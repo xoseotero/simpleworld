@@ -1,0 +1,49 @@
+BUG DATA:
+ID (IDRaza+IDSexo+IDBicho)
+Health
+Food
+Age
+Food/Movement (food needed for a movement)
+Health/Time (recovered health each X time)
+Oldness (health lost each X time)
+Communication range (lenght of the weave)
+
+If the bug hasn't food enough, each X time it lost X health.
+If the bug has food enough, each X time it gains Health/Time health.
+Each X time it lost Oldness health.
+
+
+
+WORLD's INTERACTIONS:
+GetInfo(id): Data de un bicho que esté como mucho a tal distancia
+
+Movements:
+Turn(left | right)
+Move(forward | backward)
+
+Eat:
+Eat()
+
+Communication:
+The data is propagated from the source location to X nearest locations (propagation wave).
+When the data "touch" a bug, the exception "World Event" is raised.
+SetData(address, lenght)
+GetData(address, lenght, id, location)
+
+Sexo:
+id = CreateBug(x, y)
+SendCode(id, address, lenght)
+
+Radar()
+
+Battle:
+Atack()
+Defend()
+
+
+#################
+#################
+#################
+El mundo tiene:
+comida
+rastro
