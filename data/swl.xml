@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE language SYSTEM "language.dtd">
+<!-- Simple World Language highlightning by XosÃ© Otero -->
+<language name="Simple World Language" version="1.00" kateversion="2.4" section="Assembler" extensions="*.swl;" mimetype="text/x-swl" casesensitive="1" author="XosÃ© Otero" license="GPL" priority="-1">
+    <highlighting>
+        <list name="prep">
+            <item> .include </item>
+            <item> .define  </item>
+            <item> .label  </item>
+            <item> .pragma  </item>
+        </list>
+        <list name="inst">
+            <!-- Management operations -->
+            <item> stop </item>
+            <item> restart </item>
+
+            <!-- Move operations -->
+            <item> move </item>
+            <item> swap </item>
+
+            <!-- Stack operations -->
+            <item> push </item>
+            <item> pop </item>
+
+            <!-- Load operations -->
+            <item> load </item>
+            <item> loadi </item>
+            <item> loadrr </item>
+            <item> loadri </item>
+
+            <!-- Store operations -->
+            <item> store </item>
+            <item> storerr </item>
+            <item> storeri </item>
+
+            <!-- Branch operations -->
+            <item> b </item>
+            <item> beq </item>
+            <item> bne </item>
+            <item> blt </item>
+            <item> bltu </item>
+            <item> bgt </item>
+            <item> bgtu </item>
+            <item> ble </item>
+            <item> bleu </item>
+            <item> bge </item>
+            <item> bgeu </item>
+
+            <!-- Function operations -->
+            <item> call </item>
+            <item> ret </item>
+            <item> rete </item>
+            <item> world </item>
+
+            <!-- Arithmetic operations -->
+            <item> add </item>
+            <item> addi </item>
+            <item> sub </item>
+            <item> subi </item>
+            <item> multl </item>
+            <item> multli </item>
+            <item> multlu </item>
+            <item> multlui </item>
+            <item> multh </item>
+            <item> multhi </item>
+            <item> multhu </item>
+            <item> multhui </item>
+            <item> div </item>
+            <item> divi </item>
+            <item> divu </item>
+            <item> divui </item>
+            <item> mod </item>
+            <item> modi </item>
+            <item> modu </item>
+            <item> modui </item>
+
+            <!-- Logic operations -->
+            <item> not </item>
+            <item> or </item>
+            <item> ori </item>
+            <item> and </item>
+            <item> andi </item>
+            <item> xor </item>
+            <item> xori </item>
+
+            <!-- Shift operations -->
+            <item> sll </item>
+            <item> slli </item>
+            <item> srl </item>
+            <item> srli </item>
+            <item> sla </item>
+            <item> slai </item>
+            <item> sra </item>
+            <item> srai </item>
+            <item> rl </item>
+            <item> rli </item>
+            <item> rr </item>
+            <item> rri </item>
+        </list>
+        <list name="register">
+            <item> r0 </item>
+            <item> r1 </item>
+            <item> r2 </item>
+            <item> r3 </item>
+            <item> r4 </item>
+            <item> r5 </item>
+            <item> r6 </item>
+            <item> r7 </item>
+            <item> r8 </item>
+            <item> r9 </item>
+            <item> r10 </item>
+            <item> r11 </item>
+            <item> r12 </item>
+            <item> pc </item>
+            <item> sp </item>
+            <item> etp </item>
+        </list>
+        <contexts>
+            <context name="normal" attribute="Normal Text" lineEndContext="#stay" >
+                <keyword attribute="Preprocessor" context="#stay" firstNonSpace="true" String="prep" />
+                <keyword attribute="Error" context="#stay" firstNonSpace="false" String="prep" />
+                <keyword attribute="Keyword" context="#stay" firstNonSpace="true" String="inst" />
+                <keyword attribute="Error" context="#stay" firstNonSpace="false" String="inst" />
+		<keyword attribute="Error" context="#stay" firstNonSpace="true" String="register" />
+		<keyword attribute="Register" context="#stay" firstNonSpace="false" String="register" />
+                <RegExpr attribute="Comment" context="#stay" String="#.*$" />
+                <DetectChar attribute="Error" context="string" firstNonSpace="true" char="&quot;" />
+                <DetectChar attribute="String" context="string" firstNonSpace="false" char="&quot;" />
+                <HlCHex attribute="Hex" context="#stay"/>
+            </context>
+            <context name="string" attribute="String" lineEndContext="#stay" >
+                <DetectChar attribute="String" context="#pop" char="&quot;" />
+            </context>
+        </contexts>
+        <itemDatas>
+            <itemData name="Normal Text" defStyleNum="dsNormal" />
+	    <itemData name="Preprocessor" defStyleNum="dsOthers" />
+            <itemData name="Keyword" defStyleNum="dsKeyword" />
+            <itemData name="Register" defStyleNum="dsDataType" color="#0000ff" />
+            <itemData name="Comment" defStyleNum="dsComment" />
+            <itemData name="String" defStyleNum="dsString" />
+            <itemData name="Hex" defStyleNum="dsBaseN" />
+            <itemData name="Error" defStyleNum="dsAlert" />
+            <!-- <itemData name="Error" defStyleNum="dsError" /> -->
+        </itemDatas>
+    </highlighting>
+    <general>
+        <comments>
+            <comment name="singleLine" start="#" />
+        </comments>
+        <keywords casesensitive="1" weakDeliminator="." />
+    </general>
+</language>
