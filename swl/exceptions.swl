@@ -1,0 +1,34 @@
+# @file swl/exceptions.swl
+# $DESCRIPTION$
+#
+# begin:     Wed, 22 Nov 2006 20:06:29 +0100
+# last:      $Date$ by $Author$
+#
+#  Copyright (C) 2006, Xosé Otero <xoseotero@users.sourceforge.net>
+#
+#  This program is free software; you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation; either version 2 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program; if not, write to the Free Software
+#  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+# Kind of exceptions
+.define EXCEPTIONS_INSTRUCTION  0x0	# Wrong Instruction
+.define EXCEPTIONS_MEMORY	0x1	# Wrong Memory Location
+.define EXCEPTIONS_DIVISION	0x2	# Division by Zero
+.define EXCEPTIONS_TIME		0x3	# Timer Exception
+.define EXCEPTIONS_WORLD	0x4	# Unknow World Command
+.define EXCEPTIONS_WORLDEVENT	0x5	# World Event
+.define EXCEPTIONS_USEREVENT	0x6	# User Event
+
+.label exceptions_add
+.label exceptions_clear
+.label exceptions_clearall

@@ -1,0 +1,47 @@
+# @file swl/error.swl
+# Error management.
+# Functions that can detect or produce errors must use the functions defined
+# here to inform about the error (that happened and what was the error).
+#
+# begin:     Wed, 29 Nov 2006 16:31:30 +0100
+# last:      $Date$ by $Author$
+#
+#  Copyright (C) 2006, Xosé Otero <xoseotero@users.sourceforge.net>
+#
+#  This program is free software; you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation; either version 2 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program; if not, write to the Free Software
+#  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+
+# Definitions for the errors
+.define ERROR_NOERROR	0x0000	# No error
+
+.define ERROR_NOFUNC	0x0001	# Function not implemented
+
+.define ERROR_INVAL	0x0002	# Invalid argument
+.define ERROR_RANGE	0x0003	# Math result not representable
+.define ERROR_OVERFLOW	0x0004	# Value too large for defined data type
+
+# memory.swl
+.define ERROR_NOMEM	0x0005	# Out of memory
+.define ERROR_FAULT	0x0006	# Bad address
+
+# string.swl
+.define ERROR_STRSIZE	0x0007	# String too long
+
+
+
+# Variable with the value of the last error
+.label error_error
+0x00000000	# This should be ERROR_NOERROR, but a 32 bits number must be
+		# used

@@ -1,0 +1,70 @@
+# @file swl/math.swl
+# $DESCRIPTION$
+#
+# begin:     Tue, 28 Nov 2006 03:59:15 +0100
+# last:      $Date$ by $Author$
+#
+#  Copyright (C) 2006, Xosé Otero <xoseotero@users.sourceforge.net>
+#
+#  This program is free software; you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation; either version 2 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program; if not, write to the Free Software
+#  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+# math_*_min and math_*_max are not constants because abs need 0xFFFFFFF and
+# to get the value in a registers without a memory with the value need 4
+# instructions (4 worods), so, the same space to store then in memory
+
+# MAX and MIN for signed words
+.label math_word_min
+0x80000000
+.label math_word_max
+0x70000000
+
+# MAX and MIN for unsigned words
+.label math_word_zero	# A word with all the bits to 0
+.label math_wordu_min
+0x00000000
+.label math_word_full	# A word with all the bits to 1
+.label math_wordu_max
+0xffffffff
+
+
+
+# Return the positive value of a number (signed word)
+# {math_word_min} can't be converted to positive and the same value is returned
+# IN:  r0 the word
+# OUT: r0 the positive word
+.label math_abs
+  load r1 math_word_full	# r1 = 0xFFFFFFFF
+  xor r0 r0 r1		# r0 = r0 ^ 0xFFFFFFFF
+  addi r0 r0 0x0001	# r0 += 1
+
+
+
+# Add a number x times (signed numbers)
+# IN:  r0 number
+# IN:  r1 times to add (unsigned number)
+# OUT: r0 the result
+.label math_pow
+  move r2 r0			# r2 = r0
+  load r3 math_word_zero		# r3 = 0
+  loadi r0 0x0000			# r0 = 0
+
+.label math_pow_continue
+  beq r1 r3 math_pow_return	# if r1 == 0, then return
+  add r0 r0 r2			# r0 = r0 + r2
+  subi r1 r1 0x0001		# r1 = r1 - 1
+  b pow_continue
+
+.label math_pow_return
+  ret

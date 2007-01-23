@@ -1,0 +1,74 @@
+# @file swl/action.swl
+# Definition of the actions that can do a bug.
+#
+# begin:     Wed, 17 Jan 2007 12:47:15 +0100
+# last:      $Date$ by $Author$
+#
+#  Copyright (C) 2007, Xosé Otero <xoseotero@users.sourceforge.net>
+#
+#  This program is free software; you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation; either version 2 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program; if not, write to the Free Software
+#  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+# In the examples ACTION_REG is filled with the ACTION_* action
+# Ex: loadi ACTION_REG ACTION_NOTHING
+
+# Do nothing
+# Ex: world ACTION_REG UNUSED_REG UNUSED_REG
+.define ACTION_NOTHING       0x00
+
+# Selfkill
+# Ex: world ACTION_REG UNUSED_REG UNUSED_REG
+.define ACTION_SUICIDE       0x01
+
+# Get info about the bug itself
+# Ex: world ACTION_REG OUTPUT_REG UNUSED_REG
+.define ACTION_ID            0x02
+# Ex: world ACTION_REG OUTPUT_REG UNUSED_REG
+.define ACTION_ENERGY        0x03
+# Ex: world ACTION_REG OUTPUT_X_REG OUTPUT_Y_REG
+.define ACTION_POSITION      0x04
+# Ex: world ACTION_REG OUTPUT_REG UNUSED_REG
+.define ACTION_ORIENTATION   0x05
+
+# Detect a object in front of the bug
+# Ex: world ACTION_REG UNUSED_REG UNUSED_REG
+.define ACTION_DETECT        0x06
+
+# Movements
+# Ex: world ACTION_REG UNUSED_REG UNUSED_REG
+.define ACTION_MOVE_FORWARD  0x07
+# Ex: world ACTION_REG UNUSED_REG UNUSED_REG
+.define ACTION_MOVE_BACKWARD 0x08
+# Ex: world ACTION_REG UNUSED_REG UNUSED_REG
+.define ACTION_TURN_LEFT     0x09
+# Ex: world ACTION_REG UNUSED_REG UNUSED_REG
+.define ACTION_TURN_RIGHT    0x0a
+
+# Take a object to move it with the bug
+# Ex: world ACTION_REG UNUSED_REG UNUSED_REG
+.define ACTION_TAKE          0x0b
+
+# Fight
+# Ex: world ACTION_REG ENERGY_REG UNUSED_REG
+.define ACTION_ATTACK        0x0c
+# Ex: world ACTION_REG ENERGY_REG UNUSED_REG
+.define ACTION_DEFEND        0x0d
+# Ex: world ACTION_REG ENERGY_REG UNUSED_REG
+.define ACTION_PUSH          0x0e
+
+# Communication with other bug
+# Ex: world ACTION_REG ADDRESS_REG LENGHT_REG
+.define ACTION_SEND_MSG      0x0f
+# Ex: world ACTION_REG ADDRESS_REG LENGHT_REG
+.define ACTION_RECEIVE_MSG   0x10
