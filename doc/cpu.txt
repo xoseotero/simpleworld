@@ -136,12 +136,12 @@ Add (T3):
 Substract (T3):
 	sub	REG_DST REG_SRC1 REG_SRC2	# REG_DST = REG_SRC1 - REG_SRC2
 	subi	REG_DST REG_SRC INMEDIATE	# REG_DST = REG_SRC - INMEDIATE
-Multiply (low 16 bits) (T3):
+Multiply (low 32 bits) (T3):
 	multl	REG_DST REG_SRC1 REG_SRC2	# REG_DST = REG_SRC1 * REG_SRC2
 	multli	REG_DST REG_SRC INMEDIATE	# REG_DST = REG_SRC * INMEDIATE
 	multlu	REG_DST REG_SRC1 REG_SRC2	# REG_DST = REG_SRC1 * REG_SRC2 (unsigned integer)
 	multlui	REG_DST REG_SRC INMEDIATE	# REG_DST = REG_SRC * INMEDIATE (unsigned integer)
-Multiply (high 16 bits) (T3):
+Multiply (high 32 bits) (T3):
 	multh	REG_DST REG_SRC1 REG_SRC2	# REG_DST = REG_SRC1 * REG_SRC2
 	multhi	REG_DST REG_SRC INMEDIATE	# REG_DST = REG_SRC * INMEDIATE
 	multhu	REG_DST REG_SRC1 REG_SRC2	# REG_DST = REG_SRC1 * REG_SRC2 (unsigned integer)
