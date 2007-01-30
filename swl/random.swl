@@ -1,0 +1,62 @@
+# @file swl/random.swl
+# Pseudorandom number generator.
+#
+# begin:     Tue, 30 Jan 2007 08:07:42 +0100
+# last:      $Date$ by $Author$
+#
+#  Copyright (C) 2007, Xosé Otero <xoseotero@users.sourceforge.net>
+#
+#  This program is free software; you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation; either version 2 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program; if not, write to the Free Software
+#  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+# Linear Congruential Generator (LCG)
+# Vi = A * V(i-1) + B
+# http://en.wikipedia.org/wiki/Linear_congruential_generator
+
+
+
+# Constants for calculate next random value
+.label RANDOM_A
+0x19660d		# 1664525
+.label RANDOM_B
+0x3c6ef35f		# 1013904223
+
+# Seed zero by default
+.label RANDOM_SEED
+0x0
+
+
+# Change the seed value
+# IN:  r0 the new seed
+.label random_seed
+  store RANDOM_SEED r0
+  ret
+
+
+
+# Calculate a new random value
+# OUT: r0 the random value
+.label random_value
+  load r0 RANDOM_SEED
+  load r1 RANDOM_A
+  load r2 RANDOM_B
+
+  # Vi = A * V(i - 1) + B
+  multl r0 r0 r1
+  add r0 r0 r2
+
+  # Update seed
+  store RANDOM_SEED r0
+
+  ret
