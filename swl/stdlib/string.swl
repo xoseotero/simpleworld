@@ -26,18 +26,18 @@
 # IN:  r0 pointer to string
 # OUT: r0 the lenght
 .label string_len
-  loadi r1 0x0		# r1 = 0
-  loadi r2 CHAR_END	# r2 = '\0'
+	loadi r1 0x0		# r1 = 0
+	loadi r2 CHAR_END	# r2 = '\0'
 
-  .label string_len_cmp
-  loadrr r3 r0 r1		# r3 = MEM[r0 + r1]
-  beq r3 r2 string_len_ret # if r3 == '\0' goto string_len_ret
-  addi r1 r1 0x1		# r1 = r1 + 1
-  b string_len_cmp	# goto string_len_cmp
+	.label string_len_cmp
+	loadrr r3 r0 r1		# r3 = MEM[r0 + r1]
+	beq r3 r2 string_len_ret # if r3 == '\0' goto string_len_ret
+	addi r1 r1 0x1		# r1 = r1 + 1
+	b string_len_cmp	# goto string_len_cmp
 
-  .label string_len_ret
-  move r0 r1		# r0 = r1
-  ret
+	.label string_len_ret
+	move r0 r1		# r0 = r1
+	ret
 # End of .label string_len
 
 

@@ -25,8 +25,8 @@
 # IN:  r0 word
 # OUT: 1 if the word is zero, 0 if not
 .label status_zero
-  andi r0 r0 0x0000	# r0 = ro & 0
-  ret
+	andi r0 r0 0x0000	# r0 = ro & 0
+	ret
 
 
 
@@ -34,8 +34,8 @@
 # IN:  r0 the word
 # OUT: r0 1 if the numbers is negative, 0 if is positive
 .label status_negative
-  srl r0 r0 0x001f	# r0 = has sign?
-  ret
+	srl r0 r0 0x001f	# r0 = has sign?
+	ret
 
 
 

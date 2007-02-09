@@ -40,23 +40,23 @@
 # Change the seed value
 # IN:  r0 the new seed
 .label random_seed
-  store RANDOM_SEED r0
-  ret
+	store RANDOM_SEED r0
+	ret
 
 
 
 # Calculate a new random value
 # OUT: r0 the random value
 .label random_value
-  load r0 RANDOM_SEED
-  load r1 RANDOM_A
-  load r2 RANDOM_B
+	load r0 RANDOM_SEED
+	load r1 RANDOM_A
+	load r2 RANDOM_B
 
-  # Vi = A * V(i - 1) + B
-  multl r0 r0 r1
-  add r0 r0 r2
+	# Vi = A * V(i - 1) + B
+	multl r0 r0 r1
+	add r0 r0 r2
 
-  # Update seed
-  store RANDOM_SEED r0
+	# Update seed
+	store RANDOM_SEED r0
 
-  ret
+	ret
