@@ -3,14 +3,14 @@
 # found, XySSL_FOUND is set to false.
 #  XySSL_FOUND        - True when the XySSL include directory is found.
 #  XySSL_INCLUDE_DIRS - the path to where the XySSL include files are.
-#  XySSL_LIBRARIES    - The path to where the XySSL library files are.
+#  XySSL_LIBRARIES    - The XySSL library.
 FIND_PATH(XySSL_INCLUDE_DIRS xyssl/md5.h /usr/include /usr/local/include)
 FIND_LIBRARY(XySSL_LIBRARIES NAMES xyssl PATHS /usr/lib /usr/local/lib)
 
 IF(XySSL_INCLUDE_DIRS AND XySSL_LIBRARIES)
   SET(XySSL_FOUND 1)
   IF(NOT XySSL_FIND_QUIETLY)
-    MESSAGE(STATUS "Found libsqlite3: ${XySSL_LIBRARIES}")
+    MESSAGE(STATUS "Found libxyssl: ${XySSL_LIBRARIES}")
   ENDIF(NOT XySSL_FIND_QUIETLY)
 ENDIF(XySSL_INCLUDE_DIRS AND XySSL_LIBRARIES)
 

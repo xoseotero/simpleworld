@@ -1,5 +1,5 @@
 ADD_EXECUTABLE(simpleworld main.cpp)
-TARGET_LINK_LIBRARIES(simpleworld sw_cpu sw_world boost_filesystem boost_regex)
+TARGET_LINK_LIBRARIES(simpleworld sw_cpu sw_world boost_filesystem boost_regex ${SQLite3_LIBRARIES} ${SQLite3x_LIBRARIES} ${XySSL_LIBRARIES})
 SET_TARGET_PROPERTIES(simpleworld PROPERTIES
   INSTALL_RPATH_USE_LINK_PATH ON
   INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")

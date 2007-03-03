@@ -1,5 +1,5 @@
 # Use extern SQLite3 library if found
-IF(NOT SQLite3_FOUND)
+IF(SQLite3_USE_INTERNAL)
   SET(SQLite3_SRCS
     alter.c
     analyze.c
@@ -44,4 +44,4 @@ IF(NOT SQLite3_FOUND)
     vtab.c
     where.c)
   ADD_LIBRARY(sqlite3 STATIC ${SQLite3_SRCS})
-ENDIF(NOT SQLite3_FOUND)
+ENDIF(SQLite3_USE_INTERNAL)
