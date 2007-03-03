@@ -29,6 +29,7 @@
 #include <string>
 
 #include <simple/types.h>
+#include <cpu/types.h>
 #include <cpu/exception.h>
 #include <cpu/memory.h>
 #include <cpu/instruction.h>
@@ -90,18 +91,18 @@ public:
    * @return the word.
    * @exception AddressOutOfRange address > (length - 4)
    */
-  const Uint32 memory(Uint32 address) const throw (AddressOutOfRange);
+  const Word memory(Address address) const throw (AddressOutOfRange);
 
   /**
    * Get a word from the registers (big endian).
-   * The address should be a multiply of sizeof(Uint32): 0x0 * 4 gets the r0,
+   * The address should be a multiply of sizeof(Word): 0x0 * 4 gets the r0,
    * 0xD * 4 gets the sp.
    * You can get the name of the registers from the instruction set.
    * @param address address of the register.
    * @return the word.
    * @exception AddressOutOfRange address > (length - 4)
    */
-  const Uint32 reg(Uint32 address) const throw (AddressOutOfRange);
+  const Word reg(Address address) const throw (AddressOutOfRange);
 
   /**
    * Return if the CPU is running

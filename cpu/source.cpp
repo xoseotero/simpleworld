@@ -20,7 +20,6 @@
 namespace fs = boost::filesystem;
 
 #include "word.h"
-#include "instruction.h"
 #include "source.h"
 
 namespace SimpleWorld
@@ -238,8 +237,8 @@ void Source::compile(std::string filename) throw (ParseError, FileAccessError)
     if (this->is_blank(i) or this->is_comment(i))
       continue;
 
-    Uint32 code = this->compile(i);
-    file.write(reinterpret_cast<char*>(&code), sizeof(Uint32));
+    Word code = this->compile(i);
+    file.write(reinterpret_cast<char*>(&code), sizeof(Word));
     if (file.fail())
       throw FileAccessError(__FILE__, __LINE__,
                             boost::str(boost::format("Couldn't write in %1%") %
@@ -301,7 +300,7 @@ void Source::replace_constants() throw (ParseError)
                                     label),
                          i);
       char address[11];
-      std::snprintf(address, 11, "0x%x", lines_code * sizeof(Uint32));
+      std::snprintf(address, 11, "0x%x", lines_code * sizeof(Word));
       this->remove(i, 1);
       this->constants_.insert(std::pair<std::string, std::string>(label,
         address));
@@ -329,7 +328,7 @@ void Source::replace_constants() throw (ParseError)
 }
 
 
-Uint32 Source::compile(File::size_type line) const throw (ParseError)
+Word Source::compile(File::size_type line) const throw (ParseError)
 {
   if (this->is_data(line)) {
 #ifdef IS_BIG_ENDIAN
@@ -463,9 +462,9 @@ std::string Source::get_include(File::size_type line) const
   return result;
 }
 
-Uint32 Source::get_data(File::size_type line) const throw (LineOutOfRange)
+Word Source::get_data(File::size_type line) const throw (LineOutOfRange)
 {
-  Uint32 result = 0;
+  Word result = 0;
 
   boost::smatch what;
   if (boost::regex_match(this->get_line(line), what, re_data)) {

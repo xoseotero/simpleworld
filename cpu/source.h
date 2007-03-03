@@ -31,6 +31,7 @@
 #include <string>
 
 #include <simple/types.h>
+#include <cpu/types.h>
 #include <cpu/exception.h>
 #include <cpu/instruction.h>
 #include <cpu/file.h>
@@ -125,9 +126,10 @@ protected:
   /**
    * Compile a line.
    * @param line Number of the line.
+   * @return the instruction compiled.
    * @exception ParseError error found in the code.
    */
-  Uint32 compile(File::size_type line) const throw (ParseError);
+  Word compile(File::size_type line) const throw (ParseError);
 
 
   /**
@@ -227,7 +229,7 @@ protected:
    * @return the data.
    * @exception LineOutOfRange line > lines of the file.
    */
-  Uint32 get_data(File::size_type line) const throw (LineOutOfRange);
+  Word get_data(File::size_type line) const throw (LineOutOfRange);
 
   /**
    * Return the components of a instruction.

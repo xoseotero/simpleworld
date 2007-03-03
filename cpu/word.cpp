@@ -17,15 +17,15 @@ namespace SimpleWorld
 namespace CPU
 {
 
-Uint8 get_byte(Uint32 word, Uint8 byte) throw (ByteOutOfRange)
+Uint8 get_byte(Word word, Uint8 byte) throw (ByteOutOfRange)
 {
   if (byte > 3)
-    throw ByteOutOfRange(__FILE__, __LINE__);;
+    throw ByteOutOfRange(__FILE__, __LINE__);
 
   return reinterpret_cast<Uint8*>(&word)[byte];
 }
 
-void set_byte(Uint32* word, Uint8 byte, Uint8 value)
+void set_byte(Word* word, Uint8 byte, Uint8 value)
   throw (ByteOutOfRange)
 {
   if (byte > 3)
@@ -34,13 +34,13 @@ void set_byte(Uint32* word, Uint8 byte, Uint8 value)
   reinterpret_cast<Uint8*>(word)[byte] = value;
 }
 
-Uint32 change_byte_order(Uint32 word) throw ()
+Word change_byte_order(Word word) throw ()
 {
   return get_byte(word, 0) << 24 | get_byte(word, 1) << 16 |
     get_byte(word, 2) << 8 | get_byte(word, 3);
 }
 
-Uint32 change_byte_order_middle(Uint32 word) throw ()
+Word change_byte_order_middle(Word word) throw ()
 {
   return get_byte(word, 0) << 8 | get_byte(word, 1) | get_byte(word, 2) << 24 |
     get_byte(word, 3) << 16;

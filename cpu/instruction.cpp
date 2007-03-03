@@ -31,26 +31,26 @@ InstructionSet::InstructionSet(const InstructionSet& set) throw ()
 }
 
 
-Uint32 InstructionSet::encode(const Instruction& instruction) throw ()
+Word InstructionSet::encode(const Instruction& instruction) throw ()
 {
-  Uint32 word;
+  Word word;
 
   set_byte(&word, 0, instruction.code);
   set_byte(&word, 1, static_cast<Uint8>(instruction.first << 4 |
                                         instruction.second));
 
 #ifdef IS_BIG_ENDIAN
-  set_byte(&word, 2, get_byte(static_cast<Uint32>(instruction.address), 2));
-  set_byte(&word, 3, get_byte(static_cast<Uint32>(instruction.address), 3));
+  set_byte(&word, 2, get_byte(static_cast<Word>(instruction.address), 2));
+  set_byte(&word, 3, get_byte(static_cast<Word>(instruction.address), 3));
 #else
-  set_byte(&word, 2, get_byte(static_cast<Uint32>(instruction.address), 1));
-  set_byte(&word, 3, get_byte(static_cast<Uint32>(instruction.address), 0));
+  set_byte(&word, 2, get_byte(static_cast<Word>(instruction.address), 1));
+  set_byte(&word, 3, get_byte(static_cast<Word>(instruction.address), 0));
 #endif
 
   return word;
 }
 
-Instruction InstructionSet::decode(Uint32 word) throw ()
+Instruction InstructionSet::decode(Word word) throw ()
 {
   Instruction instruction;
 
@@ -62,9 +62,9 @@ Instruction InstructionSet::decode(Uint32 word) throw ()
   set_byte(&instruction.address, 0, get_byte(word, 2));
   set_byte(&instruction.address, 1, get_byte(word, 3));
 #else
-  set_byte(reinterpret_cast<Uint32*>(&instruction.address), 0,
+  set_byte(reinterpret_cast<Word*>(&instruction.address), 0,
            get_byte(word, 3));
-  set_byte(reinterpret_cast<Uint32*>(&instruction.address), 1,
+  set_byte(reinterpret_cast<Word*>(&instruction.address), 1,
            get_byte(word, 2));
 #endif
 

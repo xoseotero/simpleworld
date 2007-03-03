@@ -1,0 +1,69 @@
+/*
+	Copyright (C) 2004-2005 Cory Nelson
+
+	This software is provided 'as-is', without any express or implied
+	warranty.  In no event will the authors be held liable for any damages
+	arising from the use of this software.
+
+	Permission is granted to anyone to use this software for any purpose,
+	including commercial applications, and to alter it and redistribute it
+	freely, subject to the following restrictions:
+
+	1. The origin of this software must not be misrepresented; you must not
+		claim that you wrote the original software. If you use this software
+		in a product, an acknowledgment in the product documentation would be
+		appreciated but is not required.
+	2. Altered source versions must be plainly marked as such, and must not be
+		misrepresented as being the original software.
+	3. This notice may not be removed or altered from any source distribution.
+	
+	CVS Info :
+		$Author$
+		$Date$
+		$Revision$
+*/
+
+#include <sqlite3.h>
+#include "sqlite3x.hpp"
+#include <cstdarg> // varargs handling
+#include <limits> // std::max()
+#include <cstring> // strlen()
+#include <cstdio> // vsnprintf()
+namespace sqlite3x {
+
+	database_error::~database_error() throw() {}
+
+	database_error::database_error(sqlite3_connection &con)
+		: m_what( con.errormsg() )
+	{
+	}
+
+	char const * database_error::what() const throw()
+	{
+		return this->m_what.c_str();
+	}
+
+	database_error::database_error(const char *format,...)
+	{
+		const int buffsz = std::max( (size_t) 2048, std::strlen(format) * 2 );
+		char buffer[buffsz];
+		std::va_list vargs;
+		va_start ( vargs, format );
+		int size = std::vsnprintf(buffer, buffsz, format, vargs);
+		va_end( vargs );
+		if (size > (buffsz-1))
+		{
+			// replace tail of msg with "..."
+			size = buffsz-1;
+			for( int i = buffsz-4; i < buffsz-1; ++i )
+			{
+				buffer[i] = '.';
+			}
+		}
+		buffer[size] = '\0';
+		this->m_what = buffer;
+	}
+}
+
+
+

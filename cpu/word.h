@@ -26,6 +26,7 @@
 #define __CPU_WORD_H__
 
 #include <simple/types.h>
+#include <cpu/types.h>
 #include <cpu/exception.h>
 
 
@@ -66,7 +67,7 @@ public:
  * @return the byte value.
  * @exception ByteOutOfRange byte > 3
  */
-Uint8 get_byte(Uint32 word, Uint8 byte) throw (ByteOutOfRange);
+Uint8 get_byte(Word word, Uint8 byte) throw (ByteOutOfRange);
 
 /**
  * Set the value of a byte in a word.
@@ -76,7 +77,7 @@ Uint8 get_byte(Uint32 word, Uint8 byte) throw (ByteOutOfRange);
  * @return the byte value.
  * @exception ByteOutOfRange byte > 3
  */
-void set_byte(Uint32* word, Uint8 byte, Uint8 value) throw (ByteOutOfRange);
+void set_byte(Word* word, Uint8 byte, Uint8 value) throw (ByteOutOfRange);
 
 /**
  * Change the byte order of a word.
@@ -84,7 +85,7 @@ void set_byte(Uint32* word, Uint8 byte, Uint8 value) throw (ByteOutOfRange);
  * @param word Word to change.
  * @return the word with the order changed.
  */
-Uint32 change_byte_order(Uint32 word) throw ();
+Word change_byte_order(Word word) throw ();
 
 /**
  * Change the order of the bytes in a word.
@@ -92,7 +93,7 @@ Uint32 change_byte_order(Uint32 word) throw ();
  * @param word Word to change.
  * @return the word with the order changed.
  */
-Uint32 change_byte_order_middle(Uint32 word) throw ();
+Word change_byte_order_middle(Word word) throw ();
 
 }
 }

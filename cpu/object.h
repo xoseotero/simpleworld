@@ -27,6 +27,7 @@
 
 #include <string>
 
+#include <cpu/types.h>
 #include <cpu/instruction.h>
 #include <cpu/file.h>
 
@@ -69,7 +70,7 @@ protected:
    * @exception InstructionNotFound instruction not found.
    * @exception RegisterNotFound register not found.
    */
-  std::string decompile(Uint32 instruction) const
+  std::string decompile(Word instruction) const
     throw (InstructionNotFound, RegisterNotFound);
 
 private:

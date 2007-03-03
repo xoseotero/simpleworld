@@ -30,6 +30,7 @@
 #include <string>
 
 #include <simple/types.h>
+#include <cpu/types.h>
 #include <cpu/exception.h>
 #include <cpu/memory.h>
 
@@ -145,7 +146,7 @@ struct Instruction {
   Uint8 code;         /**< Code of the instruction */
   Uint8 first:4;      /**< First operand of the operation (destiny) */
   Uint8 second:4;     /**< Second operand of the operation (first source) */
-  Uint16 address;     /**< Memory address or third operand of the operation
+  Address address;     /**< Memory address or third operand of the operation
 			   (second source) */
 };
 
@@ -201,18 +202,18 @@ public:
 
 
   /**
-   * Encode the instruction to a Uint32 (in big endian).
+   * Encode the instruction to a Word (in big endian).
    * @param instruction instruction to encode.
    * @return the instruction encoded.
    */
-  static Uint32 encode(const Instruction& instruction) throw ();
+  static Word encode(const Instruction& instruction) throw ();
 
   /**
    * Decode the instruction (in big endian).
    * @param word word to decode (in big endian).
    * @return the instruction decoded.
    */
-  static Instruction decode(Uint32 word) throw ();
+  static Instruction decode(Word word) throw ();
 
 
   /**

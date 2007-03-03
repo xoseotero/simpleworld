@@ -17,7 +17,7 @@
 #endif
 #include <fstream>
 
-#include "../simple/types.h"
+#include "types.h"
 #include "word.h"
 #include "memory.h"
 #include "cpu_file.h"
@@ -42,7 +42,7 @@ void CPUFile::load_file(const std::string& filename) throw (FileAccessError)
 
   // All instructions are 32bits, if the file is not X*32bits long is not valid
   is.seekg(0, std::ios_base::end);
-  if ((is.tellg() % sizeof(Uint32)) != 0)
+  if ((is.tellg() % sizeof(Word)) != 0)
     throw FileAccessError(__FILE__, __LINE__);
 
 #ifdef DEBUG
@@ -50,10 +50,10 @@ void CPUFile::load_file(const std::string& filename) throw (FileAccessError)
                           % filename)
     << std::endl;
 #endif
-  Uint32 instruction;
-  Uint32 i = 0;
+  Word instruction;
+  Word i = 0;
   is.seekg(0);
-  while (is.read(reinterpret_cast<char*>(&instruction), sizeof(Uint32))) {
+  while (is.read(reinterpret_cast<char*>(&instruction), sizeof(Word))) {
 #ifdef DEBUG
     std::cout << boost::str(boost::format("> Instruction %d: 0x%8X")
                             % i
@@ -62,9 +62,9 @@ void CPUFile::load_file(const std::string& filename) throw (FileAccessError)
 #endif
 
 #ifdef IS_BIG_ENDIAN
-    this->memory_.set_word(i * sizeof(Uint32), instruction);
+    this->memory_.set_word(i * sizeof(Word), instruction);
 #else
-    this->memory_.set_word(i * sizeof(Uint32), instruction, false);
+    this->memory_.set_word(i * sizeof(Word), instruction, false);
 #endif
 
     i++;

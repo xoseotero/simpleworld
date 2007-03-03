@@ -32,7 +32,7 @@ void Object::decompile(const std::string filename) const
 {
   File file;
   File::size_type i = 0;
-  Uint32 instruction;
+  Word instruction;
 
   std::ifstream is(this->filename_.c_str(), std::ios::binary);
   if (is.rdstate() & std::ifstream::failbit)
@@ -40,11 +40,11 @@ void Object::decompile(const std::string filename) const
 
   // All instructions are 32bits, if the file is not X*32bits long is not valid
   is.seekg(0, std::ios_base::end);
-  if ((is.tellg() % sizeof(Uint32)) != 0)
+  if ((is.tellg() % sizeof(Word)) != 0)
     throw FileAccessError(__FILE__, __LINE__);
 
   is.seekg(0);
-  while (is.read(reinterpret_cast<char*>(&instruction), sizeof(Uint32))) {
+  while (is.read(reinterpret_cast<char*>(&instruction), sizeof(Word))) {
     // If a unknown instruction or register is found suppose that the value
     // is data.
     try {
@@ -67,7 +67,7 @@ void Object::decompile(const std::string filename) const
   file.save(filename);
 }
 
-std::string Object::decompile(Uint32 instruction) const
+std::string Object::decompile(Word instruction) const
   throw (InstructionNotFound, RegisterNotFound)
 {
   Instruction inst = InstructionSet::decode(instruction);

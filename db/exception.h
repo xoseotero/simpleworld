@@ -1,0 +1,58 @@
+/**
+ * @file db/exception.h
+ * Exception class father of the rest of DB exceptions.
+ *
+ * begin:     Mon, 01 Jan 2007 08:49:24 +0100
+ * last:      $Date$ by $Author$
+ *
+ *  Copyright (C) 2007, Xosé Otero <xoseotero@users.sourceforge.net>
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
+ *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+#ifndef __CPU_EXCEPTION_H__
+#define __CPU_EXCEPTION_H__
+
+#include <string>
+
+#include <simple/types.h>
+#include <simple/exception.h>
+
+namespace SimpleWorld
+{
+namespace DB
+{
+
+/**
+ * Exception class father of the rest of DB exceptions.
+ *
+ * It hasn't any data.
+ */
+class DBException: public Exception
+{
+public:
+    /**
+     * Constructor.
+     * @param file File where the exception is raised.
+     * @param line Line where the exception is raised.
+     */
+  DBException(std::string file = "", Uint32 line = 0) throw ()
+    : Exception(file, line)
+  {}
+};
+
+}
+}
+
+#endif // __CPU_EXCEPTION_H__

@@ -1,0 +1,83 @@
+/* 10 bugs */
+INSERT INTO Bug(path, size, md5, order_world, energy, position_x, position_y,
+birth, dead, killer_id)
+VALUES ("1.swo", 65536, "00112233445566778899aabbccddeeff", 1, 100, 0, 0, 0,
+NULL, NULL);
+INSERT INTO Bug(path, size, md5, order_world, energy, position_x, position_y,
+birth, dead, killer_id)
+VALUES ("2.swo", 65536, "10112233445566778899aabbccddeeff", NULL, 0, 0, 0, 0,
+10, 1);
+INSERT INTO Bug(path, size, md5, order_world, energy, position_x, position_y,
+birth, dead, killer_id)
+VALUES ("3.swo", 65536, "20112233445566778899aabbccddeeff", NULL, 0, 0, 0, 0,
+21, 1);
+INSERT INTO Bug(path, size, md5, order_world, energy, position_x, position_y,
+birth, dead, killer_id)
+VALUES ("4.swo", 16384, "30112233445566778899aabbccddeeff", NULL, 0, 0, 0, 0, 5,
+3);
+INSERT INTO Bug(path, size, md5, order_world, energy, position_x, position_y,
+birth, dead, killer_id)
+VALUES ("5.swo", 16384, "20112233445566778899aabbccddeeff", 2, 10, 0, 0, 0,
+NULL, NULL);
+INSERT INTO Bug(path, size, md5, order_world, energy, position_x, position_y,
+birth, dead, killer_id)
+VALUES ("6.swo", 65536, "30112233445566778899aabbccddeeff", NULL, 0, 0, 0, 0,
+30, 5);
+INSERT INTO Bug(path, size, md5, order_world, energy, position_x, position_y,
+birth, dead, killer_id)
+VALUES ("7.swo", 16384, "04112233445566778899aabbccddeeff", NULL, 0, 0, 0, 0,
+50, 1);
+INSERT INTO Bug(path, size, md5, order_world, energy, position_x, position_y,
+birth, dead, killer_id)
+VALUES ("8.swo", 16384, "50112233445566778899aabbccddeeff", NULL0, 0, 0, 0, 22,
+6);
+INSERT INTO Bug(path, size, md5, order_world, energy, position_x, position_y,
+birth, dead, killer_id)
+VALUES ("9.swo", 65536, "60112233445566778899aabbccddeeff", NULL, 0, 0, 0, 0,
+11, 6);
+INSERT INTO Bug(path, size, md5, order_world, energy, position_x, position_y,
+birth, dead, killer_id)
+VALUES ("10.swo", 16384, "70112233445566778899aabbccddeeff", NULL, 0, 0, 0, 0,
+33, 6);
+
+/*  */
+INSERT INTO Hierarchy(father_id, son_id)
+VALUES (1, 5);
+INSERT INTO Hierarchy(father_id, son_id)
+VALUES (8, 9);
+INSERT INTO Hierarchy(father_id, son_id)
+VALUES (8, 10);
+
+/*  */
+INSERT INTO CPU(r0, r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, r11, r12, pc, sp,
+etp, bug_id)
+VALUES (0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 1);
+INSERT INTO CPU(r0, r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, r11, r12, pc, sp,
+etp, bug_id)
+VALUES (0, 2, 0, 3, 0, 4, 0, 5, 0, 6, 0, 7, 0, 8, 0, 9, 5);
+
+/*  */
+INSERT INTO Mutation(position, original, mutated, bug_id)
+VALUES (0, 0, 1, 1);
+INSERT INTO Mutation(position, original, mutated, bug_id)
+VALUES (1, 1, 0, 1);
+INSERT INTO Mutation(position, original, mutated, bug_id)
+VALUES (2, 101, 10, 1);
+INSERT INTO Mutation(position, original, mutated, bug_id)
+VALUES (102, 10234, NULL, 10);
+INSERT INTO Mutation(position, original, mutated, bug_id)
+VALUES (103, NULL, 54321, 10);
+
+/*  */
+INSERT INTO Environment(time, mutations_percent, energy_move, energy_attack,
+energy_sex)
+VALUES (123, 0.000001, 1, 2, 1);
+INSERT INTO Environment(time, mutations_percent, energy_move, energy_attack,
+energy_sex)
+VALUES (133, 0.00001, 1, 1, 2);
+INSERT INTO Environment(time, mutations_percent, energy_move, energy_attack,
+energy_sex)
+VALUES (143, 0.000001, 1, 2, 2);
+INSERT INTO Environment(time, mutations_percent, energy_move, energy_attack,
+energy_sex)
+VALUES (153, 0.0001, 1, 2, 1);

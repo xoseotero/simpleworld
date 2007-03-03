@@ -25,10 +25,11 @@
 #ifndef __CPU_OPERATIONS_H__
 #define __CPU_OPERATIONS_H__
 
+#include <cpu/types.h>
 #include <cpu/memory.h>
 #include <cpu/instruction.h>
 
-#define REGISTER(NUMBER) (NUMBER * sizeof(Uint32))
+#define REGISTER(NUMBER) (NUMBER * sizeof(Word))
 #define REGISTER_PC REGISTER(0xc)
 #define REGISTER_SGP REGISTER(0xd)
 #define REGISTER_STP REGISTER(0xe)

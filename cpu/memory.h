@@ -26,6 +26,7 @@
 #define __CPU_MEMORY_H__
 
 #include <simple/types.h>
+#include <cpu/types.h>
 #include <cpu/exception.h>
 
 namespace SimpleWorld
@@ -95,7 +96,7 @@ public:
    * @param length bytes of the memory
    * @exception NotEnoughLength length < 4
    */
-  Memory(Uint32 length) throw (NotEnoughLength);
+  Memory(Address length) throw (NotEnoughLength);
 
   /**
    * Destructor.
@@ -113,7 +114,7 @@ public:
    * @return the word
    * @exception AddressOutOfRange address > (length - 4)
    */
-  Uint32 get_word(Uint32 address, bool system_endian = true) const
+  Word get_word(Address address, bool system_endian = true) const
     throw(AddressOutOfRange);
 
   /**
@@ -127,7 +128,7 @@ public:
    * @return the word
    * @exception AddressOutOfRange address > (length - 4)
    */
-  Uint32 set_word(Uint32 address, Uint32 value, bool system_endian = true)
+  Word set_word(Address address, Word value, bool system_endian = true)
     throw(AddressOutOfRange);
 
 
@@ -137,11 +138,11 @@ public:
    * @return the word
    * @exception AddressOutOfRange address > (length - 4)
    */
-  Uint32 operator [](Uint32 address) const throw(AddressOutOfRange)
+  Word operator [](Address address) const throw(AddressOutOfRange)
   { return this->get_word(address); }
 
 private:
-  Sint32 length_;
+  Address length_;
   Sint8* memory_;
 };
 

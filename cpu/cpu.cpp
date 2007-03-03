@@ -25,7 +25,7 @@ namespace CPU
 {
 
 CPU::CPU(Memory* memory)
-  : registers_(sizeof(Uint32) * 16), memory_(memory), running_(true)
+  : registers_(sizeof(Word) * 16), memory_(memory), running_(true)
 {
   // 16 registers
   this->set.add_register(0x0, "r0");
@@ -140,12 +140,12 @@ const InstructionSet& CPU::instruction_set() const throw ()
   return this->set;
 }
 
-const Uint32 CPU::memory(Uint32 address) const throw (AddressOutOfRange)
+const Word CPU::memory(Address address) const throw (AddressOutOfRange)
 {
   return this->memory_->get_word(address, false);
 }
 
-const Uint32 CPU::reg(Uint32 address) const throw (AddressOutOfRange)
+const Word CPU::reg(Address address) const throw (AddressOutOfRange)
 {
   return this->registers_.get_word(address, false);
 }
