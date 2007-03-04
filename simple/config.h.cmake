@@ -21,8 +21,8 @@
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-#ifndef SIMPLEWORLDCONFIG_H
-#define SIMPLEWORLDCONFIG_H
+#ifndef __SIMPLE_CONFIG_H__
+#define __SIMPLE_CONFIG_H__
 
 #define EXIT_SUCCESS 0
 
@@ -35,4 +35,4 @@
 #cmakedefine HAVE_LONG_LONG
 #cmakedefine HAVE__INT64
 
-#endif // SIMPLEWORLDCONFIG_H
+#endif // __SIMPLE_CONFIG_H__
