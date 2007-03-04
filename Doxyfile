@@ -82,7 +82,10 @@ WARN_LOGFILE           =
 #---------------------------------------------------------------------------
 # configuration options related to the input files
 #---------------------------------------------------------------------------
-INPUT                  = .
+INPUT                  = simple \
+                         world \
+                         cpu \
+                         db
 FILE_PATTERNS          = *.c \
                          *.cc \
                          *.cxx \
