@@ -44,8 +44,8 @@ typedef Uint32 Energy;
  * Position of a bug.
  */
 struct Position {
-  Uint32 x;
-  Uint32 y;
+  Uint16 x;
+  Uint16 y;
 };
 
 
