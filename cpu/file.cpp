@@ -17,11 +17,11 @@ namespace SimpleWorld
 namespace CPU
 {
 
-File::File() throw ()
+File::File()
 {
 }
 
-File::File(const File& file) throw ()
+File::File(const File& file)
 {
   std::vector<std::string>::const_iterator iter = file.lines_.begin();
   while (iter != file.lines_.end()) {
@@ -30,17 +30,17 @@ File::File(const File& file) throw ()
   }
 }
 
-File::File(std::string filename) throw (FileAccessError)
+File::File(std::string filename)
 {
   this->load(filename);
 }
 
-File::size_type File::lines() const throw ()
+File::size_type File::lines() const
 {
   return this->lines_.size();
 }
 
-std::string& File::get_line(File::size_type pos) throw (LineOutOfRange)
+std::string& File::get_line(File::size_type pos)
 {
   if ((pos + 1) > this->lines_.size())
     throw LineOutOfRange(__FILE__, __LINE__);
@@ -49,7 +49,6 @@ std::string& File::get_line(File::size_type pos) throw (LineOutOfRange)
 }
 
 const std::string& File::get_line(File::size_type pos) const
-  throw (LineOutOfRange)
 {
   if ((pos + 1) > this->lines_.size())
     throw LineOutOfRange(__FILE__, __LINE__);
@@ -58,7 +57,6 @@ const std::string& File::get_line(File::size_type pos) const
 }
 
 void File::insert(File::size_type pos, const std::string& line)
-  throw (LineOutOfRange)
 {
   if (pos > this->lines_.size())
     throw LineOutOfRange(__FILE__, __LINE__);
@@ -66,7 +64,7 @@ void File::insert(File::size_type pos, const std::string& line)
   this->lines_.insert(this->lines_.begin() + pos, line);
 }
 
-void File::insert(File::size_type pos, const File& file) throw (LineOutOfRange)
+void File::insert(File::size_type pos, const File& file)
 {
   if (pos > this->lines_.size())
     throw LineOutOfRange(__FILE__, __LINE__);
@@ -75,7 +73,7 @@ void File::insert(File::size_type pos, const File& file) throw (LineOutOfRange)
                       file.lines_.begin(), file.lines_.end());
 }
 
-void File::remove(File::size_type pos, File::size_type n) throw (LineOutOfRange)
+void File::remove(File::size_type pos, File::size_type n)
 {
   if ((pos + 1) > this->lines_.size())
     throw LineOutOfRange(__FILE__, __LINE__);
@@ -84,7 +82,7 @@ void File::remove(File::size_type pos, File::size_type n) throw (LineOutOfRange)
 }
 
 
-void File::load(std::string filename) throw (FileAccessError)
+void File::load(std::string filename)
 {
   this->lines_.clear();
 
@@ -97,7 +95,7 @@ void File::load(std::string filename) throw (FileAccessError)
     this->lines_.push_back(str);
 }
 
-void File::save(std::string filename) const throw (FileAccessError)
+void File::save(std::string filename) const
 {
   std::ofstream os(filename.c_str());
   if (os.rdstate() & std::ofstream::failbit)
@@ -110,13 +108,12 @@ void File::save(std::string filename) const throw (FileAccessError)
   }
 }
 
-std::string& File::operator [](File::size_type pos) throw (LineOutOfRange)
+std::string& File::operator [](File::size_type pos)
 {
   return this->get_line(pos);
 }
 
 const std::string& File::operator [](File::size_type pos) const
-  throw (LineOutOfRange)
 {
   return this->get_line(pos);
 }

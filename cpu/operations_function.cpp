@@ -20,7 +20,6 @@ namespace CPU
 {
 
 Update call(Memory& regs, Memory& mem, Instruction inst)
-  throw (AddressOutOfRange)
 {
   // Save the program counter (pc) in the top of the stack
   mem.set_word(regs[REGISTER_STP], regs[REGISTER_PC]);
@@ -33,7 +32,6 @@ Update call(Memory& regs, Memory& mem, Instruction inst)
 }
 
 Update ret(Memory& regs, Memory& mem, Instruction inst)
-  throw (AddressOutOfRange)
 {
   // Update stack pointer
   regs.set_word(REGISTER_STP, regs[REGISTER_STP] + 4);
@@ -44,7 +42,6 @@ Update ret(Memory& regs, Memory& mem, Instruction inst)
 }
 
 Update rete(Memory& regs, Memory& mem, Instruction inst)
-  throw (AddressOutOfRange)
 {
   Sint8 i;
   for (i = 15; i >= 0; i--) {
@@ -60,7 +57,6 @@ Update rete(Memory& regs, Memory& mem, Instruction inst)
 
 #warning World operation not implemented
 Update world(Memory& regs, Memory& mem, Instruction inst)
-  throw (AddressOutOfRange)
 {
   std::cout << "Calling world with parameter " << inst.address << std::endl;
 

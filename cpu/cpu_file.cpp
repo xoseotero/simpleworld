@@ -27,14 +27,14 @@ namespace SimpleWorld
 namespace CPU
 {
 
-CPUFile::CPUFile(const std::string& filename) throw (FileAccessError)
+CPUFile::CPUFile(const std::string& filename)
   : memory_(1 << 16), CPU(&this->memory_)
 {
   this->load_file(filename);
 }
 
 
-void CPUFile::load_file(const std::string& filename) throw (FileAccessError)
+void CPUFile::load_file(const std::string& filename)
 {
   std::ifstream is(filename.c_str(), std::ios::binary);
   if (is.rdstate() & std::ifstream::failbit)

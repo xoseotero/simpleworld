@@ -18,13 +18,11 @@ namespace CPU
 {
 
 Update stop(Memory& regs, Memory& mem, Instruction inst)
-  throw (AddressOutOfRange)
 {
   return Stop;
 }
 
 Update restart(Memory& regs, Memory& mem, Instruction inst)
-  throw (AddressOutOfRange)
 {
   Uint8 i;
   for (i = 0; i < 16; i++)

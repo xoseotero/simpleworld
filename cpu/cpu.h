@@ -83,7 +83,7 @@ public:
    * Instruction set of the CPU.
    * @return the instruction set.
    */
-  const InstructionSet& instruction_set() const throw ();
+  const InstructionSet& instruction_set() const;
 
   /**
    * Get a word from memory (big endian).
@@ -91,7 +91,7 @@ public:
    * @return the word.
    * @exception AddressOutOfRange address > (length - 4)
    */
-  const Word memory(Address address) const throw (AddressOutOfRange);
+  const Word memory(Address address) const;
 
   /**
    * Get a word from the registers (big endian).
@@ -102,25 +102,25 @@ public:
    * @return the word.
    * @exception AddressOutOfRange address > (length - 4)
    */
-  const Word reg(Address address) const throw (AddressOutOfRange);
+  const Word reg(Address address) const;
 
   /**
    * Return if the CPU is running
    * @return true if the CPU is running, false if not
    */
-  bool running() const throw () { return this->running_; }
+  bool running() const { return this->running_; }
 
 
   /**
    * Execute all the code until a stop instruction is found.
    */
-  void execute() throw ();
+  void execute();
 
   /**
    * Execute the next instruction.
    * @exception CPUStopped A stop instruction was found
    */
-  virtual void next() throw (CPUStopped);
+  virtual void next();
 
 protected:
   /**

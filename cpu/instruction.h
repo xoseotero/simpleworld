@@ -192,13 +192,13 @@ public:
   /**
    * Constructor for a empty instruction set.
    */
-  InstructionSet() throw ();
+  InstructionSet();
 
   /**
    * Copy constructor.
    * @param set instruction set to copy.
    */
-  InstructionSet(const InstructionSet& set) throw ();
+  InstructionSet(const InstructionSet& set);
 
 
   /**
@@ -206,27 +206,27 @@ public:
    * @param instruction instruction to encode.
    * @return the instruction encoded.
    */
-  static Word encode(const Instruction& instruction) throw ();
+  static Word encode(const Instruction& instruction);
 
   /**
    * Decode the instruction (in big endian).
    * @param word word to decode (in big endian).
    * @return the instruction decoded.
    */
-  static Instruction decode(Word word) throw ();
+  static Instruction decode(Word word);
 
 
   /**
    * Instruction codes.
    * @return the instruction codes.
    */
-  std::vector<Uint8> instruction_codes() const throw ();
+  std::vector<Uint8> instruction_codes() const;
 
   /**
    * Register codes.
    * @return the register codes.
    */
-  std::vector<Uint8> register_codes() const throw ();
+  std::vector<Uint8> register_codes() const;
 
 
   /**
@@ -235,8 +235,7 @@ public:
    * @return the info about the instruction.
    * @exception InstructionNotFound instruction not found.
    */
-  InstructionInfo instruction_info(Uint8 code) const
-    throw (InstructionNotFound);
+  InstructionInfo instruction_info(Uint8 code) const;
 
   /**
    * Code of the instruction.
@@ -244,7 +243,7 @@ public:
    * @return the code of the instruction.
    * @exception InstructionNotFound instruction not found.
    */
-  Uint8 instruction_code(std::string name) const throw (InstructionNotFound);
+  Uint8 instruction_code(std::string name) const;
 
   /**
    * Name of the register.
@@ -252,7 +251,7 @@ public:
    * @return the name of the register.
    * @exception RegisterNotFound register not found.
    */
-  std::string register_name(Uint8 code) const throw (RegisterNotFound);
+  std::string register_name(Uint8 code) const;
 
   /**
    * Code of the register.
@@ -260,7 +259,7 @@ public:
    * @return the code of the register.
    * @exception RegisterNotFound register not found.
    */
-  Uint8 register_code(std::string name) const throw (RegisterNotFound);
+  Uint8 register_code(std::string name) const;
 
 
   /**
@@ -268,7 +267,7 @@ public:
    * @param instruction instruction to add.
    * @exception InstructionExist the instruction already exist.
    */
-  void add_instruction(InstructionInfo instruction) throw (InstructionExist);
+  void add_instruction(InstructionInfo instruction);
 
   /**
    * Add a new instruction.
@@ -280,15 +279,14 @@ public:
    * @exception InstructionExist the instruction already exist.
    */
   void add_instruction(Uint8 code, std::string name, Uint8 nregs, bool
-                       has_inmediate, Operation func)
-    throw (InstructionExist);
+                       has_inmediate, Operation func);
 
   /**
    * Remove a instruction.
    * @param code code of the instruction.
    * @exception InstructionNotFound instruction not found.
    */
-  void remove_instruction(Uint8 code) throw (InstructionNotFound);
+  void remove_instruction(Uint8 code);
 
   /**
    * Add a new register.
@@ -296,14 +294,14 @@ public:
    * @param name name of the register.
    * @exception RegisterExist the register already exist.
    */
-  void add_register(Uint8 code, std::string name) throw (RegisterExist);
+  void add_register(Uint8 code, std::string name);
 
   /**
    * Remove a register.
    * @param code code of the register.
    * @exception RegisterNotFound register not found.
    */
-  void remove_register(Uint8 code) throw (RegisterNotFound);
+  void remove_register(Uint8 code);
 
 private:
   std::map<Uint8, InstructionInfo> instructions_;

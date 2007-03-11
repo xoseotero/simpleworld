@@ -53,25 +53,25 @@ public:
    * @exception DBError if there is a error in the database.
    * @exception IDNotFound if the ID is not found in the table.
    */
-  Table(DB* db, ID id) throw (DBError, IDNotFound);
+  Table(DB* db, ID id);
 
   /**
    * Destructor.
   */
-  virtual ~Table() throw () = 0;
+  virtual ~Table() = 0;
 
 
   /**
    * The database of the table.
    * @return the database object.
    */
-  DB* db() const throw () { return this->db_; }
+  DB* db() const { return this->db_; }
 
   /**
    * The id of the table.
    * @return the ID.
    */
-  ID id() const throw () { return this->id_; }
+  ID id() const { return this->id_; }
 
 
   /**
@@ -85,7 +85,7 @@ public:
    * @param colname name of the column.
    * @return true if colname is NULL, else false.
    */
-  bool is_null(std::string colname) const throw ()
+  bool is_null(std::string colname) const
   {
     return std::find(this->null.begin(),
 		     this->null.end(),
@@ -96,7 +96,7 @@ public:
    * Add colname as NULL.
    * @param colname name of the column.
    */
-  void add_null(std::string colname) throw ()
+  void add_null(std::string colname)
   {
     this->null.push_back(colname);
   }
@@ -105,7 +105,7 @@ public:
    * Remove colname as NULL.
    * @param colname name of the column.
    */
-  void remove_null(std::string colname) throw ()
+  void remove_null(std::string colname)
   {
     this->null.erase(std::find(this->null.begin(),
 			       this->null.end(),
@@ -118,13 +118,13 @@ public:
    * @exception DBError if there is a error in the database.
    * @execption IDNotFound if the ID is not found in the table.
    */
-  virtual void update() throw (DBError, IDNotFound) = 0;
+  virtual void update() = 0;
 
   /**
    * Update the database with the data of the class.
    * @exception DBError if there is a error in the database.
    */
-  virtual void update_db() throw (DBError) = 0;
+  virtual void update_db() = 0;
 
 protected:
   DB* db_;

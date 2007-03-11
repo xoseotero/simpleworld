@@ -17,18 +17,18 @@ namespace SimpleWorld
 namespace DB
 {
 
-CPU::CPU(DB* db, ID bug_id) throw (DBError, IDNotFound)
+CPU::CPU(DB* db, ID bug_id)
   : Table(db, bug_id)
 {
 }
 
-CPU::~CPU() throw ()
+CPU::~CPU()
 {
   this->db_->free_cpu(this->id_);
 }
 
 
-void CPU::update() throw (DBError, IDNotFound)
+void CPU::update()
 {
   static sqlite3x::sqlite3_command sql(*this->db_,
 				       "\
@@ -64,7 +64,7 @@ WHERE bug_id = ?;");
   }
 }
 
-void CPU::update_db() throw (DBError)
+void CPU::update_db()
 {
   static sqlite3x::sqlite3_command sql(*this->db_,
 				       "\

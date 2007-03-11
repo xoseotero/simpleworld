@@ -51,13 +51,13 @@ protected:
    * @exception DBError if there is a error in the database.
    * @exception IDNotFound if the ID is not found in the table.
    */
-  Bug(DB* db, ID id) throw (IDNotFound, DBError);
+  Bug(DB* db, ID id);
 
 public:
   /**
    * Destructor.
    */
-  ~Bug() throw ();
+  ~Bug();
 
 
   // Data
@@ -80,13 +80,13 @@ public:
    * @exception DBError if there is a error in the database.
    * @execption IDNotFound if the ID is not found in the table.
    */
-  void update() throw (DBError, IDNotFound);
+  void update();
 
   /**
    * Update the database with the data of the class.
    * @exception DBError if there is a error in the database.
    */
-  void update_db() throw (DBError);
+  void update_db();
 };
 
 }

@@ -71,7 +71,7 @@ public:
    * Line with the error.
    * @return the line number.
    */
-  File::size_type source_line() const throw () { this->source_line_; }
+  File::size_type source_line() const { this->source_line_; }
 
 private:
   File::size_type source_line_;
@@ -97,7 +97,7 @@ public:
    * @exception FileAccessError File can't be opened
    */
   Source(const InstructionSet& set, std::vector<std::string> include_path,
-         const std::string& filename) throw (FileAccessError);
+         const std::string& filename);
 
 
   /**
@@ -106,7 +106,7 @@ public:
    * @exception FileAccessError problem with file.
    * @exception ParseError error found in the code.
    */
-  void compile(std::string filename) throw (FileAccessError, ParseError);
+  void compile(std::string filename);
 
 
   /**
@@ -114,13 +114,13 @@ public:
    * @exception FileAccessError file can't be opened.
    * @exception ParseError file included two times.
    */
-  void replace_includes() throw (FileAccessError, ParseError);
+  void replace_includes();
  
   /**
    * Replace the constants and labels with its value.
    * @exception ParseError error found in the code.
    */
-  void replace_constants() throw (ParseError);
+  void replace_constants();
 
 protected:
   /**
@@ -129,7 +129,7 @@ protected:
    * @return the instruction compiled.
    * @exception ParseError error found in the code.
    */
-  Word compile(File::size_type line) const throw (ParseError);
+  Word compile(File::size_type line) const;
 
 
   /**
@@ -138,7 +138,7 @@ protected:
    * @return the check result.
    * @exception LineOutOfRange line > lines of the file.
    */
-  bool is_blank(File::size_type line) const throw (LineOutOfRange);
+  bool is_blank(File::size_type line) const;
 
   /**
    * Check if a line is a comment.
@@ -146,7 +146,7 @@ protected:
    * @return the check result.
    * @exception LineOutOfRange line > lines of the file.
    */
-  bool is_comment(File::size_type line) const throw (LineOutOfRange);
+  bool is_comment(File::size_type line) const;
 
   /**
    * Check if a line is a constant definition.
@@ -154,7 +154,7 @@ protected:
    * @return the check result.
    * @exception LineOutOfRange line > lines of the file.
    */
-  bool is_constant(File::size_type line) const throw (LineOutOfRange);
+  bool is_constant(File::size_type line) const;
 
   /**
    * Check if a line is a label definition.
@@ -162,7 +162,7 @@ protected:
    * @return the check result.
    * @exception LineOutOfRange line > lines of the file.
    */
-  bool is_label(File::size_type line) const throw (LineOutOfRange);
+  bool is_label(File::size_type line) const;
 
   /**
    * Check if a line is a include.
@@ -170,7 +170,7 @@ protected:
    * @return the check result.
    * @exception LineOutOfRange line > lines of the file.
    */
-  bool is_include(File::size_type line) const throw (LineOutOfRange);
+  bool is_include(File::size_type line) const;
 
   /**
    * Check if a line is data (32 bits number).
@@ -178,7 +178,7 @@ protected:
    * @return the check result.
    * @exception LineOutOfRange line > lines of the file.
    */
-  bool is_data(File::size_type line) const throw (LineOutOfRange);
+  bool is_data(File::size_type line) const;
 
   /**
    * Check if a line is a instruction.
@@ -186,7 +186,7 @@ protected:
    * @return the check result.
    * @exception LineOutOfRange line > lines of the file.
    */
-  bool is_instruction(File::size_type line) const throw (LineOutOfRange);
+  bool is_instruction(File::size_type line) const;
 
 
   /**
@@ -198,8 +198,7 @@ protected:
    * @return the components of a constant.
    * @exception LineOutOfRange line > lines of the file.
    */
-  std::vector<std::string> get_constant(File::size_type line) const
-    throw (LineOutOfRange);
+  std::vector<std::string> get_constant(File::size_type line) const;
 
   /**
    * Return the label name.
@@ -209,7 +208,7 @@ protected:
    * @return the label.
    * @exception LineOutOfRange line > lines of the file.
    */
-  std::string get_label(File::size_type line) const throw (LineOutOfRange);
+  std::string get_label(File::size_type line) const;
 
   /**
    * Return the included file.
@@ -219,7 +218,7 @@ protected:
    * @return the file name.
    * @exception LineOutOfRange line > lines of the file.
    */
-  std::string get_include(File::size_type line) const throw (LineOutOfRange);
+  std::string get_include(File::size_type line) const;
 
   /**
    * Return the data.
@@ -229,7 +228,7 @@ protected:
    * @return the data.
    * @exception LineOutOfRange line > lines of the file.
    */
-  Word get_data(File::size_type line) const throw (LineOutOfRange);
+  Word get_data(File::size_type line) const;
 
   /**
    * Return the components of a instruction.
@@ -241,8 +240,7 @@ protected:
    * @return the components of a constant.
    * @exception LineOutOfRange line > lines of the file.
    */
-  std::vector<std::string> get_instruction(File::size_type line) const
-    throw (LineOutOfRange);
+  std::vector<std::string> get_instruction(File::size_type line) const;
 
 private:
   const InstructionSet& set_;

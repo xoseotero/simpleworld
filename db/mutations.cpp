@@ -17,18 +17,18 @@ namespace SimpleWorld
 namespace DB
 {
 
-Mutations::Mutations(DB* db, ID bug_id) throw (DBError, IDNotFound)
+Mutations::Mutations(DB* db, ID bug_id)
   : Table(db, bug_id)
 {
 }
 
-Mutations::~Mutations() throw ()
+Mutations::~Mutations()
 {
   this->db_->free_mutations(this->id_);
 }
 
 
-void Mutations::update() throw (DBError, IDNotFound)
+void Mutations::update()
 {
   static sqlite3x::sqlite3_command sql(*this->db_,
 				       "\
@@ -61,7 +61,7 @@ WHERE bug_id = ?;");
   }
 }
 
-void Mutations::update_db() throw (DBError)
+void Mutations::update_db()
 {
   static sqlite3x::sqlite3_command sql(*this->db_,
 				       "\

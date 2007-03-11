@@ -19,7 +19,7 @@ namespace SimpleWorld
 namespace CPU
 {
 
-Memory::Memory(Address length) throw (NotEnoughLength)
+Memory::Memory(Address length)
   : length_(length)
 {
   if (length < 4)
@@ -33,14 +33,13 @@ Memory::Memory(Address length) throw (NotEnoughLength)
     this->memory_[i] = 0;
 }
 
-Memory::~Memory() throw ()
+Memory::~Memory()
 {
   delete[] this->memory_;
 }
 
 
 Word Memory::get_word(Address address, bool system_endian) const
-  throw(AddressOutOfRange)
 {
   if (address > (this->length_ - 4))
     throw AddressOutOfRange(__FILE__, __LINE__);
@@ -62,7 +61,6 @@ change_byte_order_middle(*(reinterpret_cast<Word*>(&this->memory_[address])));
 
 
 Word Memory::set_word(Address address, Uint32 value, bool system_endian)
-  throw(AddressOutOfRange)
 {
   if (address > (this->length_ - 4))
     throw AddressOutOfRange(__FILE__, __LINE__);

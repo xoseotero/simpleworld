@@ -135,23 +135,23 @@ CPU::CPU(Memory* memory)
 }
 
 
-const InstructionSet& CPU::instruction_set() const throw ()
+const InstructionSet& CPU::instruction_set() const
 {
   return this->set;
 }
 
-const Word CPU::memory(Address address) const throw (AddressOutOfRange)
+const Word CPU::memory(Address address) const
 {
   return this->memory_->get_word(address, false);
 }
 
-const Word CPU::reg(Address address) const throw (AddressOutOfRange)
+const Word CPU::reg(Address address) const
 {
   return this->registers_.get_word(address, false);
 }
 
 
-void CPU::execute() throw ()
+void CPU::execute()
 {
   try {
     while (true)
@@ -162,7 +162,7 @@ void CPU::execute() throw ()
   }
 }
 
-void CPU::next() throw (CPUStopped)
+void CPU::next()
 {
   if (not this->running_)
     throw CPUStopped(__FILE__, __LINE__);

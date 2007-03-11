@@ -18,7 +18,6 @@ namespace CPU
 {
 
 Update lnot(Memory& regs, Memory& mem, Instruction inst)
-  throw (AddressOutOfRange)
 {
   regs.set_word(inst.first * 4, ~ regs[inst.second * 4]);
 
@@ -26,7 +25,6 @@ Update lnot(Memory& regs, Memory& mem, Instruction inst)
 }
 
 Update lor(Memory& regs, Memory& mem, Instruction inst)
-  throw (AddressOutOfRange)
 {
   regs.set_word(inst.first * 4, regs[inst.second * 4] | regs[inst.address * 4]);
 
@@ -34,7 +32,6 @@ Update lor(Memory& regs, Memory& mem, Instruction inst)
 }
 
 Update lori(Memory& regs, Memory& mem, Instruction inst)
-  throw (AddressOutOfRange)
 {
   regs.set_word(inst.first * 4, regs[inst.second * 4] | inst.address);
 
@@ -42,7 +39,6 @@ Update lori(Memory& regs, Memory& mem, Instruction inst)
 }
 
 Update land(Memory& regs, Memory& mem, Instruction inst)
-  throw (AddressOutOfRange)
 {
   regs.set_word(inst.first * 4, regs[inst.second * 4] & regs[inst.address * 4]);
 
@@ -50,7 +46,6 @@ Update land(Memory& regs, Memory& mem, Instruction inst)
 }
 
 Update landi(Memory& regs, Memory& mem, Instruction inst)
-  throw (AddressOutOfRange)
 {
   regs.set_word(inst.first * 4, regs[inst.second * 4] & inst.address);
 
@@ -58,7 +53,6 @@ Update landi(Memory& regs, Memory& mem, Instruction inst)
 }
 
 Update lxor(Memory& regs, Memory& mem, Instruction inst)
-  throw (AddressOutOfRange)
 {
   regs.set_word(inst.first * 4, regs[inst.second * 4] ^ regs[inst.address * 4]);
 
@@ -66,7 +60,6 @@ Update lxor(Memory& regs, Memory& mem, Instruction inst)
 }
 
 Update lxori(Memory& regs, Memory& mem, Instruction inst)
-  throw (AddressOutOfRange)
 {
   regs.set_word(inst.first * 4, regs[inst.second * 4] ^ inst.address);
 

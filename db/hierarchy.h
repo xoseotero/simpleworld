@@ -51,13 +51,13 @@ protected:
    * @exception DBError if there is a error in the database.
    * @exception IDNotFound if the ID is not found in the table.
    */
-  Hierarchy(DB* db, ID bug_id) throw (DBError, IDNotFound);
+  Hierarchy(DB* db, ID bug_id);
 
 public:
   /**
    * Destructor.
   */
-  ~Hierarchy() throw ();
+  ~Hierarchy();
 
 
   // Data
@@ -70,13 +70,13 @@ public:
    * @exception DBError if there is a error in the database.
    * @execption IDNotFound if the ID is not found in the table.
    */
-  void update() throw (DBError, IDNotFound);
+  void update();
 
   /**
    * Update the database with the data of the class.
    * @exception DBError if there is a error in the database.
    */
-  void update_db() throw (DBError);
+  void update_db();
 };
 
 }

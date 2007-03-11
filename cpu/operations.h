@@ -48,8 +48,7 @@ namespace CPU
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update stop(Memory& regs, Memory& mem, Instruction inst)
-  throw (AddressOutOfRange);
+Update stop(Memory& regs, Memory& mem, Instruction inst);
 
 /**
  * Restart the CPU (zeroing the registers).
@@ -58,8 +57,7 @@ Update stop(Memory& regs, Memory& mem, Instruction inst)
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update restart(Memory& regs, Memory& mem, Instruction inst)
-   throw (AddressOutOfRange);
+Update restart(Memory& regs, Memory& mem, Instruction inst);
 
 
 /* Move operations: Move data from a register to other one. */
@@ -72,8 +70,7 @@ Update restart(Memory& regs, Memory& mem, Instruction inst)
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update move(Memory& regs, Memory& mem, Instruction inst)
-  throw (AddressOutOfRange);
+Update move(Memory& regs, Memory& mem, Instruction inst);
 
 /**
  * Swap the high half-word and the low half-word of a word.
@@ -82,8 +79,7 @@ Update move(Memory& regs, Memory& mem, Instruction inst)
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update swap(Memory& regs, Memory& mem, Instruction inst)
-  throw (AddressOutOfRange);
+Update swap(Memory& regs, Memory& mem, Instruction inst);
 
 
 /* Load operations: Move data from memory to a register. */
@@ -96,8 +92,7 @@ Update swap(Memory& regs, Memory& mem, Instruction inst)
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update load(Memory& regs, Memory& mem, Instruction inst)
-  throw (AddressOutOfRange);
+Update load(Memory& regs, Memory& mem, Instruction inst);
 
 /**
  * Load a inmediate value.
@@ -108,8 +103,7 @@ Update load(Memory& regs, Memory& mem, Instruction inst)
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update loadi(Memory& regs, Memory& mem, Instruction inst)
-  throw (AddressOutOfRange);
+Update loadi(Memory& regs, Memory& mem, Instruction inst);
 
 /**
  * Load a word from memory using two base registers.
@@ -120,8 +114,7 @@ Update loadi(Memory& regs, Memory& mem, Instruction inst)
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update loadrr(Memory& regs, Memory& mem, Instruction inst)
-  throw (AddressOutOfRange);
+Update loadrr(Memory& regs, Memory& mem, Instruction inst);
 
 /**
  * Load a word from memory using a base register and a inmediate value.
@@ -132,8 +125,7 @@ Update loadrr(Memory& regs, Memory& mem, Instruction inst)
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update loadri(Memory& regs, Memory& mem, Instruction inst)
-  throw (AddressOutOfRange);
+Update loadri(Memory& regs, Memory& mem, Instruction inst);
 
 
 /* Store operations: Move data from a register to memory. */
@@ -146,8 +138,7 @@ Update loadri(Memory& regs, Memory& mem, Instruction inst)
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update store(Memory& regs, Memory& mem, Instruction inst)
-  throw (AddressOutOfRange);
+Update store(Memory& regs, Memory& mem, Instruction inst);
 
 /**
  * Store a word to memory using two base registers.
@@ -158,8 +149,7 @@ Update store(Memory& regs, Memory& mem, Instruction inst)
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update storerr(Memory& regs, Memory& mem, Instruction inst)
-  throw (AddressOutOfRange);
+Update storerr(Memory& regs, Memory& mem, Instruction inst);
 
 /**
  * Store a word to memory using a base register and a inmediate value.
@@ -170,8 +160,7 @@ Update storerr(Memory& regs, Memory& mem, Instruction inst)
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update storeri(Memory& regs, Memory& mem, Instruction inst)
-  throw (AddressOutOfRange);
+Update storeri(Memory& regs, Memory& mem, Instruction inst);
 
 
 /* Stack operations: Push and pop in the stack. */
@@ -182,8 +171,7 @@ Update storeri(Memory& regs, Memory& mem, Instruction inst)
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update push(Memory& regs, Memory& mem, Instruction inst)
-  throw (AddressOutOfRange);
+Update push(Memory& regs, Memory& mem, Instruction inst);
 
 /**
  * Move the top of the stack to a register.
@@ -192,8 +180,7 @@ Update push(Memory& regs, Memory& mem, Instruction inst)
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update pop(Memory& regs, Memory& mem, Instruction inst)
-  throw (AddressOutOfRange);
+Update pop(Memory& regs, Memory& mem, Instruction inst);
 
 
 /* Branch operations: Change the program counter (PC) if the condition is 
@@ -207,8 +194,7 @@ Update pop(Memory& regs, Memory& mem, Instruction inst)
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update b(Memory& regs, Memory& mem, Instruction inst)
-  throw (AddressOutOfRange);
+Update b(Memory& regs, Memory& mem, Instruction inst);
 
 /**
  * Branch on equal.
@@ -219,8 +205,7 @@ Update b(Memory& regs, Memory& mem, Instruction inst)
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update beq(Memory& regs, Memory& mem, Instruction inst)
-  throw (AddressOutOfRange);
+Update beq(Memory& regs, Memory& mem, Instruction inst);
 
 /**
  * Branch on not equal.
@@ -231,8 +216,7 @@ Update beq(Memory& regs, Memory& mem, Instruction inst)
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update bne(Memory& regs, Memory& mem, Instruction inst)
-  throw (AddressOutOfRange);
+Update bne(Memory& regs, Memory& mem, Instruction inst);
 
 /**
  * Branch on less than (signed comparission).
@@ -243,8 +227,7 @@ Update bne(Memory& regs, Memory& mem, Instruction inst)
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update blt(Memory& regs, Memory& mem, Instruction inst)
-  throw (AddressOutOfRange);
+Update blt(Memory& regs, Memory& mem, Instruction inst);
 
 /**
  * Branch on less than (unsigned comparission).
@@ -255,8 +238,7 @@ Update blt(Memory& regs, Memory& mem, Instruction inst)
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update bltu(Memory& regs, Memory& mem, Instruction inst)
-  throw (AddressOutOfRange);
+Update bltu(Memory& regs, Memory& mem, Instruction inst);
 
 /**
  * Branch on great than (signed comparission).
@@ -267,8 +249,7 @@ Update bltu(Memory& regs, Memory& mem, Instruction inst)
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update bgt(Memory& regs, Memory& mem, Instruction inst)
-  throw (AddressOutOfRange);
+Update bgt(Memory& regs, Memory& mem, Instruction inst);
 
 /**
  * Branch on great than (unsigned comparission).
@@ -279,8 +260,7 @@ Update bgt(Memory& regs, Memory& mem, Instruction inst)
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update bgtu(Memory& regs, Memory& mem, Instruction inst)
-  throw (AddressOutOfRange);
+Update bgtu(Memory& regs, Memory& mem, Instruction inst);
 
 /**
  * Branch on less or equal (signed comparission).
@@ -291,8 +271,7 @@ Update bgtu(Memory& regs, Memory& mem, Instruction inst)
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update ble(Memory& regs, Memory& mem, Instruction inst)
-  throw (AddressOutOfRange);
+Update ble(Memory& regs, Memory& mem, Instruction inst);
 
 /**
  * Branch on less or equal (unsigned comparission).
@@ -303,8 +282,7 @@ Update ble(Memory& regs, Memory& mem, Instruction inst)
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update bleu(Memory& regs, Memory& mem, Instruction inst)
-  throw (AddressOutOfRange);
+Update bleu(Memory& regs, Memory& mem, Instruction inst);
 
 /**
  * Branch on greater or equal (signed comparission).
@@ -315,8 +293,7 @@ Update bleu(Memory& regs, Memory& mem, Instruction inst)
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update bge(Memory& regs, Memory& mem, Instruction inst)
-  throw (AddressOutOfRange);
+Update bge(Memory& regs, Memory& mem, Instruction inst);
 
 /**
  * Branch on greater or equal (unsigned comparission).
@@ -327,8 +304,7 @@ Update bge(Memory& regs, Memory& mem, Instruction inst)
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update bgeu(Memory& regs, Memory& mem, Instruction inst)
-  throw (AddressOutOfRange);
+Update bgeu(Memory& regs, Memory& mem, Instruction inst);
 
 
 /* Function operations: call and return from a function. */
@@ -341,8 +317,7 @@ Update bgeu(Memory& regs, Memory& mem, Instruction inst)
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update call(Memory& regs, Memory& mem, Instruction inst)
-  throw (AddressOutOfRange);
+Update call(Memory& regs, Memory& mem, Instruction inst);
 
 /**
  * Return.
@@ -353,8 +328,7 @@ Update call(Memory& regs, Memory& mem, Instruction inst)
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update ret(Memory& regs, Memory& mem, Instruction inst)
-  throw (AddressOutOfRange);
+Update ret(Memory& regs, Memory& mem, Instruction inst);
 
 /**
  * Return from exception.
@@ -365,8 +339,7 @@ Update ret(Memory& regs, Memory& mem, Instruction inst)
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update rete(Memory& regs, Memory& mem, Instruction inst)
-  throw (AddressOutOfRange);
+Update rete(Memory& regs, Memory& mem, Instruction inst);
 
 /**
  * Call a World function.
@@ -375,8 +348,7 @@ Update rete(Memory& regs, Memory& mem, Instruction inst)
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update world(Memory& regs, Memory& mem, Instruction inst)
-  throw (AddressOutOfRange);
+Update world(Memory& regs, Memory& mem, Instruction inst);
 
 
 /* Arithmetic operations: execute a arithmetic operation. */
@@ -389,8 +361,7 @@ Update world(Memory& regs, Memory& mem, Instruction inst)
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update add(Memory& regs, Memory& mem, Instruction inst)
-  throw (AddressOutOfRange);
+Update add(Memory& regs, Memory& mem, Instruction inst);
 
 /**
  * Add a register and a inmediate value.
@@ -401,8 +372,7 @@ Update add(Memory& regs, Memory& mem, Instruction inst)
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update addi(Memory& regs, Memory& mem, Instruction inst)
-  throw (AddressOutOfRange);
+Update addi(Memory& regs, Memory& mem, Instruction inst);
 
 /**
  * Substract two registers.
@@ -413,8 +383,7 @@ Update addi(Memory& regs, Memory& mem, Instruction inst)
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update sub(Memory& regs, Memory& mem, Instruction inst)
-  throw (AddressOutOfRange);
+Update sub(Memory& regs, Memory& mem, Instruction inst);
 
 /**
  * Substract a register and a inmediate value.
@@ -425,8 +394,7 @@ Update sub(Memory& regs, Memory& mem, Instruction inst)
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update subi(Memory& regs, Memory& mem, Instruction inst)
-  throw (AddressOutOfRange);
+Update subi(Memory& regs, Memory& mem, Instruction inst);
 
 /**
  * Low 16bits from multiply two signed registers.
@@ -437,8 +405,7 @@ Update subi(Memory& regs, Memory& mem, Instruction inst)
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update multl(Memory& regs, Memory& mem, Instruction inst)
-  throw (AddressOutOfRange);
+Update multl(Memory& regs, Memory& mem, Instruction inst);
 
 /**
  * Low 16bits from multiply a signed registers and a signed inmediate value.
@@ -449,8 +416,7 @@ Update multl(Memory& regs, Memory& mem, Instruction inst)
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update multli(Memory& regs, Memory& mem, Instruction inst)
-  throw (AddressOutOfRange);
+Update multli(Memory& regs, Memory& mem, Instruction inst);
 
 /**
  * Low 16bits from multiply two unsigned registers.
@@ -461,8 +427,7 @@ Update multli(Memory& regs, Memory& mem, Instruction inst)
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update multlu(Memory& regs, Memory& mem, Instruction inst)
-  throw (AddressOutOfRange);
+Update multlu(Memory& regs, Memory& mem, Instruction inst);
 
 /**
  * Low 16bits from multiply a unsigned registers and a unsigned inmediate
@@ -474,8 +439,7 @@ Update multlu(Memory& regs, Memory& mem, Instruction inst)
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update multlui(Memory& regs, Memory& mem, Instruction inst)
-  throw (AddressOutOfRange);
+Update multlui(Memory& regs, Memory& mem, Instruction inst);
 
 /**
  * High 16bits from multiply two signed registers.
@@ -486,8 +450,7 @@ Update multlui(Memory& regs, Memory& mem, Instruction inst)
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update multh(Memory& regs, Memory& mem, Instruction inst)
-  throw (AddressOutOfRange);
+Update multh(Memory& regs, Memory& mem, Instruction inst);
 
 /**
  * High 16bits from multiply a signed registers and a signed inmediate value.
@@ -498,8 +461,7 @@ Update multh(Memory& regs, Memory& mem, Instruction inst)
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update multhi(Memory& regs, Memory& mem, Instruction inst)
-  throw (AddressOutOfRange);
+Update multhi(Memory& regs, Memory& mem, Instruction inst);
 
 /**
  * High 16bits from multiply two unsigned registers.
@@ -510,8 +472,7 @@ Update multhi(Memory& regs, Memory& mem, Instruction inst)
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update multhu(Memory& regs, Memory& mem, Instruction inst)
-  throw (AddressOutOfRange);
+Update multhu(Memory& regs, Memory& mem, Instruction inst);
 
 /**
  * High 16bits from multiply a unsigned registers and a unsigned inmediate
@@ -523,8 +484,7 @@ Update multhu(Memory& regs, Memory& mem, Instruction inst)
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update multhui(Memory& regs, Memory& mem, Instruction inst)
-  throw (AddressOutOfRange);
+Update multhui(Memory& regs, Memory& mem, Instruction inst);
 
 /**
  * Divide two signed registers.
@@ -535,8 +495,7 @@ Update multhui(Memory& regs, Memory& mem, Instruction inst)
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update div(Memory& regs, Memory& mem, Instruction inst)
-  throw (AddressOutOfRange);
+Update div(Memory& regs, Memory& mem, Instruction inst);
 
 /**
  * Divide a signed register and a signed inmediate value.
@@ -547,8 +506,7 @@ Update div(Memory& regs, Memory& mem, Instruction inst)
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update divi(Memory& regs, Memory& mem, Instruction inst)
-  throw (AddressOutOfRange);
+Update divi(Memory& regs, Memory& mem, Instruction inst);
 
 /**
  * Divide two unsigned registers.
@@ -559,8 +517,7 @@ Update divi(Memory& regs, Memory& mem, Instruction inst)
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update divu(Memory& regs, Memory& mem, Instruction inst)
-  throw (AddressOutOfRange);
+Update divu(Memory& regs, Memory& mem, Instruction inst);
 
 /**
  * Divide a unsigned register and a unsigned inmediate value.
@@ -571,8 +528,7 @@ Update divu(Memory& regs, Memory& mem, Instruction inst)
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update divui(Memory& regs, Memory& mem, Instruction inst)
-  throw (AddressOutOfRange);
+Update divui(Memory& regs, Memory& mem, Instruction inst);
 
 /**
  * Module of two signed registers.
@@ -583,8 +539,7 @@ Update divui(Memory& regs, Memory& mem, Instruction inst)
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update mod(Memory& regs, Memory& mem, Instruction inst)
-  throw (AddressOutOfRange);
+Update mod(Memory& regs, Memory& mem, Instruction inst);
 
 /**
  * Module of a signed register and a signed inmediate value.
@@ -595,8 +550,7 @@ Update mod(Memory& regs, Memory& mem, Instruction inst)
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update modi(Memory& regs, Memory& mem, Instruction inst)
-  throw (AddressOutOfRange);
+Update modi(Memory& regs, Memory& mem, Instruction inst);
 
 /**
  * Module of two unsigned registers.
@@ -607,8 +561,7 @@ Update modi(Memory& regs, Memory& mem, Instruction inst)
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update modu(Memory& regs, Memory& mem, Instruction inst)
-  throw (AddressOutOfRange);
+Update modu(Memory& regs, Memory& mem, Instruction inst);
 
 /**
  * Module of a unsigned register and a unsigned inmediate value.
@@ -619,8 +572,7 @@ Update modu(Memory& regs, Memory& mem, Instruction inst)
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update modui(Memory& regs, Memory& mem, Instruction inst)
-  throw (AddressOutOfRange);
+Update modui(Memory& regs, Memory& mem, Instruction inst);
 
 
 /* Logic operations: execute a logic operation. */
@@ -633,8 +585,7 @@ Update modui(Memory& regs, Memory& mem, Instruction inst)
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update lnot(Memory& regs, Memory& mem, Instruction inst)
-  throw (AddressOutOfRange);
+Update lnot(Memory& regs, Memory& mem, Instruction inst);
 
 /**
  * OR of two registers.
@@ -645,8 +596,7 @@ Update lnot(Memory& regs, Memory& mem, Instruction inst)
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update lor(Memory& regs, Memory& mem, Instruction inst)
-  throw (AddressOutOfRange);
+Update lor(Memory& regs, Memory& mem, Instruction inst);
 
 /**
  * OR of a register and a inmediate value.
@@ -657,8 +607,7 @@ Update lor(Memory& regs, Memory& mem, Instruction inst)
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update lori(Memory& regs, Memory& mem, Instruction inst)
-  throw (AddressOutOfRange);
+Update lori(Memory& regs, Memory& mem, Instruction inst);
 
 /**
  * AND of two registers.
@@ -669,8 +618,7 @@ Update lori(Memory& regs, Memory& mem, Instruction inst)
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update land(Memory& regs, Memory& mem, Instruction inst)
-  throw (AddressOutOfRange);
+Update land(Memory& regs, Memory& mem, Instruction inst);
 
 /**
  * AND of a register and a inmediate value.
@@ -681,8 +629,7 @@ Update land(Memory& regs, Memory& mem, Instruction inst)
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update landi(Memory& regs, Memory& mem, Instruction inst)
-  throw (AddressOutOfRange);
+Update landi(Memory& regs, Memory& mem, Instruction inst);
 
 /**
  * EXOR of two registers.
@@ -693,8 +640,7 @@ Update landi(Memory& regs, Memory& mem, Instruction inst)
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update lxor(Memory& regs, Memory& mem, Instruction inst)
-  throw (AddressOutOfRange);
+Update lxor(Memory& regs, Memory& mem, Instruction inst);
 
 /**
  * EXOR of a register and a inmediate value.
@@ -705,8 +651,7 @@ Update lxor(Memory& regs, Memory& mem, Instruction inst)
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update lxori(Memory& regs, Memory& mem, Instruction inst)
-  throw (AddressOutOfRange);
+Update lxori(Memory& regs, Memory& mem, Instruction inst);
 
 
 /* Shift operations: execute a shift operation. */
@@ -719,8 +664,7 @@ Update lxori(Memory& regs, Memory& mem, Instruction inst)
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update sll(Memory& regs, Memory& mem, Instruction inst)
-  throw (AddressOutOfRange);
+Update sll(Memory& regs, Memory& mem, Instruction inst);
 
 /**
  * Logic shift left.
@@ -731,8 +675,7 @@ Update sll(Memory& regs, Memory& mem, Instruction inst)
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update slli(Memory& regs, Memory& mem, Instruction inst)
-  throw (AddressOutOfRange);
+Update slli(Memory& regs, Memory& mem, Instruction inst);
 
 /**
  * Logic shift right.
@@ -743,8 +686,7 @@ Update slli(Memory& regs, Memory& mem, Instruction inst)
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update srl(Memory& regs, Memory& mem, Instruction inst)
-  throw (AddressOutOfRange);
+Update srl(Memory& regs, Memory& mem, Instruction inst);
 
 /**
  * Logic shift right.
@@ -755,8 +697,7 @@ Update srl(Memory& regs, Memory& mem, Instruction inst)
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update srli(Memory& regs, Memory& mem, Instruction inst)
-  throw (AddressOutOfRange);
+Update srli(Memory& regs, Memory& mem, Instruction inst);
 
 /**
  * Arithmetic shift left.
@@ -767,8 +708,7 @@ Update srli(Memory& regs, Memory& mem, Instruction inst)
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update sla(Memory& regs, Memory& mem, Instruction inst)
-  throw (AddressOutOfRange);
+Update sla(Memory& regs, Memory& mem, Instruction inst);
 
 /**
  * Arithmetic shift left.
@@ -779,8 +719,7 @@ Update sla(Memory& regs, Memory& mem, Instruction inst)
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update slai(Memory& regs, Memory& mem, Instruction inst)
-  throw (AddressOutOfRange);
+Update slai(Memory& regs, Memory& mem, Instruction inst);
 
 /**
  * Arithmetic shift right.
@@ -791,8 +730,7 @@ Update slai(Memory& regs, Memory& mem, Instruction inst)
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update sra(Memory& regs, Memory& mem, Instruction inst)
-  throw (AddressOutOfRange);
+Update sra(Memory& regs, Memory& mem, Instruction inst);
 
 /**
  * Arithmetic shift right.
@@ -803,8 +741,7 @@ Update sra(Memory& regs, Memory& mem, Instruction inst)
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update srai(Memory& regs, Memory& mem, Instruction inst)
-  throw (AddressOutOfRange);
+Update srai(Memory& regs, Memory& mem, Instruction inst);
 
 /**
  * Rotate left.
@@ -815,8 +752,7 @@ Update srai(Memory& regs, Memory& mem, Instruction inst)
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update rl(Memory& regs, Memory& mem, Instruction inst)
-  throw (AddressOutOfRange);
+Update rl(Memory& regs, Memory& mem, Instruction inst);
 
 /**
  * Rotate left.
@@ -827,8 +763,7 @@ Update rl(Memory& regs, Memory& mem, Instruction inst)
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update rli(Memory& regs, Memory& mem, Instruction inst)
-  throw (AddressOutOfRange);
+Update rli(Memory& regs, Memory& mem, Instruction inst);
 
 /**
  * Rotate right.
@@ -839,8 +774,7 @@ Update rli(Memory& regs, Memory& mem, Instruction inst)
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update rr(Memory& regs, Memory& mem, Instruction inst)
-  throw (AddressOutOfRange);
+Update rr(Memory& regs, Memory& mem, Instruction inst);
 
 /**
  * Rotate right.
@@ -851,8 +785,7 @@ Update rr(Memory& regs, Memory& mem, Instruction inst)
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update rri(Memory& regs, Memory& mem, Instruction inst)
-  throw (AddressOutOfRange);
+Update rri(Memory& regs, Memory& mem, Instruction inst);
 
 }
 }

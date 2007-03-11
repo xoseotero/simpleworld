@@ -141,7 +141,7 @@ public:
    * @exception DBError if there is a error in the database.
    * @exception VersionNotSupported if the database version is not supported.
    */
-  DB(std::string filename) throw (DBError, VersionNotSupported);
+  DB(std::string filename);
 
 
   /**
@@ -158,14 +158,14 @@ public:
    * @return the list of bugs.
    * @exception DBError if there is a error in the database.
    */
-  std::vector<ID> bugs() throw (DBError);
+  std::vector<ID> bugs();
 
   /**
    * List of the alive bugs, ordered by its world_order.
    * @return the list of bugs.
    * @exception DBError if there is a error in the database.
    */
-  std::vector<ID> alive_bugs() throw (DBError);
+  std::vector<ID> alive_bugs();
 
   /**
    * Get a bug.
@@ -174,14 +174,14 @@ public:
    * @exception DBError if there is a error in the database.
    * @exception IDNotFound if the ID is not found in the table.
    */
-  boost::shared_ptr<Bug> bug(ID id) throw (DBError, IDNotFound);
+  boost::shared_ptr<Bug> bug(ID id);
 
   /**
    * Free the memory used by the bug.
    * @param id id of the bug.
    * @exception IDNotFound if the ID is not found in the table.
    */
-  void free_bug(ID id) throw (IDNotFound);
+  void free_bug(ID id);
 
   /**
    * Add a new bug to the database.
@@ -196,14 +196,14 @@ public:
    */
   ID add_bug(SortOrder order, Energy energy,
 	     Position x, Position y, Orientation orientation,
-	     Time birth) throw (DBError);
+	     Time birth);
 
   /**
    * Delete a bug from the database.
    * @param bug_id id of the bug.
    * @exception IDNotFound if the ID is not found in the table.
    */
-  void del_bug(ID id) throw (IDNotFound);
+  void del_bug(ID id);
 
 
   // Hierarchy management
@@ -215,15 +215,14 @@ public:
    * @exception DBError if there is a error in the database.
    * @exception IDNotFound if the ID is not found in the table.
    */
-  boost::shared_ptr<Hierarchy> hierarchy(ID bug_id)
-    throw (DBError, IDNotFound);
+  boost::shared_ptr<Hierarchy> hierarchy(ID bug_id);
 
   /**
    * Free the memory used by the hierarchy.
    * @param bug_id id of the bug.
    * @exception IDNotFound if the ID is not found in the table.
    */
-  void free_hierarchy(ID bug_id) throw (IDNotFound);
+  void free_hierarchy(ID bug_id);
 
 
   // Code management
@@ -235,14 +234,14 @@ public:
    * @exception DBError if there is a error in the database.
    * @exception IDNotFound if the ID is not found in the table.
    */
-  boost::shared_ptr<Code> code(ID bug_id) throw (DBError, IDNotFound);
+  boost::shared_ptr<Code> code(ID bug_id);
 
   /**
    * Free the memory used by the code.
    * @param bug_id id of the bug.
    * @exception IDNotFound if the ID is not found in the table.
    */
-  void free_code(ID bug_id) throw (IDNotFound);
+  void free_code(ID bug_id);
 
 
   // CPU management
@@ -254,14 +253,14 @@ public:
    * @exception DBError if there is a error in the database.
    * @exception IDNotFound if the ID is not found in the table.
    */
-  boost::shared_ptr<CPU> cpu(ID bug_id) throw (DBError, IDNotFound);
+  boost::shared_ptr<CPU> cpu(ID bug_id);
 
   /**
    * Free the memory used by the CPU.
    * @param bug_id id of the bug.
    * @exception IDNotFound if the ID is not found in the table.
    */
-  void free_cpu(ID bug_id) throw (IDNotFound);
+  void free_cpu(ID bug_id);
 
 
   // Mutations management
@@ -273,15 +272,14 @@ public:
    * @exception DBError if there is a error in the database.
    * @exception IDNotFound if the ID is not found in the table.
    */
-  boost::shared_ptr<Mutations> mutations(ID bug_id)
-    throw (DBError, IDNotFound);
+  boost::shared_ptr<Mutations> mutations(ID bug_id);
 
   /**
    * Free the memory used by the mutations.
    * @param bug_id id of the bug.
    * @exception IDNotFound if the ID is not found in the table.
    */
-  void free_mutations(ID bug_id) throw (IDNotFound);
+  void free_mutations(ID bug_id);
 
 
   // Environment management
@@ -291,7 +289,7 @@ public:
    * @return the list of environments.
    * @exception DBError if there is a error in the database.
    */
-  std::vector<Time> environments() throw (DBError);
+  std::vector<Time> environments();
 
   /**
    * Get the last environment (change).
@@ -299,7 +297,7 @@ public:
    * @exception DBError if there is a error in the database.
    * @exception IDNotFound if there is any environments.
    */
-  Time last_environment() throw (DBError, IDNotFound);
+  Time last_environment();
 
   /**
    * Get a environment.
@@ -308,15 +306,14 @@ public:
    * @exception DBError if there is a error in the database.
    * @exception IDNotFound if the ID is not found in the table.
    */
-  boost::shared_ptr<Environment> environment(Time time)
-    throw (DBError, IDNotFound);
+  boost::shared_ptr<Environment> environment(Time time);
 
   /**
    * Free the memory used by the environment.
    * @param time time of the environment.
    * @exception IDNotFound if the ID is not found in the table.
    */
-  void free_environment(Time time) throw (IDNotFound);
+  void free_environment(Time time);
 
   /**
    * Add a new environment to the database.
@@ -339,15 +336,14 @@ public:
 		       Energy energy_detect, Energy energy_move,
 		       Energy energy_push, Energy energy_take,
 		       Energy energy_attack, Energy energy_defend,
-		       Energy energy_msg, Energy energy_sex)
-    throw (DBError);
+		       Energy energy_msg, Energy energy_sex);
 
   /**
    * Delete a environment from the database.
    * @param time time of the environment.
    * @exception IDNotFound if the ID is not found in the table.
    */
-  void del_environment(Time time) throw (IDNotFound);
+  void del_environment(Time time);
 
 protected:
   /**
@@ -361,7 +357,7 @@ protected:
    * Create the tables.
    * @exception DBError The tables can't be created.
    */
-  void create_tables() throw (DBError);
+  void create_tables();
 
 private:
   Uint8 version_;

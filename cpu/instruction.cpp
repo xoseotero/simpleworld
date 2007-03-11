@@ -19,11 +19,11 @@ namespace SimpleWorld
 namespace CPU
 {
 
-InstructionSet::InstructionSet() throw ()
+InstructionSet::InstructionSet()
 {
 }
 
-InstructionSet::InstructionSet(const InstructionSet& set) throw ()
+InstructionSet::InstructionSet(const InstructionSet& set)
   : instructions_(set.instructions_),
     instruction_codes_(set.instruction_codes_), registers_(set.registers_),
     register_codes_(set.register_codes_)
@@ -31,7 +31,7 @@ InstructionSet::InstructionSet(const InstructionSet& set) throw ()
 }
 
 
-Word InstructionSet::encode(const Instruction& instruction) throw ()
+Word InstructionSet::encode(const Instruction& instruction)
 {
   Word word;
 
@@ -50,7 +50,7 @@ Word InstructionSet::encode(const Instruction& instruction) throw ()
   return word;
 }
 
-Instruction InstructionSet::decode(Word word) throw ()
+Instruction InstructionSet::decode(Word word)
 {
   Instruction instruction;
 
@@ -72,7 +72,7 @@ Instruction InstructionSet::decode(Word word) throw ()
 }
 
 
-std::vector<Uint8> InstructionSet::instruction_codes() const throw ()
+std::vector<Uint8> InstructionSet::instruction_codes() const
 {
   std::vector<Uint8> instructions;
 
@@ -86,7 +86,7 @@ std::vector<Uint8> InstructionSet::instruction_codes() const throw ()
   return instructions;
 }
 
-std::vector<Uint8> InstructionSet::register_codes() const throw ()
+std::vector<Uint8> InstructionSet::register_codes() const
 {
   std::vector<Uint8> registers;
 
@@ -100,8 +100,7 @@ std::vector<Uint8> InstructionSet::register_codes() const throw ()
 }
 
 
-InstructionInfo InstructionSet::instruction_info(Uint8 code)
-  const throw (InstructionNotFound)
+InstructionInfo InstructionSet::instruction_info(Uint8 code) const
 {
   std::map<Uint8, InstructionInfo>::const_iterator iter =
     this->instructions_.find(code);
@@ -112,7 +111,6 @@ InstructionInfo InstructionSet::instruction_info(Uint8 code)
 }
 
 Uint8 InstructionSet::instruction_code(std::string name) const
-  throw (InstructionNotFound)
 {
   std::map<std::string, Uint8>::const_iterator iter =
     this->instruction_codes_.find(name);
@@ -123,7 +121,6 @@ Uint8 InstructionSet::instruction_code(std::string name) const
 }
 
 std::string InstructionSet::register_name(Uint8 code) const
-  throw (RegisterNotFound)
 {
   std::map<Uint8, std::string>::const_iterator iter =
     this->registers_.find(code);
@@ -134,7 +131,6 @@ std::string InstructionSet::register_name(Uint8 code) const
 }
 
 Uint8 InstructionSet::register_code(std::string name) const
-  throw (RegisterNotFound)
 {
   std::map<std::string, Uint8>::const_iterator iter =
     this->register_codes_.find(name);
@@ -146,7 +142,6 @@ Uint8 InstructionSet::register_code(std::string name) const
 
 
 void InstructionSet::add_instruction(InstructionInfo instruction)
-  throw (InstructionExist)
 {
   if (this->instructions_.find(instruction.code) != this->instructions_.end())
     throw InstructionExist(__FILE__, __LINE__);
@@ -161,13 +156,12 @@ void InstructionSet::add_instruction(InstructionInfo instruction)
 
 void InstructionSet::add_instruction(Uint8 code, std::string name, Uint8 nregs,
                                      bool has_inmediate, Operation func)
-  throw (InstructionExist)
 {
   InstructionInfo info = {code, name, nregs, has_inmediate, func};
   this->add_instruction(info);
 }
 
-void InstructionSet::remove_instruction(Uint8 code) throw (InstructionNotFound)
+void InstructionSet::remove_instruction(Uint8 code)
 {
   std::map<Uint8, InstructionInfo>::iterator iter =
     this->instructions_.find(code);
@@ -179,7 +173,6 @@ void InstructionSet::remove_instruction(Uint8 code) throw (InstructionNotFound)
 }
 
 void InstructionSet::add_register(Uint8 code, std::string name)
-  throw (RegisterExist)
 {
   if (this->registers_.find(code) != this->registers_.end())
     throw RegisterExist(__FILE__, __LINE__);
@@ -188,7 +181,7 @@ void InstructionSet::add_register(Uint8 code, std::string name)
   this->register_codes_.insert(std::pair<std::string, Uint8>(name, code));
 }
 
-void InstructionSet::remove_register(Uint8 code) throw (RegisterNotFound)
+void InstructionSet::remove_register(Uint8 code)
 {
   std::map<Uint8, std::string>::iterator iter = this->registers_.find(code);
   if (iter == this->registers_.end())

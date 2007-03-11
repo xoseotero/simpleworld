@@ -23,18 +23,18 @@ namespace SimpleWorld
 namespace DB
 {
 
-Code::Code(DB* db, ID bug_id) throw (DBError, IDNotFound)
+Code::Code(DB* db, ID bug_id)
   : Table(db, bug_id)
 {
 }
 
-Code::~Code() throw ()
+Code::~Code()
 {
   this->db_->free_code(this->id_);
 }
 
 
-void Code::update() throw (DBError, IDNotFound)
+void Code::update()
 {
   static sqlite3x::sqlite3_command sql(*this->db_,
 				       "\
@@ -61,7 +61,7 @@ WHERE bug_id = ?;");
   }
 }
 
-void Code::update_db() throw (DBError)
+void Code::update_db()
 {
   static sqlite3x::sqlite3_command sql(*this->db_,
 				       "\

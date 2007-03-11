@@ -17,7 +17,7 @@ namespace SimpleWorld
 namespace DB
 {
 
-Table::Table(DB* db, ID id) throw (DBError, IDNotFound)
+Table::Table(DB* db, ID id)
   : db_(db), id_(id)
 {
   this->update();

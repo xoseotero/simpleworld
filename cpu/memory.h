@@ -96,12 +96,12 @@ public:
    * @param length bytes of the memory
    * @exception NotEnoughLength length < 4
    */
-  Memory(Address length) throw (NotEnoughLength);
+  Memory(Address length);
 
   /**
    * Destructor.
    */
-  ~Memory() throw ();
+  ~Memory();
 
 
   /**
@@ -114,8 +114,7 @@ public:
    * @return the word
    * @exception AddressOutOfRange address > (length - 4)
    */
-  Word get_word(Address address, bool system_endian = true) const
-    throw(AddressOutOfRange);
+  Word get_word(Address address, bool system_endian = true) const;
 
   /**
    * Set the value of a word.
@@ -128,8 +127,7 @@ public:
    * @return the word
    * @exception AddressOutOfRange address > (length - 4)
    */
-  Word set_word(Address address, Word value, bool system_endian = true)
-    throw(AddressOutOfRange);
+  Word set_word(Address address, Word value, bool system_endian = true);
 
 
   /**
@@ -138,7 +136,7 @@ public:
    * @return the word
    * @exception AddressOutOfRange address > (length - 4)
    */
-  Word operator [](Address address) const throw(AddressOutOfRange)
+  Word operator [](Address address) const
   { return this->get_word(address); }
 
 private:

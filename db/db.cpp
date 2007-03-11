@@ -28,14 +28,14 @@ namespace SimpleWorld
 namespace DB
 {
 
-DB::DB(std::string filename) throw (DBError, VersionNotSupported)
+DB::DB(std::string filename)
   : sqlite3x::sqlite3_connection(filename)
 {
 }
 
 
 // Bug management
-std::vector<ID> DB::bugs() throw (DBError)
+std::vector<ID> DB::bugs()
 {
   static sqlite3x::sqlite3_command sql(*this,
 				       "\
@@ -54,7 +54,7 @@ ORDER BY birth, id;");
   return ids;
 }
 
-std::vector<ID> DB::alive_bugs() throw (DBError)
+std::vector<ID> DB::alive_bugs()
 {
   static sqlite3x::sqlite3_command sql(*this,
 				       "\
@@ -73,7 +73,7 @@ ORDER BY world_order, id;");
   return ids;
 }
 
-boost::shared_ptr<Bug> DB::bug(ID id) throw (IDNotFound, DBError)
+boost::shared_ptr<Bug> DB::bug(ID id)
 {
   std::map<ID, boost::weak_ptr<Bug> >::iterator iter = this->bug_map_.find(id);
   if (iter == this->bug_map_.end()) {
@@ -85,7 +85,7 @@ boost::shared_ptr<Bug> DB::bug(ID id) throw (IDNotFound, DBError)
   }
 }
 
-void DB::free_bug(ID id) throw (IDNotFound)
+void DB::free_bug(ID id)
 {
   std::map<ID, boost::weak_ptr<Bug> >::iterator iter = this->bug_map_.find(id);
   if (iter == this->bug_map_.end())
@@ -96,7 +96,7 @@ void DB::free_bug(ID id) throw (IDNotFound)
 
 ID DB::add_bug(SortOrder order, Energy energy,
 	       Position x, Position y, Orientation orientation,
-	       Time birth) throw (DBError)
+	       Time birth)
 {
   static sqlite3x::sqlite3_command sql(*this,
 				       "\
@@ -120,7 +120,7 @@ VALUES (?, ?, ?, ?, ?, ?);");
   return this->insertid();
 }
 
-void DB::del_bug(ID id) throw (IDNotFound)
+void DB::del_bug(ID id)
 {
   static sqlite3x::sqlite3_command sql(*this,
 				       "\
@@ -136,7 +136,6 @@ WHERE id = ?;");
 
 // Hierarchy management
 boost::shared_ptr<Hierarchy> DB::hierarchy(ID bug_id)
-  throw (IDNotFound, DBError)
 {
   std::map<ID, boost::weak_ptr<Hierarchy> >::iterator iter =
     this->hierarchy_map_.find(bug_id);
@@ -149,7 +148,7 @@ boost::shared_ptr<Hierarchy> DB::hierarchy(ID bug_id)
   }
 }
 
-void DB::free_hierarchy(ID bug_id) throw (IDNotFound)
+void DB::free_hierarchy(ID bug_id)
 {
   std::map<ID, boost::weak_ptr<Hierarchy> >::iterator iter =
     this->hierarchy_map_.find(bug_id);
@@ -161,7 +160,7 @@ void DB::free_hierarchy(ID bug_id) throw (IDNotFound)
 
 
 // Code management
-boost::shared_ptr<Code> DB::code(ID bug_id) throw (IDNotFound, DBError)
+boost::shared_ptr<Code> DB::code(ID bug_id)
 {
   std::map<ID, boost::weak_ptr<Code> >::iterator iter =
     this->code_map_.find(bug_id);
@@ -174,7 +173,7 @@ boost::shared_ptr<Code> DB::code(ID bug_id) throw (IDNotFound, DBError)
   }
 }
 
-void DB::free_code(ID bug_id) throw (IDNotFound)
+void DB::free_code(ID bug_id)
 {
   std::map<ID, boost::weak_ptr<Code> >::iterator iter =
     this->code_map_.find(bug_id);
@@ -186,7 +185,7 @@ void DB::free_code(ID bug_id) throw (IDNotFound)
 
 
 // CPU management
-boost::shared_ptr<CPU> DB::cpu(ID bug_id) throw (IDNotFound, DBError)
+boost::shared_ptr<CPU> DB::cpu(ID bug_id)
 {
   std::map<ID, boost::weak_ptr<CPU> >::iterator iter =
     this->cpu_map_.find(bug_id);
@@ -199,7 +198,7 @@ boost::shared_ptr<CPU> DB::cpu(ID bug_id) throw (IDNotFound, DBError)
   }
 }
 
-void DB::free_cpu(ID bug_id) throw (IDNotFound)
+void DB::free_cpu(ID bug_id)
 {
   std::map<ID, boost::weak_ptr<CPU> >::iterator iter =
     this->cpu_map_.find(bug_id);
@@ -212,7 +211,6 @@ void DB::free_cpu(ID bug_id) throw (IDNotFound)
 
 // Mutations management
 boost::shared_ptr<Mutations> DB::mutations(ID bug_id)
-  throw (IDNotFound, DBError)
 {
   std::map<ID, boost::weak_ptr<Mutations> >::iterator iter =
     this->mutations_map_.find(bug_id);
@@ -225,7 +223,7 @@ boost::shared_ptr<Mutations> DB::mutations(ID bug_id)
   }
 }
 
-void DB::free_mutations(ID bug_id) throw (IDNotFound)
+void DB::free_mutations(ID bug_id)
 {
   std::map<ID, boost::weak_ptr<Mutations> >::iterator iter =
     this->mutations_map_.find(bug_id);
@@ -237,7 +235,7 @@ void DB::free_mutations(ID bug_id) throw (IDNotFound)
 
 
 // Environment management
-std::vector<Time> DB::environments() throw (DBError)
+std::vector<Time> DB::environments()
 {
   static sqlite3x::sqlite3_command sql(*this,
 				       "\
@@ -256,7 +254,7 @@ ORDER BY time;");
   return ids;
 }
 
-Time DB::last_environment() throw (DBError, IDNotFound)
+Time DB::last_environment()
 {
   static sqlite3x::sqlite3_command sql(*this,
 				       "\
@@ -276,7 +274,6 @@ LIMIT 1;");
 }
 
 boost::shared_ptr<Environment> DB::environment(Time time)
-  throw (IDNotFound, DBError)
 {
   std::map<Time, boost::weak_ptr<Environment> >::iterator iter =
     this->environment_map_.find(time);
@@ -289,7 +286,7 @@ boost::shared_ptr<Environment> DB::environment(Time time)
   }
 }
 
-void DB::free_environment(Time time) throw (IDNotFound)
+void DB::free_environment(Time time)
 {
   std::map<Time, boost::weak_ptr<Environment> >::iterator iter =
     this->environment_map_.find(time);
@@ -304,7 +301,6 @@ Time DB::add_environment(World::Time time, Uint8 mutations_percent,
 			 Energy energy_push, Energy energy_take,
 			 Energy energy_attack, Energy energy_defend,
 			 Energy energy_msg, Energy energy_sex)
-  throw (DBError)
 {
   static sqlite3x::sqlite3_command sql(*this,
 				       "\
@@ -334,7 +330,7 @@ VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
   return this->insertid();
 }
 
-void DB::del_environment(Time time) throw (IDNotFound)
+void DB::del_environment(Time time)
 {
   static sqlite3x::sqlite3_command sql(*this,
 				       "\
@@ -365,7 +361,7 @@ void DB::on_open()
     throw VersionNotSupported(__FILE__, __LINE__);
 }
 
-void DB::create_tables() throw (DBError)
+void DB::create_tables()
 {
   sqlite3x::sqlite3_command sql(*this,
 				"\

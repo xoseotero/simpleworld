@@ -27,7 +27,6 @@ namespace CPU
 {
 
 Update add(Memory& regs, Memory& mem, Instruction inst)
-  throw (AddressOutOfRange)
 {
   regs.set_word(inst.first * 4, regs[inst.second * 4] + regs[inst.address * 4]);
 
@@ -35,7 +34,6 @@ Update add(Memory& regs, Memory& mem, Instruction inst)
 }
 
 Update addi(Memory& regs, Memory& mem, Instruction inst)
-  throw (AddressOutOfRange)
 {
   regs.set_word(inst.first * 4, regs[inst.second * 4] + inst.address);
 
@@ -43,7 +41,6 @@ Update addi(Memory& regs, Memory& mem, Instruction inst)
 }
 
 Update sub(Memory& regs, Memory& mem, Instruction inst)
-  throw (AddressOutOfRange)
 {
   regs.set_word(inst.first * 4, regs[inst.second * 4] -
                 regs[inst.address * 4]);
@@ -52,7 +49,6 @@ Update sub(Memory& regs, Memory& mem, Instruction inst)
 }
 
 Update subi(Memory& regs, Memory& mem, Instruction inst)
-  throw (AddressOutOfRange)
 {
   regs.set_word(inst.first * 4, regs[inst.second * 4] - inst.address);
 
@@ -60,7 +56,6 @@ Update subi(Memory& regs, Memory& mem, Instruction inst)
 }
 
 Update multl(Memory& regs, Memory& mem, Instruction inst)
-  throw (AddressOutOfRange)
 {
   Sint64 result = static_cast<Sint32>(regs[inst.second * 4]) *
     static_cast<Sint32>(regs[inst.address * 4]);
@@ -70,7 +65,6 @@ Update multl(Memory& regs, Memory& mem, Instruction inst)
 }
 
 Update multli(Memory& regs, Memory& mem, Instruction inst)
-  throw (AddressOutOfRange)
 {
   Sint64 result = static_cast<Sint32>(regs[inst.second * 4]) *
     static_cast<Sint32>(inst.address);
@@ -80,7 +74,6 @@ Update multli(Memory& regs, Memory& mem, Instruction inst)
 }
 
 Update multlu(Memory& regs, Memory& mem, Instruction inst)
-  throw (AddressOutOfRange)
 {
   Uint64 result = regs[inst.second * 4] * regs[inst.address * 4];
   regs.set_word(inst.first * 4, static_cast<Uint32>(result & LOWBITS_64BITS));
@@ -89,7 +82,6 @@ Update multlu(Memory& regs, Memory& mem, Instruction inst)
 }
 
 Update multlui(Memory& regs, Memory& mem, Instruction inst)
-  throw (AddressOutOfRange)
 {
   Uint64 result = regs[inst.second * 4] *  static_cast<Uint32>(inst.address);
   regs.set_word(inst.first * 4, static_cast<Uint32>(result & LOWBITS_64BITS));
@@ -98,7 +90,6 @@ Update multlui(Memory& regs, Memory& mem, Instruction inst)
 }
 
 Update multh(Memory& regs, Memory& mem, Instruction inst)
-  throw (AddressOutOfRange)
 {
   Sint64 result = static_cast<Sint32>(regs[inst.second * 4]) *
     static_cast<Sint32>(regs[inst.address * 4]);
@@ -109,7 +100,6 @@ Update multh(Memory& regs, Memory& mem, Instruction inst)
 }
 
 Update multhi(Memory& regs, Memory& mem, Instruction inst)
-  throw (AddressOutOfRange)
 {
   Sint64 result = static_cast<Sint32>(regs[inst.second * 4]) *
     static_cast<Sint32>(inst.address);
@@ -120,7 +110,6 @@ Update multhi(Memory& regs, Memory& mem, Instruction inst)
 }
 
 Update multhu(Memory& regs, Memory& mem, Instruction inst)
-  throw (AddressOutOfRange)
 {
   Uint64 result = regs[inst.second * 4] * regs[inst.address * 4];
   regs.set_word(inst.first * 4,
@@ -130,7 +119,6 @@ Update multhu(Memory& regs, Memory& mem, Instruction inst)
 }
 
 Update multhui(Memory& regs, Memory& mem, Instruction inst)
-  throw (AddressOutOfRange)
 {
   Uint64 result = regs[inst.second * 4] * inst.address;
   regs.set_word(inst.first * 4,
@@ -140,7 +128,6 @@ Update multhui(Memory& regs, Memory& mem, Instruction inst)
 }
 
 Update div(Memory& regs, Memory& mem, Instruction inst)
-  throw (AddressOutOfRange)
 {
   regs.set_word(inst.first * 4, static_cast<Sint32>(regs[inst.second * 4]) /
                 static_cast<Sint32>(regs[inst.address * 4]));
@@ -149,7 +136,6 @@ Update div(Memory& regs, Memory& mem, Instruction inst)
 }
 
 Update divi(Memory& regs, Memory& mem, Instruction inst)
-  throw (AddressOutOfRange)
 {
   regs.set_word(inst.first * 4, static_cast<Sint32>(regs[inst.second * 4]) /
                 static_cast<Sint32>(inst.address));
@@ -158,7 +144,6 @@ Update divi(Memory& regs, Memory& mem, Instruction inst)
 }
 
 Update divu(Memory& regs, Memory& mem, Instruction inst)
-  throw (AddressOutOfRange)
 {
   regs.set_word(inst.first * 4, regs[inst.second * 4] / regs[inst.address * 4]);
 
@@ -166,7 +151,6 @@ Update divu(Memory& regs, Memory& mem, Instruction inst)
 }
 
 Update divui(Memory& regs, Memory& mem, Instruction inst)
-  throw (AddressOutOfRange)
 {
   regs.set_word(inst.first * 4, regs[inst.second * 4] / inst.address);
 
@@ -174,7 +158,6 @@ Update divui(Memory& regs, Memory& mem, Instruction inst)
 }
 
 Update mod(Memory& regs, Memory& mem, Instruction inst)
-  throw (AddressOutOfRange)
 {
   regs.set_word(inst.first * 4, static_cast<Sint32>(regs[inst.second * 4]) %
                 static_cast<Sint32>(regs[inst.address * 4]));
@@ -183,7 +166,6 @@ Update mod(Memory& regs, Memory& mem, Instruction inst)
 }
 
 Update modi(Memory& regs, Memory& mem, Instruction inst)
-  throw (AddressOutOfRange)
 {
   regs.set_word(inst.first * 4, static_cast<Sint32>(regs[inst.second * 4]) %
                 static_cast<Sint32>(inst.address));
@@ -192,7 +174,6 @@ Update modi(Memory& regs, Memory& mem, Instruction inst)
 }
 
 Update modu(Memory& regs, Memory& mem, Instruction inst)
-  throw (AddressOutOfRange)
 {
   regs.set_word(inst.first * 4, regs[inst.second * 4] % regs[inst.address * 4]);
 
@@ -200,7 +181,6 @@ Update modu(Memory& regs, Memory& mem, Instruction inst)
 }
 
 Update modui(Memory& regs, Memory& mem, Instruction inst)
-  throw (AddressOutOfRange)
 {
   regs.set_word(inst.first * 4, regs[inst.second * 4] % inst.address);
 

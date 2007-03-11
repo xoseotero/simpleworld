@@ -21,14 +21,12 @@ namespace CPU
 {
 
 Object::Object(const InstructionSet& set, const std::string& filename)
-  throw ()
   : set_(set), filename_(filename)
 {
 }
 
 
 void Object::decompile(const std::string filename) const
-  throw (FileAccessError)
 {
   File file;
   File::size_type i = 0;
@@ -68,7 +66,6 @@ void Object::decompile(const std::string filename) const
 }
 
 std::string Object::decompile(Word instruction) const
-  throw (InstructionNotFound, RegisterNotFound)
 {
   Instruction inst = InstructionSet::decode(instruction);
   InstructionInfo info = this->set_.instruction_info(inst.code);

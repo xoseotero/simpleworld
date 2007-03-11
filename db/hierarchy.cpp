@@ -17,18 +17,18 @@ namespace SimpleWorld
 namespace DB
 {
 
-Hierarchy::Hierarchy(DB* db, ID bug_id) throw (DBError, IDNotFound)
+Hierarchy::Hierarchy(DB* db, ID bug_id)
   : Table(db, bug_id)
 {
 }
 
-Hierarchy::~Hierarchy() throw ()
+Hierarchy::~Hierarchy()
 {
   this->db_->free_hierarchy(this->id_);
 }
 
 
-void Hierarchy::update() throw (DBError, IDNotFound)
+void Hierarchy::update()
 {
   // parents
   static sqlite3x::sqlite3_command sql1(*this->db_,
@@ -69,7 +69,7 @@ WHERE father_id = ?");
   }
 }
 
-void Hierarchy::update_db() throw (DBError)
+void Hierarchy::update_db()
 {
   // parents
   static sqlite3x::sqlite3_command sql(*this->db_,

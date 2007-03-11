@@ -46,7 +46,7 @@ public:
    * @param filename filename from where to load the code into memory.
    * @exception FileAccessError problem with the file.
    */
-  CPUFile(const std::string& filename) throw (FileAccessError);
+  CPUFile(const std::string& filename);
 
 
   /**
@@ -54,7 +54,7 @@ public:
    * @param filename filename from where to load the code into memory.
    * @exception FileAccessError problem with the file.
    */
-  void load_file(const std::string& filename) throw (FileAccessError);
+  void load_file(const std::string& filename);
 
 private:
   Memory memory_;

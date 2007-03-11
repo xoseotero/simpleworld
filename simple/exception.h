@@ -54,13 +54,13 @@ public:
    * File where the exception is raised.
    * @return the file name.
    */
-  const std::string& file() const throw () { return this->file_; }
+  const std::string& file() const { return this->file_; }
 
   /**
    * Line where the exception is raised.
    * @return the line number.
    */
-  Uint32 line() const throw () { return this->line_; }
+  Uint32 line() const { return this->line_; }
 
 private:
   std::string file_;

@@ -209,8 +209,9 @@ static fs::path find_file(const std::vector<std::string>& path,
 }
 
 
-Source::Source(const InstructionSet& set, std::vector<std::string> include_path,
-               const std::string& filename) throw (FileAccessError)
+Source::Source(const InstructionSet& set,
+	       std::vector<std::string> include_path,
+               const std::string& filename)
   : File(filename), set_(set), include_path_(include_path)
 {
   // The main file can't be included
@@ -220,7 +221,7 @@ Source::Source(const InstructionSet& set, std::vector<std::string> include_path,
 }
 
 
-void Source::compile(std::string filename) throw (ParseError, FileAccessError)
+void Source::compile(std::string filename)
 {
   // replace_includes is already done by replace_constants
   // this->replace_includes();
@@ -248,7 +249,7 @@ void Source::compile(std::string filename) throw (ParseError, FileAccessError)
 }
 
 
-void Source::replace_includes() throw (FileAccessError, ParseError)
+void Source::replace_includes()
 {
   File::size_type i;
   for (i = 0; i < this->lines(); i++)
@@ -273,7 +274,7 @@ void Source::replace_includes() throw (FileAccessError, ParseError)
     }
 }
 
-void Source::replace_constants() throw (ParseError)
+void Source::replace_constants()
 {
   this->replace_includes();
 
@@ -328,7 +329,7 @@ void Source::replace_constants() throw (ParseError)
 }
 
 
-Word Source::compile(File::size_type line) const throw (ParseError)
+Word Source::compile(File::size_type line) const
 {
   if (this->is_data(line)) {
 #ifdef IS_BIG_ENDIAN
@@ -384,38 +385,38 @@ Word Source::compile(File::size_type line) const throw (ParseError)
 }
 
 
-bool Source::is_blank(File::size_type line) const throw (LineOutOfRange)
+bool Source::is_blank(File::size_type line) const
 {
   return boost::regex_match(this->get_line(line), re_blank);
 }
 
 
-bool Source::is_comment(File::size_type line) const throw (LineOutOfRange)
+bool Source::is_comment(File::size_type line) const
 {
   return boost::regex_match(this->get_line(line), re_comment);
 }
 
-bool Source::is_constant(File::size_type line) const throw (LineOutOfRange)
+bool Source::is_constant(File::size_type line) const
 {
   return boost::regex_match(this->get_line(line), re_constant);
 }
 
-bool Source::is_label(File::size_type line) const throw (LineOutOfRange)
+bool Source::is_label(File::size_type line) const
 {
   return boost::regex_match(this->get_line(line), re_label);
 }
 
-bool Source::is_include(File::size_type line) const throw (LineOutOfRange)
+bool Source::is_include(File::size_type line) const
 {
   return boost::regex_match(this->get_line(line), re_include);
 }
 
-bool Source::is_data(File::size_type line) const throw (LineOutOfRange)
+bool Source::is_data(File::size_type line) const
 {
   return boost::regex_match(this->get_line(line), re_data);
 }
 
-bool Source::is_instruction(File::size_type line) const throw (LineOutOfRange)
+bool Source::is_instruction(File::size_type line) const
 {
   return boost::regex_match(this->get_line(line), re_inst0) |
     boost::regex_match(this->get_line(line), re_inst0i) |
@@ -428,7 +429,6 @@ bool Source::is_instruction(File::size_type line) const throw (LineOutOfRange)
 
 
 std::vector<std::string> Source::get_constant(File::size_type line) const
-  throw (LineOutOfRange)
 {
   std::vector<std::string> result;
 
@@ -439,7 +439,7 @@ std::vector<std::string> Source::get_constant(File::size_type line) const
   return result;
 }
 
-std::string Source::get_label(File::size_type line) const throw (LineOutOfRange)
+std::string Source::get_label(File::size_type line) const
 {
   std::string result;
 
@@ -451,7 +451,6 @@ std::string Source::get_label(File::size_type line) const throw (LineOutOfRange)
 }
 
 std::string Source::get_include(File::size_type line) const
-  throw (LineOutOfRange)
 {
   std::string result;
 
@@ -462,7 +461,7 @@ std::string Source::get_include(File::size_type line) const
   return result;
 }
 
-Word Source::get_data(File::size_type line) const throw (LineOutOfRange)
+Word Source::get_data(File::size_type line) const
 {
   Word result = 0;
 
@@ -477,7 +476,6 @@ Word Source::get_data(File::size_type line) const throw (LineOutOfRange)
 }
 
 std::vector<std::string> Source::get_instruction(File::size_type line) const
-  throw (LineOutOfRange)
 {
   std::vector<std::string> result;
 

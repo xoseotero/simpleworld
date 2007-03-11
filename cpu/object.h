@@ -49,7 +49,7 @@ public:
    * @param set Instruction set of the CPU
    * @param filename File to open.
    */
-  Object(const InstructionSet& set, const std::string& filename) throw ();
+  Object(const InstructionSet& set, const std::string& filename);
 
 
   /**
@@ -59,8 +59,7 @@ public:
    * @param filename File where to save.
    * @exception FileAccessError problem with file.
    */
-  void decompile(const std::string filename) const
-    throw (FileAccessError);
+  void decompile(const std::string filename) const;
 
 protected:
   /**
@@ -70,8 +69,7 @@ protected:
    * @exception InstructionNotFound instruction not found.
    * @exception RegisterNotFound register not found.
    */
-  std::string decompile(Word instruction) const
-    throw (InstructionNotFound, RegisterNotFound);
+  std::string decompile(Word instruction) const;
 
 private:
   const InstructionSet& set_;

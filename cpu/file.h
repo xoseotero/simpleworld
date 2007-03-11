@@ -102,41 +102,41 @@ public:
   /**
    * Constructor for a empty file.
    */
-  File() throw ();
+  File();
 
   /**
    * Copy constructor.
    * @param file File to copy.
    */
-  File(const File& file) throw ();
+  File(const File& file);
 
   /**
    * Constructor that opens a file.
    * @param filename File to open.
    * @exception FileAccessError File can't be opened
    */
-  File(std::string filename) throw (FileAccessError);
+  File(std::string filename);
 
 
   /**
    * Number of lines.
    * @return the number of lines.
    */
-  size_type lines() const throw ();
+  size_type lines() const;
 
   /**
    * Get a line.
    * @param pos Position of the line.
    * @exception LineOutOfRange pos > lines
    */
-  std::string& get_line(size_type pos) throw (LineOutOfRange);
+  std::string& get_line(size_type pos);
 
   /**
    * Get a line.
    * @param pos Position of the line.
    * @exception LineOutOfRange pos > lines
    */
-  const std::string& get_line(size_type pos) const throw (LineOutOfRange);
+  const std::string& get_line(size_type pos) const;
 
 
   /**
@@ -145,7 +145,7 @@ public:
    * @param line Line to insert.
    * @exception LineOutOfRange pos > lines
    */
-  void insert(size_type pos, const std::string& line) throw (LineOutOfRange);
+  void insert(size_type pos, const std::string& line);
 
   /**
    * Insert the lines of a File in the file.
@@ -153,7 +153,7 @@ public:
    * @param file File to insert.
    * @exception LineOutOfRange pos > lines
    */
-  void insert(size_type pos, const File& file) throw (LineOutOfRange);
+  void insert(size_type pos, const File& file);
 
   /**
    * Remove n lines from the file.
@@ -161,7 +161,7 @@ public:
    * @param n Number of lines to remove.
    * @exception LineOutOfRange pos > lines or pos + n > lines
    */
-  void remove(size_type pos, size_type n) throw (LineOutOfRange);
+  void remove(size_type pos, size_type n);
 
 
   /**
@@ -171,14 +171,14 @@ public:
    * @param filename File to open.
    * @exception FileAccessError File can't be opened
    */
-  void load(std::string filename) throw (FileAccessError);
+  void load(std::string filename);
 
   /**
    * Save to a file.
    * @param filename File name where to save.
    * @exception FileAccessError File can't be saved
    */
-  void save(std::string filename) const throw (FileAccessError);
+  void save(std::string filename) const;
 
 
   /**
@@ -186,14 +186,14 @@ public:
    * @param pos Position of the line.
    * @exception LineOutOfRange pos > lines
    */
-  std::string& operator [](size_type pos) throw (LineOutOfRange);
+  std::string& operator [](size_type pos);
 
   /**
    * Get a line.
    * @param pos Position of the line.
    * @exception LineOutOfRange pos > lines
    */
-  const std::string& operator [](size_type pos) const throw (LineOutOfRange);
+  const std::string& operator [](size_type pos) const;
 
 
   /**

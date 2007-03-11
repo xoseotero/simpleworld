@@ -18,7 +18,6 @@ namespace CPU
 {
 
 Update b(Memory& regs, Memory& mem, Instruction inst)
-  throw (AddressOutOfRange)
 {
   regs.set_word(REGISTER_PC, (regs[REGISTER_SGP] << 16) + inst.address);
 
@@ -26,7 +25,6 @@ Update b(Memory& regs, Memory& mem, Instruction inst)
 }
 
 Update beq(Memory& regs, Memory& mem, Instruction inst)
-  throw (AddressOutOfRange)
 {
   if (regs[inst.first * 4] == regs[inst.second * 4]) {
     regs.set_word(REGISTER_PC, (regs[REGISTER_SGP] << 16) + inst.address);
@@ -37,7 +35,6 @@ Update beq(Memory& regs, Memory& mem, Instruction inst)
 }
 
 Update bne(Memory& regs, Memory& mem, Instruction inst)
-  throw (AddressOutOfRange)
 {
   if (regs[inst.first * 4] != regs[inst.second * 4]) {
     regs.set_word(REGISTER_PC, (regs[REGISTER_SGP] << 16) + inst.address);
@@ -48,7 +45,6 @@ Update bne(Memory& regs, Memory& mem, Instruction inst)
 }
 
 Update blt(Memory& regs, Memory& mem, Instruction inst)
-  throw (AddressOutOfRange)
 {
   if (static_cast<Sint32>(regs[inst.first * 4]) <
       static_cast<Sint32>(regs[inst.second * 4])) {
@@ -60,7 +56,6 @@ Update blt(Memory& regs, Memory& mem, Instruction inst)
 }
 
 Update bltu(Memory& regs, Memory& mem, Instruction inst)
-  throw (AddressOutOfRange)
 {
   if (regs[inst.first * 4] < regs[inst.second * 4]) {
     regs.set_word(REGISTER_PC, (regs[REGISTER_SGP] << 16) + inst.address);
@@ -71,7 +66,6 @@ Update bltu(Memory& regs, Memory& mem, Instruction inst)
 }
 
 Update bgt(Memory& regs, Memory& mem, Instruction inst)
-  throw (AddressOutOfRange)
 {
   if (static_cast<Sint32>(regs[inst.first * 4]) >
       static_cast<Sint32>(regs[inst.second * 4])) {
@@ -83,7 +77,6 @@ Update bgt(Memory& regs, Memory& mem, Instruction inst)
 }
 
 Update bgtu(Memory& regs, Memory& mem, Instruction inst)
-  throw (AddressOutOfRange)
 {
   if (regs[inst.first * 4] > regs[inst.second * 4]) {
     regs.set_word(REGISTER_PC, (regs[REGISTER_SGP] << 16) + inst.address);
@@ -94,7 +87,6 @@ Update bgtu(Memory& regs, Memory& mem, Instruction inst)
 }
 
 Update ble(Memory& regs, Memory& mem, Instruction inst)
-  throw (AddressOutOfRange)
 {
   if (static_cast<Sint32>(regs[inst.first * 4]) <=
       static_cast<Sint32>(regs[inst.second * 4])) {
@@ -106,7 +98,6 @@ Update ble(Memory& regs, Memory& mem, Instruction inst)
 }
 
 Update bleu(Memory& regs, Memory& mem, Instruction inst)
-  throw (AddressOutOfRange)
 {
   if (regs[inst.first * 4] <= regs[inst.second * 4]) {
     regs.set_word(REGISTER_PC, (regs[REGISTER_SGP] << 16) + inst.address);
@@ -117,7 +108,6 @@ Update bleu(Memory& regs, Memory& mem, Instruction inst)
 }
 
 Update bge(Memory& regs, Memory& mem, Instruction inst)
-  throw (AddressOutOfRange)
 {
   if (static_cast<Sint32>(regs[inst.first * 4]) >=
       static_cast<Sint32>(regs[inst.second * 4])) {
@@ -129,7 +119,6 @@ Update bge(Memory& regs, Memory& mem, Instruction inst)
 }
 
 Update bgeu(Memory& regs, Memory& mem, Instruction inst)
-  throw (AddressOutOfRange)
 {
   if (regs[inst.first * 4] >= regs[inst.second * 4]) {
     regs.set_word(REGISTER_PC, (regs[REGISTER_SGP] << 16) + inst.address);

@@ -17,18 +17,18 @@ namespace SimpleWorld
 namespace DB
 {
 
-Environment::Environment(DB* db, Time time) throw (DBError, IDNotFound)
+Environment::Environment(DB* db, Time time)
   : Table(db, time)
 {
 }
 
-Environment::~Environment() throw ()
+Environment::~Environment()
 {
   this->db_->free_environment(this->id_);
 }
 
 
-void Environment::update() throw (DBError, IDNotFound)
+void Environment::update()
 {
   static sqlite3x::sqlite3_command sql(*this->db_,
 				       "\
@@ -62,7 +62,7 @@ LIMIT 1;");
   }
 }
 
-void Environment::update_db() throw (DBError)
+void Environment::update_db()
 {
   static sqlite3x::sqlite3_command sql(*this->db_,
 				       "\

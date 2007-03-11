@@ -20,7 +20,6 @@ namespace CPU
 
 /* Move operations */
 Update move(Memory& regs, Memory& mem, Instruction inst)
-  throw (AddressOutOfRange)
 {
   regs.set_word(inst.first * 4, regs[inst.second * 4]);
 
@@ -28,7 +27,6 @@ Update move(Memory& regs, Memory& mem, Instruction inst)
 }
 
 Update swap(Memory& regs, Memory& mem, Instruction inst)
-  throw (AddressOutOfRange)
 {
   regs.set_word(inst.first * 4,
                 regs[inst.second * 4] << 16 | regs[inst.second * 4] >> 16);
@@ -39,7 +37,6 @@ Update swap(Memory& regs, Memory& mem, Instruction inst)
 
 /* Stack operations */
 Update push(Memory& regs, Memory& mem, Instruction inst)
-  throw (AddressOutOfRange)
 {
   // Save the register in the top of the stack
   regs.set_word(REGISTER_STP, regs[inst.first * 4]);
@@ -50,7 +47,6 @@ Update push(Memory& regs, Memory& mem, Instruction inst)
 }
 
 Update pop(Memory& regs, Memory& mem, Instruction inst)
-  throw (AddressOutOfRange)
 {
   // Update stack pointer
   regs.set_word(REGISTER_STP, regs[REGISTER_STP] + 4);
@@ -63,7 +59,6 @@ Update pop(Memory& regs, Memory& mem, Instruction inst)
 
 /* Load operations */
 Update load(Memory& regs, Memory& mem, Instruction inst)
-  throw (AddressOutOfRange)
 {
   regs.set_word(inst.first * 4, mem[(regs[REGISTER_SGP] << 16) + inst.address]);
 
@@ -71,7 +66,6 @@ Update load(Memory& regs, Memory& mem, Instruction inst)
 }
 
 Update loadi(Memory& regs, Memory& mem, Instruction inst)
-  throw (AddressOutOfRange)
 {
   regs.set_word(inst.first * 4, inst.address);
 
@@ -79,7 +73,6 @@ Update loadi(Memory& regs, Memory& mem, Instruction inst)
 }
 
 Update loadrr(Memory& regs, Memory& mem, Instruction inst)
-  throw (AddressOutOfRange)
 {
   regs.set_word(inst.first * 4, mem[regs[inst.second * 4] +
                                     regs[inst.address * 4]]);
@@ -88,7 +81,6 @@ Update loadrr(Memory& regs, Memory& mem, Instruction inst)
 }
 
 Update loadri(Memory& regs, Memory& mem, Instruction inst)
-  throw (AddressOutOfRange)
 {
   regs.set_word(inst.first * 4, mem[regs[inst.second * 4] + inst.address]);
 
@@ -98,7 +90,6 @@ Update loadri(Memory& regs, Memory& mem, Instruction inst)
 
 /* Store operations */
 Update store(Memory& regs, Memory& mem, Instruction inst)
-  throw (AddressOutOfRange)
 {
   mem.set_word((regs[REGISTER_SGP] << 16) + inst.address, regs[inst.first * 4]);
 
@@ -106,7 +97,6 @@ Update store(Memory& regs, Memory& mem, Instruction inst)
 }
 
 Update storerr(Memory& regs, Memory& mem, Instruction inst)
-  throw (AddressOutOfRange)
 {
   mem.set_word(regs[inst.first] + regs[inst.address], regs[inst.second]);
 
@@ -114,7 +104,6 @@ Update storerr(Memory& regs, Memory& mem, Instruction inst)
 }
 
 Update storeri(Memory& regs, Memory& mem, Instruction inst)
-  throw (AddressOutOfRange)
 {
   mem.set_word(regs[inst.first] + inst.address, regs[inst.second]);
 
