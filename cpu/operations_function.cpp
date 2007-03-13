@@ -19,44 +19,68 @@ namespace SimpleWorld
 namespace CPU
 {
 
-Update call(Memory& regs, Memory& mem, Instruction inst)
+call::call(Memory& regs, Memory& mem)
+  : Operation(regs, mem)
+{
+}
+
+Update call::operator()(Instruction inst)
 {
   // Save the program counter (pc) in the top of the stack
-  mem.set_word(regs[REGISTER_STP], regs[REGISTER_PC]);
+  this->mem_.set_word(this->regs_[REGISTER_STP], this->regs_[REGISTER_PC]);
   // Update stack pointer
-  regs.set_word(REGISTER_STP, regs[REGISTER_STP] - 4);
+  this->regs_.set_word(REGISTER_STP, this->regs_[REGISTER_STP] - 4);
   // Execute the function
-  regs.set_word(REGISTER_PC, (regs[REGISTER_SGP] << 16) + inst.address);
+  this->regs_.set_word(REGISTER_PC,
+		       (this->regs_[REGISTER_SGP] << 16) + inst.address);
 
   return None;
 }
 
-Update ret(Memory& regs, Memory& mem, Instruction inst)
+
+ret::ret(Memory& regs, Memory& mem)
+  : Operation(regs, mem)
+{
+}
+
+Update ret::operator()(Instruction inst)
 {
   // Update stack pointer
-  regs.set_word(REGISTER_STP, regs[REGISTER_STP] + 4);
+  this->regs_.set_word(REGISTER_STP, this->regs_[REGISTER_STP] + 4);
   // Restore the program counter
-  regs.set_word(REGISTER_PC, mem[regs[REGISTER_STP]]);
+  this->regs_.set_word(REGISTER_PC, this->mem_[this->regs_[REGISTER_STP]]);
 
   return UpdatePC;
 }
 
-Update rete(Memory& regs, Memory& mem, Instruction inst)
+
+rete::rete(Memory& regs, Memory& mem)
+  : Operation(regs, mem)
+{
+}
+
+Update rete::operator()(Instruction inst)
 {
   Sint8 i;
   for (i = 15; i >= 0; i--) {
     // Restore a register:
     // Update stack pointer
-    regs.set_word(REGISTER_STP, regs[REGISTER_STP] + 4);
+    this->regs_.set_word(REGISTER_STP, this->regs_[REGISTER_STP] + 4);
     // Restore the register
-    regs.set_word(i * 4, mem[regs[REGISTER_STP]]);
+    this->regs_.set_word(i * 4, this->mem_[this->regs_[REGISTER_STP]]);
   }
 
   return UpdatePC;
 }
 
+
 #warning World operation not implemented
-Update world(Memory& regs, Memory& mem, Instruction inst)
+world::world(Memory& regs, Memory& mem)
+  : Operation(regs, mem)
+{
+}
+
+Update world::operator()(Instruction inst)
 {
   std::cout << "Calling world with parameter " << inst.address << std::endl;
 

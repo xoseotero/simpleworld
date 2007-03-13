@@ -17,16 +17,27 @@ namespace SimpleWorld
 namespace CPU
 {
 
-Update stop(Memory& regs, Memory& mem, Instruction inst)
+stop::stop(Memory& regs, Memory& mem)
+  : Operation(regs, mem)
+{
+}
+
+Update stop::operator()(Instruction inst)
 {
   return Stop;
 }
 
-Update restart(Memory& regs, Memory& mem, Instruction inst)
+
+restart::restart(Memory& regs, Memory& mem)
+  : Operator(regs, mem)
+{
+}
+
+Update restart::operator()(Instruction inst)
 {
   Uint8 i;
   for (i = 0; i < 16; i++)
-    regs.set_word(i * 4, 0);
+    this->regs_.set_word(i * 4, 0);
 
   return None;
 }

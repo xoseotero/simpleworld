@@ -33,6 +33,7 @@
 #include <cpu/types.h>
 #include <cpu/exception.h>
 #include <cpu/memory.h>
+#include <cpu/operation.h>
 
 namespace SimpleWorld
 {
@@ -160,15 +161,6 @@ enum Update {
 };
 
 /**
- * Pointer to a function that executes a instruction.
- * @param regs the registers.
- * @param mem the memory.
- * @param inst the instruction.
- * @return if the PC must be updated.
- */
-typedef Update (*Operation) (Memory& regs, Memory& mem, Instruction inst);
-
-/**
  * Information about instruction's parameters.
  */
 struct InstructionInfo {
@@ -176,7 +168,7 @@ struct InstructionInfo {
   std::string name;   /**< Instruction name */
   Uint8 nregs;        /**< Registers used */
   bool has_inmediate; /**< The instruction uses the inmediate space */
-  Operation func;     /**< Function that execute the operation */
+  Operation operation;/**< Operation executed */
 };
 
 
@@ -275,11 +267,11 @@ public:
    * @param name name of the instruction.
    * @param nregs registers used.
    * @param has_inmediate if the instruction uses the inmediate space.
-   * @param func function that executes the operation.
+   * @param operation operation executed.
    * @exception InstructionExist the instruction already exist.
    */
   void add_instruction(Uint8 code, std::string name, Uint8 nregs, bool
-                       has_inmediate, Operation func);
+                       has_inmediate, Operation operation);
 
   /**
    * Remove a instruction.

@@ -155,9 +155,9 @@ void InstructionSet::add_instruction(InstructionInfo instruction)
 }
 
 void InstructionSet::add_instruction(Uint8 code, std::string name, Uint8 nregs,
-                                     bool has_inmediate, Operation func)
+                                     bool has_inmediate, Operation operation)
 {
-  InstructionInfo info = {code, name, nregs, has_inmediate, func};
+  InstructionInfo info = {code, name, nregs, has_inmediate, operation};
   this->add_instruction(info);
 }
 

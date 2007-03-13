@@ -17,111 +17,187 @@ namespace SimpleWorld
 namespace CPU
 {
 
-Update b(Memory& regs, Memory& mem, Instruction inst)
+b::b(Memory& regs, Memory& mem)
+  : Operation(regs, mem)
 {
-  regs.set_word(REGISTER_PC, (regs[REGISTER_SGP] << 16) + inst.address);
+}
+
+Update b::operator()(Instruction inst)
+{
+  this->regs_.set_word(REGISTER_PC,
+		       (this->regs_[REGISTER_SGP] << 16) + inst.address);
 
   return None;
 }
 
-Update beq(Memory& regs, Memory& mem, Instruction inst)
+
+beq::beq(Memory& regs, Memory& mem)
+  : Operation(regs, mem)
 {
-  if (regs[inst.first * 4] == regs[inst.second * 4]) {
-    regs.set_word(REGISTER_PC, (regs[REGISTER_SGP] << 16) + inst.address);
+}
+
+Update beq::operator()(Instruction inst)
+{
+  if (this->regs_[inst.first * 4] == this->regs_[inst.second * 4]) {
+    this->regs_.set_word(REGISTER_PC,
+			 (this->regs_[REGISTER_SGP] << 16) + inst.address);
     return None;
   }
 
   return UpdatePC;
 }
 
-Update bne(Memory& regs, Memory& mem, Instruction inst)
+
+bne::bne(Memory& regs, Memory& mem)
+  : Operation(regs, mem)
 {
-  if (regs[inst.first * 4] != regs[inst.second * 4]) {
-    regs.set_word(REGISTER_PC, (regs[REGISTER_SGP] << 16) + inst.address);
+}
+
+Update bne::operator()(Instruction inst)
+{
+  if (this->regs_[inst.first * 4] != this->regs_[inst.second * 4]) {
+    this->regs_.set_word(REGISTER_PC,
+			 (this->regs_[REGISTER_SGP] << 16) + inst.address);
     return None;
   }
 
   return UpdatePC;
 }
 
-Update blt(Memory& regs, Memory& mem, Instruction inst)
+
+blt::blt(Memory& regs, Memory& mem)
+  : Operation(regs, mem)
 {
-  if (static_cast<Sint32>(regs[inst.first * 4]) <
-      static_cast<Sint32>(regs[inst.second * 4])) {
-    regs.set_word(REGISTER_PC, (regs[REGISTER_SGP] << 16) + inst.address);
+}
+
+Update blt::operator()(Instruction inst)
+{
+  if (static_cast<Sint32>(this->regs_[inst.first * 4]) <
+      static_cast<Sint32>(this->regs_[inst.second * 4])) {
+    this->regs_.set_word(REGISTER_PC,
+			 (this->regs_[REGISTER_SGP] << 16) + inst.address);
     return None;
   }
 
   return UpdatePC;
 }
 
-Update bltu(Memory& regs, Memory& mem, Instruction inst)
+
+bltu::bltu(Memory& regs, Memory& mem)
+  : Operation(regs, mem)
 {
-  if (regs[inst.first * 4] < regs[inst.second * 4]) {
-    regs.set_word(REGISTER_PC, (regs[REGISTER_SGP] << 16) + inst.address);
+}
+
+Update bltu::operator()(Instruction inst)
+{
+  if (this->regs_[inst.first * 4] < this->regs_[inst.second * 4]) {
+    this->regs_.set_word(REGISTER_PC,
+			 (this->regs_[REGISTER_SGP] << 16) + inst.address);
     return None;
   }
 
   return UpdatePC;
 }
 
-Update bgt(Memory& regs, Memory& mem, Instruction inst)
+
+bgt::bgt(Memory& regs, Memory& mem)
+  : Operation(regs, mem)
 {
-  if (static_cast<Sint32>(regs[inst.first * 4]) >
-      static_cast<Sint32>(regs[inst.second * 4])) {
-    regs.set_word(REGISTER_PC, (regs[REGISTER_SGP] << 16) + inst.address);
+}
+
+Update bgt::operator()(Instruction inst)
+{
+  if (static_cast<Sint32>(this->regs_[inst.first * 4]) >
+      static_cast<Sint32>(this->regs_[inst.second * 4])) {
+    this->regs_.set_word(REGISTER_PC,
+			 (this->regs_[REGISTER_SGP] << 16) + inst.address);
     return None;
   }
 
   return UpdatePC;
 }
 
-Update bgtu(Memory& regs, Memory& mem, Instruction inst)
+
+bgtu::bgtu(Memory& regs, Memory& mem)
+  : Operation(regs, mem)
 {
-  if (regs[inst.first * 4] > regs[inst.second * 4]) {
-    regs.set_word(REGISTER_PC, (regs[REGISTER_SGP] << 16) + inst.address);
+}
+
+Update bgtu::operator()(Instruction inst)
+{
+  if (this->regs_[inst.first * 4] > this->regs_[inst.second * 4]) {
+    this->regs_.set_word(REGISTER_PC,
+			 (this->regs_[REGISTER_SGP] << 16) + inst.address);
     return None;
   }
 
   return UpdatePC;
 }
 
-Update ble(Memory& regs, Memory& mem, Instruction inst)
+
+ble::ble(Memory& regs, Memory& mem)
+  : Operation(regs, mem)
 {
-  if (static_cast<Sint32>(regs[inst.first * 4]) <=
-      static_cast<Sint32>(regs[inst.second * 4])) {
-    regs.set_word(REGISTER_PC, (regs[REGISTER_SGP] << 16) + inst.address);
+}
+
+Update ble::operator()(Instruction inst)
+{
+  if (static_cast<Sint32>(this->regs_[inst.first * 4]) <=
+      static_cast<Sint32>(this->regs_[inst.second * 4])) {
+    this->regs_.set_word(REGISTER_PC,
+			 (this->regs_[REGISTER_SGP] << 16) + inst.address);
     return None;
   }
 
   return UpdatePC;
 }
 
-Update bleu(Memory& regs, Memory& mem, Instruction inst)
+
+bleu::bleu(Memory& regs, Memory& mem)
+  : Operator(regs, mem)
 {
-  if (regs[inst.first * 4] <= regs[inst.second * 4]) {
-    regs.set_word(REGISTER_PC, (regs[REGISTER_SGP] << 16) + inst.address);
+}
+
+Update bleu::operator()(Instruction inst)
+{
+  if (this->regs_[inst.first * 4] <= this->regs_[inst.second * 4]) {
+    this->regs_.set_word(REGISTER_PC,
+			 (this->regs_[REGISTER_SGP] << 16) + inst.address);
     return None;
   }
 
   return UpdatePC;
 }
 
-Update bge(Memory& regs, Memory& mem, Instruction inst)
+
+bge::bge(Memory& regs, Memory& mem)
+  : Operation(regs, mem)
 {
-  if (static_cast<Sint32>(regs[inst.first * 4]) >=
-      static_cast<Sint32>(regs[inst.second * 4])) {
-    regs.set_word(REGISTER_PC, (regs[REGISTER_SGP] << 16) + inst.address);
+}
+
+Update bge::operator()(Instruction inst)
+{
+  if (static_cast<Sint32>(this->regs_[inst.first * 4]) >=
+      static_cast<Sint32>(this->regs_[inst.second * 4])) {
+    this->regs_.set_word(REGISTER_PC,
+			 (this->regs_[REGISTER_SGP] << 16) + inst.address);
     return None;
   }
 
   return UpdatePC;
 }
 
-Update bgeu(Memory& regs, Memory& mem, Instruction inst)
+
+bgeu::bgeu(Memory& regs, Memory& mem)
+  : Operation(regs, mem)
 {
-  if (regs[inst.first * 4] >= regs[inst.second * 4]) {
-    regs.set_word(REGISTER_PC, (regs[REGISTER_SGP] << 16) + inst.address);
+}
+
+Update bgeu::operator()(Instruction inst)
+{
+  if (this->regs_[inst.first * 4] >= this->regs_[inst.second * 4]) {
+    this->regs_.set_word(REGISTER_PC,
+			 (this->regs_[REGISTER_SGP] << 16) + inst.address);
     return None;
   }
 

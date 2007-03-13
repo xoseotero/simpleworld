@@ -18,108 +18,193 @@ namespace SimpleWorld
 namespace CPU
 {
 
-Update sll(Memory& regs, Memory& mem, Instruction inst)
+sll::sll(Memory& regs, Memory& mem)
+  : Operation(regs, mem)
 {
-  regs.set_word(inst.first * 4,
-                regs[inst.second * 4] << regs[inst.address * 4]);
+}
+
+Update sll::operator()(Instruction inst)
+{
+  this->regs_.set_word(inst.first * 4,
+		       this->regs_[inst.second * 4] <<
+		       this->regs_[inst.address * 4]);
 
   return UpdatePC;
 }
 
-Update slli(Memory& regs, Memory& mem, Instruction inst)
+
+slli::slli(Memory& regs, Memory& mem)
+  : Operation(regs, mem)
 {
-  regs.set_word(inst.first * 4, regs[inst.second * 4] << inst.address);
+}
+
+Update slli::operator()(Instruction inst)
+{
+  this->regs_.set_word(inst.first * 4,
+		       this->regs_[inst.second * 4] << inst.address);
 
   return UpdatePC;
 }
 
-Update srl(Memory& regs, Memory& mem, Instruction inst)
+
+srl::srl(Memory& regs, Memory& mem)
+  : Operation(regs, mem)
 {
-  regs.set_word(inst.first * 4,
-                regs[inst.second * 4] >> regs[inst.address * 4]);
+}
+
+Update srl::operator()(Instruction inst)
+{
+  this->regs_.set_word(inst.first * 4,
+		       this->regs_[inst.second * 4] >>
+		       this->regs_[inst.address * 4]);
 
   return UpdatePC;
 }
 
-Update srli(Memory& regs, Memory& mem, Instruction inst)
+
+srli::srli(Memory& regs, Memory& mem)
+  : Operator(regs, mem)
+  {
+}
+
+Update srli::operator()(Instruction inst)
 {
-  regs.set_word(inst.first * 4, regs[inst.second * 4] >> inst.address);
+  this->regs_.set_word(inst.first * 4,
+		       this->regs_[inst.second * 4] >> inst.address);
 
   return UpdatePC;
 }
 
-Update sla(Memory& regs, Memory& mem, Instruction inst)
+
+sla::sla(Memory& regs, Memory& mem)
+  : Operator(regs, mem)
+  {
+}
+
+Update sla::operator()(Instruction inst)
 {
-  regs.set_word(inst.first * 4,
-                regs[inst.second * 4] << regs[inst.address * 4]);
+  this->regs_.set_word(inst.first * 4,
+		       this->regs_[inst.second * 4] <<
+		       this->regs_[inst.address * 4]);
 
   return UpdatePC;
 }
 
-Update slai(Memory& regs, Memory& mem, Instruction inst)
+
+slai::slai(Memory& regs, Memory& mem)
+  : Operator(regs, mem)
+  {
+}
+
+Update slai::operator()(Instruction inst)
 {
-  regs.set_word(inst.first * 4, regs[inst.second * 4] << inst.address);
+  this->regs_.set_word(inst.first * 4,
+		       this->regs_[inst.second * 4] << inst.address);
 
   return UpdatePC;
 }
 
-Update sra(Memory& regs, Memory& mem, Instruction inst)
+
+sra::sra(Memory& regs, Memory& mem)
+  : Operator(regs, mem)
+{
+}
+
+Update sra::operator()(Instruction inst)
 {
 #ifdef IS_BIG_ENDIAN
-  Uint32 sign = regs[inst.second * 4] & 0x80000000;
+  Uint32 sign = this->regs_[inst.second * 4] & 0x80000000;
 #else
-  Uint32 sign = regs[inst.second * 4] & 0x00000001;
+  Uint32 sign = this->regs_[inst.second * 4] & 0x00000001;
 #endif
-  regs.set_word(inst.first * 4,
-                (regs[inst.second * 4] >> regs[inst.address * 4]) | sign);
+  this->regs_.set_word(inst.first * 4,
+		       (this->regs_[inst.second * 4] >>
+			this->regs_[inst.address * 4]) | sign);
 
   return UpdatePC;
 }
 
-Update srai(Memory& regs, Memory& mem, Instruction inst)
+
+srai::srai(Memory& regs, Memory& mem)
+  : Operator(regs, mem)
+{
+}
+
+Update srai::operator()(Instruction inst)
 {
 #ifdef IS_BIG_ENDIAN
-  Uint32 sign = regs[inst.second * 4] & 0x80000000;
+  Uint32 sign = this->regs_[inst.second * 4] & 0x80000000;
 #else
-  Uint32 sign = regs[inst.second * 4] & 0x00000001;
+  Uint32 sign = this->regs_[inst.second * 4] & 0x00000001;
 #endif
-  regs.set_word(inst.first * 4, (regs[inst.second * 4] >> inst.address) | sign);
+  this->regs_.set_word(inst.first * 4,
+		       (this->regs_[inst.second * 4] >> inst.address) | sign);
 
   return UpdatePC;
 }
 
-Update rl(Memory& regs, Memory& mem, Instruction inst)
+
+rl::rl(Memory& regs, Memory& mem)
+  : Operator(regs, mem)
 {
-  regs.set_word(inst.first * 4,
-                regs[inst.second * 4] << regs[inst.address * 4] |
-                regs[inst.second * 4] >> (32 - (regs[inst.address * 4] % 32)));
+}
+
+Update rl::operator()(Instruction inst)
+{
+  this->regs_.set_word(inst.first * 4,
+		       (this->regs_[inst.second * 4] <<
+			this->regs_[inst.address * 4]) |
+		       (this->regs_[inst.second * 4] >>
+			(32 - (this->regs_[inst.address * 4] % 32))));
 
   return UpdatePC;
 }
 
-Update rli(Memory& regs, Memory& mem, Instruction inst)
+
+rli::rli(Memory& regs, Memory& mem)
+  : Operator(regs, mem)
 {
-  regs.set_word(inst.first * 4,
-                regs[inst.second * 4] << inst.address |
-                regs[inst.second * 4] >> (32 - (inst.address % 32)));
+}
+
+Update rli::operator()(Instruction inst)
+{
+  this->regs_.set_word(inst.first * 4,
+		       (this->regs_[inst.second * 4] << inst.address) |
+		       (this->regs_[inst.second * 4] >>
+			(32 - (inst.address % 32))));
 
   return UpdatePC;
 }
 
-Update rr(Memory& regs, Memory& mem, Instruction inst)
+
+rr::rr(Memory& regs, Memory& mem)
+  : Operator(regs, mem)
 {
-  regs.set_word(inst.first * 4,
-                regs[inst.second * 4] >> regs[inst.address * 4] |
-                regs[inst.second * 4] << (32 - (regs[inst.address * 4] % 32)));
+}
+
+Update rr::operator()(Instruction inst)
+{
+  this->regs_.set_word(inst.first * 4,
+		       (this->regs_[inst.second * 4] >>
+			this->regs_[inst.address * 4]) |
+		       (this->regs_[inst.second * 4] <<
+			(32 - (this->regs_[inst.address * 4] % 32))));
 
   return UpdatePC;
 }
 
-Update rri(Memory& regs, Memory& mem, Instruction inst)
+
+rri::rri(Memory& regs, Memory& mem)
+  : Operator(regs, mem)
 {
-  regs.set_word(inst.first * 4,
-                regs[inst.second * 4] >> inst.address |
-                regs[inst.second * 4] << (32 - (inst.address % 32)));
+}
+
+Update rri::operator()(Instruction inst)
+{
+  this->regs_.set_word(inst.first * 4,
+		       (this->regs_[inst.second * 4] >> inst.address) |
+		       (this->regs_[inst.second * 4] <<
+			(32 - (inst.address % 32))));
 
   return UpdatePC;
 }
