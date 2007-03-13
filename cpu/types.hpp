@@ -27,7 +27,6 @@
 
 #include <simple/types.hpp>
 #include <world/types.hpp>
-#include <cpu/types.hpp>
 
 namespace SimpleWorld
 {
