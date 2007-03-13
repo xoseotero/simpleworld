@@ -152,15 +152,6 @@ struct Instruction {
 };
 
 /**
- * How to update the CPU after a instruction.
- */
-enum Update {
-  None,               /**< Do nothing */
-  UpdatePC,           /**< Update the program counter */
-  Stop                /**< Stop the CPU */
-};
-
-/**
  * Information about instruction's parameters.
  */
 struct InstructionInfo {
