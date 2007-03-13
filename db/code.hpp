@@ -1,8 +1,8 @@
 /**
- * @file db/mutations.h
- * Mutations of a bug.
+ * @file db/code.h
+ * Code of a bug.
  *
- * begin:     Thu, 01 Mar 2007 16:59:31 +0100
+ * begin:     Thu, 01 Mar 2007 13:00:43 +0100
  * last:      $Date$ by $Author$
  *
  *  Copyright (C) 2007, Xosé Otero <xoseotero@users.sourceforge.net>
@@ -22,15 +22,16 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef __DB_MUTATIONS_H__
-#define __DB_MUTATIONS_H__
+#ifndef __DB_CODE_H__
+#define __DB_CODE_H__
 
 #include <vector>
+#include <string>
 
-#include <simple/types.h>
-#include <db/types.h>
-#include <db/db.h>
-#include <db/table.h>
+#include <simple/types.hpp>
+#include <db/types.hpp>
+#include <db/db.hpp>
+#include <db/table.hpp>
 
 namespace SimpleWorld
 {
@@ -38,9 +39,9 @@ namespace DB
 {
 
 /**
- * Mutations of a bug.
+ * Code of a bug.
  */
-class Mutations: public Table
+class Code: public Table
 {
   friend class DB;
 
@@ -52,33 +53,19 @@ protected:
    * @exception DBError if there is a error in the database.
    * @exception IDNotFound if the ID is not found in the table.
    */
-  Mutations(DB* db, ID bug_id);
+  Code(DB* db, ID bug_id);
 
 public:
   /**
    * Destructor.
   */
-  ~Mutations();
+  ~Code();
 
-
-  /**
-   * Structure for each mutation in the code.
-   */
-  struct Mutation {
-    Uint16 position;
-    enum {
-      mutation,
-      addition,
-      deletion
-    } type;
-    // If type is addition, then the value of original is garbage.
-    Word original;
-    // If type is deletion, then the value of mutated is garbage.
-    Word mutated;
-  };
 
   // Data
-  std::vector<Mutation> mutations;
+  Uint16 size;
+  std::string md5;
+  std::vector<Word> code;
 
 
   /**
@@ -98,5 +85,4 @@ public:
 }
 }
 
-#endif // __DB_MUTATIONS_H__
-
+#endif // __DB_CODE_H__

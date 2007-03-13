@@ -10,9 +10,9 @@
  *  License: See COPYING file that comes with this distribution
  */
 
-#include "../simple/config.h"
-#include "word.h"
-#include "memory.h"
+#include "../simple/config.hpp"
+#include "word.hpp"
+#include "memory.hpp"
 
 namespace SimpleWorld
 {

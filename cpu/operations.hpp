@@ -25,9 +25,9 @@
 #ifndef __CPU_OPERATIONS_H__
 #define __CPU_OPERATIONS_H__
 
-#include <cpu/types.h>
-#include <cpu/memory.h>
-#include <cpu/instruction.h>
+#include <cpu/types.hpp>
+#include <cpu/memory.hpp>
+#include <cpu/instruction.hpp>
 
 #define REGISTER(NUMBER) (NUMBER * sizeof(Word))
 #define REGISTER_PC REGISTER(0xc)

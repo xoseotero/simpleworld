@@ -27,7 +27,7 @@
 
 #include <fstream>
 
-#include <simple/types.h>
+#include <simple/types.hpp>
 
 namespace SimpleWorld
 {

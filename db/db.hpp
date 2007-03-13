@@ -33,9 +33,9 @@
 
 #include <sqlite3x.hpp>
 
-#include <simple/types.h>
-#include <db/types.h>
-#include <db/exception.h>
+#include <simple/types.hpp>
+#include <db/types.hpp>
+#include <db/exception.hpp>
 
 namespace SimpleWorld
 {

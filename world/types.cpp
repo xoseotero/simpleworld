@@ -10,7 +10,7 @@
  *  License: See COPYING file that comes with this distribution
  */
 
-#include "types.h"
+#include "types.hpp"
 
 namespace SimpleWorld
 {

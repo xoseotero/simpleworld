@@ -25,5 +25,5 @@ IF(NOT HAVE__INT64 AND NOT HAVE_LONG_LONG)
 ENDIF(NOT HAVE__INT64 AND NOT HAVE_LONG_LONG)
 
 
-CONFIGURE_FILE(${SimpleWorld_SOURCE_DIR}/simple/config.h.cmake
-  ${SimpleWorld_SOURCE_DIR}/simple/config.h)
+CONFIGURE_FILE(${SimpleWorld_SOURCE_DIR}/simple/config.hpp.cmake
+  ${SimpleWorld_SOURCE_DIR}/simple/config.hpp)

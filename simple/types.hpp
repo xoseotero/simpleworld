@@ -26,7 +26,7 @@
 #ifndef __SIMPLE_TYPES_H__
 #define __SIMPLE_TYPES_H__
 
-#include <simple/config.h>
+#include <simple/config.hpp>
 
 /**
  * Namespace for Simple World.

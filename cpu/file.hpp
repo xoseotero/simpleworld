@@ -29,8 +29,8 @@
 #include <string>
 #include <fstream>
 
-#include <simple/types.h>
-#include <cpu/exception.h>
+#include <simple/types.hpp>
+#include <cpu/exception.hpp>
 
 namespace SimpleWorld
 {

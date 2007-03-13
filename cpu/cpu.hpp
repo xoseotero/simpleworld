@@ -28,11 +28,11 @@
 
 #include <string>
 
-#include <simple/types.h>
-#include <cpu/types.h>
-#include <cpu/exception.h>
-#include <cpu/memory.h>
-#include <cpu/instruction.h>
+#include <simple/types.hpp>
+#include <cpu/types.hpp>
+#include <cpu/exception.hpp>
+#include <cpu/memory.hpp>
+#include <cpu/instruction.hpp>
 
 namespace SimpleWorld
 {

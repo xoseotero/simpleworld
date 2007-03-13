@@ -10,7 +10,7 @@
  *  License: See COPYING file that comes with this distribution
  */
 
-#include "hierarchy.h"
+#include "hierarchy.hpp"
 
 namespace SimpleWorld
 {

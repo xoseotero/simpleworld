@@ -1,8 +1,8 @@
 /**
- * @file db/cpu.h
- * CPU of a bug.
+ * @file db/mutations.h
+ * Mutations of a bug.
  *
- * begin:     Mon, 01 Jan 2007 08:46:13 +0100
+ * begin:     Thu, 01 Mar 2007 16:59:31 +0100
  * last:      $Date$ by $Author$
  *
  *  Copyright (C) 2007, Xosé Otero <xoseotero@users.sourceforge.net>
@@ -22,14 +22,15 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef __DB_CPU_H__
-#define __DB_CPU_H__
+#ifndef __DB_MUTATIONS_H__
+#define __DB_MUTATIONS_H__
 
-#include <string>
+#include <vector>
 
-#include <db/types.h>
-#include <db/db.h>
-#include <db/table.h>
+#include <simple/types.hpp>
+#include <db/types.hpp>
+#include <db/db.hpp>
+#include <db/table.hpp>
 
 namespace SimpleWorld
 {
@@ -37,11 +38,12 @@ namespace DB
 {
 
 /**
- * CPU of a bug.
- */     
-class CPU: public Table
+ * Mutations of a bug.
+ */
+class Mutations: public Table
 {
   friend class DB;
+
 protected:
   /**
    * Constructor.
@@ -50,32 +52,33 @@ protected:
    * @exception DBError if there is a error in the database.
    * @exception IDNotFound if the ID is not found in the table.
    */
-  CPU(DB* db, ID bug_id);
+  Mutations(DB* db, ID bug_id);
 
 public:
   /**
    * Destructor.
-   */
-  ~CPU();
+  */
+  ~Mutations();
 
+
+  /**
+   * Structure for each mutation in the code.
+   */
+  struct Mutation {
+    Uint16 position;
+    enum {
+      mutation,
+      addition,
+      deletion
+    } type;
+    // If type is addition, then the value of original is garbage.
+    Word original;
+    // If type is deletion, then the value of mutated is garbage.
+    Word mutated;
+  };
 
   // Data
-  Word r0;
-  Word r1;
-  Word r2;
-  Word r3;
-  Word r4;
-  Word r5;
-  Word r6;
-  Word r7;
-  Word r8;
-  Word r9;
-  Word r10;
-  Word r11;
-  Word r12;
-  Word pc;
-  Word sp;
-  Word etp;
+  std::vector<Mutation> mutations;
 
 
   /**
@@ -95,4 +98,5 @@ public:
 }
 }
 
-#endif // __DB_CPU_H__
+#endif // __DB_MUTATIONS_H__
+

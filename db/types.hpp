@@ -1,11 +1,11 @@
 /**
- * @file cpu/exception.h
- * Exception class father of the rest of CPU exceptions.
+ * @file db/types.h
+ * Definition of the types used in the database.
  *
- * begin:     Sat, 11 Dec 2004 23:28:42 +0100
+ * begin:     Sat, 13 Jan 2007 00:46:33 +0100
  * last:      $Date$ by $Author$
  *
- *  Copyright (C) 2004, 2006-2007 Xosé Otero <xoseotero@users.sourceforge.net>
+ *  Copyright (C) 2007, Xosé Otero <xoseotero@users.sourceforge.net>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -21,38 +21,31 @@
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-#ifndef __CPU_EXCEPTION_H__
-#define __CPU_EXCEPTION_H__
 
-#include <string>
+#ifndef __DB_TYPES_H__
+#define __DB_TYPES_H__
 
-#include <simple/types.h>
-#include <simple/exception.h>
+#include <sqlite3x.hpp>
+
+#include <simple/types.hpp>
+#include <world/types.hpp>
+#include <cpu/types.hpp>
 
 namespace SimpleWorld
 {
-namespace CPU
+namespace DB
 {
 
-/**
- * Exception class father of the rest of CPU exceptions.
- *
- * It hasn't any data.
- */
-class CPUException: public Exception
-{
-public:
-  /**
-   * Constructor.
-   * @param file File where the exception is raised.
-   * @param line Line where the exception is raised.
-   */
-  CPUException(std::string file = "", Uint32 line = 0) throw ()
-    : Exception(file, line)
-  {}
-};
+typedef int64_t ID;
+
+using World::SortOrder;
+using World::Energy;
+typedef Uint32 Position;
+typedef Uint8 Orientation;
+using World::Time;
+using CPU::Word;
 
 }
 }
 
-#endif // __CPU_EXCEPTION_H__
+#endif // __DB_TYPES_H__

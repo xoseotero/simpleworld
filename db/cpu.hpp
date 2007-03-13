@@ -1,8 +1,8 @@
 /**
- * @file db/bug.h
- * Information about a Bug.
+ * @file db/cpu.h
+ * CPU of a bug.
  *
- * begin:     Mon, 01 Jan 2007 08:41:25 +0100
+ * begin:     Mon, 01 Jan 2007 08:46:13 +0100
  * last:      $Date$ by $Author$
  *
  *  Copyright (C) 2007, Xosé Otero <xoseotero@users.sourceforge.net>
@@ -22,14 +22,14 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef __DB_BUG_H__
-#define __DB_BUG_H__
+#ifndef __DB_CPU_H__
+#define __DB_CPU_H__
 
-#include <vector>
+#include <string>
 
-#include <db/types.h>
-#include <db/db.h>
-#include <db/table.h>
+#include <db/types.hpp>
+#include <db/db.hpp>
+#include <db/table.hpp>
 
 namespace SimpleWorld
 {
@@ -37,42 +37,45 @@ namespace DB
 {
 
 /**
- * Information about a bug.
- */
-class Bug: public Table
+ * CPU of a bug.
+ */     
+class CPU: public Table
 {
   friend class DB;
-
 protected:
   /**
    * Constructor.
    * @param db database.
-   * @param bug id of the bug.
+   * @param bug_id id of the bug.
    * @exception DBError if there is a error in the database.
    * @exception IDNotFound if the ID is not found in the table.
    */
-  Bug(DB* db, ID id);
+  CPU(DB* db, ID bug_id);
 
 public:
   /**
    * Destructor.
    */
-  ~Bug();
+  ~CPU();
 
 
   // Data
-  SortOrder order_world;
-
-  Energy energy;
-
-  Position position_x;
-  Position position_y;
-  Orientation orientation;
-
-  Time birth;
-  Time dead;
-
-  ID killer;
+  Word r0;
+  Word r1;
+  Word r2;
+  Word r3;
+  Word r4;
+  Word r5;
+  Word r6;
+  Word r7;
+  Word r8;
+  Word r9;
+  Word r10;
+  Word r11;
+  Word r12;
+  Word pc;
+  Word sp;
+  Word etp;
 
 
   /**
@@ -92,4 +95,4 @@ public:
 }
 }
 
-#endif // __DB_BUG_H__
+#endif // __DB_CPU_H__

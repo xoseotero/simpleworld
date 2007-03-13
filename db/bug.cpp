@@ -10,7 +10,7 @@
  *  License: See COPYING file that comes with this distribution
  */
 
-#include "bug.h"
+#include "bug.hpp"
 
 #include <sqlite3x.hpp>
 

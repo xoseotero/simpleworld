@@ -10,7 +10,7 @@
  *  License: See COPYING file that comes with this distribution
  */
 
-#include "operations.h"
+#include "operations.hpp"
 
 #include <iostream>
 

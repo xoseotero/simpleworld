@@ -25,9 +25,9 @@
 #ifndef __CPU_TYPES_H__
 #define __CPU_TYPES_H__
 
-#include <simple/types.h>
-#include <world/types.h>
-#include <cpu/types.h>
+#include <simple/types.hpp>
+#include <world/types.hpp>
+#include <cpu/types.hpp>
 
 namespace SimpleWorld
 {

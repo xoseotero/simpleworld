@@ -25,9 +25,9 @@
 #ifndef __CPU_MEMORY_H__
 #define __CPU_MEMORY_H__
 
-#include <simple/types.h>
-#include <cpu/types.h>
-#include <cpu/exception.h>
+#include <simple/types.hpp>
+#include <cpu/types.hpp>
+#include <cpu/exception.hpp>
 
 namespace SimpleWorld
 {

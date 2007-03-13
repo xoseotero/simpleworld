@@ -1,11 +1,11 @@
 /**
- * @file db/hierarchy.h
- * Hierarchy of a bug.
+ * @file db/environment.h
+ * Information about the environment of the world.
  *
- * begin:     Wed, 21 Feb 2007 11:32:42 +0100
+ * begin:     Thu, 25 Jan 2007 03:53:57 +0100
  * last:      $Date$ by $Author$
  *
- *  Copyright (C) 2007, Xosé Otero <xoseotero@users.sourceforge.net>
+ *  Copyright (C) 2007 Xosé Otero <xoseotero@users.sourceforge.net>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -22,14 +22,12 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef __DB_HIERARCHY_H__
-#define __DB_HIERARCHY_H__
+#ifndef __DB_ENVIRONMENT_H__
+#define __DB_ENVIRONMENT_H__
 
-#include <vector>
-
-#include <db/types.h>
-#include <db/db.h>
-#include <db/table.h>
+#include <simple/types.hpp>
+#include <db/types.hpp>
+#include <db/table.hpp>
 
 namespace SimpleWorld
 {
@@ -37,9 +35,9 @@ namespace DB
 {
 
 /**
- * Hierarchy of a bug.
+ * Information about the environment of the world.
  */
-class Hierarchy: public Table
+class Environment: public Table
 {
   friend class DB;
 
@@ -47,22 +45,34 @@ protected:
   /**
    * Constructor.
    * @param db database.
-   * @param bug_id id of the bug.
+   * @param time time of the environment (the real time can be >= than this).
    * @exception DBError if there is a error in the database.
-   * @exception IDNotFound if the ID is not found in the table.
+   * @exception IDNotFound if the time is not found in the table.
    */
-  Hierarchy(DB* db, ID bug_id);
+  Environment(DB* db, Time time);
 
 public:
   /**
    * Destructor.
   */
-  ~Hierarchy();
+  ~Environment();
 
 
   // Data
-  std::vector<ID> parents;
-  std::vector<ID> sons;
+  Time time;
+
+  SortOrder order_world;
+
+  Uint8 mutations_percent;
+
+  Energy energy_detect;
+  Energy energy_move;
+  Energy energy_push;
+  Energy energy_take;
+  Energy energy_attack;
+  Energy energy_defend;
+  Energy energy_msg;
+  Energy energy_sex;
 
 
   /**
@@ -82,4 +92,4 @@ public:
 }
 }
 
-#endif // __DB_HIERARCHY_H__
+#endif // __DB_ENVIRONMENT_H__

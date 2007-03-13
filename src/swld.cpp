@@ -18,10 +18,10 @@
 #include <boost/program_options.hpp>
 namespace po = boost::program_options;
 
-#include <simple/config.h>
-#include <simple/exception.h>
-#include <cpu/cpu.h>
-#include <cpu/object.h>
+#include <simple/config.hpp>
+#include <simple/exception.hpp>
+#include <cpu/cpu.hpp>
+#include <cpu/object.hpp>
 namespace sw = SimpleWorld;
 namespace cpu = SimpleWorld::CPU;
 

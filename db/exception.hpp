@@ -1,8 +1,8 @@
 /**
- * @file db/types.h
- * Definition of the types used in the database.
+ * @file db/exception.h
+ * Exception class father of the rest of DB exceptions.
  *
- * begin:     Sat, 13 Jan 2007 00:46:33 +0100
+ * begin:     Mon, 01 Jan 2007 08:49:24 +0100
  * last:      $Date$ by $Author$
  *
  *  Copyright (C) 2007, Xosé Otero <xoseotero@users.sourceforge.net>
@@ -21,31 +21,38 @@
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+#ifndef __CPU_EXCEPTION_H__
+#define __CPU_EXCEPTION_H__
 
-#ifndef __DB_TYPES_H__
-#define __DB_TYPES_H__
+#include <string>
 
-#include <sqlite3x.hpp>
-
-#include <simple/types.h>
-#include <world/types.h>
-#include <cpu/types.h>
+#include <simple/types.hpp>
+#include <simple/exception.hpp>
 
 namespace SimpleWorld
 {
 namespace DB
 {
 
-typedef int64_t ID;
-
-using World::SortOrder;
-using World::Energy;
-typedef Uint32 Position;
-typedef Uint8 Orientation;
-using World::Time;
-using CPU::Word;
+/**
+ * Exception class father of the rest of DB exceptions.
+ *
+ * It hasn't any data.
+ */
+class DBException: public Exception
+{
+public:
+    /**
+     * Constructor.
+     * @param file File where the exception is raised.
+     * @param line Line where the exception is raised.
+     */
+  DBException(std::string file = "", Uint32 line = 0) throw ()
+    : Exception(file, line)
+  {}
+};
 
 }
 }
 
-#endif // __DB_TYPES_H__
+#endif // __CPU_EXCEPTION_H__

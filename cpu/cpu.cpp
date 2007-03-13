@@ -16,8 +16,8 @@
 #include <boost/format.hpp>
 #endif
 
-#include "cpu.h"
-#include "operations.h"
+#include "cpu.hpp"
+#include "operations.hpp"
 
 namespace SimpleWorld
 {

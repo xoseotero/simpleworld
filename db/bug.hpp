@@ -1,11 +1,11 @@
 /**
- * @file db/environment.h
- * Information about the environment of the world.
+ * @file db/bug.h
+ * Information about a Bug.
  *
- * begin:     Thu, 25 Jan 2007 03:53:57 +0100
+ * begin:     Mon, 01 Jan 2007 08:41:25 +0100
  * last:      $Date$ by $Author$
  *
- *  Copyright (C) 2007 Xosé Otero <xoseotero@users.sourceforge.net>
+ *  Copyright (C) 2007, Xosé Otero <xoseotero@users.sourceforge.net>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -22,12 +22,14 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef __DB_ENVIRONMENT_H__
-#define __DB_ENVIRONMENT_H__
+#ifndef __DB_BUG_H__
+#define __DB_BUG_H__
 
-#include <simple/types.h>
-#include <db/types.h>
-#include <db/table.h>
+#include <vector>
+
+#include <db/types.hpp>
+#include <db/db.hpp>
+#include <db/table.hpp>
 
 namespace SimpleWorld
 {
@@ -35,9 +37,9 @@ namespace DB
 {
 
 /**
- * Information about the environment of the world.
+ * Information about a bug.
  */
-class Environment: public Table
+class Bug: public Table
 {
   friend class DB;
 
@@ -45,34 +47,32 @@ protected:
   /**
    * Constructor.
    * @param db database.
-   * @param time time of the environment (the real time can be >= than this).
+   * @param bug id of the bug.
    * @exception DBError if there is a error in the database.
-   * @exception IDNotFound if the time is not found in the table.
+   * @exception IDNotFound if the ID is not found in the table.
    */
-  Environment(DB* db, Time time);
+  Bug(DB* db, ID id);
 
 public:
   /**
    * Destructor.
-  */
-  ~Environment();
+   */
+  ~Bug();
 
 
   // Data
-  Time time;
-
   SortOrder order_world;
 
-  Uint8 mutations_percent;
+  Energy energy;
 
-  Energy energy_detect;
-  Energy energy_move;
-  Energy energy_push;
-  Energy energy_take;
-  Energy energy_attack;
-  Energy energy_defend;
-  Energy energy_msg;
-  Energy energy_sex;
+  Position position_x;
+  Position position_y;
+  Orientation orientation;
+
+  Time birth;
+  Time dead;
+
+  ID killer;
 
 
   /**
@@ -92,4 +92,4 @@ public:
 }
 }
 
-#endif // __DB_ENVIRONMENT_H__
+#endif // __DB_BUG_H__

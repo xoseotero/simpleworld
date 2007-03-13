@@ -12,8 +12,8 @@
 
 #include <fstream>
 
-#include "word.h"
-#include "object.h"
+#include "word.hpp"
+#include "object.hpp"
 
 namespace SimpleWorld
 {

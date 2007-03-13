@@ -27,9 +27,9 @@
 
 #include <string>
 
-#include <cpu/types.h>
-#include <cpu/instruction.h>
-#include <cpu/file.h>
+#include <cpu/types.hpp>
+#include <cpu/instruction.hpp>
+#include <cpu/file.hpp>
 
 namespace SimpleWorld
 {

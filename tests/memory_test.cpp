@@ -1,10 +1,10 @@
 #include <boost/test/unit_test.hpp>
 namespace ut = boost::unit_test;
 
-#include <simple/config.h>
-#include <simple/types.h>
-#include <cpu/word.h>
-#include <cpu/memory.h>
+#include <simple/config.hpp>
+#include <simple/types.hpp>
+#include <cpu/word.hpp>
+#include <cpu/memory.hpp>
 namespace sw = SimpleWorld;
 namespace cpu = SimpleWorld::CPU;
 

@@ -31,9 +31,9 @@
 
 #include <boost/noncopyable.hpp>
 
-#include <db/types.h>
-#include <db/exception.h>
-#include <db/db.h>
+#include <db/types.hpp>
+#include <db/exception.hpp>
+#include <db/db.hpp>
 
 namespace SimpleWorld
 {

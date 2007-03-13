@@ -10,8 +10,8 @@
  *  License: See COPYING file that comes with this distribution
  */
 
-#include "../simple/config.h"
-#include "operations.h"
+#include "../simple/config.hpp"
+#include "operations.hpp"
 
 #ifdef IS_BIG_ENDIAN
 #define HIGHBITS_64BITS SINT64(0xFFFFFFFF00000000)

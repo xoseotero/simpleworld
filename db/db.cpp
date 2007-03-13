@@ -10,16 +10,16 @@
  *  License: See COPYING file that comes with this distribution
  */
 
-#include "db.h"
+#include "db.hpp"
 
 #include <cstdlib>
 
-#include <db/bug.h>
-#include <db/hierarchy.h>
-#include <db/code.h>
-#include <db/cpu.h>
-#include <db/mutations.h>
-#include <db/environment.h>
+#include <db/bug.hpp>
+#include <db/hierarchy.hpp>
+#include <db/code.hpp>
+#include <db/cpu.hpp>
+#include <db/mutations.hpp>
+#include <db/environment.hpp>
 
 #define DATABASE_VERSION 1
 

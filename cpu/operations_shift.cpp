@@ -10,8 +10,8 @@
  *  License: See COPYING file that comes with this distribution
  */
 
-#include "../simple/config.h"
-#include "operations.h"
+#include "../simple/config.hpp"
+#include "operations.hpp"
 
 namespace SimpleWorld
 {

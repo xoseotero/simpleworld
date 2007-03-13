@@ -17,10 +17,10 @@
 #endif
 #include <fstream>
 
-#include "types.h"
-#include "word.h"
-#include "memory.h"
-#include "cpu_file.h"
+#include "types.hpp"
+#include "word.hpp"
+#include "memory.hpp"
+#include "cpu_file.hpp"
 
 namespace SimpleWorld
 {

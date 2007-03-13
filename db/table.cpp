@@ -10,7 +10,7 @@
  *  License: See COPYING file that comes with this distribution
  */
 
-#include "table.h"
+#include "table.hpp"
 
 namespace SimpleWorld
 {

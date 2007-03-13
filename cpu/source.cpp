@@ -19,8 +19,8 @@
 #include <boost/regex.hpp>
 namespace fs = boost::filesystem;
 
-#include "word.h"
-#include "source.h"
+#include "word.hpp"
+#include "source.hpp"
 
 namespace SimpleWorld
 {

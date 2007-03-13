@@ -1,8 +1,8 @@
 /**
- * @file db/code.h
- * Code of a bug.
+ * @file db/hierarchy.h
+ * Hierarchy of a bug.
  *
- * begin:     Thu, 01 Mar 2007 13:00:43 +0100
+ * begin:     Wed, 21 Feb 2007 11:32:42 +0100
  * last:      $Date$ by $Author$
  *
  *  Copyright (C) 2007, Xosé Otero <xoseotero@users.sourceforge.net>
@@ -22,16 +22,14 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef __DB_CODE_H__
-#define __DB_CODE_H__
+#ifndef __DB_HIERARCHY_H__
+#define __DB_HIERARCHY_H__
 
 #include <vector>
-#include <string>
 
-#include <simple/types.h>
-#include <db/types.h>
-#include <db/db.h>
-#include <db/table.h>
+#include <db/types.hpp>
+#include <db/db.hpp>
+#include <db/table.hpp>
 
 namespace SimpleWorld
 {
@@ -39,9 +37,9 @@ namespace DB
 {
 
 /**
- * Code of a bug.
+ * Hierarchy of a bug.
  */
-class Code: public Table
+class Hierarchy: public Table
 {
   friend class DB;
 
@@ -53,19 +51,18 @@ protected:
    * @exception DBError if there is a error in the database.
    * @exception IDNotFound if the ID is not found in the table.
    */
-  Code(DB* db, ID bug_id);
+  Hierarchy(DB* db, ID bug_id);
 
 public:
   /**
    * Destructor.
   */
-  ~Code();
+  ~Hierarchy();
 
 
   // Data
-  Uint16 size;
-  std::string md5;
-  std::vector<Word> code;
+  std::vector<ID> parents;
+  std::vector<ID> sons;
 
 
   /**
@@ -85,4 +82,4 @@ public:
 }
 }
 
-#endif // __DB_CODE_H__
+#endif // __DB_HIERARCHY_H__

@@ -26,8 +26,8 @@
 #ifndef __CPU_CPUFILE_H__
 #define __CPU_CPUFILE_H__
 
-#include <cpu/cpu.h>
-#include <cpu/file.h>
+#include <cpu/cpu.hpp>
+#include <cpu/file.hpp>
 
 namespace SimpleWorld
 {

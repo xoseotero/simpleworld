@@ -18,15 +18,15 @@
 #include <boost/program_options.hpp>
 namespace po = boost::program_options;
 
-#include <simple/config.h>
-#include <simple/types.h>
-#include <simple/exception.h>
-#include <cpu/word.h>
-#include <cpu/memory.h>
-#include <cpu/instruction.h>
-#include <cpu/cpu.h>
-#include <cpu/cpu_file.h>
-#include <cpu/object.h>
+#include <simple/config.hpp>
+#include <simple/types.hpp>
+#include <simple/exception.hpp>
+#include <cpu/word.hpp>
+#include <cpu/memory.hpp>
+#include <cpu/instruction.hpp>
+#include <cpu/cpu.hpp>
+#include <cpu/cpu_file.hpp>
+#include <cpu/object.hpp>
 namespace sw = SimpleWorld;
 namespace cpu = SimpleWorld::CPU;
 

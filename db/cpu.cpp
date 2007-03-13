@@ -10,7 +10,7 @@
  *  License: See COPYING file that comes with this distribution
  */
 
-#include "cpu.h"
+#include "cpu.hpp"
 
 namespace SimpleWorld
 {
