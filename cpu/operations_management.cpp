@@ -31,5 +31,5 @@ Update restart(Memory& regs, Memory& mem, Instruction inst)
   return None;
 }
 
-} // namespace CPU
-} // namespace SimpleWorld
+}
+}

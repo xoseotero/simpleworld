@@ -71,5 +71,5 @@ void CPUFile::load_file(const std::string& filename)
   }
 }
 
-} // namespace CPU
-} // namespace SimpleWorld
+}
+}

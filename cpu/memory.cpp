@@ -80,5 +80,5 @@ Word Memory::set_word(Address address, Uint32 value, bool system_endian)
 #endif
 }
 
-} // namespace CPU
-} // namespace SimpleWorld
+}
+}

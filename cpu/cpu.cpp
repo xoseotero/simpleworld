@@ -204,5 +204,5 @@ Instruction CPU::fetch_instruction() const
 							false));
 }
 
-} // namespace CPU
-} // namespace SimpleWorld
+}
+}

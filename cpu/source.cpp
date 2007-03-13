@@ -506,5 +506,5 @@ std::vector<std::string> Source::get_instruction(File::size_type line) const
   return result;
 }
 
-} // namespace CPU
-} // namespace SimpleWorld
+}
+}

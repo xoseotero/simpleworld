@@ -141,5 +141,5 @@ std::ostream& operator <<(std::ostream& os, const File& file)
   return os;
 }
 
-} // namespace CPU
-} // namespace SimpleWorld
+}
+}

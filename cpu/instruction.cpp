@@ -191,5 +191,5 @@ void InstructionSet::remove_register(Uint8 code)
   this->registers_.erase(iter);
 }
 
-} // namespace CPU
-} // namespace SimpleWorld
+}
+}

@@ -110,5 +110,5 @@ Update storeri(Memory& regs, Memory& mem, Instruction inst)
   return UpdatePC;
 }
 
-} // namespace CPU
-} // namespace SimpleWorld
+}
+}

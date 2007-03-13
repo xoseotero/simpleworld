@@ -94,5 +94,5 @@ std::string Object::decompile(Word instruction) const
   return result;
 }
 
-} // namespace CPU
-} // namespace SimpleWorld
+}
+}

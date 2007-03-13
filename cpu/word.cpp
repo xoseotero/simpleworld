@@ -45,5 +45,5 @@ Word change_byte_order_middle(Word word)
     get_byte(word, 3) << 16;
 }
 
-} // namespace CPU
-} // namespace SimpleWorld
+}
+}
