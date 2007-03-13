@@ -17,101 +17,51 @@ namespace SimpleWorld
 namespace CPU
 {
 
-lnot::lnot(Memory& regs, Memory& mem)
-  : Operation(regs, mem)
+Update lnot(Memory& regs, Memory& mem, Instruction inst)
 {
-}
-
-Update lnot::operator()(Instruction inst)
-{
-  this->regs_.set_word(inst.first * 4, ~ this->regs_[inst.second * 4]);
+  regs.set_word(inst.first * 4, ~ regs[inst.second * 4]);
 
   return UpdatePC;
 }
 
-
-lor::lor(Memory& regs, Memory& mem)
-  : Operator(regs, mem)
+Update lor(Memory& regs, Memory& mem, Instruction inst)
 {
-}
-
-Update lor::operator()(Instruction inst)
-{
-  this->regs_.set_word(inst.first * 4,
-		       this->regs_[inst.second * 4] |
-		       this->regs_[inst.address * 4]);
+  regs.set_word(inst.first * 4, regs[inst.second * 4] | regs[inst.address * 4]);
 
   return UpdatePC;
 }
 
-
-lori::lori(Memory& regs, Memory& mem)
-  : Operation(regs, mem)
+Update lori(Memory& regs, Memory& mem, Instruction inst)
 {
-}
-
-Update lori::operator()(Instruction inst)
-{
-  this->regs_.set_word(inst.first * 4,
-		       this->regs_[inst.second * 4] | inst.address);
+  regs.set_word(inst.first * 4, regs[inst.second * 4] | inst.address);
 
   return UpdatePC;
 }
 
-
-land::land(Memory& regs, Memory& mem)
-  : Operation(regs, mem)
+Update land(Memory& regs, Memory& mem, Instruction inst)
 {
-}
-
-Update land::operator()(Instruction inst)
-{
-  this->regs_.set_word(inst.first * 4,
-		       this->regs_[inst.second * 4] &
-		       this->regs_[inst.address * 4]);
+  regs.set_word(inst.first * 4, regs[inst.second * 4] & regs[inst.address * 4]);
 
   return UpdatePC;
 }
 
-
-landi::landi(Memory& regs, Memory& mem)
-  : Operation(regs, mem)
+Update landi(Memory& regs, Memory& mem, Instruction inst)
 {
-}
-
-Update landi::operator()(Instruction inst)
-{
-  this->regs_.set_word(inst.first * 4,
-		       this->regs_[inst.second * 4] & inst.address);
+  regs.set_word(inst.first * 4, regs[inst.second * 4] & inst.address);
 
   return UpdatePC;
 }
 
-
-lxor::lxor(Memory& regs, Memory& mem)
-  : Operation(regs, mem)
+Update lxor(Memory& regs, Memory& mem, Instruction inst)
 {
-}
-
-Update lxor::operator()(Instruction inst)
-{
-  this->regs_.set_word(inst.first * 4,
-		       this->regs_[inst.second * 4] ^
-		       this->regs_[inst.address * 4]);
+  regs.set_word(inst.first * 4, regs[inst.second * 4] ^ regs[inst.address * 4]);
 
   return UpdatePC;
 }
 
-
-lxori::lxori(Memory& regs, Memory& mem)
-  : Operation(regs, mem)
+Update lxori(Memory& regs, Memory& mem, Instruction inst)
 {
-}
-
-Update lxori::operator()(Instruction inst)
-{
-  this->regs_.set_word(inst.first * 4,
-		       this->regs_[inst.second * 4] ^ inst.address);
+  regs.set_word(inst.first * 4, regs[inst.second * 4] ^ inst.address);
 
   return UpdatePC;
 }

@@ -26,301 +26,163 @@ namespace SimpleWorld
 namespace CPU
 {
 
-add::add(Memory& regs, Memory& mem)
-  : Operation(regs, mem)
+Update add(Memory& regs, Memory& mem, Instruction inst)
 {
-}
-
-Update add::operator()(Instruction inst)
-{
-  this->regs_.set_word(inst.first * 4,
-		       this->regs_[inst.second * 4] +
-		       this->regs_[inst.address * 4]);
+  regs.set_word(inst.first * 4, regs[inst.second * 4] + regs[inst.address * 4]);
 
   return UpdatePC;
 }
 
-
-addi::addi(Memory& regs, Memory& mem)
-  : Operation(regs, mem)
+Update addi(Memory& regs, Memory& mem, Instruction inst)
 {
-}
-
-Update addi::operator()(Instruction inst)
-{
-  this->regs_.set_word(inst.first * 4,
-		       this->regs_[inst.second * 4] + inst.address);
+  regs.set_word(inst.first * 4, regs[inst.second * 4] + inst.address);
 
   return UpdatePC;
 }
 
-
-sub::sub(Memory& regs, Memory& mem)
-  : Operation(regs, mem)
+Update sub(Memory& regs, Memory& mem, Instruction inst)
 {
-}
-
-Update sub::operator()(Instruction inst)
-{
-  this->regs_.set_word(inst.first * 4, this->regs_[inst.second * 4] -
-		       this->regs_[inst.address * 4]);
+  regs.set_word(inst.first * 4, regs[inst.second * 4] -
+                regs[inst.address * 4]);
 
   return UpdatePC;
 }
 
-
-subi::subi(Memory& regs, Memory& mem)
-  : Operation(regs, mem)
+Update subi(Memory& regs, Memory& mem, Instruction inst)
 {
-}
-
-Update subi::operator()(Instruction inst)
-{
-  this->regs_.set_word(inst.first * 4,
-		       this->regs_[inst.second * 4] - inst.address);
+  regs.set_word(inst.first * 4, regs[inst.second * 4] - inst.address);
 
   return UpdatePC;
 }
 
-
-multl::multl(Memory& regs, Memory& mem)
-  : Operation(regs, mem)
+Update multl(Memory& regs, Memory& mem, Instruction inst)
 {
-}
-
-Update multl::operator()(Instruction inst)
-{
-  Sint64 result = static_cast<Sint32>(this->regs_[inst.second * 4]) *
-    static_cast<Sint32>(this->regs_[inst.address * 4]);
-  this->regs_.set_word(inst.first * 4,
-		       static_cast<Sint32>(result & LOWBITS_64BITS));
+  Sint64 result = static_cast<Sint32>(regs[inst.second * 4]) *
+    static_cast<Sint32>(regs[inst.address * 4]);
+  regs.set_word(inst.first * 4, static_cast<Sint32>(result & LOWBITS_64BITS));
 
   return UpdatePC;
 }
 
-
-multli::multli(Memory& regs, Memory& mem)
-  : Operation(regs, mem)
+Update multli(Memory& regs, Memory& mem, Instruction inst)
 {
-}
-
-Update multli::operator()(Instruction inst)
-{
-  Sint64 result = static_cast<Sint32>(this->regs_[inst.second * 4]) *
+  Sint64 result = static_cast<Sint32>(regs[inst.second * 4]) *
     static_cast<Sint32>(inst.address);
-  this->regs_.set_word(inst.first * 4,
-		       static_cast<Sint32>(result & LOWBITS_64BITS));
+  regs.set_word(inst.first * 4, static_cast<Sint32>(result & LOWBITS_64BITS));
 
   return UpdatePC;
 }
 
-
-multlu::multlu(Memory& regs, Memory& mem)
-  : Operation(regs, mem)
+Update multlu(Memory& regs, Memory& mem, Instruction inst)
 {
-}
-
-Update multlu::operator()(Instruction inst)
-{
-  Uint64 result = this->regs_[inst.second * 4] * this->regs_[inst.address * 4];
-  this->regs_.set_word(inst.first * 4,
-		       static_cast<Uint32>(result & LOWBITS_64BITS));
+  Uint64 result = regs[inst.second * 4] * regs[inst.address * 4];
+  regs.set_word(inst.first * 4, static_cast<Uint32>(result & LOWBITS_64BITS));
 
   return UpdatePC;
 }
 
-
-multlui::multlui(Memory& regs, Memory& mem)
-  : Operation(regs, mem)
+Update multlui(Memory& regs, Memory& mem, Instruction inst)
 {
-}
-
-Update multlui::operator()(Instruction inst)
-{
-  Uint64 result = this->regs_[inst.second * 4] *
-    static_cast<Uint32>(inst.address);
-  this->regs_.set_word(inst.first * 4,
-		       static_cast<Uint32>(result & LOWBITS_64BITS));
+  Uint64 result = regs[inst.second * 4] *  static_cast<Uint32>(inst.address);
+  regs.set_word(inst.first * 4, static_cast<Uint32>(result & LOWBITS_64BITS));
 
   return UpdatePC;
 }
 
-
-multh::multh(Memory& regs, Memory& mem)
-  : Operation(regs, mem)
+Update multh(Memory& regs, Memory& mem, Instruction inst)
 {
-}
-
-Update multh::operator()(Instruction inst)
-{
-  Sint64 result = static_cast<Sint32>(this->regs_[inst.second * 4]) *
-    static_cast<Sint32>(this->regs_[inst.address * 4]);
-  this->regs_.set_word(inst.first * 4,
-		       static_cast<Sint32>((result & HIGHBITS_64BITS) >> 32));
+  Sint64 result = static_cast<Sint32>(regs[inst.second * 4]) *
+    static_cast<Sint32>(regs[inst.address * 4]);
+  regs.set_word(inst.first * 4,
+                static_cast<Sint32>((result & HIGHBITS_64BITS) >> 32));
 
   return UpdatePC;
 }
 
-
-multhi::multhi(Memory& regs, Memory& mem)
-  : Operation(regs, mem)
+Update multhi(Memory& regs, Memory& mem, Instruction inst)
 {
-}
-
-Update multhi::operator()(Instruction inst)
-{
-  Sint64 result = static_cast<Sint32>(this->regs_[inst.second * 4]) *
+  Sint64 result = static_cast<Sint32>(regs[inst.second * 4]) *
     static_cast<Sint32>(inst.address);
-  this->regs_.set_word(inst.first * 4,
-		       static_cast<Sint32>((result & HIGHBITS_64BITS) >> 32));
+  regs.set_word(inst.first * 4,
+                static_cast<Sint32>((result & HIGHBITS_64BITS) >> 32));
 
   return UpdatePC;
 }
 
-
-multhu::multhu(Memory& regs, Memory& mem)
-  : Operation(regs, mem)
+Update multhu(Memory& regs, Memory& mem, Instruction inst)
 {
-}
-
-Update multhu::operator()(Instruction inst)
-{
-  Uint64 result = this->regs_[inst.second * 4] * this->regs_[inst.address * 4];
-  this->regs_.set_word(inst.first * 4,
-		       static_cast<Uint32>((result & HIGHBITS_64BITS) >> 32));
+  Uint64 result = regs[inst.second * 4] * regs[inst.address * 4];
+  regs.set_word(inst.first * 4,
+                static_cast<Uint32>((result & HIGHBITS_64BITS) >> 32));
 
   return UpdatePC;
 }
 
-
-multhui::multhui(Memory& regs, Memory& mem)
-  : Operation(regs, mem)
+Update multhui(Memory& regs, Memory& mem, Instruction inst)
 {
-}
-
-Update multhui::operator()(Instruction inst)
-{
-  Uint64 result = this->regs_[inst.second * 4] * inst.address;
-  this->regs_.set_word(inst.first * 4,
-		       static_cast<Uint32>((result & HIGHBITS_64BITS) >> 32));
+  Uint64 result = regs[inst.second * 4] * inst.address;
+  regs.set_word(inst.first * 4,
+                static_cast<Uint32>((result & HIGHBITS_64BITS) >> 32));
 
   return UpdatePC;
 }
 
-
-div::div(Memory& regs, Memory& mem)
-  : Operation(regs, mem)
+Update div(Memory& regs, Memory& mem, Instruction inst)
 {
-}
-
-Update div::operator()(Instruction inst)
-{
-  this->regs_.set_word(inst.first * 4,
-		       static_cast<Sint32>(this->regs_[inst.second * 4]) /
-		       static_cast<Sint32>(this->regs_[inst.address * 4]));
+  regs.set_word(inst.first * 4, static_cast<Sint32>(regs[inst.second * 4]) /
+                static_cast<Sint32>(regs[inst.address * 4]));
 
   return UpdatePC;
 }
 
-
-divi::divi(Memory& regs, Memory& mem)
-  : Operation(regs, mem)
+Update divi(Memory& regs, Memory& mem, Instruction inst)
 {
-}
-
-Update divi::operator()(Instruction inst)
-{
-  this->regs_.set_word(inst.first * 4,
-		       static_cast<Sint32>(this->regs_[inst.second * 4]) /
-		       static_cast<Sint32>(inst.address));
+  regs.set_word(inst.first * 4, static_cast<Sint32>(regs[inst.second * 4]) /
+                static_cast<Sint32>(inst.address));
 
   return UpdatePC;
 }
 
-
-divu::divu(Memory& regs, Memory& mem)
-  : Operation(regs, mem)
+Update divu(Memory& regs, Memory& mem, Instruction inst)
 {
-}
-
-Update divu::operator()(Instruction inst)
-{
-  this->regs_.set_word(inst.first * 4,
-		       this->regs_[inst.second * 4] /
-		       this->regs_[inst.address * 4]);
+  regs.set_word(inst.first * 4, regs[inst.second * 4] / regs[inst.address * 4]);
 
   return UpdatePC;
 }
 
-
-divui::divui(Memory& regs, Memory& mem)
-  : Operation(regs, mem)
+Update divui(Memory& regs, Memory& mem, Instruction inst)
 {
-}
-
-Update divui::operator()(Instruction inst)
-{
-  this->regs_.set_word(inst.first * 4,
-		       this->regs_[inst.second * 4] / inst.address);
+  regs.set_word(inst.first * 4, regs[inst.second * 4] / inst.address);
 
   return UpdatePC;
 }
 
-
-mod::mod(Memory& regs, Memory& mem)
-  : Operation(regs, mem)
+Update mod(Memory& regs, Memory& mem, Instruction inst)
 {
-}
-
-Update mod::operator()(Instruction inst)
-{
-  this->regs_.set_word(inst.first * 4,
-		       static_cast<Sint32>(this->regs_[inst.second * 4]) %
-		       static_cast<Sint32>(this->regs_[inst.address * 4]));
+  regs.set_word(inst.first * 4, static_cast<Sint32>(regs[inst.second * 4]) %
+                static_cast<Sint32>(regs[inst.address * 4]));
 
   return UpdatePC;
 }
 
-
-modi::modi(Memory& regs, Memory& mem)
-  : Operation(regs, mem)
+Update modi(Memory& regs, Memory& mem, Instruction inst)
 {
-}
-
-Update modi::operator()(Instruction inst)
-{
-  this->regs_.set_word(inst.first * 4,
-		       static_cast<Sint32>(this->regs_[inst.second * 4]) %
-		       static_cast<Sint32>(inst.address));
+  regs.set_word(inst.first * 4, static_cast<Sint32>(regs[inst.second * 4]) %
+                static_cast<Sint32>(inst.address));
 
   return UpdatePC;
 }
 
-
-modu::modu(Memory& regs, Memory& mem)
-  : Operation(regs, mem)
+Update modu(Memory& regs, Memory& mem, Instruction inst)
 {
-}
-
-Update modu::operator()(Instruction inst)
-{
-  this->regs_.set_word(inst.first * 4,
-		       this->regs_[inst.second * 4] %
-		       this->regs_[inst.address * 4]);
+  regs.set_word(inst.first * 4, regs[inst.second * 4] % regs[inst.address * 4]);
 
   return UpdatePC;
 }
 
-
-modui::modui(Memory& regs, Memory& mem)
-  : Operation(regs, mem)
+Update modui(Memory& regs, Memory& mem, Instruction inst)
 {
-}
-
-Update modui::operator()(Instruction inst)
-{
-  this->regs_.set_word(inst.first * 4,
-		       this->regs_[inst.second * 4] % inst.address);
+  regs.set_word(inst.first * 4, regs[inst.second * 4] % inst.address);
 
   return UpdatePC;
 }

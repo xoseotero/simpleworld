@@ -19,164 +19,93 @@ namespace CPU
 {
 
 /* Move operations */
-move::move(Memory& regs, Memory& mem)
-  : Operation(regs, mem)
+Update move(Memory& regs, Memory& mem, Instruction inst)
 {
-}
-
-Update move::operator()(Instruction inst)
-{
-  this->regs_.set_word(inst.first * 4, this->regs_[inst.second * 4]);
+  regs.set_word(inst.first * 4, regs[inst.second * 4]);
 
   return UpdatePC;
 }
 
-
-swap::swap(Memory& regs, Memory& mem)
-  : Operation(regs, mem)
+Update swap(Memory& regs, Memory& mem, Instruction inst)
 {
-}
-
-Update swap::operator()(Instruction inst)
-{
-  this->regs_.set_word(inst.first * 4,
-		       this->regs_[inst.second * 4] << 16 |
-		       this->regs_[inst.second * 4] >> 16);
+  regs.set_word(inst.first * 4,
+                regs[inst.second * 4] << 16 | regs[inst.second * 4] >> 16);
 
   return UpdatePC;
 }
 
 
 /* Stack operations */
-push::push(Memory& regs, Memory& mem)
-  : Operation(regs, mem)
-{
-}
-
-Update push::operator()(Instruction inst)
+Update push(Memory& regs, Memory& mem, Instruction inst)
 {
   // Save the register in the top of the stack
-  this->regs_.set_word(REGISTER_STP, this->regs_[inst.first * 4]);
+  regs.set_word(REGISTER_STP, regs[inst.first * 4]);
   // Update stack pointer
-  this->regs_.set_word(REGISTER_STP, this->regs_[REGISTER_STP] - 4);
+  regs.set_word(REGISTER_STP, regs[REGISTER_STP] - 4);
 
   return UpdatePC;
 }
 
-
-pop::pop(Memory& regs, Memory& mem)
-  : Operation(regs, mem)
-{
-}
-
-Update pop::operator()(Instruction inst)
+Update pop(Memory& regs, Memory& mem, Instruction inst)
 {
   // Update stack pointer
-  this->regs_.set_word(REGISTER_STP, this->regs_[REGISTER_STP] + 4);
+  regs.set_word(REGISTER_STP, regs[REGISTER_STP] + 4);
   // Restore the register
-  this->regs_.set_word(inst.first * 4, this->regs_[REGISTER_STP]);
+  regs.set_word(inst.first * 4, regs[REGISTER_STP]);
 
   return UpdatePC;
 }
 
 
 /* Load operations */
-load::load(Memory& regs, Memory& mem)
-  : Operation(regs, mem)
+Update load(Memory& regs, Memory& mem, Instruction inst)
 {
-}
-
-Update load::operator()(Instruction inst)
-{
-  this->regs_.set_word(inst.first * 4,
-		       this->mem_[(this->regs_[REGISTER_SGP] << 16) +
-				  inst.address]);
+  regs.set_word(inst.first * 4, mem[(regs[REGISTER_SGP] << 16) + inst.address]);
 
   return UpdatePC;
 }
 
-
-loadi::loadi(Memory& regs, Memory& mem)
-  : Operation(regs, mem)
+Update loadi(Memory& regs, Memory& mem, Instruction inst)
 {
-}
-
-Update loadi::operator()(Instruction inst)
-{
-  this->regs_.set_word(inst.first * 4, inst.address);
+  regs.set_word(inst.first * 4, inst.address);
 
   return UpdatePC;
 }
 
-
-loadrr::loadrr(Memory& regs, Memory& mem)
-  : Operation(regs, mem)
+Update loadrr(Memory& regs, Memory& mem, Instruction inst)
 {
-}
-
-Update loadrr::operator()(Instruction inst)
-{
-  this->regs_.set_word(inst.first * 4,
-		       this->mem_[this->regs_[inst.second * 4] +
-				  this->regs_[inst.address * 4]]);
+  regs.set_word(inst.first * 4, mem[regs[inst.second * 4] +
+                                    regs[inst.address * 4]]);
 
   return UpdatePC;
 }
 
-
-loadri::loadri(Memory& regs, Memory& mem)
-  : Operation(regs, mem)
+Update loadri(Memory& regs, Memory& mem, Instruction inst)
 {
-}
-
-Update loadri::operator()(Instruction inst)
-{
-  this->regs_.set_word(inst.first * 4,
-		       this->mem_[this->regs_[inst.second * 4] +
-				  inst.address]);
+  regs.set_word(inst.first * 4, mem[regs[inst.second * 4] + inst.address]);
 
   return UpdatePC;
 }
 
 
 /* Store operations */
-store::store(Memory& regs, Memory& mem)
-  : Operation(regs, mem)
+Update store(Memory& regs, Memory& mem, Instruction inst)
 {
-}
-
-Update store::operator()(Instruction inst)
-{
-  this->mem_.set_word((this->regs_[REGISTER_SGP] << 16) + inst.address,
-		      this->regs_[inst.first * 4]);
+  mem.set_word((regs[REGISTER_SGP] << 16) + inst.address, regs[inst.first * 4]);
 
   return UpdatePC;
 }
 
-
-storerr::storerr(Memory& regs, Memory& mem)
-  : Operation(regs, mem)
+Update storerr(Memory& regs, Memory& mem, Instruction inst)
 {
-}
-
-Update storerr::operator()(Instruction inst)
-{
-  this->mem_.set_word(this->regs_[inst.first] + this->regs_[inst.address],
-		      this->regs_[inst.second]);
+  mem.set_word(regs[inst.first] + regs[inst.address], regs[inst.second]);
 
   return UpdatePC;
 }
 
-
-storeri::storeri(Memory& regs, Memory& mem)
-  : Operation(regs, mem)
+Update storeri(Memory& regs, Memory& mem, Instruction inst)
 {
-}
-
-Update storeri::operator()(Instruction inst)
-{
-  this->mem_.set_word(this->regs_[inst.first] + inst.address,
-		      this->regs_[inst.second]);
+  mem.set_word(regs[inst.first] + inst.address, regs[inst.second]);
 
   return UpdatePC;
 }

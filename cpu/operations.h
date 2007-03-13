@@ -28,7 +28,6 @@
 #include <cpu/types.h>
 #include <cpu/memory.h>
 #include <cpu/instruction.h>
-#include <cpu/operation.h>
 
 #define REGISTER(NUMBER) (NUMBER * sizeof(Word))
 #define REGISTER_PC REGISTER(0xc)
@@ -44,35 +43,21 @@ namespace CPU
 /* Management operations. */
 /**
  * Stop the CPU.
+ * @param regs the registers.
+ * @param mem the memory.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
  */
-class stop: public Operation
-{
-public:
-  /**
-   * Constructor.
-   * @param regs the registers.
-   * @param mem the memory.
-   */
-  stop(Memory& regs, Memory& mem);
-
-  Update operator()(Instruction inst);
-};
+Update stop(Memory& regs, Memory& mem, Instruction inst);
 
 /**
  * Restart the CPU (zeroing the registers).
+ * @param regs the registers.
+ * @param mem the memory.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
  */
-class restart: public Operation
-{
-public:
-  /**
-   * Constructor.
-   * @param regs the registers.
-   * @param mem the memory.
-   */
-  restart(Memory& regs, Memory& mem);
-
-  Update operator()(Instruction inst);
-};
+Update restart(Memory& regs, Memory& mem, Instruction inst);
 
 
 /* Move operations: Move data from a register to other one. */
@@ -80,35 +65,21 @@ public:
  * Move the content of a register to a register.
  *
  * REGISTERS[FIRST] = REGISTERS[SECOND]
+ * @param regs the registers.
+ * @param mem the memory.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
  */
-class move: public Operation
-{
-public:
-  /**
-   * Constructor.
-   * @param regs the registers.
-   * @param mem the memory.
-   */
-  move(Memory& regs, Memory& mem);
-
-  Update operator()(Instruction inst);
-};
+Update move(Memory& regs, Memory& mem, Instruction inst);
 
 /**
  * Swap the high half-word and the low half-word of a word.
+ * @param regs the registers.
+ * @param mem the memory.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
  */
-class swap: public Operation
-{
-public:
-  /**
-   * Constructor.
-   * @param regs the registers.
-   * @param mem the memory.
-   */
-  swap(Memory& regs, Memory& mem);
-
-  Update operator()(Instruction inst);
-};
+Update swap(Memory& regs, Memory& mem, Instruction inst);
 
 
 /* Load operations: Move data from memory to a register. */
@@ -116,73 +87,45 @@ public:
  * Load a word from memory.
  *
  * REGISTERS[FIRST] = MEMORY[ADDRESS]
+ * @param regs the registers.
+ * @param mem the memory.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
  */
-class load: public Operation
-{
-public:
-  /**
-   * Constructor.
-   * @param regs the registers.
-   * @param mem the memory.
-   */
-  load(Memory& regs, Memory& mem);
-
-  Update operator()(Instruction inst);
-};
+Update load(Memory& regs, Memory& mem, Instruction inst);
 
 /**
  * Load a inmediate value.
  *
  * REGISTERS[FIRST] = ADDRESS (the upper 16 bits are cleared)
+ * @param regs the registers.
+ * @param mem the memory.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
  */
-class loadi: public Operation
-{
-public:
-  /**
-   * Constructor.
-   * @param regs the registers.
-   * @param mem the memory.
-   */
-  loadi(Memory& regs, Memory& mem);
-
-  Update operator()(Instruction inst);
-};
+Update loadi(Memory& regs, Memory& mem, Instruction inst);
 
 /**
  * Load a word from memory using two base registers.
  *
  * REGISTERS[FIRST] = MEMORY[REGISTERS[SECOND] + REGISTERS[ADDRESS]]
+ * @param regs the registers.
+ * @param mem the memory.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
  */
-class loadrr: public Operation
-{
-public:
-  /**
-   * Constructor.
-   * @param regs the registers.
-   * @param mem the memory.
-   */
-  loadrr(Memory& regs, Memory& mem);
-
-  Update operator()(Instruction inst);
-};
+Update loadrr(Memory& regs, Memory& mem, Instruction inst);
 
 /**
  * Load a word from memory using a base register and a inmediate value.
  *
  * REGISTERS[FIRST] = MEMORY[REGISTERS[SECOND] + ADDRESS]
+ * @param regs the registers.
+ * @param mem the memory.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
  */
-class loadri: public Operation
-{
-public:
-  /**
-   * Constructor.
-   * @param regs the registers.
-   * @param mem the memory.
-   */
-  loadri(Memory& regs, Memory& mem);
-
-  Update operator()(Instruction inst);
-};
+Update loadri(Memory& regs, Memory& mem, Instruction inst);
 
 
 /* Store operations: Move data from a register to memory. */
@@ -190,89 +133,54 @@ public:
  * Store a word to memory.
  *
  * MEMORY[ADDRESS] = REGISTERS[FIRST]
+ * @param regs the registers.
+ * @param mem the memory.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
  */
-class store: public Operation
-{
-public:
-  /**
-   * Constructor.
-   * @param regs the registers.
-   * @param mem the memory.
-   */
-  store(Memory& regs, Memory& mem);
-
-  Update operator()(Instruction inst);
-};
+Update store(Memory& regs, Memory& mem, Instruction inst);
 
 /**
  * Store a word to memory using two base registers.
  *
  * MEMORY[REGISTERS[FIRST] + REGISTERS[ADDRESS]] = REGISTERS[SECOND]
+ * @param regs the registers.
+ * @param mem the memory.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
  */
-class storerr: public Operation
-{
-public:
-  /**
-   * Constructor.
-   * @param regs the registers.
-   * @param mem the memory.
-   */
-  storerr(Memory& regs, Memory& mem);
-
-  Update operator()(Instruction inst);
-};
+Update storerr(Memory& regs, Memory& mem, Instruction inst);
 
 /**
  * Store a word to memory using a base register and a inmediate value.
  *
  * MEMORY[REGISTERS[FIRST] + INMEDIATE] = REGISTERS[SECOND]
+ * @param regs the registers.
+ * @param mem the memory.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
  */
-class storeri: public Operation
-{
-public:
-  /**
-   * Constructor.
-   * @param regs the registers.
-   * @param mem the memory.
-   */
-  storeri(Memory& regs, Memory& mem);
-
-  Update operator()(Instruction inst);
-};
+Update storeri(Memory& regs, Memory& mem, Instruction inst);
 
 
 /* Stack operations: Push and pop in the stack. */
 /**
  * Move the content of the register to the top of the stack.
+ * @param regs the registers.
+ * @param mem the memory.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
  */
-class push: public Operation
-{
-public:
-  /**
-   * Constructor.
-   * @param regs the registers.
-   * @param mem the memory.
-   */
-  push(Memory& regs, Memory& mem);
-
-  Update operator()(Instruction inst);
-};
+Update push(Memory& regs, Memory& mem, Instruction inst);
 
 /**
  * Move the top of the stack to a register.
+ * @param regs the registers.
+ * @param mem the memory.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
  */
-class pop: public Operation
-{
-public:
-  /**
-   * Constructor.
-   * @param regs the registers.
-   * @param mem the memory.
-   */
-  pop(Memory& regs, Memory& mem);
-
-  Update operator()(Instruction inst);
-};
+Update pop(Memory& regs, Memory& mem, Instruction inst);
 
 
 /* Branch operations: Change the program counter (PC) if the condition is 
@@ -281,199 +189,122 @@ public:
  * Branch always.
  *
  * PC = ADDRESS
+ * @param regs the registers.
+ * @param mem the memory.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
  */
-class b: public Operation
-{
-public:
-  /**
-   * Constructor.
-   * @param regs the registers.
-   * @param mem the memory.
-   */
-  b(Memory& regs, Memory& mem);
-
-  Update operator()(Instruction inst);
-};
+Update b(Memory& regs, Memory& mem, Instruction inst);
 
 /**
  * Branch on equal.
  *
  * if REGISTERS[FIRST] == REGISTERS[SECOND] -> PC = ADDRESS
+ * @param regs the registers.
+ * @param mem the memory.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
  */
-class beq: public Operation
-{
-public:
-  /**
-   * Constructor.
-   * @param regs the registers.
-   * @param mem the memory.
-   */
-  beq(Memory& regs, Memory& mem);
-
-  Update operator()(Instruction inst);
-};
+Update beq(Memory& regs, Memory& mem, Instruction inst);
 
 /**
  * Branch on not equal.
  *
  * if REGISTERS[FIRST] != REGISTERS[SECOND] -> PC = ADDRESS
+ * @param regs the registers.
+ * @param mem the memory.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
  */
-class bne: public Operation
-{
-public:
-  /**
-   * Constructor.
-   * @param regs the registers.
-   * @param mem the memory.
-   */
-  bne(Memory& regs, Memory& mem);
-
-  Update operator()(Instruction inst);
-};
+Update bne(Memory& regs, Memory& mem, Instruction inst);
 
 /**
  * Branch on less than (signed comparission).
  *
  * if REGISTERS[FIRST] < REGISTERS[SECOND] -> PC = ADDRESS
+ * @param regs the registers.
+ * @param mem the memory.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
  */
-class blt: public Operation
-{
-public:
-  /**
-   * Constructor.
-   * @param regs the registers.
-   * @param mem the memory.
-   */
-  blt(Memory& regs, Memory& mem);
-
-  Update operator()(Instruction inst);
-};
+Update blt(Memory& regs, Memory& mem, Instruction inst);
 
 /**
  * Branch on less than (unsigned comparission).
  *
  * if REGISTERS[FIRST] < REGISTERS[SECOND] -> PC = ADDRESS
+ * @param regs the registers.
+ * @param mem the memory.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
  */
-class bltu: public Operation
-{
-public:
-  /**
-   * Constructor.
-   * @param regs the registers.
-   * @param mem the memory.
-   */
-  bltu(Memory& regs, Memory& mem);
-
-  Update operator()(Instruction inst);
-};
+Update bltu(Memory& regs, Memory& mem, Instruction inst);
 
 /**
  * Branch on great than (signed comparission).
  *
  * if REGISTERS[FIRST] > REGISTERS[SECOND] -> PC = ADDRESS
+ * @param regs the registers.
+ * @param mem the memory.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
  */
-class bgt: public Operation
-{
-public:
-  /**
-   * Constructor.
-   * @param regs the registers.
-   * @param mem the memory.
-   */
-  bgt(Memory& regs, Memory& mem);
-
-  Update operator()(Instruction inst);
-};
+Update bgt(Memory& regs, Memory& mem, Instruction inst);
 
 /**
  * Branch on great than (unsigned comparission).
  *
  * if REGISTERS[FIRST] > REGISTERS[SECOND] -> PC = ADDRESS
+ * @param regs the registers.
+ * @param mem the memory.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
  */
-class bgtu: public Operation
-{
-public:
-  /**
-   * Constructor.
-   * @param regs the registers.
-   * @param mem the memory.
-   */
-  bgtu(Memory& regs, Memory& mem);
-
-  Update operator()(Instruction inst);
-};
+Update bgtu(Memory& regs, Memory& mem, Instruction inst);
 
 /**
  * Branch on less or equal (signed comparission).
  *
  * if REGISTERS[FIRST] <= REGISTERS[SECOND] -> PC = ADDRESS
+ * @param regs the registers.
+ * @param mem the memory.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
  */
-class ble: public Operation
-{
-public:
-  /**
-   * Constructor.
-   * @param regs the registers.
-   * @param mem the memory.
-   */
-  ble(Memory& regs, Memory& mem);
-
-  Update operator()(Instruction inst);
-};
+Update ble(Memory& regs, Memory& mem, Instruction inst);
 
 /**
  * Branch on less or equal (unsigned comparission).
  *
  * if REGISTERS[FIRST] <= REGISTERS[SECOND] -> PC = ADDRESS
+ * @param regs the registers.
+ * @param mem the memory.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
  */
-class bleu: public Operation
-{
-public:
-  /**
-   * Constructor.
-   * @param regs the registers.
-   * @param mem the memory.
-   */
-  bleu(Memory& regs, Memory& mem);
-
-  Update operator()(Instruction inst);
-};
+Update bleu(Memory& regs, Memory& mem, Instruction inst);
 
 /**
  * Branch on greater or equal (signed comparission).
  *
  * if REGISTERS[FIRST] >= REGISTERS[SECOND] -> PC = ADDRESS
+ * @param regs the registers.
+ * @param mem the memory.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
  */
-class bge: public Operation
-{
-public:
-  /**
-   * Constructor.
-   * @param regs the registers.
-   * @param mem the memory.
-   */
-  bge(Memory& regs, Memory& mem);
-
-  Update operator()(Instruction inst);
-};
+Update bge(Memory& regs, Memory& mem, Instruction inst);
 
 /**
  * Branch on greater or equal (unsigned comparission).
  *
  * if REGISTERS[FIRST] >= REGISTERS[SECOND] -> PC = ADDRESS
+ * @param regs the registers.
+ * @param mem the memory.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
  */
-class bgeu: public Operation
-{
-public:
-  /**
-   * Constructor.
-   * @param regs the registers.
-   * @param mem the memory.
-   */
-  bgeu(Memory& regs, Memory& mem);
-
-  Update operator()(Instruction inst);
-};
+Update bgeu(Memory& regs, Memory& mem, Instruction inst);
 
 
 /* Function operations: call and return from a function. */
@@ -481,71 +312,43 @@ public:
  * Call a function.
  *
  * PUSH(PC) and PC = ADDRESS
+ * @param regs the registers.
+ * @param mem the memory.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
  */
-class call: public Operation
-{
-public:
-  /**
-   * Constructor.
-   * @param regs the registers.
-   * @param mem the memory.
-   */
-  call(Memory& regs, Memory& mem);
-
-  Update operator()(Instruction inst);
-};
+Update call(Memory& regs, Memory& mem, Instruction inst);
 
 /**
  * Return.
  *
  * POP(PC)
+ * @param regs the registers.
+ * @param mem the memory.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
  */
-class ret: public Operation
-{
-public:
-  /**
-   * Constructor.
-   * @param regs the registers.
-   * @param mem the memory.
-   */
-  ret(Memory& regs, Memory& mem);
-
-  Update operator()(Instruction inst);
-};
+Update ret(Memory& regs, Memory& mem, Instruction inst);
 
 /**
  * Return from exception.
  *
  * POP(ALL REGISTERS)
+ * @param regs the registers.
+ * @param mem the memory.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
  */
-class rete: public Operation
-{
-public:
-  /**
-   * Constructor.
-   * @param regs the registers.
-   * @param mem the memory.
-   */
-  rete(Memory& regs, Memory& mem);
-
-  Update operator()(Instruction inst);
-};
+Update rete(Memory& regs, Memory& mem, Instruction inst);
 
 /**
  * Call a World function.
+ * @param regs the registers.
+ * @param mem the memory.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
  */
-class world: public Operation
-{
-public:
-  /**
-   * Constructor.
-   * @param regs the registers.
-   * @param mem the memory.
-   */
-  world(Memory& regs, Memory& mem);
-
-  Update operator()(Instruction inst);
-};
+Update world(Memory& regs, Memory& mem, Instruction inst);
 
 
 /* Arithmetic operations: execute a arithmetic operation. */
@@ -553,363 +356,223 @@ public:
  * Add two registers.
  *
  * REGISTERS[FIRST] = REGISTERS[SECOND] + REGISTERS[ADDRESS]
+ * @param regs the registers.
+ * @param mem the memory.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
  */
-class add: public Operation
-{
-public:
-  /**
-   * Constructor.
-   * @param regs the registers.
-   * @param mem the memory.
-   */
-  add(Memory& regs, Memory& mem);
-
-  Update operator()(Instruction inst);
-};
+Update add(Memory& regs, Memory& mem, Instruction inst);
 
 /**
  * Add a register and a inmediate value.
  *
  * REGISTERS[FIRST] = REGISTERS[SECOND] + ADDRESS
+ * @param regs the registers.
+ * @param mem the memory.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
  */
-class addi: public Operation
-{
-public:
-  /**
-   * Constructor.
-   * @param regs the registers.
-   * @param mem the memory.
-   */
-  addi(Memory& regs, Memory& mem);
-
-  Update operator()(Instruction inst);
-};
+Update addi(Memory& regs, Memory& mem, Instruction inst);
 
 /**
  * Substract two registers.
  *
  * REGISTERS[FIRST] = REGISTERS[SECOND] - REGISTERS[ADDRESS]
+ * @param regs the registers.
+ * @param mem the memory.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
  */
-class sub: public Operation
-{
-public:
-  /**
-   * Constructor.
-   * @param regs the registers.
-   * @param mem the memory.
-   */
-  sub(Memory& regs, Memory& mem);
-
-  Update operator()(Instruction inst);
-};
+Update sub(Memory& regs, Memory& mem, Instruction inst);
 
 /**
  * Substract a register and a inmediate value.
  *
  * REGISTERS[FIRST] = REGISTERS[SECOND] - ADDRESS
+ * @param regs the registers.
+ * @param mem the memory.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
  */
-class subi: public Operation
-{
-public:
-  /**
-   * Constructor.
-   * @param regs the registers.
-   * @param mem the memory.
-   */
-  subi(Memory& regs, Memory& mem);
-
-  Update operator()(Instruction inst);
-};
+Update subi(Memory& regs, Memory& mem, Instruction inst);
 
 /**
  * Low 16bits from multiply two signed registers.
  *
  * REGISTERS[FIRST] = REGISTERS[SECOND] * REGISTERS[ADDRESS]
+ * @param regs the registers.
+ * @param mem the memory.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
  */
-class multl: public Operation
-{
-public:
-  /**
-   * Constructor.
-   * @param regs the registers.
-   * @param mem the memory.
-   */
-  multl(Memory& regs, Memory& mem);
-
-  Update operator()(Instruction inst);
-};
+Update multl(Memory& regs, Memory& mem, Instruction inst);
 
 /**
  * Low 16bits from multiply a signed registers and a signed inmediate value.
  *
  * REGISTERS[FIRST] = REGISTERS[SECOND] * ADDRESS
+ * @param regs the registers.
+ * @param mem the memory.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
  */
-class multli: public Operation
-{
-public:
-  /**
-   * Constructor.
-   * @param regs the registers.
-   * @param mem the memory.
-   */
-  multli(Memory& regs, Memory& mem);
-
-  Update operator()(Instruction inst);
-};
+Update multli(Memory& regs, Memory& mem, Instruction inst);
 
 /**
  * Low 16bits from multiply two unsigned registers.
  *
  * REGISTERS[FIRST] = REGISTERS[SECOND] * REGISTERS[ADDRESS]
+ * @param regs the registers.
+ * @param mem the memory.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
  */
-class multlu: public Operation
-{
-public:
-  /**
-   * Constructor.
-   * @param regs the registers.
-   * @param mem the memory.
-   */
-  multlu(Memory& regs, Memory& mem);
-
-  Update operator()(Instruction inst);
-};
+Update multlu(Memory& regs, Memory& mem, Instruction inst);
 
 /**
  * Low 16bits from multiply a unsigned registers and a unsigned inmediate
  * value.
  *
  * REGISTERS[FIRST] = REGISTERS[SECOND] * ADDRESS
+ * @param regs the registers.
+ * @param mem the memory.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
  */
-class multlui: public Operation
-{
-public:
-  /**
-   * Constructor.
-   * @param regs the registers.
-   * @param mem the memory.
-   */
-  multlui(Memory& regs, Memory& mem);
-
-  Update operator()(Instruction inst);
-};
+Update multlui(Memory& regs, Memory& mem, Instruction inst);
 
 /**
  * High 16bits from multiply two signed registers.
  *
  * REGISTERS[FIRST] = REGISTERS[SECOND] * REGISTERS[ADDRESS]
+ * @param regs the registers.
+ * @param mem the memory.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
  */
-class multh: public Operation
-{
-public:
-  /**
-   * Constructor.
-   * @param regs the registers.
-   * @param mem the memory.
-   */
-  multh(Memory& regs, Memory& mem);
-
-  Update operator()(Instruction inst);
-};
+Update multh(Memory& regs, Memory& mem, Instruction inst);
 
 /**
  * High 16bits from multiply a signed registers and a signed inmediate value.
  *
  * REGISTERS[FIRST] = REGISTERS[SECOND] * ADDRESS
+ * @param regs the registers.
+ * @param mem the memory.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
  */
-class multhi: public Operation
-{
-public:
-  /**
-   * Constructor.
-   * @param regs the registers.
-   * @param mem the memory.
-   */
-  multhi(Memory& regs, Memory& mem);
-
-  Update operator()(Instruction inst);
-};
+Update multhi(Memory& regs, Memory& mem, Instruction inst);
 
 /**
  * High 16bits from multiply two unsigned registers.
  *
  * REGISTERS[FIRST] = REGISTERS[SECOND] * REGISTERS[ADDRESS]
+ * @param regs the registers.
+ * @param mem the memory.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
  */
-class multhu: public Operation
-{
-public:
-  /**
-   * Constructor.
-   * @param regs the registers.
-   * @param mem the memory.
-   */
-  multhu(Memory& regs, Memory& mem);
-
-  Update operator()(Instruction inst);
-};
+Update multhu(Memory& regs, Memory& mem, Instruction inst);
 
 /**
  * High 16bits from multiply a unsigned registers and a unsigned inmediate
  * value.
  *
  * REGISTERS[FIRST] = REGISTERS[SECOND] * ADDRESS
+ * @param regs the registers.
+ * @param mem the memory.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
  */
-class multhui: public Operation
-{
-public:
-  /**
-   * Constructor.
-   * @param regs the registers.
-   * @param mem the memory.
-   */
-  multhui(Memory& regs, Memory& mem);
-
-  Update operator()(Instruction inst);
-};
+Update multhui(Memory& regs, Memory& mem, Instruction inst);
 
 /**
  * Divide two signed registers.
  *
  * REGISTERS[FIRST] = REGISTERS[SECOND] / REGISTERS[ADDRESS]
+ * @param regs the registers.
+ * @param mem the memory.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
  */
-class div: public Operation
-{
-public:
-  /**
-   * Constructor.
-   * @param regs the registers.
-   * @param mem the memory.
-   */
-  div(Memory& regs, Memory& mem);
-
-  Update operator()(Instruction inst);
-};
+Update div(Memory& regs, Memory& mem, Instruction inst);
 
 /**
  * Divide a signed register and a signed inmediate value.
  *
  * REGISTERS[FIRST] = REGISTERS[SECOND] / ADDRESS
+ * @param regs the registers.
+ * @param mem the memory.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
  */
-class divi: public Operation
-{
-public:
-  /**
-   * Constructor.
-   * @param regs the registers.
-   * @param mem the memory.
-   */
-  divi(Memory& regs, Memory& mem);
-
-  Update operator()(Instruction inst);
-};
+Update divi(Memory& regs, Memory& mem, Instruction inst);
 
 /**
  * Divide two unsigned registers.
  *
  * REGISTERS[FIRST] = REGISTERS[SECOND] / REGISTERS[ADDRESS]
+ * @param regs the registers.
+ * @param mem the memory.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
  */
-class divu: public Operation
-{
-public:
-  /**
-   * Constructor.
-   * @param regs the registers.
-   * @param mem the memory.
-   */
-  divu(Memory& regs, Memory& mem);
-
-  Update operator()(Instruction inst);
-};
+Update divu(Memory& regs, Memory& mem, Instruction inst);
 
 /**
  * Divide a unsigned register and a unsigned inmediate value.
  *
  * REGISTERS[FIRST] = REGISTERS[SECOND] / ADDRESS
+ * @param regs the registers.
+ * @param mem the memory.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
  */
-class divui: public Operation
-{
-public:
-  /**
-   * Constructor.
-   * @param regs the registers.
-   * @param mem the memory.
-   */
-  divui(Memory& regs, Memory& mem);
-
-  Update operator()(Instruction inst);
-};
+Update divui(Memory& regs, Memory& mem, Instruction inst);
 
 /**
  * Module of two signed registers.
  *
  * REGISTERS[FIRST] = REGISTERS[SECOND] % REGISTERS[ADDRESS]
+ * @param regs the registers.
+ * @param mem the memory.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
  */
-class mod: public Operation
-{
-public:
-  /**
-   * Constructor.
-   * @param regs the registers.
-   * @param mem the memory.
-   */
-  mod(Memory& regs, Memory& mem);
-
-  Update operator()(Instruction inst);
-};
+Update mod(Memory& regs, Memory& mem, Instruction inst);
 
 /**
  * Module of a signed register and a signed inmediate value.
  *
  * REGISTERS[FIRST] = REGISTERS[SECOND] % ADDRESS
+ * @param regs the registers.
+ * @param mem the memory.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
  */
-class modi: public Operation
-{
-public:
-  /**
-   * Constructor.
-   * @param regs the registers.
-   * @param mem the memory.
-   */
-  modi(Memory& regs, Memory& mem);
-
-  Update operator()(Instruction inst);
-};
+Update modi(Memory& regs, Memory& mem, Instruction inst);
 
 /**
  * Module of two unsigned registers.
  *
  * REGISTERS[FIRST] = REGISTERS[SECOND] % REGISTERS[ADDRESS]
+ * @param regs the registers.
+ * @param mem the memory.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
  */
-class modu: public Operation
-{
-public:
-  /**
-   * Constructor.
-   * @param regs the registers.
-   * @param mem the memory.
-   */
-  modu(Memory& regs, Memory& mem);
-
-  Update operator()(Instruction inst);
-};
+Update modu(Memory& regs, Memory& mem, Instruction inst);
 
 /**
  * Module of a unsigned register and a unsigned inmediate value.
  *
  * REGISTERS[FIRST] = REGISTERS[SECOND] % ADDRESS
+ * @param regs the registers.
+ * @param mem the memory.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
  */
-class modui: public Operation
-{
-public:
-  /**
-   * Constructor.
-   * @param regs the registers.
-   * @param mem the memory.
-   */
-  modui(Memory& regs, Memory& mem);
-
-  Update operator()(Instruction inst);
-};
+Update modui(Memory& regs, Memory& mem, Instruction inst);
 
 
 /* Logic operations: execute a logic operation. */
@@ -917,127 +580,78 @@ public:
  * NOT of a register.
  *
  * REGISTERS[FIRST] = ~REGISTERS[SECOND]
+ * @param regs the registers.
+ * @param mem the memory.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
  */
-class lnot: public Operation
-{
-public:
-  /**
-   * Constructor.
-   * @param regs the registers.
-   * @param mem the memory.
-   */
-  lnot(Memory& regs, Memory& mem);
-
-  Update operator()(Instruction inst);
-};
+Update lnot(Memory& regs, Memory& mem, Instruction inst);
 
 /**
  * OR of two registers.
  *
  * REGISTERS[FIRST] = REGISTERS[SECOND] | REGISTERS[ADDRESS]
+ * @param regs the registers.
+ * @param mem the memory.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
  */
-class lor: public Operation
-{
-public:
-  /**
-   * Constructor.
-   * @param regs the registers.
-   * @param mem the memory.
-   */
-  lor(Memory& regs, Memory& mem);
-
-  Update operator()(Instruction inst);
-};
+Update lor(Memory& regs, Memory& mem, Instruction inst);
 
 /**
  * OR of a register and a inmediate value.
  *
  * REGISTERS[FIRST] = REGISTERS[SECOND] | ADDRESS
+ * @param regs the registers.
+ * @param mem the memory.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
  */
-class lori: public Operation
-{
-public:
-  /**
-   * Constructor.
-   * @param regs the registers.
-   * @param mem the memory.
-   */
-  lori(Memory& regs, Memory& mem);
-
-  Update operator()(Instruction inst);
-};
+Update lori(Memory& regs, Memory& mem, Instruction inst);
 
 /**
  * AND of two registers.
  *
  * REGISTERS[FIRST] = REGISTERS[SECOND] & REGISTERS[ADDRESS]
+ * @param regs the registers.
+ * @param mem the memory.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
  */
-class land: public Operation
-{
-public:
-  /**
-   * Constructor.
-   * @param regs the registers.
-   * @param mem the memory.
-   */
-  land(Memory& regs, Memory& mem);
-
-  Update operator()(Instruction inst);
-};
+Update land(Memory& regs, Memory& mem, Instruction inst);
 
 /**
  * AND of a register and a inmediate value.
  *
  * REGISTERS[FIRST] = REGISTERS[SECOND] & ADDRESS
+ * @param regs the registers.
+ * @param mem the memory.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
  */
-class landi: public Operation
-{
-public:
-  /**
-   * Constructor.
-   * @param regs the registers.
-   * @param mem the memory.
-   */
-  landi(Memory& regs, Memory& mem);
-
-  Update operator()(Instruction inst);
-};
+Update landi(Memory& regs, Memory& mem, Instruction inst);
 
 /**
  * EXOR of two registers.
  *
  * REGISTERS[FIRST] = REGISTERS[SECOND] ^ REGISTERS[ADDRESS]
+ * @param regs the registers.
+ * @param mem the memory.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
  */
-class lxor: public Operation
-{
-public:
-  /**
-   * Constructor.
-   * @param regs the registers.
-   * @param mem the memory.
-   */
-  lxor(Memory& regs, Memory& mem);
-
-  Update operator()(Instruction inst);
-};
+Update lxor(Memory& regs, Memory& mem, Instruction inst);
 
 /**
  * EXOR of a register and a inmediate value.
  *
  * REGISTERS[FIRST] = REGISTERS[SECOND] ^ ADDRESS
+ * @param regs the registers.
+ * @param mem the memory.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
  */
-class lxori: public operation
-{
-public:
-  /**
-   * Constructor.
-   * @param regs the registers.
-   * @param mem the memory.
-   */
-  lxori(Memory& regs, Memory& mem);
-
-  Update operator()(Instruction inst);
-};
+Update lxori(Memory& regs, Memory& mem, Instruction inst);
 
 
 /* Shift operations: execute a shift operation. */
@@ -1045,216 +659,133 @@ public:
  * Logic shift left.
  *
  * Move the bits X positions to the left inserting zeros on the right.
+ * @param regs the registers.
+ * @param mem the memory.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
  */
-class sll: public Operation
-{
-public:
-  /**
-   * Constructor.
-   * @param regs the registers.
-   * @param mem the memory.
-   */
-  sll(Memory& regs, Memory& mem);
-
-  Update operator()(Instruction inst);
-};
+Update sll(Memory& regs, Memory& mem, Instruction inst);
 
 /**
  * Logic shift left.
  *
  * Move the bits X positions to the left inserting zeros on the right.
+ * @param regs the registers.
+ * @param mem the memory.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
  */
-class slli: public Operation
-{
-public:
-  /**
-   * Constructor.
-   * @param regs the registers.
-   * @param mem the memory.
-   */
-  slli(Memory& regs, Memory& mem);
-
-  Update operator()(Instruction inst);
-};
+Update slli(Memory& regs, Memory& mem, Instruction inst);
 
 /**
  * Logic shift right.
  *
  * Move the bits X positions to the right inserting zeros on the left.
+ * @param regs the registers.
+ * @param mem the memory.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
  */
-class srl: public Operation
-{
-public:
-  /**
-   * Constructor.
-   * @param regs the registers.
-   * @param mem the memory.
-   */
-  srl(Memory& regs, Memory& mem);
-
-  Update operator()(Instruction inst);
-};
+Update srl(Memory& regs, Memory& mem, Instruction inst);
 
 /**
  * Logic shift right.
  *
  * Move the bits X positions to the right inserting zeros on the left.
+ * @param regs the registers.
+ * @param mem the memory.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
  */
-class srli: public Operation
-{
-public:
-  /**
-   * Constructor.
-   * @param regs the registers.
-   * @param mem the memory.
-   */
-  srli(Memory& regs, Memory& mem);
-
-  Update operator()(Instruction inst);
-};
+Update srli(Memory& regs, Memory& mem, Instruction inst);
 
 /**
  * Arithmetic shift left.
  *
  * Same as logic shift left.
+ * @param regs the registers.
+ * @param mem the memory.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
  */
-class sla: public Operation
-{
-public:
-  /**
-   * Constructor.
-   * @param regs the registers.
-   * @param mem the memory.
-   */
-  sla(Memory& regs, Memory& mem);
-
-  Update operator()(Instruction inst);
-};
+Update sla(Memory& regs, Memory& mem, Instruction inst);
 
 /**
  * Arithmetic shift left.
  *
  * Same as logic shift left.
+ * @param regs the registers.
+ * @param mem the memory.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
  */
-class slai: public Operation
-{
-public:
-  /**
-   * Constructor.
-   * @param regs the registers.
-   * @param mem the memory.
-   */
-  slai(Memory& regs, Memory& mem);
-
-  Update operator()(Instruction inst);
-};
+Update slai(Memory& regs, Memory& mem, Instruction inst);
 
 /**
  * Arithmetic shift right.
  *
  * Same as logic shift right but performing sign extension.
+ * @param regs the registers.
+ * @param mem the memory.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
  */
-class sra: public Operation
-{
-public:
-  /**
-   * Constructor.
-   * @param regs the registers.
-   * @param mem the memory.
-   */
-  sra(Memory& regs, Memory& mem);
-
-  Update operator()(Instruction inst);
-};
+Update sra(Memory& regs, Memory& mem, Instruction inst);
 
 /**
  * Arithmetic shift right.
  *
  * Same as logic shift right but performing sign extension.
+ * @param regs the registers.
+ * @param mem the memory.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
  */
-class srai: public Operation
-{
-public:
-  /**
-   * Constructor.
-   * @param regs the registers.
-   * @param mem the memory.
-   */
-  srai(Memory& regs, Memory& mem);
-
-  Update operator()(Instruction inst);
-};
+Update srai(Memory& regs, Memory& mem, Instruction inst);
 
 /**
  * Rotate left.
  *
  * Same as logic shift left but inserting the removed bits on the right.
+ * @param regs the registers.
+ * @param mem the memory.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
  */
-class rl: public Operation
-{
-public:
-  /**
-   * Constructor.
-   * @param regs the registers.
-   * @param mem the memory.
-   */
-  rl(Memory& regs, Memory& mem);
-
-  Update operator()(Instruction inst);
-};
+Update rl(Memory& regs, Memory& mem, Instruction inst);
 
 /**
  * Rotate left.
  *
  * Same as logic shift left but inserting the removed bits on the right.
+ * @param regs the registers.
+ * @param mem the memory.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
  */
-class rli: public Operation
-{
-public:
-  /**
-   * Constructor.
-   * @param regs the registers.
-   * @param mem the memory.
-   */
-  rli(Memory& regs, Memory& mem);
-
-  Update operator()(Instruction inst);
-};
+Update rli(Memory& regs, Memory& mem, Instruction inst);
 
 /**
  * Rotate right.
  *
  * Same as logic shift right but inserting the removed bits on the left.
+ * @param regs the registers.
+ * @param mem the memory.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
  */
-class rr: public Operation
-{
-  /**
-   * Constructor.
-   * @param regs the registers.
-   * @param mem the memory.
-   */
-  rr(Memory& regs, Memory& mem);
-
-  Update operator()(Instruction inst);
-};
+Update rr(Memory& regs, Memory& mem, Instruction inst);
 
 /**
  * Rotate right.
  *
  * Same as logic shift right but inserting the removed bits on the left.
+ * @param regs the registers.
+ * @param mem the memory.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
  */
-class rri: public Operation
-{
-public:
-  /**
-   * Constructor.
-   * @param regs the registers.
-   * @param mem the memory.
-   */
-  rri(Memory& regs, Memory& mem);
-
-  Update operator()(Instruction inst);
-};
+Update rri(Memory& regs, Memory& mem, Instruction inst);
 
 }
 }

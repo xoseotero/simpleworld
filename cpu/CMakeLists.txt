@@ -2,7 +2,6 @@ SET(CPU_SRCS
   word.cpp
   memory.cpp
   instruction.cpp
-  operation.cpp
   operations_management.cpp operations_move.cpp operations_branch.cpp
   operations_function.cpp operations_arithmetic.cpp operations_logic.cpp
   operations_shift.cpp
