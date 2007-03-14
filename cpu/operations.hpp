@@ -97,7 +97,7 @@ Update load(Memory& regs, Memory& mem, Instruction inst);
 /**
  * Load a inmediate value.
  *
- * REGISTERS[FIRST] = ADDRESS (the upper 16 bits are cleared)
+ * REGISTERS[FIRST] = ADDRESS (the upper 32bits are cleared)
  * @param regs the registers.
  * @param mem the memory.
  * @param inst the instruction.
@@ -397,7 +397,7 @@ Update sub(Memory& regs, Memory& mem, Instruction inst);
 Update subi(Memory& regs, Memory& mem, Instruction inst);
 
 /**
- * Low 16bits from multiply two signed registers.
+ * Low 32bits from multiply two signed registers.
  *
  * REGISTERS[FIRST] = REGISTERS[SECOND] * REGISTERS[ADDRESS]
  * @param regs the registers.
@@ -408,7 +408,7 @@ Update subi(Memory& regs, Memory& mem, Instruction inst);
 Update multl(Memory& regs, Memory& mem, Instruction inst);
 
 /**
- * Low 16bits from multiply a signed registers and a signed inmediate value.
+ * Low 32bits from multiply a signed registers and a signed inmediate value.
  *
  * REGISTERS[FIRST] = REGISTERS[SECOND] * ADDRESS
  * @param regs the registers.
@@ -419,7 +419,7 @@ Update multl(Memory& regs, Memory& mem, Instruction inst);
 Update multli(Memory& regs, Memory& mem, Instruction inst);
 
 /**
- * Low 16bits from multiply two unsigned registers.
+ * Low 32bits from multiply two unsigned registers.
  *
  * REGISTERS[FIRST] = REGISTERS[SECOND] * REGISTERS[ADDRESS]
  * @param regs the registers.
@@ -430,7 +430,7 @@ Update multli(Memory& regs, Memory& mem, Instruction inst);
 Update multlu(Memory& regs, Memory& mem, Instruction inst);
 
 /**
- * Low 16bits from multiply a unsigned registers and a unsigned inmediate
+ * Low 32bits from multiply a unsigned registers and a unsigned inmediate
  * value.
  *
  * REGISTERS[FIRST] = REGISTERS[SECOND] * ADDRESS
@@ -442,7 +442,7 @@ Update multlu(Memory& regs, Memory& mem, Instruction inst);
 Update multlui(Memory& regs, Memory& mem, Instruction inst);
 
 /**
- * High 16bits from multiply two signed registers.
+ * High 32bits from multiply two signed registers.
  *
  * REGISTERS[FIRST] = REGISTERS[SECOND] * REGISTERS[ADDRESS]
  * @param regs the registers.
@@ -453,7 +453,7 @@ Update multlui(Memory& regs, Memory& mem, Instruction inst);
 Update multh(Memory& regs, Memory& mem, Instruction inst);
 
 /**
- * High 16bits from multiply a signed registers and a signed inmediate value.
+ * High 32bits from multiply a signed registers and a signed inmediate value.
  *
  * REGISTERS[FIRST] = REGISTERS[SECOND] * ADDRESS
  * @param regs the registers.
@@ -464,7 +464,7 @@ Update multh(Memory& regs, Memory& mem, Instruction inst);
 Update multhi(Memory& regs, Memory& mem, Instruction inst);
 
 /**
- * High 16bits from multiply two unsigned registers.
+ * High 32bits from multiply two unsigned registers.
  *
  * REGISTERS[FIRST] = REGISTERS[SECOND] * REGISTERS[ADDRESS]
  * @param regs the registers.
@@ -475,7 +475,7 @@ Update multhi(Memory& regs, Memory& mem, Instruction inst);
 Update multhu(Memory& regs, Memory& mem, Instruction inst);
 
 /**
- * High 16bits from multiply a unsigned registers and a unsigned inmediate
+ * High 32bits from multiply a unsigned registers and a unsigned inmediate
  * value.
  *
  * REGISTERS[FIRST] = REGISTERS[SECOND] * ADDRESS
