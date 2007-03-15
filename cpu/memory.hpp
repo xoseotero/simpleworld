@@ -92,11 +92,12 @@ class Memory
 public:
   /**
    * Constructor.
+   * Memory outside the 16bits range can't be used.
    * The memory is zeroed after being allocated.
    * @param length bytes of the memory
    * @exception NotEnoughLength length < 4
    */
-  Memory(Address length);
+  Memory(Uint32 length);
 
   /**
    * Destructor.

@@ -19,7 +19,7 @@ namespace SimpleWorld
 namespace CPU
 {
 
-Memory::Memory(Address length)
+Memory::Memory(Uint32 length)
   : length_(length)
 {
   if (length < 4)
@@ -28,7 +28,7 @@ Memory::Memory(Address length)
   this->memory_ = new Sint8[length];
 
   // Zeroed the memory
-  Address i;
+  Uint32 i;
   for (i = 0; i < length; i++)
     this->memory_[i] = 0;
 }
