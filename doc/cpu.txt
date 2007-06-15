@@ -107,7 +107,8 @@ Return from exception:
 	rete				# pc = stp and restore registers from
 					  stack
 Call a World function (T1a):
-	world	REG_OP REG_P1 REG_P2	# Execute the REG_OP operation in world
+	world	REG_OP REG_P1 REG_P2	# Execute the REG_OP operation in world with
+					# REG_P1 and REG_P2 as parameters
 
 with REG_P1 and REG_P2 parameters
 Branch always:
