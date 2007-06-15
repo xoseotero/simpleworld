@@ -55,13 +55,5 @@ Update rete(Memory& regs, Memory& mem, Instruction inst)
   return UpdatePC;
 }
 
-#warning World operation not implemented
-Update world(Memory& regs, Memory& mem, Instruction inst)
-{
-  std::cout << "Calling world with parameter " << inst.address << std::endl;
-
-  return UpdatePC;
-}
-
 }
 }

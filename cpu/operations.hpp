@@ -341,15 +341,6 @@ Update ret(Memory& regs, Memory& mem, Instruction inst);
  */
 Update rete(Memory& regs, Memory& mem, Instruction inst);
 
-/**
- * Call a World function.
- * @param regs the registers.
- * @param mem the memory.
- * @param inst the instruction.
- * @return if the PC must be updated.
- */
-Update world(Memory& regs, Memory& mem, Instruction inst);
-
 
 /* Arithmetic operations: execute a arithmetic operation. */
 /**
