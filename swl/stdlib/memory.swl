@@ -1,10 +1,10 @@
-# @file swl/memory.swl
-# $DESCRIPTION$
+# @file stdlib/memory.swl
+# Operations over the memory.
 #
 # begin:     Wed, 22 Nov 2006 20:03:28 +0100
 # last:      $Date$ by $Author$
 #
-#  Copyright (C) 2006, Xosé Otero <xoseotero@users.sourceforge.net>
+#  Copyright (C) 2006, 2007, Xosé Otero <xoseotero@users.sourceforge.net>
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -20,10 +20,24 @@
 #  along with this program; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-.label memory_init
-
-.label memory_alloc
-.label memory_realloc
-.label memory_free
-
+# Copy a block of memory.
+# IN:  r0 pointer to src memory block
+# IN:  r1 pointer to dst memory block
+# IN:  r2 words to copy
 .label memory_copy
+
+# Concatenate src block memory to dst.
+# IN:  r0 pointer to src memory block
+# IN:  r1 pointer to dst memory block
+# IN:  r2 words of the first memory block
+# IN:  r3 words of the second memory block
+.label memory_cat
+
+# Compare two blocks of memory.
+# IN:  r0 pointer to first memory block
+# IN:  r1 pointer to second memory block
+# IN:  r2 words to compare
+# OUT: r0 < 0 if first < second
+#         = 0 if first == second
+#         > 0 if first > second
+.label memory_cmp

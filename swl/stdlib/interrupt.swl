@@ -1,10 +1,10 @@
-# @file swl/exceptions.swl
-# $DESCRIPTION$
+# @file stdlib/interrupt.swl
+# Interrupt handling.
 #
 # begin:     Wed, 22 Nov 2006 20:06:29 +0100
 # last:      $Date$ by $Author$
 #
-#  Copyright (C) 2006, Xosé Otero <xoseotero@users.sourceforge.net>
+#  Copyright (C) 2006, 2007, Xosé Otero <xoseotero@users.sourceforge.net>
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -21,14 +21,14 @@
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 # Kind of exceptions
-.define EXCEPTIONS_INSTRUCTION  0x0	# Wrong Instruction
-.define EXCEPTIONS_MEMORY	0x1	# Wrong Memory Location
-.define EXCEPTIONS_DIVISION	0x2	# Division by Zero
-.define EXCEPTIONS_TIME		0x3	# Timer Exception
-.define EXCEPTIONS_WORLD	0x4	# Unknow World Command
-.define EXCEPTIONS_WORLDEVENT	0x5	# World Event
-.define EXCEPTIONS_USEREVENT	0x6	# User Event
+.define INTERRUPT_INSTRUCTION	0x0	# Invalid Instruction
+.define INTERRUPT_MEMORY	0x1	# Invalid Memory Location
+.define INTERRUPT_DIVISION	0x2	# Division by Zero
+.define INTERRUPT_TIME		0x3	# Timer Interrupt
+.define INTERRUPT_WORLD		0x4	# Invalid World Command
+.define INTERRUPT_EVENT		0x5	# World Event
+.define INTERRUPT_SOFTWARE	0x6	# Software Interrupt
 
-.label exceptions_add
-.label exceptions_clear
-.label exceptions_clearall
+.label interrupt_add
+.label interrupt_clear
+.label interrupt_clearall

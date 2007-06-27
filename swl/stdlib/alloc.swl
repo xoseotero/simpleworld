@@ -1,7 +1,7 @@
-# @file stdlib/time.swl
-# Management of the Timer Interrupt to calculate the cycles of the World.
+# @file stdlib/alloc.swl
+# Memory allocator.
 #
-# begin:     Wed, 22 Nov 2006 20:04:17 +0100
+# begin:     Wed, 22 Nov 2006 20:03:28 +0100
 # last:      $Date$ by $Author$
 #
 #  Copyright (C) 2006, 2007, Xosé Otero <xoseotero@users.sourceforge.net>
@@ -20,10 +20,8 @@
 #  along with this program; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-.include "stdlib/interrupt.swl"
+.label alloc_init
 
-.label time_init
-
-.label time_interrupt
-.label time_time
-.label time_add_function
+.label alloc_alloc
+.label alloc_resize
+.label alloc_free
