@@ -21,13 +21,13 @@
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 # Kind of exceptions
-.define INTERRUPT_INSTRUCTION	0x0	# Invalid Instruction
-.define INTERRUPT_MEMORY	0x1	# Invalid Memory Location
-.define INTERRUPT_DIVISION	0x2	# Division by Zero
-.define INTERRUPT_TIME		0x3	# Timer Interrupt
-.define INTERRUPT_WORLD		0x4	# Invalid World Command
-.define INTERRUPT_EVENT		0x5	# World Event
-.define INTERRUPT_SOFTWARE	0x6	# Software Interrupt
+.define INTERRUPT_TIME		0x0	# Timer Interrupt
+.define INTERRUPT_SOFTWARE	0x1	# Software Interrupt
+.define INTERRUPT_INSTRUCTION	0x2	# Invalid Instruction
+.define INTERRUPT_MEMORY	0x3	# Invalid Memory Location
+.define INTERRUPT_DIVISION	0x4	# Division by Zero
+.define INTERRUPT_WORLD		0x5	# Invalid World Command
+.define INTERRUPT_EVENT		0x6	# World Event
 
 .label interrupt_add
 .label interrupt_clear
