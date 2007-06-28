@@ -4,10 +4,10 @@
 <language name="Simple World Language" version="1.00" kateversion="2.4" section="Assembler" extensions="*.swl;" mimetype="text/x-swl" casesensitive="1" author="XosÃ© Otero" license="GPL" priority="-1">
     <highlighting>
         <list name="prep">
-            <item> .include </item>
             <item> .define  </item>
             <item> .label  </item>
-            <item> .pragma  </item>
+            <item> .include </item>
+            <item> .block  </item>
         </list>
         <list name="inst">
             <!-- Management operations -->
@@ -48,8 +48,9 @@
 
             <!-- Function operations -->
             <item> call </item>
+            <item> int </item>
             <item> ret </item>
-            <item> rete </item>
+            <item> reti </item>
             <item> world </item>
 
             <!-- Arithmetic operations -->
