@@ -43,7 +43,7 @@ CPU::CPU(Memory* memory)
   this->set.add_register(0xc, "r12");
   this->set.add_register(0xd, "pc");
   this->set.add_register(0xe, "stp");
-  this->set.add_register(0xf, "etp");
+  this->set.add_register(0xf, "itp");
 
   // Instructions
   // Management operations
