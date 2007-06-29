@@ -33,6 +33,7 @@
 #include <cpu/exception.hpp>
 #include <cpu/memory.hpp>
 #include <cpu/instruction.hpp>
+#include <cpu/interrupt.hpp>
 
 namespace SimpleWorld
 {
@@ -129,11 +130,21 @@ protected:
   Instruction fetch_instruction() const;
 
 
+  /**
+   * Handle the interrupt.
+   */
+  void interrupt_handler();
+
+
   InstructionSet set; /**< Instruction set */
 
 private:
   Memory registers_;  /**< 16 registers */
   Memory* memory_;
+
+  bool interrupt_request_;	/**< If a interrupt was thrown. */
+  Interrupt interrupt_;
+
   bool running_;
 };
 

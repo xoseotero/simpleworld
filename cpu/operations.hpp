@@ -44,19 +44,21 @@ namespace CPU
  * Stop the CPU.
  * @param regs the registers.
  * @param mem the memory.
+ * @param interrupt interrupt.
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update stop(Memory& regs, Memory& mem, Instruction inst);
+Update stop(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst);
 
 /**
  * Restart the CPU (zeroing the registers).
  * @param regs the registers.
  * @param mem the memory.
+ * @param interrupt interrupt.
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update restart(Memory& regs, Memory& mem, Instruction inst);
+Update restart(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst);
 
 
 /* Move operations: Move data from a register to other one. */
@@ -66,19 +68,21 @@ Update restart(Memory& regs, Memory& mem, Instruction inst);
  * REGISTERS[FIRST] = REGISTERS[SECOND]
  * @param regs the registers.
  * @param mem the memory.
+ * @param interrupt interrupt.
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update move(Memory& regs, Memory& mem, Instruction inst);
+Update move(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst);
 
 /**
  * Swap the high half-word and the low half-word of a word.
  * @param regs the registers.
  * @param mem the memory.
+ * @param interrupt interrupt.
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update swap(Memory& regs, Memory& mem, Instruction inst);
+Update swap(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst);
 
 
 /* Load operations: Move data from memory to a register. */
@@ -88,10 +92,11 @@ Update swap(Memory& regs, Memory& mem, Instruction inst);
  * REGISTERS[FIRST] = MEMORY[ADDRESS]
  * @param regs the registers.
  * @param mem the memory.
+ * @param interrupt interrupt.
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update load(Memory& regs, Memory& mem, Instruction inst);
+Update load(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst);
 
 /**
  * Load a inmediate value.
@@ -99,10 +104,11 @@ Update load(Memory& regs, Memory& mem, Instruction inst);
  * REGISTERS[FIRST] = ADDRESS (the upper 32bits are cleared)
  * @param regs the registers.
  * @param mem the memory.
+ * @param interrupt interrupt.
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update loadi(Memory& regs, Memory& mem, Instruction inst);
+Update loadi(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst);
 
 /**
  * Load a word from memory using two base registers.
@@ -110,10 +116,11 @@ Update loadi(Memory& regs, Memory& mem, Instruction inst);
  * REGISTERS[FIRST] = MEMORY[REGISTERS[SECOND] + REGISTERS[ADDRESS]]
  * @param regs the registers.
  * @param mem the memory.
+ * @param interrupt interrupt.
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update loadrr(Memory& regs, Memory& mem, Instruction inst);
+Update loadrr(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst);
 
 /**
  * Load a word from memory using a base register and a inmediate value.
@@ -121,10 +128,11 @@ Update loadrr(Memory& regs, Memory& mem, Instruction inst);
  * REGISTERS[FIRST] = MEMORY[REGISTERS[SECOND] + ADDRESS]
  * @param regs the registers.
  * @param mem the memory.
+ * @param interrupt interrupt.
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update loadri(Memory& regs, Memory& mem, Instruction inst);
+Update loadri(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst);
 
 
 /* Store operations: Move data from a register to memory. */
@@ -134,10 +142,11 @@ Update loadri(Memory& regs, Memory& mem, Instruction inst);
  * MEMORY[ADDRESS] = REGISTERS[FIRST]
  * @param regs the registers.
  * @param mem the memory.
+ * @param interrupt interrupt.
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update store(Memory& regs, Memory& mem, Instruction inst);
+Update store(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst);
 
 /**
  * Store a word to memory using two base registers.
@@ -145,10 +154,11 @@ Update store(Memory& regs, Memory& mem, Instruction inst);
  * MEMORY[REGISTERS[FIRST] + REGISTERS[ADDRESS]] = REGISTERS[SECOND]
  * @param regs the registers.
  * @param mem the memory.
+ * @param interrupt interrupt.
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update storerr(Memory& regs, Memory& mem, Instruction inst);
+Update storerr(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst);
 
 /**
  * Store a word to memory using a base register and a inmediate value.
@@ -156,10 +166,11 @@ Update storerr(Memory& regs, Memory& mem, Instruction inst);
  * MEMORY[REGISTERS[FIRST] + INMEDIATE] = REGISTERS[SECOND]
  * @param regs the registers.
  * @param mem the memory.
+ * @param interrupt interrupt.
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update storeri(Memory& regs, Memory& mem, Instruction inst);
+Update storeri(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst);
 
 
 /* Stack operations: Push and pop in the stack. */
@@ -167,19 +178,21 @@ Update storeri(Memory& regs, Memory& mem, Instruction inst);
  * Move the content of the register to the top of the stack.
  * @param regs the registers.
  * @param mem the memory.
+ * @param interrupt interrupt.
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update push(Memory& regs, Memory& mem, Instruction inst);
+Update push(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst);
 
 /**
  * Move the top of the stack to a register.
  * @param regs the registers.
  * @param mem the memory.
+ * @param interrupt interrupt.
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update pop(Memory& regs, Memory& mem, Instruction inst);
+Update pop(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst);
 
 
 /* Branch operations: Change the program counter (PC) if the condition is 
@@ -190,10 +203,11 @@ Update pop(Memory& regs, Memory& mem, Instruction inst);
  * PC = ADDRESS
  * @param regs the registers.
  * @param mem the memory.
+ * @param interrupt interrupt.
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update b(Memory& regs, Memory& mem, Instruction inst);
+Update b(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst);
 
 /**
  * Branch on equal.
@@ -204,7 +218,7 @@ Update b(Memory& regs, Memory& mem, Instruction inst);
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update beq(Memory& regs, Memory& mem, Instruction inst);
+Update beq(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst);
 
 /**
  * Branch on not equal.
@@ -215,7 +229,7 @@ Update beq(Memory& regs, Memory& mem, Instruction inst);
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update bne(Memory& regs, Memory& mem, Instruction inst);
+Update bne(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst);
 
 /**
  * Branch on less than (signed comparission).
@@ -226,7 +240,7 @@ Update bne(Memory& regs, Memory& mem, Instruction inst);
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update blt(Memory& regs, Memory& mem, Instruction inst);
+Update blt(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst);
 
 /**
  * Branch on less than (unsigned comparission).
@@ -237,7 +251,7 @@ Update blt(Memory& regs, Memory& mem, Instruction inst);
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update bltu(Memory& regs, Memory& mem, Instruction inst);
+Update bltu(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst);
 
 /**
  * Branch on great than (signed comparission).
@@ -248,7 +262,7 @@ Update bltu(Memory& regs, Memory& mem, Instruction inst);
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update bgt(Memory& regs, Memory& mem, Instruction inst);
+Update bgt(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst);
 
 /**
  * Branch on great than (unsigned comparission).
@@ -259,7 +273,7 @@ Update bgt(Memory& regs, Memory& mem, Instruction inst);
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update bgtu(Memory& regs, Memory& mem, Instruction inst);
+Update bgtu(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst);
 
 /**
  * Branch on less or equal (signed comparission).
@@ -270,7 +284,7 @@ Update bgtu(Memory& regs, Memory& mem, Instruction inst);
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update ble(Memory& regs, Memory& mem, Instruction inst);
+Update ble(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst);
 
 /**
  * Branch on less or equal (unsigned comparission).
@@ -281,7 +295,7 @@ Update ble(Memory& regs, Memory& mem, Instruction inst);
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update bleu(Memory& regs, Memory& mem, Instruction inst);
+Update bleu(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst);
 
 /**
  * Branch on greater or equal (signed comparission).
@@ -292,7 +306,7 @@ Update bleu(Memory& regs, Memory& mem, Instruction inst);
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update bge(Memory& regs, Memory& mem, Instruction inst);
+Update bge(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst);
 
 /**
  * Branch on greater or equal (unsigned comparission).
@@ -303,7 +317,7 @@ Update bge(Memory& regs, Memory& mem, Instruction inst);
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update bgeu(Memory& regs, Memory& mem, Instruction inst);
+Update bgeu(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst);
 
 
 /* Function operations: call and return from a function. */
@@ -316,7 +330,18 @@ Update bgeu(Memory& regs, Memory& mem, Instruction inst);
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update call(Memory& regs, Memory& mem, Instruction inst);
+Update call(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst);
+
+/**
+ * Software interrupt.
+ *
+ * @param regs the registers.
+ * @param mem the memory.
+ * @param interrupt interrupt.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
+ */
+Update interrupt(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst);
 
 /**
  * Return.
@@ -324,10 +349,11 @@ Update call(Memory& regs, Memory& mem, Instruction inst);
  * POP(PC)
  * @param regs the registers.
  * @param mem the memory.
+ * @param interrupt interrupt.
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update ret(Memory& regs, Memory& mem, Instruction inst);
+Update ret(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst);
 
 /**
  * Return from exception.
@@ -335,10 +361,11 @@ Update ret(Memory& regs, Memory& mem, Instruction inst);
  * POP(ALL REGISTERS)
  * @param regs the registers.
  * @param mem the memory.
+ * @param interrupt interrupt.
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update reti(Memory& regs, Memory& mem, Instruction inst);
+Update reti(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst);
 
 
 /* Arithmetic operations: execute a arithmetic operation. */
@@ -348,10 +375,11 @@ Update reti(Memory& regs, Memory& mem, Instruction inst);
  * REGISTERS[FIRST] = REGISTERS[SECOND] + REGISTERS[ADDRESS]
  * @param regs the registers.
  * @param mem the memory.
+ * @param interrupt interrupt.
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update add(Memory& regs, Memory& mem, Instruction inst);
+Update add(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst);
 
 /**
  * Add a register and a inmediate value.
@@ -359,10 +387,11 @@ Update add(Memory& regs, Memory& mem, Instruction inst);
  * REGISTERS[FIRST] = REGISTERS[SECOND] + ADDRESS
  * @param regs the registers.
  * @param mem the memory.
+ * @param interrupt interrupt.
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update addi(Memory& regs, Memory& mem, Instruction inst);
+Update addi(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst);
 
 /**
  * Substract two registers.
@@ -370,10 +399,11 @@ Update addi(Memory& regs, Memory& mem, Instruction inst);
  * REGISTERS[FIRST] = REGISTERS[SECOND] - REGISTERS[ADDRESS]
  * @param regs the registers.
  * @param mem the memory.
+ * @param interrupt interrupt.
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update sub(Memory& regs, Memory& mem, Instruction inst);
+Update sub(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst);
 
 /**
  * Substract a register and a inmediate value.
@@ -381,10 +411,11 @@ Update sub(Memory& regs, Memory& mem, Instruction inst);
  * REGISTERS[FIRST] = REGISTERS[SECOND] - ADDRESS
  * @param regs the registers.
  * @param mem the memory.
+ * @param interrupt interrupt.
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update subi(Memory& regs, Memory& mem, Instruction inst);
+Update subi(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst);
 
 /**
  * Low 32bits from multiply two signed registers.
@@ -392,10 +423,11 @@ Update subi(Memory& regs, Memory& mem, Instruction inst);
  * REGISTERS[FIRST] = REGISTERS[SECOND] * REGISTERS[ADDRESS]
  * @param regs the registers.
  * @param mem the memory.
+ * @param interrupt interrupt.
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update multl(Memory& regs, Memory& mem, Instruction inst);
+Update multl(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst);
 
 /**
  * Low 32bits from multiply a signed registers and a signed inmediate value.
@@ -403,10 +435,11 @@ Update multl(Memory& regs, Memory& mem, Instruction inst);
  * REGISTERS[FIRST] = REGISTERS[SECOND] * ADDRESS
  * @param regs the registers.
  * @param mem the memory.
+ * @param interrupt interrupt.
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update multli(Memory& regs, Memory& mem, Instruction inst);
+Update multli(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst);
 
 /**
  * Low 32bits from multiply two unsigned registers.
@@ -414,10 +447,11 @@ Update multli(Memory& regs, Memory& mem, Instruction inst);
  * REGISTERS[FIRST] = REGISTERS[SECOND] * REGISTERS[ADDRESS]
  * @param regs the registers.
  * @param mem the memory.
+ * @param interrupt interrupt.
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update multlu(Memory& regs, Memory& mem, Instruction inst);
+Update multlu(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst);
 
 /**
  * Low 32bits from multiply a unsigned registers and a unsigned inmediate
@@ -426,10 +460,11 @@ Update multlu(Memory& regs, Memory& mem, Instruction inst);
  * REGISTERS[FIRST] = REGISTERS[SECOND] * ADDRESS
  * @param regs the registers.
  * @param mem the memory.
+ * @param interrupt interrupt.
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update multlui(Memory& regs, Memory& mem, Instruction inst);
+Update multlui(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst);
 
 /**
  * High 32bits from multiply two signed registers.
@@ -437,10 +472,11 @@ Update multlui(Memory& regs, Memory& mem, Instruction inst);
  * REGISTERS[FIRST] = REGISTERS[SECOND] * REGISTERS[ADDRESS]
  * @param regs the registers.
  * @param mem the memory.
+ * @param interrupt interrupt.
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update multh(Memory& regs, Memory& mem, Instruction inst);
+Update multh(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst);
 
 /**
  * High 32bits from multiply a signed registers and a signed inmediate value.
@@ -448,10 +484,11 @@ Update multh(Memory& regs, Memory& mem, Instruction inst);
  * REGISTERS[FIRST] = REGISTERS[SECOND] * ADDRESS
  * @param regs the registers.
  * @param mem the memory.
+ * @param interrupt interrupt.
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update multhi(Memory& regs, Memory& mem, Instruction inst);
+Update multhi(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst);
 
 /**
  * High 32bits from multiply two unsigned registers.
@@ -459,10 +496,11 @@ Update multhi(Memory& regs, Memory& mem, Instruction inst);
  * REGISTERS[FIRST] = REGISTERS[SECOND] * REGISTERS[ADDRESS]
  * @param regs the registers.
  * @param mem the memory.
+ * @param interrupt interrupt.
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update multhu(Memory& regs, Memory& mem, Instruction inst);
+Update multhu(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst);
 
 /**
  * High 32bits from multiply a unsigned registers and a unsigned inmediate
@@ -471,10 +509,11 @@ Update multhu(Memory& regs, Memory& mem, Instruction inst);
  * REGISTERS[FIRST] = REGISTERS[SECOND] * ADDRESS
  * @param regs the registers.
  * @param mem the memory.
+ * @param interrupt interrupt.
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update multhui(Memory& regs, Memory& mem, Instruction inst);
+Update multhui(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst);
 
 /**
  * Divide two signed registers.
@@ -482,10 +521,11 @@ Update multhui(Memory& regs, Memory& mem, Instruction inst);
  * REGISTERS[FIRST] = REGISTERS[SECOND] / REGISTERS[ADDRESS]
  * @param regs the registers.
  * @param mem the memory.
+ * @param interrupt interrupt.
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update div(Memory& regs, Memory& mem, Instruction inst);
+Update div(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst);
 
 /**
  * Divide a signed register and a signed inmediate value.
@@ -493,10 +533,11 @@ Update div(Memory& regs, Memory& mem, Instruction inst);
  * REGISTERS[FIRST] = REGISTERS[SECOND] / ADDRESS
  * @param regs the registers.
  * @param mem the memory.
+ * @param interrupt interrupt.
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update divi(Memory& regs, Memory& mem, Instruction inst);
+Update divi(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst);
 
 /**
  * Divide two unsigned registers.
@@ -504,10 +545,11 @@ Update divi(Memory& regs, Memory& mem, Instruction inst);
  * REGISTERS[FIRST] = REGISTERS[SECOND] / REGISTERS[ADDRESS]
  * @param regs the registers.
  * @param mem the memory.
+ * @param interrupt interrupt.
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update divu(Memory& regs, Memory& mem, Instruction inst);
+Update divu(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst);
 
 /**
  * Divide a unsigned register and a unsigned inmediate value.
@@ -515,10 +557,11 @@ Update divu(Memory& regs, Memory& mem, Instruction inst);
  * REGISTERS[FIRST] = REGISTERS[SECOND] / ADDRESS
  * @param regs the registers.
  * @param mem the memory.
+ * @param interrupt interrupt.
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update divui(Memory& regs, Memory& mem, Instruction inst);
+Update divui(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst);
 
 /**
  * Module of two signed registers.
@@ -526,10 +569,11 @@ Update divui(Memory& regs, Memory& mem, Instruction inst);
  * REGISTERS[FIRST] = REGISTERS[SECOND] % REGISTERS[ADDRESS]
  * @param regs the registers.
  * @param mem the memory.
+ * @param interrupt interrupt.
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update mod(Memory& regs, Memory& mem, Instruction inst);
+Update mod(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst);
 
 /**
  * Module of a signed register and a signed inmediate value.
@@ -537,10 +581,11 @@ Update mod(Memory& regs, Memory& mem, Instruction inst);
  * REGISTERS[FIRST] = REGISTERS[SECOND] % ADDRESS
  * @param regs the registers.
  * @param mem the memory.
+ * @param interrupt interrupt.
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update modi(Memory& regs, Memory& mem, Instruction inst);
+Update modi(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst);
 
 /**
  * Module of two unsigned registers.
@@ -548,10 +593,11 @@ Update modi(Memory& regs, Memory& mem, Instruction inst);
  * REGISTERS[FIRST] = REGISTERS[SECOND] % REGISTERS[ADDRESS]
  * @param regs the registers.
  * @param mem the memory.
+ * @param interrupt interrupt.
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update modu(Memory& regs, Memory& mem, Instruction inst);
+Update modu(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst);
 
 /**
  * Module of a unsigned register and a unsigned inmediate value.
@@ -559,10 +605,11 @@ Update modu(Memory& regs, Memory& mem, Instruction inst);
  * REGISTERS[FIRST] = REGISTERS[SECOND] % ADDRESS
  * @param regs the registers.
  * @param mem the memory.
+ * @param interrupt interrupt.
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update modui(Memory& regs, Memory& mem, Instruction inst);
+Update modui(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst);
 
 
 /* Logic operations: execute a logic operation. */
@@ -572,10 +619,11 @@ Update modui(Memory& regs, Memory& mem, Instruction inst);
  * REGISTERS[FIRST] = ~REGISTERS[SECOND]
  * @param regs the registers.
  * @param mem the memory.
+ * @param interrupt interrupt.
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update lnot(Memory& regs, Memory& mem, Instruction inst);
+Update lnot(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst);
 
 /**
  * OR of two registers.
@@ -583,10 +631,11 @@ Update lnot(Memory& regs, Memory& mem, Instruction inst);
  * REGISTERS[FIRST] = REGISTERS[SECOND] | REGISTERS[ADDRESS]
  * @param regs the registers.
  * @param mem the memory.
+ * @param interrupt interrupt.
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update lor(Memory& regs, Memory& mem, Instruction inst);
+Update lor(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst);
 
 /**
  * OR of a register and a inmediate value.
@@ -594,10 +643,11 @@ Update lor(Memory& regs, Memory& mem, Instruction inst);
  * REGISTERS[FIRST] = REGISTERS[SECOND] | ADDRESS
  * @param regs the registers.
  * @param mem the memory.
+ * @param interrupt interrupt.
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update lori(Memory& regs, Memory& mem, Instruction inst);
+Update lori(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst);
 
 /**
  * AND of two registers.
@@ -605,10 +655,11 @@ Update lori(Memory& regs, Memory& mem, Instruction inst);
  * REGISTERS[FIRST] = REGISTERS[SECOND] & REGISTERS[ADDRESS]
  * @param regs the registers.
  * @param mem the memory.
+ * @param interrupt interrupt.
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update land(Memory& regs, Memory& mem, Instruction inst);
+Update land(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst);
 
 /**
  * AND of a register and a inmediate value.
@@ -616,10 +667,11 @@ Update land(Memory& regs, Memory& mem, Instruction inst);
  * REGISTERS[FIRST] = REGISTERS[SECOND] & ADDRESS
  * @param regs the registers.
  * @param mem the memory.
+ * @param interrupt interrupt.
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update landi(Memory& regs, Memory& mem, Instruction inst);
+Update landi(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst);
 
 /**
  * EXOR of two registers.
@@ -627,10 +679,11 @@ Update landi(Memory& regs, Memory& mem, Instruction inst);
  * REGISTERS[FIRST] = REGISTERS[SECOND] ^ REGISTERS[ADDRESS]
  * @param regs the registers.
  * @param mem the memory.
+ * @param interrupt interrupt.
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update lxor(Memory& regs, Memory& mem, Instruction inst);
+Update lxor(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst);
 
 /**
  * EXOR of a register and a inmediate value.
@@ -638,10 +691,11 @@ Update lxor(Memory& regs, Memory& mem, Instruction inst);
  * REGISTERS[FIRST] = REGISTERS[SECOND] ^ ADDRESS
  * @param regs the registers.
  * @param mem the memory.
+ * @param interrupt interrupt.
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update lxori(Memory& regs, Memory& mem, Instruction inst);
+Update lxori(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst);
 
 
 /* Shift operations: execute a shift operation. */
@@ -651,10 +705,11 @@ Update lxori(Memory& regs, Memory& mem, Instruction inst);
  * Move the bits X positions to the left inserting zeros on the right.
  * @param regs the registers.
  * @param mem the memory.
+ * @param interrupt interrupt.
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update sll(Memory& regs, Memory& mem, Instruction inst);
+Update sll(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst);
 
 /**
  * Logic shift left.
@@ -662,10 +717,11 @@ Update sll(Memory& regs, Memory& mem, Instruction inst);
  * Move the bits X positions to the left inserting zeros on the right.
  * @param regs the registers.
  * @param mem the memory.
+ * @param interrupt interrupt.
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update slli(Memory& regs, Memory& mem, Instruction inst);
+Update slli(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst);
 
 /**
  * Logic shift right.
@@ -673,10 +729,11 @@ Update slli(Memory& regs, Memory& mem, Instruction inst);
  * Move the bits X positions to the right inserting zeros on the left.
  * @param regs the registers.
  * @param mem the memory.
+ * @param interrupt interrupt.
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update srl(Memory& regs, Memory& mem, Instruction inst);
+Update srl(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst);
 
 /**
  * Logic shift right.
@@ -684,10 +741,11 @@ Update srl(Memory& regs, Memory& mem, Instruction inst);
  * Move the bits X positions to the right inserting zeros on the left.
  * @param regs the registers.
  * @param mem the memory.
+ * @param interrupt interrupt.
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update srli(Memory& regs, Memory& mem, Instruction inst);
+Update srli(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst);
 
 /**
  * Arithmetic shift left.
@@ -695,10 +753,11 @@ Update srli(Memory& regs, Memory& mem, Instruction inst);
  * Same as logic shift left.
  * @param regs the registers.
  * @param mem the memory.
+ * @param interrupt interrupt.
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update sla(Memory& regs, Memory& mem, Instruction inst);
+Update sla(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst);
 
 /**
  * Arithmetic shift left.
@@ -706,10 +765,11 @@ Update sla(Memory& regs, Memory& mem, Instruction inst);
  * Same as logic shift left.
  * @param regs the registers.
  * @param mem the memory.
+ * @param interrupt interrupt.
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update slai(Memory& regs, Memory& mem, Instruction inst);
+Update slai(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst);
 
 /**
  * Arithmetic shift right.
@@ -717,10 +777,11 @@ Update slai(Memory& regs, Memory& mem, Instruction inst);
  * Same as logic shift right but performing sign extension.
  * @param regs the registers.
  * @param mem the memory.
+ * @param interrupt interrupt.
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update sra(Memory& regs, Memory& mem, Instruction inst);
+Update sra(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst);
 
 /**
  * Arithmetic shift right.
@@ -728,10 +789,11 @@ Update sra(Memory& regs, Memory& mem, Instruction inst);
  * Same as logic shift right but performing sign extension.
  * @param regs the registers.
  * @param mem the memory.
+ * @param interrupt interrupt.
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update srai(Memory& regs, Memory& mem, Instruction inst);
+Update srai(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst);
 
 /**
  * Rotate left.
@@ -739,10 +801,11 @@ Update srai(Memory& regs, Memory& mem, Instruction inst);
  * Same as logic shift left but inserting the removed bits on the right.
  * @param regs the registers.
  * @param mem the memory.
+ * @param interrupt interrupt.
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update rl(Memory& regs, Memory& mem, Instruction inst);
+Update rl(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst);
 
 /**
  * Rotate left.
@@ -750,10 +813,11 @@ Update rl(Memory& regs, Memory& mem, Instruction inst);
  * Same as logic shift left but inserting the removed bits on the right.
  * @param regs the registers.
  * @param mem the memory.
+ * @param interrupt interrupt.
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update rli(Memory& regs, Memory& mem, Instruction inst);
+Update rli(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst);
 
 /**
  * Rotate right.
@@ -761,10 +825,11 @@ Update rli(Memory& regs, Memory& mem, Instruction inst);
  * Same as logic shift right but inserting the removed bits on the left.
  * @param regs the registers.
  * @param mem the memory.
+ * @param interrupt interrupt.
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update rr(Memory& regs, Memory& mem, Instruction inst);
+Update rr(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst);
 
 /**
  * Rotate right.
@@ -772,10 +837,11 @@ Update rr(Memory& regs, Memory& mem, Instruction inst);
  * Same as logic shift right but inserting the removed bits on the left.
  * @param regs the registers.
  * @param mem the memory.
+ * @param interrupt interrupt.
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update rri(Memory& regs, Memory& mem, Instruction inst);
+Update rri(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst);
 
 }
 }

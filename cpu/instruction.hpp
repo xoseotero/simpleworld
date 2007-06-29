@@ -33,6 +33,7 @@
 #include <cpu/types.hpp>
 #include <cpu/exception.hpp>
 #include <cpu/memory.hpp>
+#include <cpu/interrupt.hpp>
 
 namespace SimpleWorld
 {
@@ -156,6 +157,7 @@ struct Instruction {
 enum Update {
   None,               /**< Do nothing */
   UpdatePC,           /**< Update the program counter */
+  UpdateInterrupt,	      /**< Interrupt request */
   Stop                /**< Stop the CPU */
 };
 
@@ -163,10 +165,12 @@ enum Update {
  * Pointer to a function that executes a instruction.
  * @param regs the registers.
  * @param mem the memory.
+ * @param interrupt interrupt.
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-typedef Update (*Operation) (Memory& regs, Memory& mem, Instruction inst);
+typedef Update (*Operation) (Memory& regs, Memory& mem, Interrupt& interrupt,
+			     Instruction inst);
 
 /**
  * Information about instruction's parameters.

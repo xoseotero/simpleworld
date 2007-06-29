@@ -17,12 +17,13 @@ namespace SimpleWorld
 namespace CPU
 {
 
-Update stop(Memory& regs, Memory& mem, Instruction inst)
+Update stop(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst)
 {
   return Stop;
 }
 
-Update restart(Memory& regs, Memory& mem, Instruction inst)
+Update restart(Memory& regs, Memory& mem, Interrupt& interrupt,
+	       Instruction inst)
 {
   Uint8 i;
   for (i = 0; i < 16; i++)

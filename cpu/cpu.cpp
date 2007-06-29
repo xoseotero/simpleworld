@@ -84,6 +84,7 @@ CPU::CPU(Memory* memory)
 
   // Function operations
   this->set.add_instruction(0x30, "call", 0, true, call);
+  this->set.add_instruction(0x31, "int", 0, true, interrupt);
   this->set.add_instruction(0x34, "ret", 0, false, ret);
   this->set.add_instruction(0x35, "reti", 0, false, reti);
 
@@ -166,27 +167,40 @@ void CPU::next()
   if (not this->running_)
     throw CPUStopped(__FILE__, __LINE__);
 
-  Instruction instruction = this->fetch_instruction();
-  InstructionInfo info = this->set.instruction_info(instruction.code);
+  if (this->interrupt_request_) {
 #ifdef DEBUG
-  std::cout << "Instruction info:";
-  std::cout
-    << boost::str(boost::format("code: %d, name: %s, nregs: %d, has_i: %d")
-                  % static_cast<int>(info.code)
-                  % info.name
-                  % static_cast<int>(info.nregs)
-                  % static_cast<int>(info.has_inmediate))
-    << std::endl;
+    std::cout << boost::str(boost::format("Interrupt: 0x%8x")
+                            % this->interrupt_)
+	      << std::endl;
+#endif
+    this->interrupt_handler();
+  } else {
+    Instruction instruction = this->fetch_instruction();
+    InstructionInfo info = this->set.instruction_info(instruction.code);
+#ifdef DEBUG
+    std::cout << "Instruction info:";
+    std::cout
+      << boost::str(boost::format("code: %d, name: %s, nregs: %d, has_i: %d")
+		    % static_cast<int>(info.code)
+		    % info.name
+		    % static_cast<int>(info.nregs)
+		    % static_cast<int>(info.has_inmediate))
+      << std::endl;
 #endif
 
-  switch (info.func(this->registers_, *this->memory_, instruction)) {
-  case UpdatePC:
-    // Update PC
-    this->registers_.set_word(REGISTER_PC, this->registers_[REGISTER_PC] + 4);
-    break;
-  case Stop:
-    this->running_ = false;
-    break;
+    switch (info.func(this->registers_, *this->memory_, this->interrupt_,
+		      instruction)) {
+    case UpdateInterrupt:
+      // Thrown a interrupt
+      this->interrupt_request_ = true;
+    case UpdatePC:
+      // Update PC
+      this->registers_.set_word(REGISTER_PC, this->registers_[REGISTER_PC] + 4);
+      break;
+    case Stop:
+      this->running_ = false;
+      break;
+    }
   }
 }
 
@@ -201,6 +215,34 @@ Instruction CPU::fetch_instruction() const
 #endif
   return InstructionSet::decode(this->memory_->get_word(this->registers_[REGISTER_PC],
 							false));
+}
+
+
+void CPU::interrupt_handler()
+{
+  Word itp = this->registers_[REGISTER_ITP];
+  Word handler = this->memory_->get_word(this->registers_[REGISTER_ITP +
+    this->interrupt_.type * sizeof(Word)]);
+  if (this->interrupt_request_ and itp != 0 and handler != 0) {
+    // Save all the registers in the stack
+    Sint8 i;
+    for (i = 0; i < 16; i++) {
+      // Store a register:
+      // Save the register in the top of the stack
+      this->registers_.set_word(REGISTER_STP, this->registers_[REGISTER(i)]);
+      // Update stack pointer
+      this->registers_.set_word(REGISTER_STP,
+                                this->registers_[REGISTER_STP] - 4);
+    }
+
+    // Store the information of the interrupt
+    this->registers_.set_word(REGISTER(0), this->interrupt_.r0);
+    this->registers_.set_word(REGISTER(1), this->interrupt_.r1);
+    this->registers_.set_word(REGISTER(2), this->interrupt_.r2);
+
+    // Update the PC with the interrupt handler location
+    this->registers_.set_word(REGISTER_PC, handler);
+  }
 }
 
 }

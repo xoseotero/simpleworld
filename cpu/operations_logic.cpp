@@ -17,49 +17,52 @@ namespace SimpleWorld
 namespace CPU
 {
 
-Update lnot(Memory& regs, Memory& mem, Instruction inst)
+Update lnot(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst)
 {
   regs.set_word(inst.first * 4, ~ regs[inst.second * 4]);
 
   return UpdatePC;
 }
 
-Update lor(Memory& regs, Memory& mem, Instruction inst)
+Update lor(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst)
 {
-  regs.set_word(inst.first * 4, regs[inst.second * 4] | regs[inst.address * 4]);
+  regs.set_word(inst.first * 4,
+		regs[inst.second * 4] | regs[inst.address * 4]);
 
   return UpdatePC;
 }
 
-Update lori(Memory& regs, Memory& mem, Instruction inst)
+Update lori(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst)
 {
   regs.set_word(inst.first * 4, regs[inst.second * 4] | inst.address);
 
   return UpdatePC;
 }
 
-Update land(Memory& regs, Memory& mem, Instruction inst)
+Update land(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst)
 {
-  regs.set_word(inst.first * 4, regs[inst.second * 4] & regs[inst.address * 4]);
+  regs.set_word(inst.first * 4,
+		regs[inst.second * 4] & regs[inst.address * 4]);
 
   return UpdatePC;
 }
 
-Update landi(Memory& regs, Memory& mem, Instruction inst)
+Update landi(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst)
 {
   regs.set_word(inst.first * 4, regs[inst.second * 4] & inst.address);
 
   return UpdatePC;
 }
 
-Update lxor(Memory& regs, Memory& mem, Instruction inst)
+Update lxor(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst)
 {
-  regs.set_word(inst.first * 4, regs[inst.second * 4] ^ regs[inst.address * 4]);
+  regs.set_word(inst.first * 4,
+		regs[inst.second * 4] ^ regs[inst.address * 4]);
 
   return UpdatePC;
 }
 
-Update lxori(Memory& regs, Memory& mem, Instruction inst)
+Update lxori(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst)
 {
   regs.set_word(inst.first * 4, regs[inst.second * 4] ^ inst.address);
 

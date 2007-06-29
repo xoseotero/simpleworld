@@ -17,14 +17,14 @@ namespace SimpleWorld
 namespace CPU
 {
 
-Update b(Memory& regs, Memory& mem, Instruction inst)
+Update b(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst)
 {
   regs.set_word(REGISTER_PC, inst.address);
 
   return None;
 }
 
-Update beq(Memory& regs, Memory& mem, Instruction inst)
+Update beq(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst)
 {
   if (regs[inst.first * 4] == regs[inst.second * 4]) {
     regs.set_word(REGISTER_PC, inst.address);
@@ -34,7 +34,7 @@ Update beq(Memory& regs, Memory& mem, Instruction inst)
   return UpdatePC;
 }
 
-Update bne(Memory& regs, Memory& mem, Instruction inst)
+Update bne(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst)
 {
   if (regs[inst.first * 4] != regs[inst.second * 4]) {
     regs.set_word(REGISTER_PC, inst.address);
@@ -44,7 +44,7 @@ Update bne(Memory& regs, Memory& mem, Instruction inst)
   return UpdatePC;
 }
 
-Update blt(Memory& regs, Memory& mem, Instruction inst)
+Update blt(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst)
 {
   if (static_cast<Sint32>(regs[inst.first * 4]) <
       static_cast<Sint32>(regs[inst.second * 4])) {
@@ -55,7 +55,7 @@ Update blt(Memory& regs, Memory& mem, Instruction inst)
   return UpdatePC;
 }
 
-Update bltu(Memory& regs, Memory& mem, Instruction inst)
+Update bltu(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst)
 {
   if (regs[inst.first * 4] < regs[inst.second * 4]) {
     regs.set_word(REGISTER_PC, inst.address);
@@ -65,7 +65,7 @@ Update bltu(Memory& regs, Memory& mem, Instruction inst)
   return UpdatePC;
 }
 
-Update bgt(Memory& regs, Memory& mem, Instruction inst)
+Update bgt(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst)
 {
   if (static_cast<Sint32>(regs[inst.first * 4]) >
       static_cast<Sint32>(regs[inst.second * 4])) {
@@ -76,7 +76,7 @@ Update bgt(Memory& regs, Memory& mem, Instruction inst)
   return UpdatePC;
 }
 
-Update bgtu(Memory& regs, Memory& mem, Instruction inst)
+Update bgtu(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst)
 {
   if (regs[inst.first * 4] > regs[inst.second * 4]) {
     regs.set_word(REGISTER_PC, inst.address);
@@ -86,7 +86,7 @@ Update bgtu(Memory& regs, Memory& mem, Instruction inst)
   return UpdatePC;
 }
 
-Update ble(Memory& regs, Memory& mem, Instruction inst)
+Update ble(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst)
 {
   if (static_cast<Sint32>(regs[inst.first * 4]) <=
       static_cast<Sint32>(regs[inst.second * 4])) {
@@ -97,7 +97,7 @@ Update ble(Memory& regs, Memory& mem, Instruction inst)
   return UpdatePC;
 }
 
-Update bleu(Memory& regs, Memory& mem, Instruction inst)
+Update bleu(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst)
 {
   if (regs[inst.first * 4] <= regs[inst.second * 4]) {
     regs.set_word(REGISTER_PC, inst.address);
@@ -107,7 +107,7 @@ Update bleu(Memory& regs, Memory& mem, Instruction inst)
   return UpdatePC;
 }
 
-Update bge(Memory& regs, Memory& mem, Instruction inst)
+Update bge(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst)
 {
   if (static_cast<Sint32>(regs[inst.first * 4]) >=
       static_cast<Sint32>(regs[inst.second * 4])) {
@@ -118,7 +118,7 @@ Update bge(Memory& regs, Memory& mem, Instruction inst)
   return UpdatePC;
 }
 
-Update bgeu(Memory& regs, Memory& mem, Instruction inst)
+Update bgeu(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst)
 {
   if (regs[inst.first * 4] >= regs[inst.second * 4]) {
     regs.set_word(REGISTER_PC, inst.address);

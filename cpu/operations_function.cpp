@@ -11,6 +11,7 @@
  */
 
 #include "operations.hpp"
+#include "interrupt.hpp"
 
 #include <iostream>
 
@@ -19,7 +20,7 @@ namespace SimpleWorld
 namespace CPU
 {
 
-Update call(Memory& regs, Memory& mem, Instruction inst)
+Update call(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst)
 {
   // Save the program counter (pc) in the top of the stack
   mem.set_word(regs[REGISTER_STP], regs[REGISTER_PC]);
@@ -31,7 +32,16 @@ Update call(Memory& regs, Memory& mem, Instruction inst)
   return None;
 }
 
-Update ret(Memory& regs, Memory& mem, Instruction inst)
+Update interrupt(Memory& regs, Memory& mem, Interrupt& interrupt,
+		 Instruction inst)
+{
+  interrupt.type = SoftwareInterrupt;
+  interrupt.r0 = static_cast<Word>(SoftwareInterrupt);
+  interrupt.r1 = inst.address;
+  return UpdateInterrupt;
+}
+
+Update ret(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst)
 {
   // Update stack pointer
   regs.set_word(REGISTER_STP, regs[REGISTER_STP] + 4);
@@ -41,7 +51,7 @@ Update ret(Memory& regs, Memory& mem, Instruction inst)
   return UpdatePC;
 }
 
-Update reti(Memory& regs, Memory& mem, Instruction inst)
+Update reti(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst)
 {
   Sint8 i;
   for (i = 15; i >= 0; i--) {
@@ -49,7 +59,7 @@ Update reti(Memory& regs, Memory& mem, Instruction inst)
     // Update stack pointer
     regs.set_word(REGISTER_STP, regs[REGISTER_STP] + 4);
     // Restore the register
-    regs.set_word(i * 4, mem[regs[REGISTER_STP]]);
+    regs.set_word(REGISTER(i), regs[REGISTER_STP]);
   }
 
   return UpdatePC;
