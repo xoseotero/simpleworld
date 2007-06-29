@@ -60,7 +60,7 @@ Update pop(Memory& regs, Memory& mem, Instruction inst)
 /* Load operations */
 Update load(Memory& regs, Memory& mem, Instruction inst)
 {
-  regs.set_word(inst.first * 4, mem[(regs[REGISTER_SGP] << 16) + inst.address]);
+  regs.set_word(inst.first * 4, mem[inst.address]);
 
   return UpdatePC;
 }
@@ -91,7 +91,7 @@ Update loadri(Memory& regs, Memory& mem, Instruction inst)
 /* Store operations */
 Update store(Memory& regs, Memory& mem, Instruction inst)
 {
-  mem.set_word((regs[REGISTER_SGP] << 16) + inst.address, regs[inst.first * 4]);
+  mem.set_word(inst.address, regs[inst.first * 4]);
 
   return UpdatePC;
 }

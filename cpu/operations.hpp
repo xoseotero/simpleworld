@@ -30,8 +30,7 @@
 #include <cpu/instruction.hpp>
 
 #define REGISTER(NUMBER) (NUMBER * sizeof(Word))
-#define REGISTER_PC REGISTER(0xc)
-#define REGISTER_SGP REGISTER(0xd)
+#define REGISTER_PC REGISTER(0xd)
 #define REGISTER_STP REGISTER(0xe)
 #define REGISTER_ETP REGISTER(0xf)
 

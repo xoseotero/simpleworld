@@ -26,7 +26,7 @@ Update call(Memory& regs, Memory& mem, Instruction inst)
   // Update stack pointer
   regs.set_word(REGISTER_STP, regs[REGISTER_STP] - 4);
   // Execute the function
-  regs.set_word(REGISTER_PC, (regs[REGISTER_SGP] << 16) + inst.address);
+  regs.set_word(REGISTER_PC, inst.address);
 
   return None;
 }

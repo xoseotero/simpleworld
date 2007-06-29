@@ -19,7 +19,7 @@ namespace CPU
 
 Update b(Memory& regs, Memory& mem, Instruction inst)
 {
-  regs.set_word(REGISTER_PC, (regs[REGISTER_SGP] << 16) + inst.address);
+  regs.set_word(REGISTER_PC, inst.address);
 
   return None;
 }
@@ -27,7 +27,7 @@ Update b(Memory& regs, Memory& mem, Instruction inst)
 Update beq(Memory& regs, Memory& mem, Instruction inst)
 {
   if (regs[inst.first * 4] == regs[inst.second * 4]) {
-    regs.set_word(REGISTER_PC, (regs[REGISTER_SGP] << 16) + inst.address);
+    regs.set_word(REGISTER_PC, inst.address);
     return None;
   }
 
@@ -37,7 +37,7 @@ Update beq(Memory& regs, Memory& mem, Instruction inst)
 Update bne(Memory& regs, Memory& mem, Instruction inst)
 {
   if (regs[inst.first * 4] != regs[inst.second * 4]) {
-    regs.set_word(REGISTER_PC, (regs[REGISTER_SGP] << 16) + inst.address);
+    regs.set_word(REGISTER_PC, inst.address);
     return None;
   }
 
@@ -48,7 +48,7 @@ Update blt(Memory& regs, Memory& mem, Instruction inst)
 {
   if (static_cast<Sint32>(regs[inst.first * 4]) <
       static_cast<Sint32>(regs[inst.second * 4])) {
-    regs.set_word(REGISTER_PC, (regs[REGISTER_SGP] << 16) + inst.address);
+    regs.set_word(REGISTER_PC, inst.address);
     return None;
   }
 
@@ -58,7 +58,7 @@ Update blt(Memory& regs, Memory& mem, Instruction inst)
 Update bltu(Memory& regs, Memory& mem, Instruction inst)
 {
   if (regs[inst.first * 4] < regs[inst.second * 4]) {
-    regs.set_word(REGISTER_PC, (regs[REGISTER_SGP] << 16) + inst.address);
+    regs.set_word(REGISTER_PC, inst.address);
     return None;
   }
 
@@ -69,7 +69,7 @@ Update bgt(Memory& regs, Memory& mem, Instruction inst)
 {
   if (static_cast<Sint32>(regs[inst.first * 4]) >
       static_cast<Sint32>(regs[inst.second * 4])) {
-    regs.set_word(REGISTER_PC, (regs[REGISTER_SGP] << 16) + inst.address);
+    regs.set_word(REGISTER_PC, inst.address);
     return None;
   }
 
@@ -79,7 +79,7 @@ Update bgt(Memory& regs, Memory& mem, Instruction inst)
 Update bgtu(Memory& regs, Memory& mem, Instruction inst)
 {
   if (regs[inst.first * 4] > regs[inst.second * 4]) {
-    regs.set_word(REGISTER_PC, (regs[REGISTER_SGP] << 16) + inst.address);
+    regs.set_word(REGISTER_PC, inst.address);
     return None;
   }
 
@@ -90,7 +90,7 @@ Update ble(Memory& regs, Memory& mem, Instruction inst)
 {
   if (static_cast<Sint32>(regs[inst.first * 4]) <=
       static_cast<Sint32>(regs[inst.second * 4])) {
-    regs.set_word(REGISTER_PC, (regs[REGISTER_SGP] << 16) + inst.address);
+    regs.set_word(REGISTER_PC, inst.address);
     return None;
   }
 
@@ -100,7 +100,7 @@ Update ble(Memory& regs, Memory& mem, Instruction inst)
 Update bleu(Memory& regs, Memory& mem, Instruction inst)
 {
   if (regs[inst.first * 4] <= regs[inst.second * 4]) {
-    regs.set_word(REGISTER_PC, (regs[REGISTER_SGP] << 16) + inst.address);
+    regs.set_word(REGISTER_PC, inst.address);
     return None;
   }
 
@@ -111,7 +111,7 @@ Update bge(Memory& regs, Memory& mem, Instruction inst)
 {
   if (static_cast<Sint32>(regs[inst.first * 4]) >=
       static_cast<Sint32>(regs[inst.second * 4])) {
-    regs.set_word(REGISTER_PC, (regs[REGISTER_SGP] << 16) + inst.address);
+    regs.set_word(REGISTER_PC, inst.address);
     return None;
   }
 
@@ -121,7 +121,7 @@ Update bge(Memory& regs, Memory& mem, Instruction inst)
 Update bgeu(Memory& regs, Memory& mem, Instruction inst)
 {
   if (regs[inst.first * 4] >= regs[inst.second * 4]) {
-    regs.set_word(REGISTER_PC, (regs[REGISTER_SGP] << 16) + inst.address);
+    regs.set_word(REGISTER_PC, inst.address);
     return None;
   }
 

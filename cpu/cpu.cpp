@@ -40,8 +40,8 @@ CPU::CPU(Memory* memory)
   this->set.add_register(0x9, "r9");
   this->set.add_register(0xa, "r10");
   this->set.add_register(0xb, "r11");
-  this->set.add_register(0xc, "pc");
-  this->set.add_register(0xd, "sgc");
+  this->set.add_register(0xb, "r12");
+  this->set.add_register(0xd, "pc");
   this->set.add_register(0xe, "stp");
   this->set.add_register(0xf, "etp");
 
