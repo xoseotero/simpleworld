@@ -85,7 +85,7 @@ CPU::CPU(Memory* memory)
   // Function operations
   this->set.add_instruction(0x30, "call", 0, true, call);
   this->set.add_instruction(0x34, "ret", 0, false, ret);
-  this->set.add_instruction(0x35, "rete", 0, false, rete);
+  this->set.add_instruction(0x35, "reti", 0, false, reti);
 
   // Arithmetic operations
   this->set.add_instruction(0x40, "add", 3, false, add);

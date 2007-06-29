@@ -338,7 +338,7 @@ Update ret(Memory& regs, Memory& mem, Instruction inst);
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update rete(Memory& regs, Memory& mem, Instruction inst);
+Update reti(Memory& regs, Memory& mem, Instruction inst);
 
 
 /* Arithmetic operations: execute a arithmetic operation. */

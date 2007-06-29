@@ -41,7 +41,7 @@ Update ret(Memory& regs, Memory& mem, Instruction inst)
   return UpdatePC;
 }
 
-Update rete(Memory& regs, Memory& mem, Instruction inst)
+Update reti(Memory& regs, Memory& mem, Instruction inst)
 {
   Sint8 i;
   for (i = 15; i >= 0; i--) {
