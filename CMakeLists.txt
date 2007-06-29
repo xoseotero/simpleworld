@@ -14,34 +14,14 @@ set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 
 # Boost is needed
-FIND_PACKAGE(Boost REQUIRED)
+SET(Boost_LIB_TYPE "st")
+#SET(Boost_LIB_SUFFIX "gcc41-mt-1_34")
+FIND_PACKAGE(Boost REQUIRED filesystem regex program_options unit_test_framework)
 IF(NOT Boost_FOUND)
   MESSAGE(FATAL_ERROR "Boost not found")
 ENDIF(NOT Boost_FOUND)
 
-SET(CMAKE_REQUIRED_INCLUDES "${Boost_INCLUDE_DIRS}")
-# Boost Filesystem Library is needed
-CHECK_INCLUDE_FILE_CXX("boost/filesystem/path.hpp" HAVE_BOOST_PATH)
-IF(NOT HAVE_BOOST_PATH)
-  MESSAGE(FATAL_ERROR "Boost Filesystem Library not found")
-ENDIF(NOT HAVE_BOOST_PATH)
-
-# Boost Regular Expressions Library is needed
-CHECK_INCLUDE_FILE_CXX("boost/regex.hpp" HAVE_BOOST_REGEX)
-IF(NOT HAVE_BOOST_REGEX)
-  MESSAGE(FATAL_ERROR "Boost Regular Expressions Library not found")
-ENDIF(NOT HAVE_BOOST_REGEX)
-
-IF(SW_TEST)
-  # Boost Unit Test Frameword is needed
-  CHECK_INCLUDE_FILE_CXX("boost/test/unit_test.hpp" HAVE_BOOST_UTF)
-  IF(NOT HAVE_BOOST_UTF)
-    MESSAGE(FATAL_ERROR "Boost Unit Test Framework not found")
-  ENDIF(NOT HAVE_BOOST_UTF)
-ENDIF(SW_TEST)
-
 INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIRS})
-LINK_DIRECTORIES(${Boost_LIBRARY_DIRS})
 
 # SQLite3
 OPTION(SQLite3_USE_INTERNAL "Use internal SQLite3 library" OFF)
