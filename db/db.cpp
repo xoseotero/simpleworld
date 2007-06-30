@@ -3,7 +3,7 @@
  * Simple World Data Base.
  *
  * begin:     Wed, 24 Jan 2007 06:23:10 +0100
- * last:      $Date$ by $Author$
+ * last:      $Date$
  *
  *  Copyright (C) 2006, 2007 Xosé Otero <xoseotero@users.sourceforge.net>
  *

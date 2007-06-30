@@ -3,7 +3,7 @@
  * Simple World Data Base management.
  *
  * begin:     Wed, 24 Jan 2007 17:13:02 +0100
- * last:      $Date$ by $Author$
+ * last:      $Date$
  *
  *  Copyright (C) 2007 Xosé Otero <xoseotero@users.sourceforge.net>
  *

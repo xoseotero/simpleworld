@@ -3,7 +3,7 @@
  * Simple World Language source file.
  *
  * begin:     Wed, 15 Nov 2006 21:31:26 +0100
- * last:      $Date$ by $Author$
+ * last:      $Date$
  *
  *  Copyright (C) 2006, Xosé Otero <xoseotero@users.sourceforge.net>
  *

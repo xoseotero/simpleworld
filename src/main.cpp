@@ -3,7 +3,7 @@
  * Simple World
  *
  * begin:     
- * last:      $Date$ by $Author$
+ * last:      $Date$
  *
  *  Copyright (C) 2006, Xosé Otero <xoseotero@users.sourceforge.net>
  *

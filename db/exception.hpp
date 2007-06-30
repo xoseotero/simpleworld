@@ -3,7 +3,7 @@
  * Exception class father of the rest of DB exceptions.
  *
  * begin:     Mon, 01 Jan 2007 08:49:24 +0100
- * last:      $Date$ by $Author$
+ * last:      $Date$
  *
  *  Copyright (C) 2007, Xosé Otero <xoseotero@users.sourceforge.net>
  *

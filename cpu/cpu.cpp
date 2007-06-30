@@ -4,7 +4,7 @@
  * address space.
  *
  * begin:     Mon, 06 Nov 2006 13:39:29 +0100
- * last:      $Date$ by $Author$
+ * last:      $Date$
  *
  *  Copyright (C) 2006, Xosé Otero <xoseotero@users.sourceforge.net>
  *

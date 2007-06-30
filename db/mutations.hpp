@@ -3,7 +3,7 @@
  * Mutations of a bug.
  *
  * begin:     Thu, 01 Mar 2007 16:59:31 +0100
- * last:      $Date$ by $Author$
+ * last:      $Date$
  *
  *  Copyright (C) 2007, Xosé Otero <xoseotero@users.sourceforge.net>
  *

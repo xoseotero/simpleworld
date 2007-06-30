@@ -3,7 +3,7 @@
  * Shift operations of the Simple CPU.
  *
  * begin:     Sat, 11 Nov 2006 19:15:19 +0100
- * last:      $Date$ by $Author$
+ * last:      $Date$
  *
  *  Copyright (C) 2006, Xosé Otero <xoseotero@users.sourceforge.net>
  *

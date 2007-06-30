@@ -3,7 +3,7 @@
  * Information about the environment of the world.
  *
  * begin:     Fri, 26 Jan 2007 06:29:35 +0100
- * last:      $Date$ by $Author$
+ * last:      $Date$
  *
  *  Copyright (C) 2007 Xosé Otero <xoseotero@users.sourceforge.net>
  *

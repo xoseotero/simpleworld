@@ -3,7 +3,7 @@
  * Word class for accessing its bytes.
  *
  * begin:     Sat, 11 Dec 2004 22:06:28 +0100
- * last:      $Date$ by $Author$
+ * last:      $Date$
  *
  *  Copyright (C) 2004, 2006, Xosé Otero <xoseotero@users.sourceforge.net>
  *

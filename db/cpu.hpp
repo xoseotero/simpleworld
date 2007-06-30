@@ -3,7 +3,7 @@
  * CPU of a bug.
  *
  * begin:     Mon, 01 Jan 2007 08:46:13 +0100
- * last:      $Date$ by $Author$
+ * last:      $Date$
  *
  *  Copyright (C) 2007, Xosé Otero <xoseotero@users.sourceforge.net>
  *

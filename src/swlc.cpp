@@ -3,7 +3,7 @@
  * Simple World Language compiler
  *
  * begin:     Sat, 18 Nov 2006 12:26:31 +0100
- * last:      $Date$ by $Author$
+ * last:      $Date$
  *
  *  Copyright (C) 2006, Xosé Otero <xoseotero@users.sourceforge.net>
  *

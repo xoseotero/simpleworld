@@ -3,7 +3,7 @@
  * Simple World Language decompiler
  *
  * begin:     Sun, 19 Nov 2006 17:58:49 +0100
- * last:      $Date$ by $Author$
+ * last:      $Date$
  *
  *  Copyright (C) 2006, Xosé Otero <xoseotero@users.sourceforge.net>
  *

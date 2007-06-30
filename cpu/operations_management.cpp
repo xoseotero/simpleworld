@@ -3,7 +3,7 @@
  * Stop/restart operations of the Simple CPU.
  *
  * begin:     Xov Nov 30 2006
- * last:      $Date$ by $Author$
+ * last:      $Date$
  *
  *  Copyright (C) 2006, Xosé Otero <xoseotero@users.sourceforge.net>
  *

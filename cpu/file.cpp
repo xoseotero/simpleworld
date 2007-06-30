@@ -3,7 +3,7 @@
  * Arithmetic logic unit
  *
  * begin:     Fri, 10 Nov 2006 08:27:00 +0100
- * last:      $Date$ by $Author$
+ * last:      $Date$
  *
  *  Copyright (C) 2006, Xosé Otero <xoseotero@users.sourceforge.net>
  *

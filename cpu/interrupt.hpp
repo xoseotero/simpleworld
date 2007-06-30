@@ -3,7 +3,7 @@
  * Definition of the interrupts and events.
  *
  * begin:     Mon, 18 Jun 2007 04:51:55 +0200
- * last:      $Date$ by $Author$
+ * last:      $Date$
  *
  *  Copyright (C) 2007, Xosé Otero <xoseotero@users.sourceforge.net>
  *

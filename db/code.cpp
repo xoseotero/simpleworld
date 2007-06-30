@@ -3,7 +3,7 @@
  * Code of a bug.
  *
  * begin:     Thu, 01 Mar 2007 13:00:43 +0100
- * last:      $Date$ by $Author$
+ * last:      $Date$
  *
  *  Copyright (C) 2007 Xosé Otero <xoseotero@users.sourceforge.net>
  *

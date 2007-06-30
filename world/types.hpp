@@ -3,7 +3,7 @@
  * Types definition for the world in Simple World.
  *
  * begin:     Sat, 13 Jan 2007 00:50:56 +0100
- * last:      $Date$ by $Author$
+ * last:      $Date$
  *
  *  Copyright (C) 2007, Xosé Otero <xoseotero@users.sourceforge.net>
  *

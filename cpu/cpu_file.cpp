@@ -4,7 +4,7 @@
  * address space that load the code from a file.
  *
  * begin:     Fri, 24 Nov 2006 03:17:54 +0100
- * last:      $Date$ by $Author$
+ * last:      $Date$
  *
  *  Copyright (C) 2006, Xosé Otero <xoseotero@users.sourceforge.net>
  *

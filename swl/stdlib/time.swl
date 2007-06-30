@@ -2,7 +2,7 @@
 # Management of the Timer Interrupt to calculate the cycles of the World.
 #
 # begin:     Wed, 22 Nov 2006 20:04:17 +0100
-# last:      $Date$ by $Author$
+# last:      $Date$
 #
 #  Copyright (C) 2006, 2007, Xosé Otero <xoseotero@users.sourceforge.net>
 #

@@ -3,7 +3,7 @@
  * Hierarchy of a bug.
  *
  * begin:     Wed, 21 Feb 2007 11:32:42 +0100
- * last:      $Date$ by $Author$
+ * last:      $Date$
  *
  *  Copyright (C) 2007, Xosé Otero <xoseotero@users.sourceforge.net>
  *

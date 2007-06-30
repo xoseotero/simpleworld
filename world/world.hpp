@@ -3,7 +3,7 @@
  * Simple World World.
  *
  * begin:     Wed, 27 Dec 2006 18:00:22 +0100
- * last:      $Date$ by $Author$
+ * last:      $Date$
  *
  *  Copyright (C) 2006, Xosé Otero <xoseotero@users.sourceforge.net>
  *
