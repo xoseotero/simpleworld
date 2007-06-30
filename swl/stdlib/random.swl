@@ -50,6 +50,6 @@
 	add r0 r0 r2
 
 	# Update seed
-	store random_seed r0
+	store r0 random_seed
 
 	ret
