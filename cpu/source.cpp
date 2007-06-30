@@ -344,7 +344,6 @@ void Source::replace_blocks()
       if (size > 0) {
         // Round to the next multiple of 4
         size = ((size - 1) / sizeof(Word) + 1);
-        printf("size = %d\n", size);
 
         this->remove(i, 1);
         while (size-- > 0)
@@ -356,8 +355,6 @@ void Source::replace_blocks()
 
 Word Source::compile(File::size_type line) const
 {
-  printf("%s\n", this->get_line(line).c_str());
-
   if (this->is_data(line)) {
 #ifdef IS_BIG_ENDIAN
     return this->get_data(line);
