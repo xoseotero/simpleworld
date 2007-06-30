@@ -232,8 +232,7 @@ Source::Source(const InstructionSet& set,
 
 void Source::compile(std::string filename)
 {
-  // replace_includes is already done by replace_constants
-  // this->replace_includes();
+  this->replace_includes();
   this->replace_constants();
   this->replace_blocks();
 
@@ -286,8 +285,6 @@ void Source::replace_includes()
 
 void Source::replace_constants()
 {
-  this->replace_includes();
-
   // Search constants
   File::size_type i = 0;
   File::size_type lines_code = 0;
