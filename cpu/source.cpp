@@ -72,6 +72,15 @@ static const boost::regex re_constant(BEGIN_LINE
                                       OPTIONAL_SPACE
                                       OPTIONAL_COMMENT
                                       END_LINE);
+// A line with a block of memory
+static const boost::regex re_block(BEGIN_LINE
+                                   OPTIONAL_SPACE
+                                   "\\.block"
+                                   SPACE
+                                   "(" NUMBER16 ")"
+                                   OPTIONAL_SPACE
+                                   OPTIONAL_COMMENT
+                                   END_LINE);
 // A line with a label definition
 static const boost::regex re_label(BEGIN_LINE
                                    OPTIONAL_SPACE
@@ -226,6 +235,7 @@ void Source::compile(std::string filename)
   // replace_includes is already done by replace_constants
   // this->replace_includes();
   this->replace_constants();
+  this->replace_blocks();
 
   std::ofstream file(filename.c_str(), std::ios::binary | std::ios::trunc);
   if (file.rdstate() & std::ofstream::failbit)
@@ -328,9 +338,29 @@ void Source::replace_constants()
   }
 }
 
+void Source::replace_blocks()
+{
+  File::size_type i;
+  for (i = 0; i < this->lines(); i++)
+    if (this->is_block(i)) {
+      Address size = this->get_block(i);
+      if (size > 0) {
+        // Round to the next multiple of 4
+        size = ((size - 1) / sizeof(Word) + 1);
+        printf("size = %d\n", size);
+
+        this->remove(i, 1);
+        while (size-- > 0)
+	  this->insert(i, "0x00000000");
+      }
+    }
+}
+
 
 Word Source::compile(File::size_type line) const
 {
+  printf("%s\n", this->get_line(line).c_str());
+
   if (this->is_data(line)) {
 #ifdef IS_BIG_ENDIAN
     return this->get_data(line);
@@ -401,6 +431,11 @@ bool Source::is_constant(File::size_type line) const
   return boost::regex_match(this->get_line(line), re_constant);
 }
 
+bool Source::is_block(File::size_type line) const
+{
+  return boost::regex_match(this->get_line(line), re_block);
+}
+
 bool Source::is_label(File::size_type line) const
 {
   return boost::regex_match(this->get_line(line), re_label);
@@ -435,6 +470,17 @@ std::vector<std::string> Source::get_constant(File::size_type line) const
   boost::smatch what;
   if (boost::regex_match(this->get_line(line), what, re_constant))
     result.insert(result.begin(), what.begin() + 1, what.end());
+
+  return result;
+}
+
+Address Source::get_block(File::size_type line) const
+{
+  Address result = 0;
+
+  boost::smatch what;
+  if (boost::regex_match(this->get_line(line), what, re_block))
+    sscanf(std::string(what[1]).c_str(), "%x", &result);
 
   return result;
 }

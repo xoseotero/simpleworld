@@ -115,12 +115,18 @@ public:
    * @exception ParseError file included two times.
    */
   void replace_includes();
- 
+
   /**
    * Replace the constants and labels with its value.
    * @exception ParseError error found in the code.
    */
   void replace_constants();
+
+  /**
+   * Replace the blocks of memory with the zero values.
+   * @exception ParseError error found in the code.
+   */
+  void replace_blocks();
 
 protected:
   /**
@@ -155,6 +161,14 @@ protected:
    * @exception LineOutOfRange line > lines of the file.
    */
   bool is_constant(File::size_type line) const;
+
+  /**
+   * Check if a line is a block of memory.
+   * @param line Number of the line.
+   * @return the check result.
+   * @exception LineOutOfRange line > lines of the file.
+   */
+  bool is_block(File::size_type line) const;
 
   /**
    * Check if a line is a label definition.
@@ -199,6 +213,16 @@ protected:
    * @exception LineOutOfRange line > lines of the file.
    */
   std::vector<std::string> get_constant(File::size_type line) const;
+
+  /**
+   * Return the value of the block of memory.
+   *
+   * If the line is not a block of memory zero value is returned.
+   * @param line Number of the line.
+   * @return the components of a constant.
+   * @exception LineOutOfRange line > lines of the file.
+   */
+  Address get_block(File::size_type line) const;
 
   /**
    * Return the label name.
