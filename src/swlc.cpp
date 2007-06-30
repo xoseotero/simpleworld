@@ -98,6 +98,8 @@ There is NO WARRANTY, to the extent permitted by law.")
   cpu::Source source(cpu.instruction_set(), include_path, input);
   if (vm.count("preprocess")) {
     source.replace_includes();
+    source.replace_constants();
+    source.replace_blocks();
     source.save(output);
   }else
     source.compile(output);
