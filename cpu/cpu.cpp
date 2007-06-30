@@ -242,6 +242,9 @@ void CPU::interrupt_handler()
 
     // Update the PC with the interrupt handler location
     this->registers_.set_word(REGISTER_PC, handler);
+
+    // Clear the interrupt request
+    this->interrupt_request_ = false;
   }
 }
 
