@@ -1,4 +1,5 @@
 #! /bin/sh
+# Prepare the project to be build in the directory build/.
 # The prefix path can be passed as argument optionally
 
 mkdir build

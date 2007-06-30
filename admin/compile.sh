@@ -1,4 +1,5 @@
 #! /bin/sh
+# Compile, build and install Simple World.
 # The prefix path can be passed as argument optionally
 
 if [ "$1" != "" ]; then
