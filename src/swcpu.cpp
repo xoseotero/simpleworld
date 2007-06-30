@@ -97,7 +97,7 @@ try {
 
   po::options_description config("Configuration");
   config.add_options()
-    ("input", po::value<std::string>(&input), "File to compile")
+    ("input", po::value<std::string>(&input), "File to execute")
     ;
 
   po::options_description cmdline_options;
