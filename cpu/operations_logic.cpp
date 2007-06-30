@@ -19,52 +19,55 @@ namespace CPU
 
 Update lnot(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst)
 {
-  regs.set_word(inst.first * 4, ~ regs[inst.second * 4]);
+  regs.set_word(REGISTER(inst.first), ~ regs[REGISTER(inst.second)]);
 
   return UpdatePC;
 }
 
 Update lor(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst)
 {
-  regs.set_word(inst.first * 4,
-		regs[inst.second * 4] | regs[inst.address * 4]);
+  regs.set_word(REGISTER(inst.first),
+                regs[REGISTER(inst.second)] | regs[REGISTER(inst.address)]);
 
   return UpdatePC;
 }
 
 Update lori(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst)
 {
-  regs.set_word(inst.first * 4, regs[inst.second * 4] | inst.address);
+  regs.set_word(REGISTER(inst.first),
+                regs[REGISTER(inst.second)] | inst.address);
 
   return UpdatePC;
 }
 
 Update land(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst)
 {
-  regs.set_word(inst.first * 4,
-		regs[inst.second * 4] & regs[inst.address * 4]);
+  regs.set_word(REGISTER(inst.first),
+                regs[REGISTER(inst.second)] & regs[REGISTER(inst.address)]);
 
   return UpdatePC;
 }
 
 Update landi(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst)
 {
-  regs.set_word(inst.first * 4, regs[inst.second * 4] & inst.address);
+  regs.set_word(REGISTER(inst.first),
+                regs[REGISTER(inst.second)] & inst.address);
 
   return UpdatePC;
 }
 
 Update lxor(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst)
 {
-  regs.set_word(inst.first * 4,
-		regs[inst.second * 4] ^ regs[inst.address * 4]);
+  regs.set_word(REGISTER(inst.first),
+                regs[REGISTER(inst.second)] ^ regs[REGISTER(inst.address)]);
 
   return UpdatePC;
 }
 
 Update lxori(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst)
 {
-  regs.set_word(inst.first * 4, regs[inst.second * 4] ^ inst.address);
+  regs.set_word(REGISTER(inst.first),
+                regs[REGISTER(inst.second)] ^ inst.address);
 
   return UpdatePC;
 }

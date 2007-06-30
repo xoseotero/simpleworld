@@ -26,7 +26,7 @@ Update b(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst)
 
 Update beq(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst)
 {
-  if (regs[inst.first * 4] == regs[inst.second * 4]) {
+  if (regs[REGISTER(inst.first)] == regs[REGISTER(inst.second)]) {
     regs.set_word(REGISTER_PC, inst.address);
     return None;
   }
@@ -36,7 +36,7 @@ Update beq(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst)
 
 Update bne(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst)
 {
-  if (regs[inst.first * 4] != regs[inst.second * 4]) {
+  if (regs[REGISTER(inst.first)] != regs[REGISTER(inst.second)]) {
     regs.set_word(REGISTER_PC, inst.address);
     return None;
   }
@@ -46,8 +46,8 @@ Update bne(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst)
 
 Update blt(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst)
 {
-  if (static_cast<Sint32>(regs[inst.first * 4]) <
-      static_cast<Sint32>(regs[inst.second * 4])) {
+  if (static_cast<Sint32>(regs[REGISTER(inst.first)]) <
+      static_cast<Sint32>(regs[REGISTER(inst.second)])) {
     regs.set_word(REGISTER_PC, inst.address);
     return None;
   }
@@ -57,7 +57,7 @@ Update blt(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst)
 
 Update bltu(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst)
 {
-  if (regs[inst.first * 4] < regs[inst.second * 4]) {
+  if (regs[REGISTER(inst.first)] < regs[REGISTER(inst.second)]) {
     regs.set_word(REGISTER_PC, inst.address);
     return None;
   }
@@ -67,8 +67,8 @@ Update bltu(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst)
 
 Update bgt(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst)
 {
-  if (static_cast<Sint32>(regs[inst.first * 4]) >
-      static_cast<Sint32>(regs[inst.second * 4])) {
+  if (static_cast<Sint32>(regs[REGISTER(inst.first)]) >
+      static_cast<Sint32>(regs[REGISTER(inst.second)])) {
     regs.set_word(REGISTER_PC, inst.address);
     return None;
   }
@@ -78,7 +78,7 @@ Update bgt(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst)
 
 Update bgtu(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst)
 {
-  if (regs[inst.first * 4] > regs[inst.second * 4]) {
+  if (regs[REGISTER(inst.first)] > regs[REGISTER(inst.second)]) {
     regs.set_word(REGISTER_PC, inst.address);
     return None;
   }
@@ -88,8 +88,8 @@ Update bgtu(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst)
 
 Update ble(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst)
 {
-  if (static_cast<Sint32>(regs[inst.first * 4]) <=
-      static_cast<Sint32>(regs[inst.second * 4])) {
+  if (static_cast<Sint32>(regs[REGISTER(inst.first)]) <=
+      static_cast<Sint32>(regs[REGISTER(inst.second)])) {
     regs.set_word(REGISTER_PC, inst.address);
     return None;
   }
@@ -99,7 +99,7 @@ Update ble(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst)
 
 Update bleu(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst)
 {
-  if (regs[inst.first * 4] <= regs[inst.second * 4]) {
+  if (regs[REGISTER(inst.first)] <= regs[REGISTER(inst.second)]) {
     regs.set_word(REGISTER_PC, inst.address);
     return None;
   }
@@ -109,8 +109,8 @@ Update bleu(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst)
 
 Update bge(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst)
 {
-  if (static_cast<Sint32>(regs[inst.first * 4]) >=
-      static_cast<Sint32>(regs[inst.second * 4])) {
+  if (static_cast<Sint32>(regs[REGISTER(inst.first)]) >=
+      static_cast<Sint32>(regs[REGISTER(inst.second)])) {
     regs.set_word(REGISTER_PC, inst.address);
     return None;
   }
@@ -120,7 +120,7 @@ Update bge(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst)
 
 Update bgeu(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst)
 {
-  if (regs[inst.first * 4] >= regs[inst.second * 4]) {
+  if (regs[REGISTER(inst.first)] >= regs[REGISTER(inst.second)]) {
     regs.set_word(REGISTER_PC, inst.address);
     return None;
   }

@@ -27,7 +27,7 @@ Update restart(Memory& regs, Memory& mem, Interrupt& interrupt,
 {
   Uint8 i;
   for (i = 0; i < 16; i++)
-    regs.set_word(i * 4, 0);
+    regs.set_word(REGISTER(i), 0);
 
   return None;
 }
