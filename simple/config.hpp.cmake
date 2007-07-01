@@ -3,7 +3,7 @@
  * Types definition.
  *
  * begin:     Tue, 23 Jan 2007 00:00:00 +0100
- * last:      $Date$ by $Author$
+ * last:      $Date$
  *
  *  Copyright (C) 2007, Xosé Otero <xoseotero@users.sourceforge.net>
  *
