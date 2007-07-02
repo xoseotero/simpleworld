@@ -21,6 +21,8 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <algorithm>
+
 #include "../simple/config.hpp"
 #include "word.hpp"
 #include "memory.hpp"
@@ -31,22 +33,41 @@ namespace CPU
 {
 
 Memory::Memory(Address size)
-  : size_(size)
+  : size_(0), memory_(NULL)
 {
-  if (size < 4)
-    throw NotEnoughSize(__FILE__, __LINE__);
-
-  this->memory_ = new Sint8[size];
-
-  // Zeroed the memory
-  Address i;
-  for (i = 0; i < size; i++)
-    this->memory_[i] = 0;
+  this->resize(size);
 }
 
 Memory::~Memory()
 {
-  delete[] this->memory_;
+  if (this->memory_ != NULL)
+    delete[] this->memory_;
+}
+
+
+void Memory::resize(Address size)
+{
+  if (size < 4)
+    throw NotEnoughSize(__FILE__, __LINE__);
+
+  Sint8* tmp = NULL;
+  if (size != 0)
+    tmp = new Sint8[size];
+
+  Address i;
+  Address limit = std::min(this->size_, size);
+  // Copy old memory
+  for (i = 0; i < limit; i++)
+    tmp[i] = this->memory_[i];
+
+  // Zeroed new memory
+  for (i = limit; i < size; i++)
+    tmp[i] = 0;
+
+  this->size_ = size;
+  if (this->memory_ != NULL)
+    delete[] this->memory_;
+  this->memory_ = tmp;
 }
 
 

@@ -96,12 +96,28 @@ public:
    * @param size bytes of the memory
    * @exception NotEnoughSize length < 4
    */
-  Memory(Address size);
+  Memory(Address size = 0);
 
   /**
    * Destructor.
    */
   ~Memory();
+
+
+  /**
+   * Get the size of the memory.
+   * @return the size of the memory.
+   * @exception NotEnoughSize length < 4
+   */
+  Address size() const { return this->size_; }
+
+  /**
+   * Set the size of the memory.
+   * The new memory is zeroed.
+   * @return the size of the memory.
+   * @exception NotEnoughSize length < 4
+   */
+  void resize(Address size);
 
 
   /**
