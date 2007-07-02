@@ -93,10 +93,10 @@ public:
    * Constructor.
    * Memory outside the 16bits range can't be used.
    * The memory is zeroed after being allocated.
-   * @param length bytes of the memory
+   * @param size bytes of the memory
    * @exception NotEnoughLength length < 4
    */
-  Memory(Address length);
+  Memory(Address size);
 
   /**
    * Destructor.
@@ -140,7 +140,7 @@ public:
   { return this->get_word(address); }
 
 private:
-  Address length_;
+  Address size_;
   Sint8* memory_;
 };
 
