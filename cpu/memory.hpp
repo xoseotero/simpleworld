@@ -37,7 +37,7 @@ namespace CPU
  * Memory exception.
  * It's raised if you try to use a memory with less than 4 bytes.
  */
-class NotEnoughLength: public std::runtime_error, public CPUException
+class NotEnoughSize: public std::runtime_error, public CPUException
 {
   /**
    * Constructor.
@@ -46,15 +46,15 @@ class NotEnoughLength: public std::runtime_error, public CPUException
    * @param what Reason of the exception.
    */
   public:
-  NotEnoughLength(std::string file = "", Uint32 line = 0,
-                  const std::string& what = "Not enough lenght") throw()
+  NotEnoughSize(std::string file = "", Uint32 line = 0,
+                const std::string& what = "Not enough lenght") throw()
     : runtime_error(what), CPUException(file, line)
   {}
 
   /**
    * Destructor.
    */
-  ~NotEnoughLength() throw () {}
+  ~NotEnoughSize() throw () {}
 };
 
 /**
@@ -94,7 +94,7 @@ public:
    * Memory outside the 16bits range can't be used.
    * The memory is zeroed after being allocated.
    * @param size bytes of the memory
-   * @exception NotEnoughLength length < 4
+   * @exception NotEnoughSize length < 4
    */
   Memory(Address size);
 

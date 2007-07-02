@@ -34,7 +34,7 @@ Memory::Memory(Address size)
   : size_(size)
 {
   if (size < 4)
-    throw NotEnoughLength(__FILE__, __LINE__);
+    throw NotEnoughSize(__FILE__, __LINE__);
 
   this->memory_ = new Sint8[size];
 
