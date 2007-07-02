@@ -96,7 +96,7 @@ public:
    * @param length bytes of the memory
    * @exception NotEnoughLength length < 4
    */
-  Memory(Uint32 length);
+  Memory(Address length);
 
   /**
    * Destructor.

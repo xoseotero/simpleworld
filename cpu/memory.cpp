@@ -30,7 +30,7 @@ namespace SimpleWorld
 namespace CPU
 {
 
-Memory::Memory(Uint32 length)
+Memory::Memory(Address length)
   : length_(length)
 {
   if (length < 4)
