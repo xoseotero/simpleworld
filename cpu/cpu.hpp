@@ -116,12 +116,6 @@ public:
   virtual void next();
 
 protected:
-  /**
-   * Decode the current instruction.
-   */
-  Instruction fetch_instruction() const;
-
-private:
   Memory registers_;  /**< 16 registers */
   Memory* memory_;
 
@@ -132,7 +126,12 @@ private:
 
   bool running_;
 
+  /**
+   * Decode the current instruction.
+   */
+  Instruction fetch_instruction() const;
 
+private:
   /**
    * Handle the interrupt.
    */
