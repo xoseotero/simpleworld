@@ -83,19 +83,19 @@ public:
    * Instruction set of the CPU.
    * @return the instruction set.
    */
-  const InstructionSet& instruction_set() const;
+  const InstructionSet& instruction_set() const { return this->set_; }
 
   /**
    * Memory of the CPU.
    * @return the memory.
    */
-  const Memory memory() const;
+  const Memory memory() const { return *this->memory_; }
 
   /**
    * Registers of the CPU.
    * @return the registers.
    */
-  const Memory registers() const;
+  const Memory registers() const { return this->registers_; }
 
   /**
    * Return if the CPU is running

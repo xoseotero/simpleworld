@@ -146,22 +146,6 @@ CPU::CPU(Memory* memory)
 }
 
 
-const InstructionSet& CPU::instruction_set() const
-{
-  return this->set_;
-}
-
-const Memory CPU::memory() const
-{
-  return *this->memory_;
-}
-
-const Memory CPU::registers() const
-{
-  return this->registers_;
-}
-
-
 void CPU::execute()
 {
   try {
