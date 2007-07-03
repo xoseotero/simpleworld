@@ -5,7 +5,7 @@
  * begin:     Sat, 24 Feb 2007 17:05:27 +0100
  * last:      $Date$
  *
- *  Copyright (C) 2007 Xosé Otero <xoseotero@users.sourceforge.net>
+ *  Copyright (C) 2007  Xosé Otero <xoseotero@users.sourceforge.net>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
