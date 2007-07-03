@@ -143,7 +143,7 @@ private:
   /**
    * Handle the interrupt.
    */
-  void interrupt_handler();
+  void interrupt_handler_();
 };
 
 }

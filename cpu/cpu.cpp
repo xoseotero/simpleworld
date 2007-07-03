@@ -184,7 +184,7 @@ void CPU::next()
                             % this->interrupt_)
 	      << std::endl;
 #endif
-    this->interrupt_handler();
+    this->interrupt_handler_();
   } else {
     Instruction instruction = this->fetch_instruction();
     InstructionInfo info = this->set_.instruction_info(instruction.code);
@@ -229,7 +229,7 @@ Instruction CPU::fetch_instruction() const
 }
 
 
-void CPU::interrupt_handler()
+void CPU::interrupt_handler_()
 {
   Word itp = this->registers_[REGISTER_ITP];
   Word handler = this->memory_->get_word(this->registers_[REGISTER_ITP +
