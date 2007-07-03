@@ -151,14 +151,14 @@ const InstructionSet& CPU::instruction_set() const
   return this->set_;
 }
 
-const Word CPU::memory(Address address) const
+const Memory CPU::memory() const
 {
-  return this->memory_->get_word(address, false);
+  return *this->memory_;
 }
 
-const Word CPU::reg(Address address) const
+const Memory CPU::registers() const
 {
-  return this->registers_.get_word(address, false);
+  return this->registers_;
 }
 
 

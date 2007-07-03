@@ -86,23 +86,16 @@ public:
   const InstructionSet& instruction_set() const;
 
   /**
-   * Get a word from memory (big endian).
-   * @param address address of the word.
-   * @return the word.
-   * @exception AddressOutOfRange address > (length - 4)
+   * Memory of the CPU.
+   * @return the memory.
    */
-  const Word memory(Address address) const;
+  const Memory memory() const;
 
   /**
-   * Get a word from the registers (big endian).
-   * The address should be a multiply of sizeof(Word): 0x0 * 4 gets the r0,
-   * 0xD * 4 gets the sp.
-   * You can get the name of the registers from the instruction set.
-   * @param address address of the register.
-   * @return the word.
-   * @exception AddressOutOfRange address > (length - 4)
+   * Registers of the CPU.
+   * @return the registers.
    */
-  const Word reg(Address address) const;
+  const Memory registers() const;
 
   /**
    * Return if the CPU is running
