@@ -128,15 +128,14 @@ protected:
    */
   Instruction fetch_instruction() const;
 
-
-  InstructionSet set; /**< Instruction set */
-
 private:
   Memory registers_;  /**< 16 registers */
   Memory* memory_;
 
   bool interrupt_request_;	/**< If a interrupt was thrown. */
   Interrupt interrupt_;
+
+  InstructionSet set_; /**< Instruction set */
 
   bool running_;
 
