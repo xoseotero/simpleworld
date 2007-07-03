@@ -129,12 +129,6 @@ protected:
   Instruction fetch_instruction() const;
 
 
-  /**
-   * Handle the interrupt.
-   */
-  void interrupt_handler();
-
-
   InstructionSet set; /**< Instruction set */
 
 private:
@@ -145,6 +139,12 @@ private:
   Interrupt interrupt_;
 
   bool running_;
+
+
+  /**
+   * Handle the interrupt.
+   */
+  void interrupt_handler();
 };
 
 }
