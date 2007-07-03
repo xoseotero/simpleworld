@@ -47,7 +47,7 @@ class NotEnoughSize: public std::runtime_error, public CPUException
    */
   public:
   NotEnoughSize(std::string file = "", Uint32 line = 0,
-                const std::string& what = "Not enough lenght") throw()
+                const std::string& what = "Not enough size") throw()
     : runtime_error(what), CPUException(file, line)
   {}
 
@@ -94,7 +94,7 @@ public:
    * Memory outside the 16bits range can't be used.
    * The memory is zeroed after being allocated.
    * @param size bytes of the memory
-   * @exception NotEnoughSize length < 4
+   * @exception NotEnoughSize size < 4
    */
   Memory(Address size = 0);
 
@@ -113,7 +113,7 @@ public:
   /**
    * Set the size of the memory.
    * The new memory is zeroed.
-   * @exception NotEnoughSize length < 4
+   * @exception NotEnoughSize size < 4
    */
   void resize(Address size);
 
@@ -126,7 +126,7 @@ public:
    * @param address address of the word
    * @param system_endian if the address must be in the system endianness
    * @return the word
-   * @exception AddressOutOfRange address > (length - 4)
+   * @exception AddressOutOfRange address > (size - 4)
    */
   Word get_word(Address address, bool system_endian = true) const;
 
@@ -139,7 +139,7 @@ public:
    * @param value value of the word
    * @param system_endian if the word is in the systen endianness
    * @return the word
-   * @exception AddressOutOfRange address > (length - 4)
+   * @exception AddressOutOfRange address > (size - 4)
    */
   Word set_word(Address address, Word value, bool system_endian = true);
 
@@ -148,7 +148,7 @@ public:
    * Get a word.
    * @param address address of the word
    * @return the word
-   * @exception AddressOutOfRange address > (length - 4)
+   * @exception AddressOutOfRange address > (size - 4)
    */
   Word operator [](Address address) const
   { return this->get_word(address); }
