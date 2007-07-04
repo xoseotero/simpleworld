@@ -66,7 +66,7 @@ void CPUFile::load_file(const std::string& filename)
     << std::endl;
 #endif
   Word instruction;
-  Word i = 0;
+  Address i = 0;
   while (is.read(reinterpret_cast<char*>(&instruction), sizeof(Word))) {
 #ifdef DEBUG
     std::cout << boost::str(boost::format("> Instruction %d: 0x%8X")
