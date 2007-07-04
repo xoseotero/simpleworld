@@ -99,6 +99,12 @@ public:
   Memory(Address size = 0);
 
   /**
+   * Copy constructor.
+   * @param memory memory to copy.
+   */
+  Memory(const Memory& memory);
+
+  /**
    * Destructor.
    */
   ~Memory();
