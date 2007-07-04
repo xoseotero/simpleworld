@@ -26,7 +26,11 @@
 #include <iostream>
 #include <boost/format.hpp>
 #endif
+
 #include <fstream>
+
+#include <boost/filesystem/operations.hpp>
+namespace fs = boost::filesystem;
 
 #include "types.hpp"
 #include "word.hpp"
@@ -52,8 +56,8 @@ void CPUFile::load_file(const std::string& filename)
     throw FileAccessError(__FILE__, __LINE__);
 
   // All instructions are 32bits, if the file is not X*32bits long is not valid
-  is.seekg(0, std::ios_base::end);
-  if ((is.tellg() % sizeof(Word)) != 0)
+  boost::uintmax_t size = fs::file_size(filename);
+  if ((size % sizeof(Word)) != 0)
     throw FileAccessError(__FILE__, __LINE__);
 
 #ifdef DEBUG
@@ -63,7 +67,6 @@ void CPUFile::load_file(const std::string& filename)
 #endif
   Word instruction;
   Word i = 0;
-  is.seekg(0);
   while (is.read(reinterpret_cast<char*>(&instruction), sizeof(Word))) {
 #ifdef DEBUG
     std::cout << boost::str(boost::format("> Instruction %d: 0x%8X")
