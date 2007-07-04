@@ -43,7 +43,7 @@ namespace CPU
 {
 
 CPUFile::CPUFile(const std::string& filename)
-  : memory_(1 << 16), CPU(&this->memory_)
+  : memory_(0), CPU(&this->memory_)
 {
   this->load_file(filename);
 }
