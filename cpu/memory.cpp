@@ -55,9 +55,6 @@ Memory::~Memory()
 
 void Memory::resize(Address size)
 {
-  if (size < 4)
-    throw NotEnoughSize(__FILE__, __LINE__);
-
   Sint8* tmp = NULL;
   if (size != 0)
     tmp = new Sint8[size];

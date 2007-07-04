@@ -35,30 +35,6 @@ namespace CPU
 
 /**
  * Memory exception.
- * It's raised if you try to use a memory with less than 4 bytes.
- */
-class NotEnoughSize: public std::runtime_error, public CPUException
-{
-  /**
-   * Constructor.
-   * @param file File where the exception is raised.
-   * @param line Line where the exception is raised.
-   * @param what Reason of the exception.
-   */
-  public:
-  NotEnoughSize(std::string file = "", Uint32 line = 0,
-                const std::string& what = "Not enough size") throw()
-    : runtime_error(what), CPUException(file, line)
-  {}
-
-  /**
-   * Destructor.
-   */
-  ~NotEnoughSize() throw () {}
-};
-
-/**
- * Memory exception.
  * It's raised if you try to get a wrong word.
  */
 class AddressOutOfRange: public std::out_of_range, public CPUException
@@ -94,7 +70,6 @@ public:
    * Memory outside the 16bits range can't be used.
    * The memory is zeroed after being allocated.
    * @param size bytes of the memory
-   * @exception NotEnoughSize size < 4
    */
   Memory(Address size = 0);
 
@@ -119,7 +94,6 @@ public:
   /**
    * Set the size of the memory.
    * The new memory is zeroed.
-   * @exception NotEnoughSize size < 4
    */
   void resize(Address size);
 
