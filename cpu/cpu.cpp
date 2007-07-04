@@ -166,7 +166,7 @@ void CPU::next()
   if (this->interrupt_request_) {
 #ifdef DEBUG
     std::cout << boost::str(boost::format("Interrupt: 0x%8x")
-                            % this->interrupt_)
+                            % this->interrupt_.type)
 	      << std::endl;
 #endif
     this->interrupt_handler_();
