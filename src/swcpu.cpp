@@ -62,13 +62,13 @@ public:
 };
 
 CPU::CPU(const std::string& filename) throw ()
-  : cpu::CPUFile(filename), Object(this->set, filename)
+  : cpu::CPUFile(filename), Object(CPUFile::set_, filename)
 {
 }
 
 void CPU::next() throw (cpu::CPUStopped)
 {
-  cpu::Instruction instruction = this->fetch_instruction();
+  cpu::Instruction instruction = this->fetch_instruction_();
   std::cout
     << this->decompile(cpu::InstructionSet::encode(instruction))
     << std::endl;
@@ -76,12 +76,13 @@ void CPU::next() throw (cpu::CPUStopped)
   cpu::CPU::next();
 
   sw::Uint8 i = 1;
-  std::vector<sw::Uint8> regs = this->set.register_codes();
-  std::vector<sw::Uint8>::const_iterator reg = regs.begin();
-  while (reg != regs.end()) {
+  std::vector<sw::Uint8> regs_codes = CPUFile::set_.register_codes();
+  std::vector<sw::Uint8>::const_iterator reg = regs_codes.begin();
+  while (reg != regs_codes.end()) {
     std::cout << boost::str(boost::format("%3s = %8X")
-                            % this->set.register_name(*reg)
-                            % cpu::change_byte_order(this->reg(*reg * 4)));
+                            % CPUFile::set_.register_name(*reg)
+                            % cpu::change_byte_order(this->registers_[*reg *
+                              4]));
     if (i % 4 == 0)
       std::cout << std::endl;
     else
