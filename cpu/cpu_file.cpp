@@ -65,6 +65,10 @@ void CPUFile::load_file(const std::string& filename)
                           % filename)
     << std::endl;
 #endif
+
+  // @TODO: File can be greater than the Address type.
+  this->memory_.resize(size);
+
   Word instruction;
   Address i = 0;
   while (is.read(reinterpret_cast<char*>(&instruction), sizeof(Word))) {
