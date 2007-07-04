@@ -36,7 +36,8 @@ namespace CPU
 {
 
 CPU::CPU(Memory* memory)
-  : registers_(sizeof(Word) * 16), memory_(memory), running_(true)
+  : registers_(sizeof(Word) * 16), memory_(memory),
+    interrupt_request_(false), running_(true)
 {
   // 16 registers
   this->set_.add_register(0x0, "r0");
