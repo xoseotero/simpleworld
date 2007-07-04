@@ -129,7 +129,7 @@ protected:
   /**
    * Decode the current instruction.
    */
-  Instruction fetch_instruction() const;
+  Instruction fetch_instruction_() const;
 
 private:
   /**

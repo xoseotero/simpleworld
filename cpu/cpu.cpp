@@ -170,7 +170,7 @@ void CPU::next()
 #endif
     this->interrupt_handler_();
   } else {
-    Instruction instruction = this->fetch_instruction();
+    Instruction instruction = this->fetch_instruction_();
     InstructionInfo info = this->set_.instruction_info(instruction.code);
 #ifdef DEBUG
     std::cout << "Instruction info:";
@@ -200,7 +200,7 @@ void CPU::next()
 }
 
 
-Instruction CPU::fetch_instruction() const
+Instruction CPU::fetch_instruction_() const
 {
 #ifdef DEBUG
   std::cout << boost::str(boost::format("Instruction[0x%8x]: 0x%8x")
