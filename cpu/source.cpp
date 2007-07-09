@@ -101,30 +101,6 @@ static const boost::regex re_label(BEGIN_LINE
                                    OPTIONAL_SPACE
                                    OPTIONAL_COMMENT
                                    END_LINE);
-// A line with a pragma definition (numeric value)
-static const boost::regex re_pragma_number(BEGIN_LINE
-                                           OPTIONAL_SPACE
-                                           "\\.pragma"
-                                           SPACE
-                                           "(" KEYWORD ")"
-                                           SPACE
-                                           "(" NUMBER32 ")"
-                                           OPTIONAL_SPACE
-                                           OPTIONAL_COMMENT
-                                           END_LINE);
-// A line with a pragma definition (string value)
-static const boost::regex re_pragma_text(BEGIN_LINE
-                                         OPTIONAL_SPACE
-                                         "\\.pragma"
-                                         SPACE
-                                         "(" KEYWORD ")"
-                                         SPACE
-                                         "\""
-                                         "(" ANYTHING ")"
-                                         "\""
-                                         OPTIONAL_SPACE
-                                         OPTIONAL_COMMENT
-                                         END_LINE);
 // Data
 static const boost::regex re_data(BEGIN_LINE
                                   OPTIONAL_SPACE
