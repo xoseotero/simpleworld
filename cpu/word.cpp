@@ -31,7 +31,7 @@ namespace CPU
 Uint8 get_byte(Word word, Uint8 byte)
 {
   if (byte > 3)
-    throw ByteOutOfRange(__FILE__, __LINE__);
+    throw ByteOutOfRange(__FILE__, __LINE__, byte);
 
   return reinterpret_cast<Uint8*>(&word)[byte];
 }
@@ -39,7 +39,7 @@ Uint8 get_byte(Word word, Uint8 byte)
 void set_byte(Word* word, Uint8 byte, Uint8 value)
 {
   if (byte > 3)
-    throw ByteOutOfRange(__FILE__, __LINE__);;
+    throw ByteOutOfRange(__FILE__, __LINE__, byte);;
 
   reinterpret_cast<Uint8*>(word)[byte] = value;
 }

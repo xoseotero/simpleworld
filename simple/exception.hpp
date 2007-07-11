@@ -44,26 +44,13 @@ public:
    * @param file File where the exception is raised.
    * @param line Line where the exception is raised.
    */
-  Exception(std::string file = "", Uint32 line = 0) throw ()
-    : file_(file), line_(line)
+  Exception(std::string file, Uint32 line) throw ()
+    : file(file), line(line)
   {}
 
 
-  /**
-   * File where the exception is raised.
-   * @return the file name.
-   */
-  const std::string& file() const { return this->file_; }
-
-  /**
-   * Line where the exception is raised.
-   * @return the line number.
-   */
-  Uint32 line() const { return this->line_; }
-
-private:
-  std::string file_;
-  Uint32 line_;
+  std::string& file;		/**< File where the exception is raised. */
+  Uint32 line;			/**< Line where the exception is raised. */
 };
 
 }

@@ -116,7 +116,7 @@ InstructionInfo InstructionSet::instruction_info(Uint8 code) const
   std::map<Uint8, InstructionInfo>::const_iterator iter =
     this->instructions_.find(code);
   if (iter == this->instructions_.end())
-    throw InstructionNotFound(__FILE__, __LINE__);
+    throw InstructionCodeNotFound(__FILE__, __LINE__, code);
 
   return (*iter).second;
 }
@@ -126,7 +126,7 @@ Uint8 InstructionSet::instruction_code(std::string name) const
   std::map<std::string, Uint8>::const_iterator iter =
     this->instruction_codes_.find(name);
   if (iter == this->instruction_codes_.end())
-    throw InstructionNotFound(__FILE__, __LINE__);
+    throw InstructionNameNotFound(__FILE__, __LINE__, name);
 
   return (*iter).second;
 }
@@ -136,7 +136,7 @@ std::string InstructionSet::register_name(Uint8 code) const
   std::map<Uint8, std::string>::const_iterator iter =
     this->registers_.find(code);
   if (iter == this->registers_.end())
-    throw RegisterNotFound(__FILE__, __LINE__);
+    throw RegisterCodeNotFound(__FILE__, __LINE__, code);
 
   return (*iter).second;
 }
@@ -146,7 +146,7 @@ Uint8 InstructionSet::register_code(std::string name) const
   std::map<std::string, Uint8>::const_iterator iter =
     this->register_codes_.find(name);
   if (iter == this->register_codes_.end())
-    throw RegisterNotFound(__FILE__, __LINE__);
+    throw RegisterNameNotFound(__FILE__, __LINE__, name);
 
   return (*iter).second;
 }
@@ -155,7 +155,7 @@ Uint8 InstructionSet::register_code(std::string name) const
 void InstructionSet::add_instruction(InstructionInfo instruction)
 {
   if (this->instructions_.find(instruction.code) != this->instructions_.end())
-    throw InstructionExist(__FILE__, __LINE__);
+    throw InstructionExist(__FILE__, __LINE__, instruction.code);
 
   this->instructions_.insert(std::pair<Uint8,
                              InstructionInfo>(instruction.code,
@@ -177,7 +177,7 @@ void InstructionSet::remove_instruction(Uint8 code)
   std::map<Uint8, InstructionInfo>::iterator iter =
     this->instructions_.find(code);
   if (iter == this->instructions_.end())
-    throw InstructionNotFound(__FILE__, __LINE__);
+    throw InstructionCodeNotFound(__FILE__, __LINE__, code);
 
   this->instruction_codes_.erase((*iter).second.name);
   this->instructions_.erase(iter);
@@ -186,7 +186,7 @@ void InstructionSet::remove_instruction(Uint8 code)
 void InstructionSet::add_register(Uint8 code, std::string name)
 {
   if (this->registers_.find(code) != this->registers_.end())
-    throw RegisterExist(__FILE__, __LINE__);
+    throw RegisterExist(__FILE__, __LINE__, code);
 
   this->registers_.insert(std::pair<Uint8, std::string>(code, name));
   this->register_codes_.insert(std::pair<std::string, Uint8>(name, code));
@@ -196,7 +196,7 @@ void InstructionSet::remove_register(Uint8 code)
 {
   std::map<Uint8, std::string>::iterator iter = this->registers_.find(code);
   if (iter == this->registers_.end())
-    throw RegisterNotFound(__FILE__, __LINE__);
+    throw RegisterCodeNotFound(__FILE__, __LINE__, code);
 
   this->register_codes_.erase((*iter).second);
   this->registers_.erase(iter);

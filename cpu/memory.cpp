@@ -79,7 +79,7 @@ void Memory::resize(Address size)
 Word Memory::get_word(Address address, bool system_endian) const
 {
   if (address > (this->size_ - (sizeof(Word) - 1)))
-    throw AddressOutOfRange(__FILE__, __LINE__);
+    throw AddressOutOfRange(__FILE__, __LINE__, address);
 
 #ifdef IS_BIG_ENDIAN
   return *(reinterpret_cast<Word*>(&this->memory_[address]));
@@ -100,7 +100,7 @@ change_byte_order_middle(*(reinterpret_cast<Word*>(&this->memory_[address])));
 Word Memory::set_word(Address address, Uint32 value, bool system_endian)
 {
   if (address > (this->size_ - (sizeof(Word) - 1)))
-    throw AddressOutOfRange(__FILE__, __LINE__);
+    throw AddressOutOfRange(__FILE__, __LINE__, address);
 
 #ifdef IS_BIG_ENDIAN
   *(reinterpret_cast<Uint32*>(&this->memory_[address])) = value;

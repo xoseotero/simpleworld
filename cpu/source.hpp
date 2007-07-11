@@ -51,13 +51,13 @@ public:
    * Constructor.
    * @param file File where the exception is raised.
    * @param line Line where the exception is raised.
-   * @param what Reason of the error.
    * @param source_line Line where the error was found.
+   * @param what Reason of the error.
    */
-  ParseError(std::string file = "", Uint32 line = 0,
-             const std::string& what = "Parse error",
-             File::size_type source_line = 0) throw ()
-    : runtime_error(what), CPUException(file, line), source_line_(source_line)
+  ParseError(std::string file, Uint32 line,
+	     File::size_type source_line,
+	     const std::string& what = "Parse error") throw ()
+    : runtime_error(what), CPUException(file, line), source_line(source_line)
   {}
 
   /**
@@ -66,14 +66,7 @@ public:
   ~ParseError() throw () {}
 
 
-  /**
-   * Line with the error.
-   * @return the line number.
-   */
-  File::size_type source_line() const { this->source_line_; }
-
-private:
-  File::size_type source_line_;
+  File::size_type source_line;	/**< Line with the error. */
 };
 
 

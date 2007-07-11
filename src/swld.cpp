@@ -108,8 +108,8 @@ There is NO WARRANTY, to the extent permitted by law.")
 }
 catch (sw::Exception e) {
   std::cout << boost::format("Exception thrown in %1%:%2%")
-    % e.file()
-    % e.line()
+    % e.file
+    % e.line
     << std::endl;
 }
 catch (std::exception e) {

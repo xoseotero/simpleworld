@@ -45,12 +45,15 @@ void Object::decompile(const std::string filename) const
 
   std::ifstream is(this->filename_.c_str(), std::ios::binary);
   if (is.rdstate() & std::ifstream::failbit)
-    throw FileAccessError(__FILE__, __LINE__);
+    throw FileAccessError(__FILE__, __LINE__,
+			  filename, "Can't open file to read.");
 
   // All instructions are 32bits, if the file is not X*32bits long is not valid
   is.seekg(0, std::ios_base::end);
   if ((is.tellg() % sizeof(Word)) != 0)
-    throw FileAccessError(__FILE__, __LINE__);
+    throw FileAccessError(__FILE__, __LINE__,
+			  filename,
+			  "The size of the file is not module of 32 bits.");
 
   is.seekg(0);
   while (is.read(reinterpret_cast<char*>(&instruction), sizeof(Word))) {

@@ -46,7 +46,7 @@ public:
    * @param file File where the exception is raised.
    * @param line Line where the exception is raised.
    */
-  CPUException(std::string file = "", Uint32 line = 0) throw ()
+  CPUException(std::string file, Uint32 line) throw ()
     : Exception(file, line)
   {}
 };

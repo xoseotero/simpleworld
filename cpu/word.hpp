@@ -45,17 +45,21 @@ public:
    * Constructor.
    * @param file File where the exception is raised
    * @param line Line where the exception is raised
+   * @param byte Value out of range.
    * @param what Reason for the exception
    */
-  ByteOutOfRange(std::string file = "", Uint32 line = 0,
+  ByteOutOfRange(std::string file, Uint32 line, Uint8 byte,
                  const std::string& what = "Bit out of range") throw ()
-    : out_of_range(what), CPUException(file, line)
+    : out_of_range(what), CPUException(file, line), byte(byte)
   {}
 
   /**
    * Destructor.
    */
   ~ByteOutOfRange() throw () {}
+
+
+  Uint8 byte;			/**< Byte out of range. */
 };
 
 

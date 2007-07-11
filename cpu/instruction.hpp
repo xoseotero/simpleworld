@@ -52,7 +52,7 @@ public:
    * @param line Line where the exception is raised.
    * @param what Reason of the exception.
    */
-  InstructionNotFound(std::string file = "", Uint32 line = 0,
+  InstructionNotFound(std::string file, Uint32 line,
                       const std::string& what = "Instruction not found")
     throw ()
     : runtime_error(what), CPUException(file, line)
@@ -66,6 +66,66 @@ public:
 
 /**
  * Instruction exception.
+ * It's raised if the instruction code can't be found.
+ */
+class InstructionCodeNotFound: public InstructionNotFound
+{
+public:
+  /**
+   * Constructor.
+   * @param file File where the exception is raised.
+   * @param line Line where the exception is raised.
+   * @param code Code of the instruction.
+   * @param what Reason of the exception.
+   */
+  InstructionCodeNotFound(std::string file, Uint32 line,
+			  Uint8 code,
+			  const std::string& what = "Instruction code not found")
+    throw ()
+    : InstructionNotFound(file, line), code(code)
+  {}
+
+  /**
+   * Destructor.
+   */
+  ~InstructionCodeNotFound() throw () {}
+
+
+  Uint8 code;			/**< Code of the instruction. */
+};
+
+/**
+ * Instruction exception.
+ * It's raised if the instruction name can't be found.
+ */
+class InstructionNameNotFound: public InstructionNotFound
+{
+public:
+  /**
+   * Constructor.
+   * @param file File where the exception is raised.
+   * @param line Line where the exception is raised.
+   * @param name Name of the instruction.
+   * @param what Reason of the exception.
+   */
+  InstructionNameNotFound(std::string file, Uint32 line,
+			  std::string name,
+			  const std::string& what = "Instruction name not found")
+    throw ()
+    : InstructionNotFound(file, line), name(name)
+  {}
+
+  /**
+   * Destructor.
+   */
+  ~InstructionNameNotFound() throw () {}
+
+
+  std::string name;		/**< Name of the instruction  */
+};
+
+/**
+ * Instruction exception.
  * It's raised if the instruction already exist.
  */
 class InstructionExist: public std::runtime_error, public CPUException
@@ -75,9 +135,10 @@ public:
    * Constructor.
    * @param file File where the exception is raised.
    * @param line Line where the exception is raised.
+   * @param code Code of the Instruction.
    * @param what Reason of the exception.
    */
-  InstructionExist(std::string file = "", Uint32 line = 0,
+  InstructionExist(std::string file, Uint32 line, Uint8 code,
                    const std::string& what = "The instruction already exist")
     throw ()
     : runtime_error(what), CPUException(file, line)
@@ -87,6 +148,9 @@ public:
    * Destructor.
    */
   ~InstructionExist() throw () {}
+
+
+  Uint8 code;			/**< Code of the instruction. */
 };
 
 /**
@@ -102,7 +166,7 @@ public:
    * @param line Line where the exception is raised.
    * @param what Reason of the exception.
    */
-  RegisterNotFound(std::string file = "", Uint32 line = 0,
+  RegisterNotFound(std::string file, Uint32 line,
                    const std::string& what = "Register not found") throw ()
     : runtime_error(what), CPUException(file, line)
   {}
@@ -111,6 +175,66 @@ public:
    * Destructor.
    */
   ~RegisterNotFound() throw () {}
+};
+
+/**
+ * Instruction exception.
+ * It's raised if the register code can't be found.
+ */
+class RegisterCodeNotFound: public RegisterNotFound
+{
+public:
+  /**
+   * Constructor.
+   * @param file File where the exception is raised.
+   * @param line Line where the exception is raised.
+   * @param code Code of the instruction
+   * @param what Reason of the exception.
+   */
+  RegisterCodeNotFound(std::string file, Uint32 line,
+		       Uint8 code,
+		       const std::string& what = "Register code not found")
+    throw ()
+    : RegisterNotFound(file, line), code(code)
+  {}
+
+  /**
+   * Destructor.
+   */
+  ~RegisterCodeNotFound() throw () {}
+
+
+  Uint8 code;			/**< Code of the register. */
+};
+
+/**
+ * Instruction exception.
+ * It's raised if the register name can't be found.
+ */
+class RegisterNameNotFound: public RegisterNotFound
+{
+public:
+  /**
+   * Constructor.
+   * @param file File where the exception is raised.
+   * @param line Line where the exception is raised.
+   * @param name Name of the instruction
+   * @param what Reason of the exception.
+   */
+  RegisterNameNotFound(std::string file, Uint32 line,
+		       std::string name,
+		       const std::string& what = "Register name not found")
+    throw ()
+    : RegisterNotFound(file, line), name(name)
+  {}
+
+  /**
+   * Destructor.
+   */
+  ~RegisterNameNotFound() throw () {}
+
+
+  std::string name;		/**< Name of the register. */
 };
 
 /**
@@ -124,9 +248,10 @@ public:
    * Constructor.
    * @param file File where the exception is raised.
    * @param line Line where the exception is raised.
+   * @param code Code of the register.
    * @param what Reason of the exception.
    */
-  RegisterExist(std::string file = "", Uint32 line = 0,
+  RegisterExist(std::string file, Uint32 line, Uint8 code,
                 const std::string& what = "The register already exist")
     throw ()
     : runtime_error(what),  CPUException(file,line)
@@ -136,6 +261,9 @@ public:
    * Destructor.
    */
   ~RegisterExist() throw () {}
+
+
+  Uint8 code;			/**< Code of the register. */
 };
 
 
@@ -236,7 +364,7 @@ public:
    * Info about the instruction.
    * @param code code of the instruction.
    * @return the info about the instruction.
-   * @exception InstructionNotFound instruction not found.
+   * @exception InstructionCodeNotFound instruction not found.
    */
   InstructionInfo instruction_info(Uint8 code) const;
 
@@ -244,7 +372,7 @@ public:
    * Code of the instruction.
    * @param name name of the instruction.
    * @return the code of the instruction.
-   * @exception InstructionNotFound instruction not found.
+   * @exception InstructionNameNotFound instruction not found.
    */
   Uint8 instruction_code(std::string name) const;
 
@@ -252,7 +380,7 @@ public:
    * Name of the register.
    * @param code code of the register.
    * @return the name of the register.
-   * @exception RegisterNotFound register not found.
+   * @exception RegisterCodeNotFound register not found.
    */
   std::string register_name(Uint8 code) const;
 
@@ -260,7 +388,7 @@ public:
    * Code of the register.
    * @param name name of the register.
    * @return the code of the register.
-   * @exception RegisterNotFound register not found.
+   * @exception RegisterNameNotFound register not found.
    */
   Uint8 register_code(std::string name) const;
 
@@ -287,7 +415,7 @@ public:
   /**
    * Remove a instruction.
    * @param code code of the instruction.
-   * @exception InstructionNotFound instruction not found.
+   * @exception InstructionCodeNotFound instruction not found.
    */
   void remove_instruction(Uint8 code);
 
@@ -302,7 +430,7 @@ public:
   /**
    * Remove a register.
    * @param code code of the register.
-   * @exception RegisterNotFound register not found.
+   * @exception RegisterCodeNotFound register not found.
    */
   void remove_register(Uint8 code);
 

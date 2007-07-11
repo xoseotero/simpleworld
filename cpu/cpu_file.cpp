@@ -53,12 +53,14 @@ void CPUFile::load_file(const std::string& filename)
 {
   std::ifstream is(filename.c_str(), std::ios::binary);
   if (is.rdstate() & std::ifstream::failbit)
-    throw FileAccessError(__FILE__, __LINE__);
+    throw FileAccessError(__FILE__, __LINE__,
+			  filename, "File can't be opened to read.");
 
   // All instructions are 32bits, if the file is not X*32bits long is not valid
   boost::uintmax_t size = fs::file_size(filename);
   if ((size % sizeof(Word)) != 0)
-    throw FileAccessError(__FILE__, __LINE__);
+    throw FileAccessError(__FILE__, __LINE__,
+			  filename, "Size of the file not module of 32bits.");
 
 #ifdef DEBUG
   std::cout << boost::str(boost::format("Loading instructions from %s:")

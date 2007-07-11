@@ -44,17 +44,21 @@ public:
    * Constructor.
    * @param file File where the exception is raised.
    * @param line Line where the exception is raised.
+   * @param address Address out of range.
    * @param what Reason of the exception.
    */
-  AddressOutOfRange(std::string file = "", Uint32 line = 0,
+  AddressOutOfRange(std::string file, Uint32 line, Address address,
                     const std::string& what = "Address out of range") throw()
-    : out_of_range(what), CPUException(file, line)
+    : out_of_range(what), CPUException(file, line), address(address)
   {}
 
   /**
    * Destructor.
    */
   ~AddressOutOfRange() throw () {}
+
+
+  Address address;		/**< Address out of range. */
 };
 
 

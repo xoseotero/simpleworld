@@ -55,7 +55,7 @@ class CPUStopped: public std::runtime_error, public CPUException
    * @param what Reason of the exception.
    */
 public:
-  CPUStopped(std::string file = "", Uint32 line = 0,
+  CPUStopped(std::string file, Uint32 line,
              const std::string& what = "CPU Stopped") throw()
     : runtime_error(what), CPUException(file, line)
   {}

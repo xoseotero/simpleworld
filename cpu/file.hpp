@@ -47,18 +47,22 @@ public:
    * Constructor.
    * @param file File where the exception is raised.
    * @param line Line where the exception is raised.
+   * @param filename Name of the file.
    * @param what Reason of the exception.
    */
-  FileAccessError(std::string file = "", Uint32 line = 0,
+  FileAccessError(std::string file, Uint32 line, std::string filename,
                   const std::string& what = "Error accessing file")
     throw ()
-    : runtime_error(what), CPUException(file, line)
+    : runtime_error(what), CPUException(file, line), filename(filename)
   {}
 
   /**
    * Destructor.
    */
   ~FileAccessError() throw () {}
+
+
+  std::string filename;		/**< Name of the file. */
 };
 
 /**
@@ -72,17 +76,22 @@ public:
    * Constructor.
    * @param file File where the exception is raised.
    * @param line Line where the exception is raised.
+   * @param fileline Line out of range.
    * @param what Reason of the exception.
    */
-  LineOutOfRange(std::string file = "", Uint32 line = 0,
+  LineOutOfRange(std::string file, Uint32 line,
+		 std::vector<std::string>::size_type fileline,
                  const std::string& what = "Line out of range") throw()
-    : out_of_range(what), CPUException(file, line)
+    : out_of_range(what), CPUException(file, line), fileline(fileline)
   {}
 
   /**
    * Destructor.
    */
   ~LineOutOfRange() throw () {}
+
+
+  std::vector<std::string>::size_type fileline; /**< Line out of range. */
 };
 
 
