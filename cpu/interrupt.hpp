@@ -35,13 +35,13 @@ namespace CPU
  * Types of interrupts.
  */
 enum InterruptType {
-  InvalidInstruction = 0,
-  InvalidMemoryLocation = 1,
-  DivisionByZero = 2,
-  TimerInterrupt = 3,
-  InvalidWorldCommand = 4,
-  WorldEvent = 5,
-  SoftwareInterrupt = 6
+  TimerInterrupt = 0,
+  SoftwareInterrupt = 1,
+  InvalidInstruction = 2,
+  InvalidMemoryLocation = 3,
+  DivisionByZero = 4,
+  InvalidWorldCommand = 5,
+  WorldEvent = 6
 };
 
 
