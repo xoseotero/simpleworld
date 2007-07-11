@@ -210,6 +210,17 @@ void CPU::next()
       // Update PC
       this->registers_.set_word(REGISTER_PC,
 				this->registers_[REGISTER_PC] + 4);
+    } catch (AddressOutOfRange exc) {
+      // Prepare the interrupt
+      this->interrupt_request_ = true;
+      this->interrupt_.type = InvalidMemoryLocation;
+      this->interrupt_.r0 = static_cast<Word>(InvalidMemoryLocation);
+      this->interrupt_.r1 = this->memory_->get_word(REGISTER_PC);
+      this->interrupt_.r2 = static_cast<Word>(exc.address);
+
+      // Update PC
+      this->registers_.set_word(REGISTER_PC,
+				this->registers_[REGISTER_PC] + 4);
     }
   }
 }
