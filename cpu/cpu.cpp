@@ -172,30 +172,44 @@ void CPU::next()
     this->interrupt_handler_();
   } else {
     Instruction instruction = this->fetch_instruction_();
-    InstructionInfo info = this->set_.instruction_info(instruction.code);
+    try {
+      InstructionInfo info = this->set_.instruction_info(instruction.code);
 #ifdef DEBUG
-    std::cout << "Instruction info:";
-    std::cout
-      << boost::str(boost::format("code: %d, name: %s, nregs: %d, has_i: %d")
-		    % static_cast<int>(info.code)
-		    % info.name
-		    % static_cast<int>(info.nregs)
-		    % static_cast<int>(info.has_inmediate))
+      std::cout << "Instruction info:";
+      std::cout
+	<< boost::str(boost::format("code: %d, name: %s, nregs: %d, has_i: %d")
+		      % static_cast<int>(info.code)
+		      % info.name
+		      % static_cast<int>(info.nregs)
+		      % static_cast<int>(info.has_inmediate))
       << std::endl;
 #endif
 
-    switch (info.func(this->registers_, *this->memory_, this->interrupt_,
-		      instruction)) {
-    case UpdateInterrupt:
-      // Thrown a interrupt
+      switch (info.func(this->registers_, *this->memory_, this->interrupt_,
+			instruction)) {
+      case UpdateInterrupt:
+	// Thrown a interrupt
+	this->interrupt_request_ = true;
+      case UpdatePC:
+	// Update PC
+	this->registers_.set_word(REGISTER_PC,
+	                          this->registers_[REGISTER_PC] + 4);
+	break;
+      case Stop:
+	this->running_ = false;
+	break;
+      }
+    } catch (InstructionCodeNotFound exc) {
+      // Prepare the interrupt
       this->interrupt_request_ = true;
-    case UpdatePC:
+      this->interrupt_.type = InvalidInstruction;
+      this->interrupt_.r0 = static_cast<Word>(InvalidInstruction);
+      this->interrupt_.r1 = this->memory_->get_word(REGISTER_PC);
+      this->interrupt_.r2 = static_cast<Word>(exc.code);
+
       // Update PC
-      this->registers_.set_word(REGISTER_PC, this->registers_[REGISTER_PC] + 4);
-      break;
-    case Stop:
-      this->running_ = false;
-      break;
+      this->registers_.set_word(REGISTER_PC,
+				this->registers_[REGISTER_PC] + 4);
     }
   }
 }
