@@ -1,5 +1,5 @@
 /**
- * @file db/code.h
+ * @file db/code.hpp
  * Code of a bug.
  *
  * begin:     Thu, 01 Mar 2007 13:00:43 +0100

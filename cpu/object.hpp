@@ -1,5 +1,5 @@
 /**
- * @file cpu/object.h
+ * @file cpu/object.hpp
  * Simple World Language object file.
  *
  * begin:     Sun, 19 Nov 2006 17:12:38 +0100

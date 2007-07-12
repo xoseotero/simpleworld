@@ -1,5 +1,5 @@
 /**
- * @file simple/exception.h
+ * @file simple/exception.hpp
  * Exception class father of the rest of Simple World exceptions.
  *
  * begin:     Sat, 11 Dec 2004 23:28:42 +0100

@@ -1,5 +1,5 @@
 /**
- * @file db/db.h
+ * @file db/db.hpp
  * Simple World Data Base management.
  *
  * begin:     Wed, 24 Jan 2007 17:13:02 +0100

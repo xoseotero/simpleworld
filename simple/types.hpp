@@ -1,5 +1,5 @@
 /**
- * @file simple/types.h
+ * @file simple/types.hpp
  * Types definition.
  * @todo In C99 there is the stdint.h where is defined intX_t and uintX_t, but
  * are not used.

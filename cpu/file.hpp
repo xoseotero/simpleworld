@@ -1,5 +1,5 @@
 /**
- * @file cpu/file.h
+ * @file cpu/file.hpp
  * A file as a array of lines.
  *
  * begin:     Fri, 10 Nov 2006 08:27:00 +0100

@@ -1,5 +1,5 @@
 /**
- * @file cpu/types.h
+ * @file cpu/types.hpp
  * Definition of the types used in the CPU.
  *
  * begin:     Thu, 01 Mar 2007 18:42:48 +0100

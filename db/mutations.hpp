@@ -1,5 +1,5 @@
 /**
- * @file db/mutations.h
+ * @file db/mutations.hpp
  * Mutations of a bug.
  *
  * begin:     Thu, 01 Mar 2007 16:59:31 +0100

@@ -1,5 +1,5 @@
 /**
- * @file cpu/memory.h
+ * @file cpu/memory.hpp
  * Accessing words from memory.
  *
  * begin:     Sun, 05 Nov 2006 16:33:13 +0100

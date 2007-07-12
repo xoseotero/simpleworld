@@ -1,5 +1,5 @@
 /**
- * @file db/environment.h
+ * @file db/environment.hpp
  * Information about the environment of the world.
  *
  * begin:     Thu, 25 Jan 2007 03:53:57 +0100

@@ -1,5 +1,5 @@
 /**
- * @file db/bug.h
+ * @file db/bug.hpp
  * Information about a Bug.
  *
  * begin:     Mon, 01 Jan 2007 08:41:25 +0100

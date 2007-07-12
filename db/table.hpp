@@ -1,5 +1,5 @@
 /**
- * @file db/table.h
+ * @file db/table.hpp
  * Base clase for the tables.
  *
  * begin:     Tue, 13 Feb 2007 11:11:22 +0100

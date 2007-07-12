@@ -1,5 +1,5 @@
 /**
- * @file db/cpu.h
+ * @file db/cpu.hpp
  * CPU of a bug.
  *
  * begin:     Mon, 01 Jan 2007 08:46:13 +0100

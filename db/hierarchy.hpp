@@ -1,5 +1,5 @@
 /**
- * @file db/hierarchy.h
+ * @file db/hierarchy.hpp
  * Hierarchy of a bug.
  *
  * begin:     Wed, 21 Feb 2007 11:32:42 +0100

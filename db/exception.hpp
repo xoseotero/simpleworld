@@ -1,5 +1,5 @@
 /**
- * @file db/exception.h
+ * @file db/exception.hpp
  * Exception class father of the rest of DB exceptions.
  *
  * begin:     Mon, 01 Jan 2007 08:49:24 +0100

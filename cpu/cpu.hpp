@@ -1,5 +1,5 @@
 /**
- * @file cpu/cpu.h
+ * @file cpu/cpu.hpp
  * Central Processing Unit big endian with 16 registers of 32bits and 16bits of
  * address space.
  *

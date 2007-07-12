@@ -1,5 +1,5 @@
 /**
- * @file world/types.h
+ * @file world/types.hpp
  * Types definition for the world in Simple World.
  *
  * begin:     Sat, 13 Jan 2007 00:50:56 +0100

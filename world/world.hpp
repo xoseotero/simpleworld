@@ -1,5 +1,5 @@
 /**
- * @file world/world.h
+ * @file world/world.hpp
  * Simple World World.
  *
  * begin:     Wed, 27 Dec 2006 18:00:22 +0100

@@ -1,5 +1,5 @@
 /**
- * @file cpu/instruction.h
+ * @file cpu/instruction.hpp
  * Instruction set.
  *
  * begin:     Wed, 08 Nov 2006 16:29:51 +0100

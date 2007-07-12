@@ -1,5 +1,5 @@
 /**
- * @file cpu/word.h
+ * @file cpu/word.hpp
  * Access bytes in a word and change the byte ordering.
  *
  * begin:     Sat, 11 Dec 2004 22:06:28 +0100

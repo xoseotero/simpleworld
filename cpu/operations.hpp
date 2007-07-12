@@ -1,5 +1,5 @@
 /**
- * @file cpu/operations.h
+ * @file cpu/operations.hpp
  * Operations of the Simple CPU.
  *
  * begin:     Sat, 11 Nov 2006 19:15:19 +0100

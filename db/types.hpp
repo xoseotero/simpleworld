@@ -1,5 +1,5 @@
 /**
- * @file db/types.h
+ * @file db/types.hpp
  * Definition of the types used in the database.
  *
  * begin:     Sat, 13 Jan 2007 00:46:33 +0100

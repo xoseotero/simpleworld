@@ -1,5 +1,5 @@
 /**
- * @file cpu/exception.h
+ * @file cpu/exception.hpp
  * Exception class father of the rest of CPU exceptions.
  *
  * begin:     Sat, 11 Dec 2004 23:28:42 +0100

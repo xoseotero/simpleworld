@@ -1,5 +1,5 @@
 /**
- * @file cpu/source.h
+ * @file cpu/source.hpp
  * Simple World Language source file.
  *
  * begin:     Wed, 15 Nov 2006 21:31:26 +0100
