@@ -21,8 +21,8 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __CPU_INTERRUPT_H__
-#define __CPU_INTERRUPT_H__
+#ifndef __CPU_INTERRUPT_HPP__
+#define __CPU_INTERRUPT_HPP__
 
 #include <cpu/memory.hpp>
 
@@ -70,4 +70,4 @@ public:
 }
 }
 
-#endif // __CPU_INTERRUPT_H__
+#endif // __CPU_INTERRUPT_HPP__

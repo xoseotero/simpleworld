@@ -22,8 +22,8 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef __SIMPLE_TYPES_H__
-#define __SIMPLE_TYPES_H__
+#ifndef __SIMPLE_TYPES_HPP__
+#define __SIMPLE_TYPES_HPP__
 
 #include <simple/config.hpp>
 
@@ -63,4 +63,4 @@ typedef unsigned __int64 Uint64;     /**< Signed integer with 64 bits long */
 
 }
 
-#endif // __SIMPLE_TYPES_H__
+#endif // __SIMPLE_TYPES_HPP__

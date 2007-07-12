@@ -21,8 +21,8 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __WORLD_TYPES_H__
-#define __WORLD_TYPES_H__
+#ifndef __WORLD_TYPES_HPP__
+#define __WORLD_TYPES_HPP__
 
 #include <fstream>
 
@@ -96,4 +96,4 @@ typedef Uint32 SortOrder;
 }
 }
 
-#endif // __WORLD_TYPES_H__
+#endif // __WORLD_TYPES_HPP__

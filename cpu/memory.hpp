@@ -21,8 +21,8 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __CPU_MEMORY_H__
-#define __CPU_MEMORY_H__
+#ifndef __CPU_MEMORY_HPP__
+#define __CPU_MEMORY_HPP__
 
 #include <simple/types.hpp>
 #include <cpu/types.hpp>
@@ -145,4 +145,4 @@ private:
 }
 }
 
-#endif // __CPU_MEMORY_H__
+#endif // __CPU_MEMORY_HPP__

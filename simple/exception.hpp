@@ -20,8 +20,8 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef __SIMPLE_EXCEPTION_H__
-#define __SIMPLE_EXCEPTION_H__
+#ifndef __SIMPLE_EXCEPTION_HPP__
+#define __SIMPLE_EXCEPTION_HPP__
 
 #include <stdexcept>
 #include <string>
@@ -55,4 +55,4 @@ public:
 
 }
 
-#endif // __SIMPLE_EXCEPTION_H__
+#endif // __SIMPLE_EXCEPTION_HPP__

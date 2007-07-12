@@ -21,8 +21,8 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __DB_CODE_H__
-#define __DB_CODE_H__
+#ifndef __DB_CODE_HPP__
+#define __DB_CODE_HPP__
 
 #include <vector>
 #include <string>
@@ -84,4 +84,4 @@ public:
 }
 }
 
-#endif // __DB_CODE_H__
+#endif // __DB_CODE_HPP__

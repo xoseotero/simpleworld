@@ -21,8 +21,8 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __CPU_INSTRUCTION_H__
-#define __CPU_INSTRUCTION_H__
+#ifndef __CPU_INSTRUCTION_HPP__
+#define __CPU_INSTRUCTION_HPP__
 
 #include <vector>
 #include <map>
@@ -444,4 +444,4 @@ private:
 }
 }
 
-#endif // __CPU_INSTRUCTION_H__
+#endif // __CPU_INSTRUCTION_HPP__

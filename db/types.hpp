@@ -21,8 +21,8 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __DB_TYPES_H__
-#define __DB_TYPES_H__
+#ifndef __DB_TYPES_HPP__
+#define __DB_TYPES_HPP__
 
 #include <sqlite3x.hpp>
 
@@ -47,4 +47,4 @@ using CPU::Word;
 }
 }
 
-#endif // __DB_TYPES_H__
+#endif // __DB_TYPES_HPP__

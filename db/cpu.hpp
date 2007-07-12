@@ -21,8 +21,8 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __DB_CPU_H__
-#define __DB_CPU_H__
+#ifndef __DB_CPU_HPP__
+#define __DB_CPU_HPP__
 
 #include <string>
 
@@ -94,4 +94,4 @@ public:
 }
 }
 
-#endif // __DB_CPU_H__
+#endif // __DB_CPU_HPP__

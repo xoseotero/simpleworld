@@ -21,8 +21,8 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __CPU_SOURCE_H__
-#define __CPU_SOURCE_H__
+#ifndef __CPU_SOURCE_HPP__
+#define __CPU_SOURCE_HPP__
 
 #include <vector>
 #include <set>
@@ -268,4 +268,4 @@ private:
 }
 }
 
-#endif // __CPU_SOURCE_H__
+#endif // __CPU_SOURCE_HPP__

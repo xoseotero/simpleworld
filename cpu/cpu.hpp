@@ -22,8 +22,8 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __CPU_CPU_H__
-#define __CPU_CPU_H__
+#ifndef __CPU_CPU_HPP__
+#define __CPU_CPU_HPP__
 
 #include <string>
 
@@ -141,4 +141,4 @@ private:
 }
 }
 
-#endif // __CPU_CPU_H__
+#endif // __CPU_CPU_HPP__

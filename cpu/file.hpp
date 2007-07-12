@@ -21,8 +21,8 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __CPU_FILE_H__
-#define __CPU_FILE_H__
+#ifndef __CPU_FILE_HPP__
+#define __CPU_FILE_HPP__
 
 #include <vector>
 #include <string>
@@ -229,4 +229,4 @@ private:
 }
 }
 
-#endif // __CPU_FILE_H__
+#endif // __CPU_FILE_HPP__

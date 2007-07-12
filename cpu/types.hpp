@@ -21,8 +21,8 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __CPU_TYPES_H__
-#define __CPU_TYPES_H__
+#ifndef __CPU_TYPES_HPP__
+#define __CPU_TYPES_HPP__
 
 #include <simple/types.hpp>
 #include <world/types.hpp>
@@ -38,4 +38,4 @@ typedef Uint16 Address;
 }
 }
 
-#endif // __CPU_TYPES_H__
+#endif // __CPU_TYPES_HPP__

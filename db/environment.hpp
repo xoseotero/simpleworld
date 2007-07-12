@@ -21,8 +21,8 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __DB_ENVIRONMENT_H__
-#define __DB_ENVIRONMENT_H__
+#ifndef __DB_ENVIRONMENT_HPP__
+#define __DB_ENVIRONMENT_HPP__
 
 #include <simple/types.hpp>
 #include <db/types.hpp>
@@ -91,4 +91,4 @@ public:
 }
 }
 
-#endif // __DB_ENVIRONMENT_H__
+#endif // __DB_ENVIRONMENT_HPP__

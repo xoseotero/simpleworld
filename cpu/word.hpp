@@ -21,8 +21,8 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __CPU_WORD_H__
-#define __CPU_WORD_H__
+#ifndef __CPU_WORD_HPP__
+#define __CPU_WORD_HPP__
 
 #include <simple/types.hpp>
 #include <cpu/types.hpp>
@@ -101,4 +101,4 @@ Word change_byte_order_middle(Word word);
 }
 }
 
-#endif // __CPU_WORD_H__
+#endif // __CPU_WORD_HPP__

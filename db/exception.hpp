@@ -20,8 +20,8 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef __CPU_EXCEPTION_H__
-#define __CPU_EXCEPTION_H__
+#ifndef __CPU_EXCEPTION_HPP__
+#define __CPU_EXCEPTION_HPP__
 
 #include <string>
 
@@ -54,4 +54,4 @@ public:
 }
 }
 
-#endif // __CPU_EXCEPTION_H__
+#endif // __CPU_EXCEPTION_HPP__

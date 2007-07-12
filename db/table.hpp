@@ -21,8 +21,8 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __DB_TABLE_H__
-#define __DB_TABLE_H__
+#ifndef __DB_TABLE_HPP__
+#define __DB_TABLE_HPP__
 
 #include <vector>
 #include <string>
@@ -133,4 +133,4 @@ protected:
 }
 }
 
-#endif // __DB_TABLE_H__
+#endif // __DB_TABLE_HPP__

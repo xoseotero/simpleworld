@@ -20,8 +20,8 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef __WORLD_WORLD_H__
-#define __WORLD_WORLD_H__
+#ifndef __WORLD_WORLD_HPP__
+#define __WORLD_WORLD_HPP__
 
 namespace SimpleWorld
 {
@@ -33,4 +33,4 @@ namespace World
 }
 }
 
-#endif // __WORLD_WORLD_H__
+#endif // __WORLD_WORLD_HPP__

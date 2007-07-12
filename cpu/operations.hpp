@@ -21,8 +21,8 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __CPU_OPERATIONS_H__
-#define __CPU_OPERATIONS_H__
+#ifndef __CPU_OPERATIONS_HPP__
+#define __CPU_OPERATIONS_HPP__
 
 #include <cpu/types.hpp>
 #include <cpu/memory.hpp>
@@ -845,4 +845,4 @@ Update rri(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst);
 }
 }
 
-#endif // __CPU_OPERATIONS_H__
+#endif // __CPU_OPERATIONS_HPP__

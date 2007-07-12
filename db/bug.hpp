@@ -21,8 +21,8 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __DB_BUG_H__
-#define __DB_BUG_H__
+#ifndef __DB_BUG_HPP__
+#define __DB_BUG_HPP__
 
 #include <vector>
 
@@ -91,4 +91,4 @@ public:
 }
 }
 
-#endif // __DB_BUG_H__
+#endif // __DB_BUG_HPP__
