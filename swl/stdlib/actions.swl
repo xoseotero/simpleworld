@@ -24,39 +24,44 @@
 # Ex: loadi ACTION_REG ACTION_NOTHING
 
 # Do nothing
-# Ex: world ACTION_REG UNUSED_REG UNUSED_REG
 .define ACTION_NOTHING		0x00
 
 # Get info about the bug itself
-# Ex: world ACTION_REG OUTPUT_REG UNUSED_REG
-.define ACTION_ID			0x01
-# Ex: world ACTION_REG OUTPUT_REG UNUSED_REG
-.define ACTION_ENERGY		0x02
-# Ex: world ACTION_REG OUTPUT_X_REG OUTPUT_Y_REG
-.define ACTION_POSITION		0x03
-# Ex: world ACTION_REG OUTPUT_REG UNUSED_REG
-.define ACTION_ORIENTATION	0x04
+.define ACTION_MYSELF		0x01
 
 # Detect a object in front of the bug
-# Ex: world ACTION_REG UNUSED_REG UNUSED_REG
-.define ACTION_DETECT		0x05
+.define ACTION_DETECT		0x02
 
-# Movements
-# Ex: world ACTION_REG UNUSED_REG UNUSED_REG
-.define ACTION_MOVE_FORWARD	0x06
-# Ex: world ACTION_REG UNUSED_REG UNUSED_REG
-.define ACTION_MOVE_BACKWARD	0x07
-# Ex: world ACTION_REG UNUSED_REG UNUSED_REG
-.define ACTION_TURN_LEFT	0x08
-# Ex: world ACTION_REG UNUSED_REG UNUSED_REG
-.define ACTION_TURN_RIGHT	0x09
+# Get information about the bug in front of the bug
+.define ACTION_INFO		0x03
+
+# Move
+.define ACTION_MOVE		0x04
+
+# Turn
+.define ACTION_TURN		0x05
 
 # Fight
-# Ex: world ACTION_REG ENERGY_REG UNUSED_REG
-.define ACTION_ATTACK		0x0a
-# Ex: world ACTION_REG ENERGY_REG UNUSED_REG
-.define ACTION_DEFEND		0x0b
+.define ACTION_ATTACK		0x06
+
+# Eat
+.define ACTION_EAT		0x07
 
 # Create a egg
-# Ex: world ACTION_REG ENERGY_REG UNUSED_REG
-.define ACTION_EGG		0x0c
+.define ACTION_EGG		0x08
+
+
+# Parameters of the MYSELF and INFO actions
+.define ACTION_ID		0x0
+.define ACTION_SIZE		0x1
+.define ACTION_ENERGY		0x2
+.define ACTION_POSITION		0x3
+.define ACTION_ORIENTATION	0x4
+
+# Parameters of the MOVE action
+.define ACTION_MOVE_FORWARD	0x0
+.define ACTION_MOVE_BACKWARD	0x1
+
+# Parameters of the TURN action
+.define ACTION_TURN_LEFT	0x0
+.define ACTION_TURN_RIGHT	0x1
