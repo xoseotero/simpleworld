@@ -32,13 +32,6 @@
 .define ERROR_RANGE	0x0003	# Math result not representable
 .define ERROR_OVERFLOW	0x0004	# Value too large for defined data type
 
-# alloc.swl
-.define ERROR_NOMEM	0x0005	# Out of memory
-.define ERROR_FAULT	0x0006	# Bad address
-
-# string.swl
-.define ERROR_STRSIZE	0x0007	# String too long
-
 
 
 # Variable with the value of the last error
