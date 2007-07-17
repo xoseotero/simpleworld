@@ -20,9 +20,9 @@
 #  along with this program; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-# In the examples ACTION_REG is filled with the ACTION_* action
-# Ex: loadi ACTION_REG ACTION_NOTHING
-
+###########
+# ACTIONS #
+###########
 # Do nothing
 .define ACTION_NOTHING		0x00
 
@@ -50,7 +50,9 @@
 # Create a egg
 .define ACTION_EGG		0x08
 
-
+##############
+# PARAMETERS #
+##############
 # Parameters of the MYSELF and INFO actions
 .define ACTION_ID		0x0
 .define ACTION_SIZE		0x1
@@ -65,3 +67,27 @@
 # Parameters of the TURN action
 .define ACTION_TURN_LEFT	0x0
 .define ACTION_TURN_RIGHT	0x1
+
+
+###########
+# SUCCESS #
+###########
+# Success status of the actions
+.define ACTION_OK		0x0
+.define ACTION_ERROR		0x1
+
+
+##########
+# OUTPUT #
+##########
+# Orientations
+.define ACTION_NORTH		0x0
+.define ACTION_EAST		0x1
+.define ACTION_SOUCH		0x2
+.define ACTION_WEST		0x3
+
+# Elements in the World
+.define ACTION_NOTHING		0x0
+.define ACTION_EGG		0x1
+.define ACTION_BUG		0x2
+.define ACTION_FOOD		0x3
