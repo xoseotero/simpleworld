@@ -3,29 +3,36 @@
  */
 CREATE TABLE Environment
 (
+  id INTEGER NOT NULL,
+
   time INTEGER NOT NULL,
 
-  order_world INTEGER NOT NULL DEFAULT 0,
+  next_bug INTEGER,                     -- NULL if there aren't alive bugs
 
-  -- The rest of the values can't change
-  mutations_percent INTEGER NOT NULL,
+  -- the rest of the rows can't change
+  mutations_percent REAL NOT NULL,
 
+  time_birth INTEGER NOT NULL,
+
+  energy_nothing INTEGER NOT NULL,
+  energy_myself INTEGER NOT NULL,
   energy_detect INTEGER NOT NULL,
+  energy_info INTEGER NOT NULL,
   energy_move INTEGER NOT NULL,
-  energy_push INTEGER NOT NULL,
-  energy_take INTEGER NOT NULL,
+  energy_turn INTEGER NOT NULL,
   energy_attack INTEGER NOT NULL,
-  energy_defend INTEGER NOT NULL,
-  energy_msg INTEGER NOT NULL,
-  energy_sex INTEGER NOT NULL,
+  energy_eat INTEGER NOT NULL,
+  energy_egg INTEGER NOT NULL,
 
-  PRIMARY KEY(time),
+  PRIMARY KEY(id),
   CHECK(time >= 0),
   CHECK(mutations_percent >= 0),
-  CHECK(energy_detect >= 0 AND energy_move >= 0 AND
-        energy_push >= 0 AND energy_take >= 0 AND
-        energy_attack >= 0 AND energy_defend >= 0 AND
-        energy_msg >= 0 AND energy_sex >= 0)
+  CHECK(time_birth >= 0),
+  CHECK(energy_nothing >= 0 AND energy_myself >= 0 AND
+        energy_detect >= 0 AND energy_info >= 0 AND
+        energy_move >= 0 AND energy_turn >= 0 AND
+        energy_attack >= 0 AND energy_eat >= 0 AND
+        energy_egg >= 0)
 );
 
 CREATE INDEX Environment_index ON Environment(time);
@@ -49,23 +56,47 @@ FOR EACH ROW BEGIN
          FROM Environment) >= NEW.time;
 END;
 
-/* Only time and order_world can change */
+/* Check if next_bug is a valid id */
+CREATE TRIGGER Environment_insert_next_bug
+BEFORE INSERT
+ON Environment
+FOR EACH ROW BEGIN
+  SELECT RAISE(ROLLBACK, 'ID of the Next bug not found')
+  WHERE (SELECT id
+         FROM bug
+         WHERE id = NEW.next_bug) IS NULL;
+END;
+
+CREATE TRIGGER Environment_update_next_bug
+BEFORE UPDATE
+ON Environment
+FOR EACH ROW BEGIN
+SELECT RAISE(ROLLBACK, 'ID of the Next bug not found')
+  WHERE (SELECT id
+         FROM bug
+         WHERE id = NEW.next_bug) IS NULL;
+END;
+
+/* Only id, time and next_bug can change */
 CREATE TRIGGER Environment_update_valid_time
 BEFORE UPDATE
 ON Environment
 FOR EACH ROW
 WHEN OLD.mutations_percent != NEW.mutations_percent OR
+     OLD.time_birth != NEW.time_birth OR
+     OLD.energy_nothing != NEW.energy_nothing OR
+     OLD.energy_myself != NEW.energy_myself OR
      OLD.energy_detect != NEW.energy_detect OR
+     OLD.energy_info != NEW.energy_info OR
      OLD.energy_move != NEW.energy_move OR
-     OLD.energy_push != NEW.energy_push OR
-     OLD.energy_take != NEW.energy_take OR
+     OLD.energy_turn != NEW.energy_turn OR
      OLD.energy_attack != NEW.energy_attack OR
-     OLD.energy_defend != NEW.energy_defend OR
-     OLD.energy_msg != NEW.energy_msg OR
-     OLD.energy_sex != NEW.energy_sex
+     OLD.energy_eat != NEW.energy_eat OR
+     OLD.energy_egg != NEW.energy_egg
 BEGIN
   SELECT RAISE(ROLLBACK, 'changed invalid col');
 END;
+
 
 
 /*******************
@@ -74,8 +105,6 @@ END;
 CREATE TABLE Bug
 (
   id INTEGER NOT NULL,
-
-  order_world INTEGER,                  -- NULL if dead
 
   energy INTEGER NOT NULL,
 
@@ -86,15 +115,16 @@ CREATE TABLE Bug
   birth INTEGER NOT NULL,
   dead INTEGER,                         -- NULL if alive
 
+  father_id INTEGER,                    -- NULL if developed bug
   killer_id INTEGER,                    -- NULL if alive
 
   PRIMARY KEY(id),
   FOREIGN KEY(killer_id) REFERENCES Bug(id),
-  CHECK(order_world >= 0),
+  FOREIGN KEY(father_id) REFERENCES Bug(id),
   CHECK(position_x >= 0 AND position_y >= 0),
   CHECK(orientation >= 0 AND orientation <= 3), -- 4 possible orientations
   CHECK(birth >= 0),
-  CHECK(birth <= dead),                  -- If dead IS NOT NULL
+  CHECK(dead IS NULL OR (birth <= dead)), -- If dead IS NOT NULL
   CHECK(killer_id IS NULL OR (killer_id IS NOT NULL AND dead IS NOT NULL))
 );
 
@@ -124,6 +154,31 @@ FOR EACH ROW BEGIN
          FROM Bug
          WHERE id=NEW.id AND dead IS NULL)
         IS NULL;
+END;
+
+/* Check if father_id is a valid id */
+CREATE TRIGGER Bug_insert_father_trigger
+BEFORE INSERT
+ON Bug
+FOR EACH ROW BEGIN
+  SELECT RAISE(ROLLBACK, 'Father not found')
+  WHERE NEW.father_id IS NOT NULL
+         AND
+         (SELECT id
+          FROM Bug
+          WHERE id=NEW.father_id AND dead IS NULL) IS NULL;
+END;
+
+CREATE TRIGGER Bug_update_father_trigger
+BEFORE UPDATE
+ON Bug
+FOR EACH ROW BEGIN
+  SELECT RAISE(ROLLBACK, 'Father not found')
+  WHERE NEW.father_id IS NOT NULL
+         AND
+         (SELECT id
+          FROM Bug
+          WHERE id=NEW.father_id AND dead IS NULL) IS NULL;
 END;
 
 /* Check if killer_id is a valid id */
@@ -189,58 +244,8 @@ CREATE TRIGGER Bug_delete_trigger
 BEFORE DELETE
 ON Bug
 FOR EACH ROW BEGIN
-  DELETE FROM Hierarchy WHERE son_id = OLD.id OR father_id = OLD.id;
   DELETE FROM Code WHERE bug_id = OLD.id;
   DELETE FROM CPU WHERE bug_id = OLD.id;
-  DELETE FROM Mutation WHERE bug_id = OLD.id;
-END;
-
-
-/*******************
- * Hierarchy
- */
-CREATE TABLE Hierarchy
-(
-  id INTEGER NOT NULL,
-
-  /* A Bug without sons won't appear as father_id. */
-  father_id INTEGER NOT NULL,
-  /* A Bug without fathers won't appear as son_id. */
-  son_id INTEGER NOT NULL,
-
-  PRIMARY KEY(id),
-  FOREIGN KEY(father_id) REFERENCES Bug(id),
-  FOREIGN KEY(son_id) REFERENCES Bug(id),
-  CHECK(father_id != son_id)
-);
-
-/* Make sure that the ids of the father and the son are valid */
-CREATE TRIGGER Hierarchy_insert_ids_trigger
-BEFORE INSERT
-ON Hierarchy
-FOR EACH ROW BEGIN
-  SELECT RAISE(ROLLBACK, 'id of father or son not found')
-  WHERE (SELECT id
-         FROM Bug
-         WHERE id=NEW.father_id AND dead IS NULL) IS NULL
-        OR
-        (SELECT id
-         FROM Bug
-         WHERE id=NEW.son_id AND dead IS NULL) IS NULL;
-END;
-
-CREATE TRIGGER Hierarchy_update_ids_trigger
-BEFORE UPDATE
-ON Hierarchy
-FOR EACH ROW BEGIN
-  SELECT RAISE(ROLLBACK, 'id of father or son not found')
-  WHERE (SELECT id
-         FROM Bug
-         WHERE id=NEW.father_id AND dead IS NULL) IS NULL
-        OR
-        (SELECT id
-         FROM Bug
-         WHERE id=NEW.son_id AND dead IS NULL) IS NULL;
 END;
 
 
@@ -317,6 +322,14 @@ FOR EACH ROW BEGIN
   WHERE (SELECT count(bug_id)
          FROM Code
          WHERE bug_id=NEW.bug_id) != 0;
+END;
+
+/* Propagate the deletion */
+CREATE TRIGGER Code_delete_trigger
+BEFORE DELETE
+ON Bug
+FOR EACH ROW BEGIN
+  DELETE FROM Mutation WHERE bug_id = OLD.id;
 END;
 
 
@@ -446,4 +459,49 @@ FOR EACH ROW BEGIN
   WHERE (SELECT id
          FROM Bug
          WHERE id=NEW.bug_id AND dead IS NULL) IS NULL;
+END;
+
+
+
+/*******************
+ * Food
+ */
+CREATE TABLE Food
+(
+  id INTEGER NOT NULL,
+
+
+  position_x INTEGER NOT NULL,
+  position_y INTEGER NOT NULL,
+
+  size INTEGER NOT NULL,
+
+  PRIMARY KEY(id),
+  CHECK(position_x >= 0 AND position_y >= 0),
+  CHECK(size >= 0)
+);
+
+CREATE INDEX Food_index ON Food(id);
+
+/* Check that two food elements are not in the same position */
+CREATE TRIGGER Food_insert_position_trigger
+BEFORE INSERT
+ON Food
+FOR EACH ROW BEGIN
+  SELECT RAISE(ROLLBACK, 'There is food in the same position')
+  WHERE (SELECT id
+         FROM Food
+         WHERE position_x=NEW.position_x AND position_y=NEW.position_y)
+        IS NOT NULL;
+END;
+
+CREATE TRIGGER Food_update_position_trigger
+BEFORE UPDATE
+ON Food
+FOR EACH ROW BEGIN
+  SELECT RAISE(ROLLBACK, 'There is food in the same position')
+  WHERE (SELECT id
+         FROM Food
+         WHERE position_x=NEW.position_x AND position_y=NEW.position_y)
+        IS NOT NULL;
 END;
