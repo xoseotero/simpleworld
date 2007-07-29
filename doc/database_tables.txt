@@ -1,4 +1,74 @@
 /*******************
+ * Environment
+ */
+CREATE TABLE Environment
+(
+  time INTEGER NOT NULL,
+
+  order_world INTEGER NOT NULL DEFAULT 0,
+
+  -- The rest of the values can't change
+  mutations_percent INTEGER NOT NULL,
+
+  energy_detect INTEGER NOT NULL,
+  energy_move INTEGER NOT NULL,
+  energy_push INTEGER NOT NULL,
+  energy_take INTEGER NOT NULL,
+  energy_attack INTEGER NOT NULL,
+  energy_defend INTEGER NOT NULL,
+  energy_msg INTEGER NOT NULL,
+  energy_sex INTEGER NOT NULL,
+
+  PRIMARY KEY(time),
+  CHECK(time >= 0),
+  CHECK(mutations_percent >= 0),
+  CHECK(energy_detect >= 0 AND energy_move >= 0 AND
+        energy_push >= 0 AND energy_take >= 0 AND
+        energy_attack >= 0 AND energy_defend >= 0 AND
+        energy_msg >= 0 AND energy_sex >= 0)
+);
+
+CREATE INDEX Environment_index ON Environment(time);
+
+/* time must be the older of the table */
+CREATE TRIGGER Environment_insert_time
+BEFORE INSERT
+ON Environment
+FOR EACH ROW BEGIN
+  SELECT RAISE(ROLLBACK, 'There is a older time')
+  WHERE (SELECT max(time)
+         FROM Environment) > NEW.time;
+END;
+
+CREATE TRIGGER Environment_update_time
+BEFORE UPDATE
+ON Environment
+FOR EACH ROW BEGIN
+  SELECT RAISE(ROLLBACK, 'There is a older time')
+  WHERE (SELECT max(time)
+         FROM Environment) >= NEW.time;
+END;
+
+/* Only time and order_world can change */
+CREATE TRIGGER Environment_update_valid_time
+BEFORE UPDATE
+ON Environment
+FOR EACH ROW
+WHEN OLD.mutations_percent != NEW.mutations_percent OR
+     OLD.energy_detect != NEW.energy_detect OR
+     OLD.energy_move != NEW.energy_move OR
+     OLD.energy_push != NEW.energy_push OR
+     OLD.energy_take != NEW.energy_take OR
+     OLD.energy_attack != NEW.energy_attack OR
+     OLD.energy_defend != NEW.energy_defend OR
+     OLD.energy_msg != NEW.energy_msg OR
+     OLD.energy_sex != NEW.energy_sex
+BEGIN
+  SELECT RAISE(ROLLBACK, 'changed invalid col');
+END;
+
+
+/*******************
  * Bug
  */
 CREATE TABLE Bug
@@ -376,74 +446,4 @@ FOR EACH ROW BEGIN
   WHERE (SELECT id
          FROM Bug
          WHERE id=NEW.bug_id AND dead IS NULL) IS NULL;
-END;
-
-
-/*******************
- * Environment
- */
-CREATE TABLE Environment
-(
-  time INTEGER NOT NULL,
-
-  order_world INTEGER NOT NULL DEFAULT 0,
-
-  -- The rest of the values can't change
-  mutations_percent INTEGER NOT NULL,
-
-  energy_detect INTEGER NOT NULL,
-  energy_move INTEGER NOT NULL,
-  energy_push INTEGER NOT NULL,
-  energy_take INTEGER NOT NULL,
-  energy_attack INTEGER NOT NULL,
-  energy_defend INTEGER NOT NULL,
-  energy_msg INTEGER NOT NULL,
-  energy_sex INTEGER NOT NULL,
-
-  PRIMARY KEY(time),
-  CHECK(time >= 0),
-  CHECK(mutations_percent >= 0),
-  CHECK(energy_detect >= 0 AND energy_move >= 0 AND
-        energy_push >= 0 AND energy_take >= 0 AND
-        energy_attack >= 0 AND energy_defend >= 0 AND
-        energy_msg >= 0 AND energy_sex >= 0)
-);
-
-CREATE INDEX Environment_index ON Environment(time);
-
-/* time must be the older of the table */
-CREATE TRIGGER Environment_insert_time
-BEFORE INSERT
-ON Environment
-FOR EACH ROW BEGIN
-  SELECT RAISE(ROLLBACK, 'There is a older time')
-  WHERE (SELECT max(time)
-         FROM Environment) > NEW.time;
-END;
-
-CREATE TRIGGER Environment_update_time
-BEFORE UPDATE
-ON Environment
-FOR EACH ROW BEGIN
-  SELECT RAISE(ROLLBACK, 'There is a older time')
-  WHERE (SELECT max(time)
-         FROM Environment) >= NEW.time;
-END;
-
-/* Only time and order_world can change */
-CREATE TRIGGER Environment_update_valid_time
-BEFORE UPDATE
-ON Environment
-FOR EACH ROW
-WHEN OLD.mutations_percent != NEW.mutations_percent OR
-     OLD.energy_detect != NEW.energy_detect OR
-     OLD.energy_move != NEW.energy_move OR
-     OLD.energy_push != NEW.energy_push OR
-     OLD.energy_take != NEW.energy_take OR
-     OLD.energy_attack != NEW.energy_attack OR
-     OLD.energy_defend != NEW.energy_defend OR
-     OLD.energy_msg != NEW.energy_msg OR
-     OLD.energy_sex != NEW.energy_sex
-BEGIN
-  SELECT RAISE(ROLLBACK, 'changed invalid col');
 END;
