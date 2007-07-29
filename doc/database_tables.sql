@@ -10,6 +10,9 @@ CREATE TABLE Environment
   next_bug INTEGER,                     -- NULL if there aren't alive bugs
 
   -- the rest of the rows can't change
+  size_x INTEGER NOT NULL,
+  size_y INTEGER NOT NULL,
+
   energy_developed INTEGER NOT NULL,
 
   mutations_percent REAL NOT NULL,
@@ -28,6 +31,7 @@ CREATE TABLE Environment
 
   PRIMARY KEY(id),
   CHECK(time >= 0),
+  CHECK(size_x > 0 AND size_y > 0),
   CHECK(energy_developed >= 0),
   CHECK(mutations_percent >= 0),
   CHECK(time_birth >= 0),
@@ -85,7 +89,9 @@ CREATE TRIGGER Environment_update_valid_time
 BEFORE UPDATE
 ON Environment
 FOR EACH ROW
-WHEN OLD.energy_developed != NEW.energy_developed OR
+WHEN OLD.size_x != NEW.size_x OR
+     OLD.size_y != NEW.size_y OR
+     OLD.energy_developed != NEW.energy_developed OR
      OLD.mutations_percent != NEW.mutations_percent OR
      OLD.time_birth != NEW.time_birth OR
      OLD.energy_nothing != NEW.energy_nothing OR
