@@ -45,7 +45,8 @@ Artem Gr <artem at bizlink ru>
 - Fixes to enable/disable wide-char support with a macro.
 
 - Xose Anton Otero Ferreira submitted patches to remove 'long long'
-decls and replace those with sqlite_int64.
+decls and replace those with sqlite_int64. He also submitted
+the isnull() functions.
 
 
 Significant changes from the original sqlite3x distribution include:
@@ -118,6 +119,9 @@ this could be a significant performance factor for some applications.
 */
 namespace sqlite3x {
 
+	/**
+	   64-bit integer type used by this code.
+	*/
 	typedef sqlite_int64 int64_t;
 
 	class sqlite3_command;
@@ -126,6 +130,9 @@ namespace sqlite3x {
 	   rc_is_okay() is an easy way to check if rc is one of
 	   SQLITE_OK, SQLITE_ROW, or SQLITE_DONE.  This function
 	   returns true if rc is one of those values, else false.
+	   When writing code which accepts arbitrary client-supplied
+	   SQL, any of those three codes can signal success, depending
+	   on the SQL code and the context.
 	*/
 	bool rc_is_okay( int rc );
 
@@ -177,6 +184,12 @@ namespace sqlite3x {
 		explicit sqlite3_connection(std::string const & dbname);
 
 		/**
+		   See take(sqlite3*). This ctor is identical except
+		   that it throws if passed a null pointer.
+		*/
+		sqlite3_connection( sqlite3 * dbh );
+
+		/**
 		   Calls this->close() if close() has not already
 		   been called. If it calls close() then the exception
 		   is silently ignored for the sake of having a no-throw
@@ -217,10 +230,41 @@ namespace sqlite3x {
 		*/
 		virtual void open( char const * );
 
-		/*
+		/**
 		  Functionally the same as open( char const *).
 		 */
 		void open(std::string const &dbname);
+
+		/**
+
+		   Transfers control of dbh to this object and makes
+		   this object point at dbh. dbh is assumed to be
+		   a valid, opened sqlite3 db handle.
+
+		   If this->db() == dbh then this function
+		   does nothing.
+
+		   If this object had an opened db handle
+		   then it is closed before dbh is taken.
+		   Closing may throw, but this function takes
+		   ownership of dbh regardless of whether
+		   it throws or not.
+
+		   If dbh is null, the effect is identical
+		   to calling close().
+
+		   This function triggers the protected on_open()
+		   function if dbh is not null.
+		*/
+		void take( sqlite3 * dbh );
+
+		/**
+		   Transfers ownership of the returned handle to the caller.
+		   This object is then considered closed. NULL is returned
+		   if this object is closed.
+		*/
+		sqlite3 * take() throw();
+
 
 		/**
 		   Closes this database. If the db is not opened,
@@ -234,18 +278,19 @@ namespace sqlite3x {
 		*/
 		int64_t insertid();
 
-		/**
-		   Returns the number of database rows that were
-		   changed (or inserted or deleted) by the most recently
-		   completed INSERT, UPDATE, or DELETE statement.
-
-		   SQLite implements the command "DELETE FROM table"
-		   without a WHERE clause by dropping and recreating
-		   the table. To get an accurate count of the number
-		   of rows deleted, use "DELETE FROM table WHERE 1"
+  		/**
+ 		   Returns the number of database rows that were
+ 		   changed (or inserted or deleted) by the most recently
+ 		   completed INSERT, UPDATE, or DELETE statement.
+ 
+ 		   SQLite implements the command "DELETE FROM table"
+ 		   without a WHERE clause by dropping and recreating
+ 		   the table. To get an accurate count of the number
+ 		   of rows deleted, use "DELETE FROM table WHERE 1"
 		   instead.
-		*/
-		int changes();
+ 		*/
+ 		int changes();
+
 
 		/**
 		   See sqlite3_busy_timeout().
@@ -416,12 +461,12 @@ namespace sqlite3x {
 
 		sqlite3_command *cmd;
 
-		/**
-		   Used only by sqlite3_command.
-		*/
-		sqlite3_cursor(sqlite3_command *cmd);
 
 	public:
+		/**
+		   Creates a cursor by calling cmd->executecursor().
+		*/
+		sqlite3_cursor(sqlite3_command & cmd);
 		/**
 		   Creates an empty cursor object, suitable only
 		   for use as the target of a copy/assignment.
@@ -471,11 +516,12 @@ namespace sqlite3x {
 		*/
 		int colcount();
 
-		/**
-		   Check if the given field number is NULL. This function
-		   returns true if is NULL, else false.
-		*/
-		bool isnull(int index);
+  		/**
+ 		   Check if the given field number is NULL. This function
+ 		   returns true if is NULL, else false.
+ 		*/
+ 		bool isnull(int index);
+
 
 		/**
 		   Gets the integer value at the given field number.

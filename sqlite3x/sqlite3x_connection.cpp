@@ -38,11 +38,25 @@ namespace sqlite3x {
 
 	sqlite3_connection::sqlite3_connection() : m_db(NULL), m_name() {}
 
-	sqlite3_connection::sqlite3_connection(std::string const & dbn) : m_db(NULL), m_name(dbn) { this->open(dbn); }
+	sqlite3_connection::sqlite3_connection(std::string const & dbn)
+		: m_db(NULL), m_name(dbn)
+	{
+		this->open(dbn);
+	}
 
 #if SQLITE3X_USE_WCHAR
 	sqlite3_connection::sqlite3_connection(const wchar_t *dbn) : m_db(NULL), m_name() { this->open(dbn); }
 #endif
+
+	sqlite3_connection::sqlite3_connection( sqlite3 * dbh )
+		: m_db(0), m_name()
+	{
+		if( ! dbh )
+		{
+			throw database_error( "sqlite3_connection(sqlite3*) ctor was passed a null db handle." );
+		}
+		this->take( dbh );
+	}
 
 	sqlite3_connection::~sqlite3_connection()
 	{
@@ -56,6 +70,36 @@ namespace sqlite3x {
 		}
 	}
 
+
+	void sqlite3_connection::take( sqlite3 * dbh )
+	{
+
+		if( this->m_db == dbh ) return;
+		try
+		{
+			if( this->m_db || (!dbh) )
+			{
+				this->close();
+			}
+			this->m_db = dbh;
+			if( dbh )
+			{
+				this->on_open();
+			}
+		}
+		catch( ... )
+		{
+			this->m_db = dbh;
+			throw;
+		}
+	}
+
+	sqlite3 * sqlite3_connection::take() throw()
+	{
+		sqlite3 * ret = this->m_db;
+		this->m_db = 0;
+		return ret;
+	}
 
 	sqlite3 * sqlite3_connection::db() const
 	{
@@ -84,6 +128,12 @@ namespace sqlite3x {
 			throw database_error("unable to open database %s", db ? db : "<null>");
 		try
 		{
+			// Potential bug: when open() is called from
+			// the ctor of subclasses as a result of
+			// calling the parent class ctor, the subclass
+			// part of the subclass may not be complete,
+			// and a less derived on_open() may
+			// potentially be called. ???
 			this->on_open();
 		}
 		catch(...)
@@ -118,9 +168,10 @@ namespace sqlite3x {
 
 	void sqlite3_connection::close() {
 		if(this->m_db) {
-			if(sqlite3_close(this->m_db)!=SQLITE_OK)
-				throw database_error(*this);
+			sqlite3 * x = this->m_db;
 			this->m_db=NULL;
+			if(sqlite3_close(x)!=SQLITE_OK)
+				throw database_error(*this);
 		}
 	}
 
@@ -129,10 +180,11 @@ namespace sqlite3x {
 		return sqlite3_last_insert_rowid(this->m_db);
 	}
 
-	int sqlite3_connection::changes() {
-		if(!this->m_db) throw database_error("database is not open");
-		return sqlite3_changes(this->m_db);
-	}
+ 	int sqlite3_connection::changes() {
+ 		if(!this->m_db) throw database_error("database is not open");
+ 		return sqlite3_changes(this->m_db);
+ 	}
+
 
 	void sqlite3_connection::setbusytimeout(int ms) {
 		if(!this->m_db) throw database_error("database is not open");

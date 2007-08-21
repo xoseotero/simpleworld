@@ -47,14 +47,7 @@ namespace sqlite3x {
 #if SQLITE3X_USE_WCHAR
 	sqlite3_command::sqlite3_command(sqlite3_connection &con, const std::wstring &sql) : con(con),stmt(0),refs(0),argc(0) {
 		const void *tail=NULL;
-		if(
-#if SQLITE_VERSION_NUMBER >= 3003009
-			sqlite3_prepare16_v2
-#else
-			sqlite3_prepare16
-#endif
-			(con.db(), sql.data(), (int)sql.length()*2, &this->stmt, &tail)!=SQLITE_OK
-		)
+		if(sqlite3_prepare16(con.db(), sql.data(), (int)sql.length()*2, &this->stmt, &tail)!=SQLITE_OK)
 			throw database_error(con);
 
 		this->argc=sqlite3_column_count(this->stmt);
@@ -65,13 +58,7 @@ namespace sqlite3x {
 	{
 		if( this->stmt ) this->finalize();
 		const char *tail=NULL;
-		int rc =
-#if SQLITE_VERSION_NUMBER >= 3003009
-			sqlite3_prepare_v2
-#else
-			sqlite3_prepare
-#endif
-			( this->con.db(), sql, len, &(this->stmt), &tail );
+		int rc = sqlite3_prepare( this->con.db(), sql, len, &(this->stmt), &tail );
 		if( SQLITE_OK != rc )
 		{
 			throw database_error("sqlite3_command::prepare([%s]) failed. Reason=[%s]",
@@ -129,7 +116,11 @@ namespace sqlite3x {
 	}
 
 	void sqlite3_command::bind(int index, const char *data, int datalen) {
-		if(sqlite3_bind_text(this->stmt, index, data, ((-1==datalen) ? std::strlen(data) : datalen), SQLITE_TRANSIENT)!=SQLITE_OK)
+		if(sqlite3_bind_text(this->stmt, index, data,
+				     ((-1==datalen)
+				      ? std::strlen(data)
+				      : datalen),
+				     SQLITE_TRANSIENT)!=SQLITE_OK)
 			throw database_error(this->con);
 	}
 
@@ -158,7 +149,7 @@ namespace sqlite3x {
 #endif
 
 	sqlite3_cursor sqlite3_command::executecursor() {
-		return sqlite3_cursor(this);
+		return sqlite3_cursor(*this);
 	}
 
 	void sqlite3_command::executenonquery() {

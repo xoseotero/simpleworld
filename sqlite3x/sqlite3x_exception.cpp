@@ -34,7 +34,7 @@ namespace sqlite3x {
 	database_error::~database_error() throw() {}
 
 	database_error::database_error(sqlite3_connection &con)
-		: m_what( con.errormsg() )
+		: m_what( "sqlite3_connection["+con.name()+"]: "+con.errormsg() )
 	{
 	}
 
@@ -45,9 +45,9 @@ namespace sqlite3x {
 
 	database_error::database_error(const char *format,...)
 	{
-		const int buffsz = std::max( (size_t) 2048, std::strlen(format) * 2 );
+		const int buffsz = std::max( (size_t) 2048, strlen(format) * 2 );
 		char buffer[buffsz];
-		std::va_list vargs;
+		va_list vargs;
 		va_start ( vargs, format );
 		int size = std::vsnprintf(buffer, buffsz, format, vargs);
 		va_end( vargs );
@@ -64,6 +64,3 @@ namespace sqlite3x {
 		this->m_what = buffer;
 	}
 }
-
-
-

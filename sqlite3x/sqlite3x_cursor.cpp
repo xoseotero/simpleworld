@@ -30,8 +30,8 @@ namespace sqlite3x {
 		if(this->cmd) ++this->cmd->refs;
 	}
 
-	sqlite3_cursor::sqlite3_cursor(sqlite3_command *cmd) : cmd(cmd) {
-		++cmd->refs;
+	sqlite3_cursor::sqlite3_cursor(sqlite3_command & cmd) : cmd(&cmd) {
+		++this->cmd->refs;
 	}
 
 	sqlite3_cursor::~sqlite3_cursor() {
@@ -89,10 +89,10 @@ namespace sqlite3x {
 	if( ! this->cmd ) throw database_error( "sqlite3_cursor::%s(%d): reader is closed", # FUNC, index ); \
 	if( (index)>(this->cmd->argc-1)) throw database_error("sqlite3_cursor::%s(%d): index out of range", # FUNC, index );
 
-	bool sqlite3_cursor::isnull(int index) {
-		READER_CHECK(isnull);
-		return sqlite3_column_type(this->cmd->stmt, index) == SQLITE_NULL;
-	}
+ 	bool sqlite3_cursor::isnull(int index) {
+ 		READER_CHECK(isnull);
+ 		return sqlite3_column_type(this->cmd->stmt, index) == SQLITE_NULL;
+ 	}
 
 	int sqlite3_cursor::getint(int index) {
 		READER_CHECK(getint);
