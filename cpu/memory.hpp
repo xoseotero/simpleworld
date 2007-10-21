@@ -98,6 +98,7 @@ public:
   /**
    * Set the size of the memory.
    * The new memory is zeroed.
+   * @param size new size of the memory.
    */
   void resize(Address size);
 
