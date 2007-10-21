@@ -4,13 +4,19 @@
 #  SQLite3x_FOUND        - True when the SQLite3x include directory is found.
 #  SQLite3x_INCLUDE_DIRS - the path to where the sqlite3x include files are.
 #  SQLite3x_LIBRARIES    - The sqlite3x library.
+MESSAGE(STATUS "Looking for SQLite3x")
+
 FIND_PATH(SQLite3x_INCLUDE_DIRS sqlite3x.hpp /usr/include /usr/local/include)
 FIND_LIBRARY(SQLite3x_LIBRARIES NAMES sqlite3x PATHS /usr/lib /usr/local/lib)
 
 IF(SQLite3x_INCLUDE_DIRS AND SQLite3x_LIBRARIES)
   SET(SQLite3x_FOUND 1)
   IF(NOT SQLite3x_FIND_QUIETLY)
-    MESSAGE(STATUS "Found libsqlite3x: ${SQLite3_LIBRARIES}")
+    MESSAGE(STATUS "Looking for SQLite3x - found")
+  ENDIF(NOT SQLite3x_FIND_QUIETLY)
+ELSE(SQLite3x_INCLUDE_DIRS AND SQLite3x_LIBRARIES)
+  IF(NOT SQLite3x_FIND_QUIETLY)
+    MESSAGE(STATUS "Looking for SQLite3x - not found")
   ENDIF(NOT SQLite3x_FIND_QUIETLY)
 ENDIF(SQLite3x_INCLUDE_DIRS AND SQLite3x_LIBRARIES)
 
