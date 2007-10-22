@@ -106,13 +106,13 @@ There is NO WARRANTY, to the extent permitted by law.")
 
   std::exit(EXIT_SUCCESS);
 }
-catch (sw::Exception e) {
+catch (const sw::Exception& e) {
   std::cout << boost::format("Exception thrown in %1%:%2%")
     % e.file
     % e.line
     << std::endl;
 }
-catch (std::exception e) {
+catch (const std::exception& e) {
   std::cout << boost::format("Exception thrown: %1%") % e.what() << std::endl;
 }
 catch (...) {
