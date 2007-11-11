@@ -53,6 +53,15 @@ public:
   Table(DB* db, ID id);
 
   /**
+   * Constructor to insert data.
+   * insert(id) must be called before any call to update(), update_db() or
+   * remove().
+   * @param db database.
+   * @exception DBError if there is a error in the database.
+   */
+  Table(DB* db);
+
+  /**
    * Destructor.
   */
   virtual ~Table();
@@ -87,6 +96,30 @@ public:
    * @exception DBError if there is a error in the database.
    */
   virtual void update_db(bool force = false);
+
+  /**
+   * Insert the data in the database.
+   * The ID is updated.
+   * changed is set to false.
+   * @exception DBError if there is an error in the database.
+   */
+  virtual void insert();
+
+  /**
+   * Insert the data in the database with a specific id.
+   * The ID is updated.
+   * changed is set to false.
+   * @param id id of the row.
+   * @exception DBError if there is an error in the database.
+   */
+  virtual void insert(ID id);
+
+  /**
+   * Remove the data from the database.
+   * changed is set to false.
+   * @exception DBError if there is an error in the database.
+   */
+  virtual void remove();
 
 
   /**
