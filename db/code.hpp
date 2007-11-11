@@ -29,22 +29,21 @@
 
 #include <simple/types.hpp>
 #include <db/types.hpp>
+#include <db/memory.hpp>
 #include <db/db.hpp>
 #include <db/table.hpp>
+#include <db/mutation.hpp>
 
 namespace SimpleWorld
 {
 namespace DB
 {
-
 /**
  * Code of a bug.
  */
 class Code: public Table
 {
-  friend class DB;
-
-protected:
+public:
   /**
    * Constructor.
    * @param db database.
@@ -54,31 +53,66 @@ protected:
    */
   Code(DB* db, ID bug_id);
 
-public:
   /**
-   * Destructor.
-  */
-  ~Code();
-
-
-  // Data
-  Uint16 size;
-  std::string md5;
-  std::vector<Word> code;
+   * Constructor to insert data.
+   * @param db database.
+   * @exception DBError if there is a error in the database.
+   */
+  Code(DB* db);
 
 
   /**
    * Update the data of the class with the database.
+   * changed is set to false.
+   * The update() is propagated to the mutations.
    * @exception DBError if there is a error in the database.
-   * @execption IDNotFound if the ID is not found in the table.
+   * @exception IDNotFound if the ID is not found in the table.
    */
   void update();
 
   /**
-   * Update the database with the data of the class.
+   * Update the database with the data of the class in changed or force are
+   * true.
+   * changed is set to false.
+   * The update_db() is propagated to the mutations but without force. If
+   * the update_db() in the mutations must be forced, a explicit call to the
+   * mutations::update_db(true) must be made.
+   * @param force force the update of the database.
    * @exception DBError if there is a error in the database.
    */
-  void update_db();
+  void update_db(bool force = false);
+
+  /**
+   * Insert the data in the database with a specific id.
+   * The ID is updated.
+   * changed is set to false.
+   * The insert() is propagated to the mutations.
+   * @param id id of the row.
+   * @exception DBError if there is an error in the database.
+   */
+  void insert(ID bug_id);
+
+  /**
+   * Remove the data from the database.
+   * changed is set to false.
+   * The remove() is propagated to the mutations.
+   * @exception DBError if there is an error in the database.
+   */
+  void remove();
+
+
+  /**
+   * Update the MD5 check sum of the code if changed or force are is true.
+   * changed is set to true.
+   */
+  void update_md5(bool force = false);
+
+  // Data
+  Uint16 size;
+  std::string md5;
+  Memory code;
+
+  std::vector<Mutation> mutations;
 };
 
 }
