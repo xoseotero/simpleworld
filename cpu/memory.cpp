@@ -39,8 +39,10 @@ Memory::Memory(Address size)
 }
 
 Memory::Memory(const Memory& memory)
-  : size_(memory.size_), memory_(memory.memory_)
+  : size_(0), memory_(NULL)
 {
+  this->resize(memory.size_);
+
   Address i;
   for (i = 0; i < this->size_; i++)
     this->memory_[i] = memory.memory_[i];
