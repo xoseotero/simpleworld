@@ -55,7 +55,7 @@ public:
   /**
    * Destructor.
   */
-  virtual ~Table() = 0;
+  virtual ~Table();
 
 
   /**
@@ -72,10 +72,22 @@ public:
 
 
   /**
-   * Cols with NULL value.
-   * This can be used directly of via *null() functions.
+   * Update the data of the class with the database.
+   * changed is set to false.
+   * @exception DBError if there is a error in the database.
+   * @exception IDNotFound if the ID is not found in the table.
    */
-  std::vector<std::string> null;
+  virtual void update();
+
+  /**
+   * Update the database with the data of the class in changed or force are
+   * true.
+   * changed is set to false.
+   * @param force force the update of the database.
+   * @exception DBError if there is a error in the database.
+   */
+  virtual void update_db(bool force = false);
+
 
   /**
    * Check if colname is NULL.
@@ -111,21 +123,19 @@ public:
 
 
   /**
-   * Update the data of the class with the database.
-   * @exception DBError if there is a error in the database.
-   * @execption IDNotFound if the ID is not found in the table.
+   * Cols with NULL value.
+   * This can be used directly of via *null() functions.
    */
-  virtual void update() = 0;
+  std::vector<std::string> null;
 
   /**
-   * Update the database with the data of the class.
-   * @exception DBError if there is a error in the database.
+   * If the table has changed.
    */
-  virtual void update_db() = 0;
+  bool changed;
 
 protected:
-  DB* db_;
-  ID id_;
+  DB* db_;				/**< DB connection */
+  ID id_;				/**< ID of the table */
 };
 
 }

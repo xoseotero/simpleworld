@@ -34,5 +34,20 @@ Table::Table(DB* db, ID id)
   this->update();
 }
 
+Table::~Table()
+{
+}
+
+
+void Table::update()
+{
+  this->changed = false;
+}
+
+void Table::update_db(bool force)
+{
+  this->changed = false;
+}
+
 }
 }
