@@ -123,7 +123,6 @@ public:
    * @param address address of the word
    * @param value value of the word
    * @param system_endian if the word is in the systen endianness
-   * @return the word
    * @exception AddressOutOfRange address > (size - 4)
    */
   void set_word(Address address, Word value, bool system_endian = true);
