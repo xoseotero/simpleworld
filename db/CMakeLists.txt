@@ -1,11 +1,17 @@
 SET(DB_SRCS
+  common.cpp
+  memory.cpp
   table.cpp
-  bug.cpp
-  hierarchy.cpp
-  code.cpp
-  cpu.cpp
-  mutations.cpp
   environment.cpp
+  food.cpp
+  mutation.cpp
+  code.cpp
+  bugelement.cpp
+  alivebug.cpp
+  cpu.cpp
+  bug.cpp
+  egg.cpp
+  deadbug.cpp
   db.cpp)
 ADD_LIBRARY(sw_db SHARED ${DB_SRCS})
 
