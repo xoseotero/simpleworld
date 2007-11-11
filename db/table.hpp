@@ -28,8 +28,6 @@
 #include <string>
 #include <algorithm>
 
-#include <boost/noncopyable.hpp>
-
 #include <db/types.hpp>
 #include <db/exception.hpp>
 #include <db/db.hpp>
@@ -42,7 +40,7 @@ namespace DB
 /**
  * Base clase for the tables.
  */
-class Table: public boost::noncopyable
+class Table
 {
 public:
   /**
