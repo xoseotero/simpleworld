@@ -1,6 +1,6 @@
 /**
  * @file db/db.hpp
- * Simple World Data Base management.
+ * Simple World Database management.
  *
  * begin:     Wed, 24 Jan 2007 17:13:02 +0100
  * last:      $Date$
@@ -25,14 +25,11 @@
 #define __DB_DB_HPP__
 
 #include <vector>
-#include <map>
-
-#include <boost/shared_ptr.hpp>
-#include <boost/weak_ptr.hpp>
 
 #include <sqlite3x.hpp>
 
 #include <simple/types.hpp>
+#include <simpleworld/types.hpp>
 #include <db/types.hpp>
 #include <db/exception.hpp>
 
@@ -119,14 +116,6 @@ public:
 };
 
 
-class Bug;
-class Hierarchy;
-class Code;
-class CPU;
-class Mutations;
-class Environment;
-
-
 /**
  * Simple World Data Base management.
  */
@@ -150,139 +139,6 @@ public:
   Uint8 version() const { return this->version_; }
 
 
-  // Bug management
-
-  /**
-   * List of all the bugs, ordered by it's birth.
-   * @return the list of bugs.
-   * @exception DBError if there is a error in the database.
-   */
-  std::vector<ID> bugs();
-
-  /**
-   * List of the alive bugs, ordered by its world_order.
-   * @return the list of bugs.
-   * @exception DBError if there is a error in the database.
-   */
-  std::vector<ID> alive_bugs();
-
-  /**
-   * Get a bug.
-   * @param id id of the bug
-   * @return the Bug.
-   * @exception DBError if there is a error in the database.
-   * @exception IDNotFound if the ID is not found in the table.
-   */
-  boost::shared_ptr<Bug> bug(ID id);
-
-  /**
-   * Free the memory used by the bug.
-   * @param id id of the bug.
-   * @exception IDNotFound if the ID is not found in the table.
-   */
-  void free_bug(ID id);
-
-  /**
-   * Add a new bug to the database.
-   * @param order order of the bug in the world.
-   * @param energy energy of the bug.
-   * @param x position of the bug (x coord)
-   * @param y position of the bug (y coord)
-   * @param orientation orientation of the bug (0 <= orientation <= 3)
-   * @param birth birthday
-   * @return the ID of the created bug.
-   * @exception DBError if there is a error in the database.
-   */
-  ID add_bug(SortOrder order, Energy energy,
-	     Position x, Position y, Orientation orientation,
-	     Time birth);
-
-  /**
-   * Delete a bug from the database.
-   * @param bug_id id of the bug.
-   * @exception IDNotFound if the ID is not found in the table.
-   */
-  void del_bug(ID id);
-
-
-  // Hierarchy management
-
-  /**
-   * Get the hierarchy of a bug.
-   * @param bug_id id of the bug.
-   * @return the Hierarchy.
-   * @exception DBError if there is a error in the database.
-   * @exception IDNotFound if the ID is not found in the table.
-   */
-  boost::shared_ptr<Hierarchy> hierarchy(ID bug_id);
-
-  /**
-   * Free the memory used by the hierarchy.
-   * @param bug_id id of the bug.
-   * @exception IDNotFound if the ID is not found in the table.
-   */
-  void free_hierarchy(ID bug_id);
-
-
-  // Code management
-
-  /**
-   * Get the code of a bug.
-   * @param bug_id id of the bug.
-   * @return the Code.
-   * @exception DBError if there is a error in the database.
-   * @exception IDNotFound if the ID is not found in the table.
-   */
-  boost::shared_ptr<Code> code(ID bug_id);
-
-  /**
-   * Free the memory used by the code.
-   * @param bug_id id of the bug.
-   * @exception IDNotFound if the ID is not found in the table.
-   */
-  void free_code(ID bug_id);
-
-
-  // CPU management
-
-  /**
-   * Get the CPU of a bug.
-   * @param bug_id id of the bug.
-   * @return the Code.
-   * @exception DBError if there is a error in the database.
-   * @exception IDNotFound if the ID is not found in the table.
-   */
-  boost::shared_ptr<CPU> cpu(ID bug_id);
-
-  /**
-   * Free the memory used by the CPU.
-   * @param bug_id id of the bug.
-   * @exception IDNotFound if the ID is not found in the table.
-   */
-  void free_cpu(ID bug_id);
-
-
-  // Mutations management
-
-  /**
-   * Get the mutations of a bug.
-   * @param bug_id id of the bug.
-   * @return the Code.
-   * @exception DBError if there is a error in the database.
-   * @exception IDNotFound if the ID is not found in the table.
-   */
-  boost::shared_ptr<Mutations> mutations(ID bug_id);
-
-  /**
-   * Free the memory used by the mutations.
-   * @param bug_id id of the bug.
-   * @exception IDNotFound if the ID is not found in the table.
-   */
-  void free_mutations(ID bug_id);
-
-
-  // Environment management
-
   /**
    * List of all the environments (changes), ordered by it's time.
    * @return the list of environments.
@@ -298,51 +154,35 @@ public:
    */
   Time last_environment();
 
-  /**
-   * Get a environment.
-   * @param time time of the environment (the real time can be >= than this).
-   * @return the Environment.
-   * @exception DBError if there is a error in the database.
-   * @exception IDNotFound if the ID is not found in the table.
-   */
-  boost::shared_ptr<Environment> environment(Time time);
 
   /**
-   * Free the memory used by the environment.
-   * @param time time of the environment.
-   * @exception IDNotFound if the ID is not found in the table.
-   */
-  void free_environment(Time time);
-
-  /**
-   * Add a new environment to the database.
-   *
-   * order_world will be 0.
-   * @param time time.
-   * @param mutations_percent percent of mutations.
-   * @param energy_detect energy needed for detect.
-   * @param energy_move energy needed for move.
-   * @param energy_push energy needed for push something.
-   * @param energy_take energy needed for take something.
-   * @param energy_attack energy needed for attack.
-   * @param energy_defend energy needed for defend.
-   * @param energy_msg energy needed for a message.
-   * @param energy_sex energy needed for sex.
-   * @return the ID of the created bug.
+   * List of all the bugs, ordered by its birth.
+   * @return the list of bugs.
    * @exception DBError if there is a error in the database.
    */
-  Time add_environment(World::Time time, Uint8 mutations_percent,
-		       Energy energy_detect, Energy energy_move,
-		       Energy energy_push, Energy energy_take,
-		       Energy energy_attack, Energy energy_defend,
-		       Energy energy_msg, Energy energy_sex);
+  std::vector<ID> bugs();
 
   /**
-   * Delete a environment from the database.
-   * @param time time of the environment.
-   * @exception IDNotFound if the ID is not found in the table.
+   * List of the alive bugs, ordered by its birth.
+   * @return the list of bugs.
+   * @exception DBError if there is a error in the database.
    */
-  void del_environment(Time time);
+  std::vector<ID> alive_bugs();
+
+  /**
+   * List of eggs, ordered by its birth.
+   * @return the list of eggs.
+   * @exception DBError if there is a error in the database.
+   */
+  std::vector<ID> eggs();
+
+
+  /**
+   * List of the food.
+   * @return the list of food.
+   * @exception DBError if there is a error in the database.
+   */
+  std::vector<ID> food();
 
 protected:
   /**
@@ -360,13 +200,6 @@ protected:
 
 private:
   Uint8 version_;
-
-  std::map<ID, boost::weak_ptr<Bug> > bug_map_;
-  std::map<ID, boost::weak_ptr<Hierarchy> > hierarchy_map_;
-  std::map<ID, boost::weak_ptr<Code> > code_map_;
-  std::map<ID, boost::weak_ptr<CPU> > cpu_map_;
-  std::map<ID, boost::weak_ptr<Mutations> > mutations_map_;
-  std::map<Time, boost::weak_ptr<Environment> > environment_map_;
 };
 
 }
