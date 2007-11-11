@@ -38,6 +38,35 @@ namespace CPU
 
 /**
  * File exception.
+ * It's raised if you try to access a wrond line.
+ */
+class LineOutOfRange: public std::out_of_range, public CPUException
+{
+public:
+  /**
+   * Constructor.
+   * @param file File where the exception is raised.
+   * @param line Line where the exception is raised.
+   * @param fileline Line out of range.
+   * @param what Reason of the exception.
+   */
+  LineOutOfRange(std::string file, Uint32 line,
+                 std::vector<std::string>::size_type fileline,
+                 const std::string& what = "Line out of range") throw()
+    : out_of_range(what), CPUException(file, line), fileline(fileline)
+  {}
+
+  /**
+   * Destructor.
+   */
+  ~LineOutOfRange() throw () {}
+
+
+  std::vector<std::string>::size_type fileline; /**< Line out of range. */
+};
+
+/**
+ * File exception.
  * It's raised if the file don't exist or can't be opened.
  */
 class FileAccessError: public std::runtime_error, public CPUException
@@ -63,35 +92,6 @@ public:
 
 
   std::string filename;		/**< Name of the file. */
-};
-
-/**
- * File exception.
- * It's raised if you try to access a wrond line.
- */
-class LineOutOfRange: public std::out_of_range, public CPUException
-{
-public:
-  /**
-   * Constructor.
-   * @param file File where the exception is raised.
-   * @param line Line where the exception is raised.
-   * @param fileline Line out of range.
-   * @param what Reason of the exception.
-   */
-  LineOutOfRange(std::string file, Uint32 line,
-		 std::vector<std::string>::size_type fileline,
-                 const std::string& what = "Line out of range") throw()
-    : out_of_range(what), CPUException(file, line), fileline(fileline)
-  {}
-
-  /**
-   * Destructor.
-   */
-  ~LineOutOfRange() throw () {}
-
-
-  std::vector<std::string>::size_type fileline; /**< Line out of range. */
 };
 
 
