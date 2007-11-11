@@ -49,8 +49,7 @@ enum InterruptType {
  * Types of events.
  */
 enum EventType {
-  Birth = 0,
-  Attack = 1
+  Attack = 0
 };
 
 
