@@ -119,5 +119,17 @@ void Memory::set_word(Address address, Uint32 value, bool system_endian)
 #endif
 }
 
+
+Memory& Memory::assign(const Memory& memory)
+{
+  this->resize(memory.size_);
+
+  Address i;
+  for (i = 0; i < this->size_; i++)
+    this->memory_[i] = memory.memory_[i];
+
+  return *this;
+}
+
 }
 }

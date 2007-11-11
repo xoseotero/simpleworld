@@ -1,4 +1,4 @@
-/**
+ /**
  * @file cpu/memory.hpp
  * Accessing words from memory.
  *
@@ -136,6 +136,21 @@ public:
    */
   Word operator [](Address address) const
   { return this->get_word(address); }
+
+
+  /**
+   * Copy the content of other Memory class.
+   * @param memory memory to copy.
+   * @return a reference to this object.
+   */
+  Memory& assign(const Memory& memory);
+
+  /**
+   * Copy the content of other Memory class.
+   * @param memory memory to copy.
+   * @return a reference to this object.
+   */
+  Memory& operator =(const Memory& memory) { return this->assign(memory); }
 
 private:
   Address size_;
