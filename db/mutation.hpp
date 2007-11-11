@@ -1,6 +1,6 @@
 /**
- * @file db/mutations.hpp
- * Mutations of a bug.
+ * @file db/mutation.hpp
+ * A mutation of a bug.
  *
  * begin:     Thu, 01 Mar 2007 16:59:31 +0100
  * last:      $Date$
@@ -21,12 +21,13 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __DB_MUTATIONS_HPP__
-#define __DB_MUTATIONS_HPP__
+#ifndef __DB_MUTATION_HPP__
+#define __DB_MUTATION_HPP__
 
 #include <vector>
 
 #include <simple/types.hpp>
+#include <cpu/types.hpp>
 #include <db/types.hpp>
 #include <db/db.hpp>
 #include <db/table.hpp>
@@ -39,63 +40,78 @@ namespace DB
 /**
  * Mutations of a bug.
  */
-class Mutations: public Table
+class Mutation: public Table
 {
-  friend class DB;
-
-protected:
+public:
   /**
    * Constructor.
    * @param db database.
-   * @param bug_id id of the bug.
+   * @param id id of the mutation.
    * @exception DBError if there is a error in the database.
    * @exception IDNotFound if the ID is not found in the table.
    */
-  Mutations(DB* db, ID bug_id);
-
-public:
-  /**
-   * Destructor.
-  */
-  ~Mutations();
-
+  Mutation(DB* db, ID id);
 
   /**
-   * Structure for each mutation in the code.
+   * Constructor to insert data.
+   * @param db database.
+   * @exception DBError if there is a error in the database.
    */
-  struct Mutation {
-    Uint16 position;
-    enum {
-      mutation,
-      addition,
-      deletion
-    } type;
-    // If type is addition, then the value of original is garbage.
-    Word original;
-    // If type is deletion, then the value of mutated is garbage.
-    Word mutated;
-  };
-
-  // Data
-  std::vector<Mutation> mutations;
+  Mutation(DB* db);
 
 
   /**
    * Update the data of the class with the database.
+   * changed is set to false.
    * @exception DBError if there is a error in the database.
    * @execption IDNotFound if the ID is not found in the table.
    */
   void update();
 
   /**
-   * Update the database with the data of the class.
+   * Update the database with the data of the class in changed or force are
+   * true.
+   * changed is set to false.
+   * @param force force the update of the database.
    * @exception DBError if there is a error in the database.
    */
-  void update_db();
+  void update_db(bool force = false);
+
+  /**
+   * Insert the data in the database with a specific id.
+   * The ID is updated.
+   * changed is set to false.
+   * @param id id of the row.
+   * @exception DBError if there is an error in the database.
+   */
+  void insert(ID bug_id);
+
+  /**
+   * Remove the data from the database.
+   * changed is set to false.
+   * @exception DBError if there is an error in the database.
+   */
+  void remove();
+
+
+  // Data
+  Uint16 position;
+
+  enum {
+    mutation,
+    addition,
+    deletion
+  } type;
+
+  // If type is addition, then the value of original is garbage.
+  CPU::Word original;
+  // If type is deletion, then the value of mutated is garbage.
+  CPU::Word mutated;
+
+  ID bug_id;
 };
 
 }
 }
 
-#endif // __DB_MUTATIONS_HPP__
-
+#endif // __DB_MUTATION_HPP__
