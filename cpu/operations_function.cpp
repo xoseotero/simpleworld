@@ -24,8 +24,6 @@
 #include "operations.hpp"
 #include "interrupt.hpp"
 
-#include <iostream>
-
 namespace SimpleWorld
 {
 namespace CPU
