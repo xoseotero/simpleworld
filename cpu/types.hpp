@@ -25,7 +25,6 @@
 #define __CPU_TYPES_HPP__
 
 #include <simple/types.hpp>
-#include <world/types.hpp>
 
 namespace SimpleWorld
 {
