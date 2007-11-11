@@ -1,12 +1,11 @@
 /**
- * @file cpu/cpu_file.cpp
- * Central Processing Unit big endian with 16 registers of 32bits and 16bits of
- * address space that load the code from a file.
+ * @file cpu/memory_file.hpp
+ * Memory that loads its content from a file.
  *
- * begin:     Fri, 24 Nov 2006 03:17:54 +0100
+ * begin:     Sat, 13 Oct 2007 12:10:20 +0200
  * last:      $Date$
  *
- *  Copyright (C) 2006-2007  Xosé Otero <xoseotero@users.sourceforge.net>
+ *  Copyright (C) 2007  Xosé Antón Otero Ferreira <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -22,69 +21,49 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifdef DEBUG
-#include <iostream>
-#include <boost/format.hpp>
-#endif
-
 #include <fstream>
 
 #include <boost/filesystem/operations.hpp>
 namespace fs = boost::filesystem;
 
-#include "types.hpp"
-#include "word.hpp"
-#include "memory.hpp"
-#include "cpu_file.hpp"
+#include "memory_file.hpp"
 
 namespace SimpleWorld
 {
 namespace CPU
 {
 
-CPUFile::CPUFile(const std::string& filename)
-  : memory_(0), CPU(&this->memory_)
+MemoryFile::MemoryFile(const std::string& filename)
+  : Memory()
 {
   this->load_file(filename);
 }
 
 
-void CPUFile::load_file(const std::string& filename)
+void MemoryFile::load_file(const std::string& filename)
 {
   std::ifstream is(filename.c_str(), std::ios::binary);
   if (is.rdstate() & std::ifstream::failbit)
     throw FileAccessError(__FILE__, __LINE__,
-			  filename, "File can't be opened to read.");
+                          filename, "File can't be opened to read.");
 
   // All instructions are 32bits, if the file is not X*32bits long is not valid
   boost::uintmax_t size = fs::file_size(filename);
   if ((size % sizeof(Word)) != 0)
     throw FileAccessError(__FILE__, __LINE__,
-			  filename, "Size of the file not module of 32bits.");
-
-#ifdef DEBUG
-  std::cout << boost::str(boost::format("Loading instructions from %s:")
-                          % filename)
-    << std::endl;
-#endif
+                          filename, "Size of the file not module of 32bits.");
 
   // @TODO: File can be greater than the Address type.
-  this->memory_.resize(size);
+  this->resize(size);
 
   Word instruction;
   Address i = 0;
   while (is.read(reinterpret_cast<char*>(&instruction), sizeof(Word))) {
-#ifdef DEBUG
-    std::cout << boost::str(boost::format("> Instruction %d: 0x%8X")
-                            % i
-                            % instruction)
-      << std::endl;
-#endif
 
 #ifdef IS_BIG_ENDIAN
-    this->memory_.set_word(i * sizeof(Word), instruction);
+    this->set_word(i * sizeof(Word), instruction);
 #else
-    this->memory_.set_word(i * sizeof(Word), instruction, false);
+    this->set_word(i * sizeof(Word), instruction, false);
 #endif
 
     i++;
