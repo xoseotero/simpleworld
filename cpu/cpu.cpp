@@ -35,11 +35,15 @@ namespace SimpleWorld
 namespace CPU
 {
 
-CPU::CPU(Memory* memory)
-  : registers_(sizeof(Word) * 16), memory_(memory),
+CPU::CPU(Memory* registers, Memory* memory)
+  : registers_(registers), memory_(memory),
     interrupt_request_(false), running_(true)
 {
   // 16 registers
+  static const Address min_size = sizeof(Word) * 16;
+  if (this->registers_->size() < min_size)
+    this->registers_->resize(min_size);
+
   this->set_.add_register(0x0, "r0");
   this->set_.add_register(0x1, "r1");
   this->set_.add_register(0x2, "r2");
@@ -182,18 +186,18 @@ void CPU::next()
 		      % info.name
 		      % static_cast<int>(info.nregs)
 		      % static_cast<int>(info.has_inmediate))
-      << std::endl;
+	<< std::endl;
 #endif
 
-      switch (info.func(this->registers_, *this->memory_, this->interrupt_,
+      switch (info.func(*this->registers_, *this->memory_, this->interrupt_,
 			instruction)) {
       case UpdateInterrupt:
 	// Thrown a interrupt
 	this->interrupt_request_ = true;
       case UpdatePC:
 	// Update PC
-	this->registers_.set_word(REGISTER_PC,
-	                          this->registers_[REGISTER_PC] + 4);
+	this->registers_->set_word(REGISTER_PC,
+	                           this->registers_->get_word(REGISTER_PC) + 4);
 	break;
       case Stop:
 	this->running_ = false;
@@ -208,8 +212,8 @@ void CPU::next()
       this->interrupt_.r2 = static_cast<Word>(exc.code);
 
       // Update PC
-      this->registers_.set_word(REGISTER_PC,
-				this->registers_[REGISTER_PC] + 4);
+      this->registers_->set_word(REGISTER_PC,
+                                 this->registers_->get_word(REGISTER_PC) + 4);
     } catch (AddressOutOfRange exc) {
       // Prepare the interrupt
       this->interrupt_request_ = true;
@@ -219,8 +223,8 @@ void CPU::next()
       this->interrupt_.r2 = static_cast<Word>(exc.address);
 
       // Update PC
-      this->registers_.set_word(REGISTER_PC,
-				this->registers_[REGISTER_PC] + 4);
+      this->registers_->set_word(REGISTER_PC,
+                                 this->registers_->get_word(REGISTER_PC) + 4);
     }
   }
 }
@@ -230,39 +234,40 @@ Instruction CPU::fetch_instruction_() const
 {
 #ifdef DEBUG
   std::cout << boost::str(boost::format("Instruction[0x%8x]: 0x%8x")
-    % this->registers_[REGISTER_PC]
-    % this->memory_->get_word(this->registers_[REGISTER_PC], false))
+    % this->registers_->get_word(REGISTER_PC)
+    % this->memory_->get_word(this->registers_->get_word(REGISTER_PC), false))
     << std::endl;
 #endif
-  return InstructionSet::decode(this->memory_->get_word(this->registers_[REGISTER_PC],
-							false));
+  return InstructionSet::decode(this->memory_->get_word(this->registers_->get_word(REGISTER_PC), false));
 }
 
 
 void CPU::interrupt_handler_()
 {
-  Word itp = this->registers_[REGISTER_ITP];
-  Word handler = this->memory_->get_word(this->registers_[REGISTER_ITP +
-    this->interrupt_.type * sizeof(Word)]);
+  Word itp = this->registers_->get_word(REGISTER_ITP);
+  Word handler =
+    this->memory_->get_word(this->registers_->get_word(REGISTER_ITP +
+      this->interrupt_.type * sizeof(Word)));
   if (this->interrupt_request_ and itp != 0 and handler != 0) {
     // Save all the registers in the stack
     Sint8 i;
     for (i = 0; i < 16; i++) {
       // Store a register:
       // Save the register in the top of the stack
-      this->registers_.set_word(REGISTER_STP, this->registers_[REGISTER(i)]);
+      this->registers_->set_word(REGISTER_STP,
+                                 this->registers_->get_word(REGISTER(i)));
       // Update stack pointer
-      this->registers_.set_word(REGISTER_STP,
-                                this->registers_[REGISTER_STP] - 4);
+      this->registers_->set_word(REGISTER_STP,
+                                 this->registers_->get_word(REGISTER_STP) - 4);
     }
 
     // Store the information of the interrupt
-    this->registers_.set_word(REGISTER(0), this->interrupt_.r0);
-    this->registers_.set_word(REGISTER(1), this->interrupt_.r1);
-    this->registers_.set_word(REGISTER(2), this->interrupt_.r2);
+    this->registers_->set_word(REGISTER(0), this->interrupt_.r0);
+    this->registers_->set_word(REGISTER(1), this->interrupt_.r1);
+    this->registers_->set_word(REGISTER(2), this->interrupt_.r2);
 
     // Update the PC with the interrupt handler location
-    this->registers_.set_word(REGISTER_PC, handler);
+    this->registers_->set_word(REGISTER_PC, handler);
 
     // Clear the interrupt request
     this->interrupt_request_ = false;

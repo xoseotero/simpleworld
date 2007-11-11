@@ -75,8 +75,11 @@ class CPU
 public:
   /**
    * Constructor.
+   * The registers size can change to allow at least 16 registers.
+   * @param registers registers of the CPU.
+   * @param memory memory of the CPU.
    */
-  CPU(Memory* memory);
+  CPU(Memory* registers, Memory* memory);
 
 
   /**
@@ -89,7 +92,7 @@ public:
    * Registers of the CPU.
    * @return the registers.
    */
-  const Memory registers() const { return this->registers_; }
+  const Memory registers() const { return *this->registers_; }
 
   /**
    * Memory of the CPU.
@@ -116,7 +119,7 @@ public:
   virtual void next();
 
 protected:
-  Memory registers_;  /**< 16 registers */
+  Memory* registers_;
   Memory* memory_;
 
   bool interrupt_request_;	/**< If a interrupt was thrown. */
