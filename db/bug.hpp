@@ -26,9 +26,9 @@
 
 #include <vector>
 
-#include <db/types.hpp>
-#include <db/db.hpp>
-#include <db/table.hpp>
+#include <db/alivebug.hpp>
+#include <db/cpu.hpp>
+#include <db/egg.hpp>
 
 namespace SimpleWorld
 {
@@ -38,11 +38,9 @@ namespace DB
 /**
  * Information about a bug.
  */
-class Bug: public Table
+class Bug: public AliveBug
 {
-  friend class DB;
-
-protected:
+public:
   /**
    * Constructor.
    * @param db database.
@@ -52,40 +50,47 @@ protected:
    */
   Bug(DB* db, ID id);
 
-public:
   /**
-   * Destructor.
+   * Constructor to convert a egg into a bug.
+   * @param db database.
+   * @param egg egg.
+   * @exception DBError if there is a error in the database.
    */
-  ~Bug();
-
-
-  // Data
-  SortOrder order_world;
-
-  Energy energy;
-
-  Position position_x;
-  Position position_y;
-  Orientation orientation;
-
-  Time birth;
-  Time dead;
-
-  ID killer;
+  Bug(DB* db, Egg* egg);
 
 
   /**
    * Update the data of the class with the database.
-   * @exception DBError if there is a error in the database.
-   * @execption IDNotFound if the ID is not found in the table.
+   * changed is set to false.
+   * The update() is propagated to the cpu.
+   * @exception DBError if there is an error in the database.
+   * @exception IDNotFound if the ID is not found in the table.
    */
   void update();
 
   /**
-   * Update the database with the data of the class.
-   * @exception DBError if there is a error in the database.
+   * Update the database with the data of the class in changed or force are
+   * true.
+   * changed is set to false.
+   * The update_db() is propagated to the cpu but without force. If the
+   * update_db() in the cpu must be forced, a explicit call to
+   * cpu::update_db(true) must be made.
+   * @param force force the update of the database.
+   * @exception DBError if there is an error in the database.
    */
-  void update_db();
+  void update_db(bool force = false);
+
+  /**
+   * Remove the data from the database.
+   * changed is set to false.
+   * The remove() is propagated to the code.
+   * @exception DBError if there is an error in the database.
+   */
+  void remove();
+
+
+  // Data
+  CPU cpu;
 };
 
 }

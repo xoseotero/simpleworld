@@ -21,9 +21,12 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "bug.hpp"
-
 #include <sqlite3x.hpp>
+
+#include <cpu/types.hpp>
+#include <cpu/memory.hpp>
+
+#include "bug.hpp"
 
 namespace SimpleWorld
 {
@@ -31,84 +34,110 @@ namespace DB
 {
 
 Bug::Bug(DB* db, ID id)
-  : Table(db, id)
+  // The position at this moment is unknown
+  : AliveBug(db, id, ElementBug, this->position), cpu(db, id)
 {
+  this->update();
 }
 
-Bug::~Bug()
+Bug::Bug(DB* db, Egg* egg)
+  : AliveBug(db, egg->id(), ElementBug, egg->position), cpu(db)
 {
-  this->db_->free_bug(this->id_);
+  this->cpu.insert(egg->id());
+
+  this->update();
+  this->type = ElementBug;
 }
 
 
 void Bug::update()
 {
-  static sqlite3x::sqlite3_command sql(*this->db_,
-				       "\
-SELECT order_world, energy, position_x, position_y, orientation,\n\
-       birth, dead, killer_id\n\
+  sqlite3x::sqlite3_command sql(*this->db_);
+
+  try{
+    sql.prepare("\
+SELECT energy, position_x, position_y, orientation,\n\
+       birth, dead, father_id, killer_id\n\
 FROM Bug\n\
 WHERE id = ?;");
-  sql.bind(1, this->id_);
+    sql.bind(1, this->id_);
 
-  try {
     sqlite3x::sqlite3_cursor cursor(sql.executecursor());
     if (! cursor.step())
       throw IDNotFound(__FILE__, __LINE__);
 
-    this->order_world = cursor.getint(0);
-    this->energy = cursor.getint(1);
-    this->position_x = cursor.getint(2);
-    this->position_y = cursor.getint(3);
-    this->orientation = cursor.getint(4);
-    this->birth = cursor.getint(5);
-    this->dead = cursor.getint(6);
-    this->killer = cursor.getint64(7);
+    this->energy = cursor.getint(0);
+    this->position.x = cursor.getint(1);
+    this->position.y = cursor.getint(2);
+    this->orientation = static_cast<Orientation>(cursor.getint(3));
+    this->birth = cursor.getint(4);
+    this->father_id = cursor.getint64(5);
 
-    if (cursor.isnull(0))
-      this->add_null("order_world");
-    if (cursor.isnull(6))
-      this->add_null("dead");
-    if (cursor.isnull(7))
-      this->add_null("killer_id");
-  } catch (sqlite3x::database_error) {
-    throw DBError(__FILE__, __LINE__);
+    if (cursor.isnull(5))
+      this->add_null("father_id");
+  } catch (const sqlite3x::database_error& e) {
+    throw DBError(__FILE__, __LINE__, e.what());
   }
+
+
+  this->cpu.update();
+
+  AliveBug::update();
 }
 
-void Bug::update_db()
+void Bug::update_db(bool force)
 {
-  static sqlite3x::sqlite3_command sql(*this->db_,
-				       "\
-UPDATE bug\n\
-SET order_world = ?, energy = ?,\n\
-    position_x = ?, position_y = ?, orientation = ?,\n\
-    birth = ? , dead = ?, killer_id = ?\n\
+  if (this->changed or force) {
+    sqlite3x::sqlite3_command sql(*this->db_);
+
+    try {
+      sql.prepare("\
+UPDATE Bug\n\
+SET energy = ?, position_x = ?, position_y = ?, orientation = ?,\n\
+    birth = ? , father_id = ?\n\
 WHERE id = ?;");
-  if (this->is_null("order_world"))
-    sql.bind(1);
-  else
-    sql.bind(1, static_cast<int>(this->order_world));
-  sql.bind(2, static_cast<int>(this->energy));
-  sql.bind(3, static_cast<int>(this->position_x));
-  sql.bind(4, static_cast<int>(this->position_y));
-  sql.bind(5, static_cast<int>(this->orientation));
-  sql.bind(6, static_cast<int>(this->birth));
-  if (this->is_null("dead"))
-    sql.bind(7);
-  else
-    sql.bind(7, static_cast<int>(this->dead));
-  if (this->is_null("killer_id"))
-    sql.bind(8);
-  else
-    sql.bind(8, static_cast<sqlite3x::int64_t>(this->killer));
-  sql.bind(9, this->id_);
+      sql.bind(1, static_cast<int>(this->energy));
+      sql.bind(2, static_cast<int>(this->position.x));
+      sql.bind(3, static_cast<int>(this->position.y));
+      sql.bind(4, static_cast<int>(this->orientation));
+      sql.bind(5, static_cast<int>(this->birth));
+      if (this->is_null("father_id"))
+	sql.bind(6);
+      else
+	sql.bind(6, static_cast<sqlite3x::int64_t>(this->father_id));
+      sql.bind(7, this->id_);
+
+      sql.executenonquery();
+    } catch (const sqlite3x::database_error& e) {
+      throw DBError(__FILE__, __LINE__, e.what());
+    }
+  }
+
+  this->cpu.update_db();
+
+  AliveBug::update_db(force);
+}
+
+void Bug::remove()
+{
+  sqlite3x::sqlite3_command sql(*this->db_);
 
   try {
+    sql.prepare("\
+DELETE FROM Bug\n\
+WHERE id = ?;");
+    sql.bind(1, this->id_);
+
     sql.executenonquery();
-  } catch (sqlite3x::database_error) {
-    throw DBError(__FILE__, __LINE__);
+  } catch (const sqlite3x::database_error& e) {
+    throw DBError(__FILE__, __LINE__, e.what());
   }
+
+
+  // It's not needed to propagate the remove because the database do it
+  // this->cpu.remove();
+
+  AliveBug::remove();
 }
 
 }
