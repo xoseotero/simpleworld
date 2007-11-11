@@ -38,9 +38,7 @@ namespace DB
  */
 class Environment: public Table
 {
-  friend class DB;
-
-protected:
+public:
   /**
    * Constructor.
    * @param db database.
@@ -50,42 +48,67 @@ protected:
    */
   Environment(DB* db, Time time);
 
-public:
   /**
-   * Destructor.
-  */
-  ~Environment();
-
-
-  // Data
-  Time time;
-
-  SortOrder order_world;
-
-  Uint8 mutations_percent;
-
-  Energy energy_detect;
-  Energy energy_move;
-  Energy energy_push;
-  Energy energy_take;
-  Energy energy_attack;
-  Energy energy_defend;
-  Energy energy_msg;
-  Energy energy_sex;
+   * Constructor to insert data.
+   * @param db database.
+   * @exception DBError if there is a error in the database.
+   */
+  Environment(DB* db);
 
 
   /**
    * Update the data of the class with the database.
+   * changed is set to false.
    * @exception DBError if there is a error in the database.
    * @execption IDNotFound if the ID is not found in the table.
    */
   void update();
 
   /**
-   * Update the database with the data of the class.
+   * Update the database with the data of the class in changed or force are
+   * true.
+   * changed is set to false.
+   * @param force force the update of the database.
    * @exception DBError if there is a error in the database.
    */
-  void update_db();
+  void update_db(bool force = false);
+
+  /**
+   * Insert the data in the database.
+   * The ID is updated.
+   * changed is set to false.
+   * @exception DBError if there is an error in the database.
+   */
+  void insert();
+
+  /**
+   * Remove the data from the database.
+   * changed is set to false.
+   * @exception DBError if there is an error in the database.
+   */
+  void remove();
+
+
+  // Data
+  Time time;
+
+  Position size;
+
+  Energy energy_developed;
+
+  float mutations_probability;
+
+  Time time_birth;
+
+  Energy energy_nothing;
+  Energy energy_myself;
+  Energy energy_detect;
+  Energy energy_info;
+  Energy energy_move;
+  Energy energy_turn;
+  Energy energy_attack;
+  Energy energy_eat;
+  Energy energy_egg;
 };
 
 }
