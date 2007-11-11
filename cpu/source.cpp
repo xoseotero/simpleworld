@@ -251,15 +251,16 @@ void Source::replace_includes()
       fs::path filename(find_file(this->include_path_, this->get_include(i)));
       if (filename.empty())
         throw ParseError(__FILE__, __LINE__,
-			 i, boost::str(boost::format("%1% not found") %
+			 i, boost::str(boost::format("File %1% not found") %
 				       this->get_include(i)));
 
       std::string
         abs_path(fs::complete(filename).normalize().string());
       if (this->includes_.find(abs_path) != this->includes_.end())
         throw ParseError(__FILE__, __LINE__,
-			 i, boost::str(boost::format("%1% already included") %
-				       abs_path));
+			 i,
+                         boost::str(boost::format("File %1% already included")
+                                    % abs_path));
       this->remove(i, 1);
       this->insert(i, File(abs_path));
       this->includes_.insert(abs_path);
@@ -276,8 +277,8 @@ void Source::replace_constants()
       std::vector<std::string> constant(this->get_constant(i));
       if (this->constants_.find(constant[0]) != this->constants_.end())
         throw ParseError(__FILE__, __LINE__, i,
-			 boost::str(boost::format("Name %1% already defined") %
-                                    constant[0]));
+                         boost::str(boost::format("Name %1% already defined")
+                                    % constant[0]));
 
       this->remove(i, 1);
       this->constants_.insert(std::pair<std::string,
@@ -285,8 +286,7 @@ void Source::replace_constants()
     } else if (this->is_label(i)) {
       std::string label(this->get_label(i));
       if (this->constants_.find(label) != this->constants_.end())
-        throw ParseError(__FILE__, __LINE__,
-			 i,
+        throw ParseError(__FILE__, __LINE__, i,
 			 boost::str(boost::format("Name %1% already defined") %
                                     label));
       char address[11];
