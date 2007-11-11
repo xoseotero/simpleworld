@@ -86,7 +86,7 @@ public:
   /**
    * Destructor.
    */
-  ~Memory();
+  virtual ~Memory();
 
 
   /**
@@ -100,7 +100,7 @@ public:
    * The new memory is zeroed.
    * @param size new size of the memory.
    */
-  void resize(Address size);
+  virtual void resize(Address size);
 
 
   /**
@@ -113,7 +113,7 @@ public:
    * @return the word
    * @exception AddressOutOfRange address > (size - 4)
    */
-  Word get_word(Address address, bool system_endian = true) const;
+  virtual Word get_word(Address address, bool system_endian = true) const;
 
   /**
    * Set the value of a word.
@@ -125,7 +125,7 @@ public:
    * @param system_endian if the word is in the systen endianness
    * @exception AddressOutOfRange address > (size - 4)
    */
-  void set_word(Address address, Word value, bool system_endian = true);
+  virtual void set_word(Address address, Word value, bool system_endian = true);
 
 
   /**
