@@ -97,7 +97,7 @@ change_byte_order_middle(*(reinterpret_cast<Word*>(&this->memory_[address])));
 }
 
 
-Word Memory::set_word(Address address, Uint32 value, bool system_endian)
+void Memory::set_word(Address address, Uint32 value, bool system_endian)
 {
   if (address > (this->size_ - (sizeof(Word) - 1)))
     throw AddressOutOfRange(__FILE__, __LINE__, address);

@@ -126,7 +126,7 @@ public:
    * @return the word
    * @exception AddressOutOfRange address > (size - 4)
    */
-  Word set_word(Address address, Word value, bool system_endian = true);
+  void set_word(Address address, Word value, bool system_endian = true);
 
 
   /**
