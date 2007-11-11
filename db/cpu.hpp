@@ -27,6 +27,7 @@
 #include <string>
 
 #include <db/types.hpp>
+#include <db/memory.hpp>
 #include <db/db.hpp>
 #include <db/table.hpp>
 
@@ -37,11 +38,10 @@ namespace DB
 
 /**
  * CPU of a bug.
- */     
+ */
 class CPU: public Table
 {
-  friend class DB;
-protected:
+public:
   /**
    * Constructor.
    * @param db database.
@@ -51,44 +51,50 @@ protected:
    */
   CPU(DB* db, ID bug_id);
 
-public:
   /**
-   * Destructor.
+   * Constructor to insert data.
+   * @param db database.
+   * @exception DBError if there is a error in the database.
    */
-  ~CPU();
-
-
-  // Data
-  Word r0;
-  Word r1;
-  Word r2;
-  Word r3;
-  Word r4;
-  Word r5;
-  Word r6;
-  Word r7;
-  Word r8;
-  Word r9;
-  Word r10;
-  Word r11;
-  Word r12;
-  Word pc;
-  Word sp;
-  Word etp;
+  CPU(DB* db);
 
 
   /**
    * Update the data of the class with the database.
+   * changed is set to false.
    * @exception DBError if there is a error in the database.
    * @execption IDNotFound if the ID is not found in the table.
    */
   void update();
 
   /**
-   * Update the database with the data of the class.
+   * Update the database with the data of the class in changed or force are
+   * true.
+   * changed is set to false.
+   * @param force force the update of the database.
    * @exception DBError if there is a error in the database.
    */
-  void update_db();
+  void update_db(bool force = false);
+
+  /**
+   * Insert the data in the database with a specific id.
+   * The ID is updated.
+   * changed is set to false.
+   * @param id id of the row.
+   * @exception DBError if there is an error in the database.
+   */
+  void insert(ID bug_id);
+
+  /**
+   * Remove the data from the database.
+   * changed is set to false.
+   * @exception DBError if there is an error in the database.
+   */
+  void remove();
+
+
+  // Data
+  Memory registers;
 };
 
 }
