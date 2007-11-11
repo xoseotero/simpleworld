@@ -26,6 +26,7 @@
 
 #include <cpu/types.hpp>
 #include <cpu/memory.hpp>
+#include <cpu/interrupt.hpp>
 #include <cpu/instruction.hpp>
 
 #define REGISTER(NUMBER) (NUMBER * sizeof(Word))
