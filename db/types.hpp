@@ -26,23 +26,12 @@
 
 #include <sqlite3x.hpp>
 
-#include <simple/types.hpp>
-#include <world/types.hpp>
-#include <cpu/types.hpp>
-
 namespace SimpleWorld
 {
 namespace DB
 {
 
 typedef int64_t ID;
-
-using World::SortOrder;
-using World::Energy;
-typedef Uint32 Position;
-typedef Uint8 Orientation;
-using World::Time;
-using CPU::Word;
 
 }
 }
