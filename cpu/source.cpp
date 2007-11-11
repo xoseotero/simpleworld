@@ -206,7 +206,7 @@ static fs::path find_file(const std::vector<std::string>& path,
 
 
 Source::Source(const InstructionSet& set,
-	       std::vector<std::string> include_path,
+	       const std::vector<std::string>& include_path,
                const std::string& filename)
   : File(filename), set_(set), include_path_(include_path)
 {

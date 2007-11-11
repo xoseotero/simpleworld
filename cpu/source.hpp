@@ -88,8 +88,9 @@ public:
    * @param filename File to open.
    * @exception FileAccessError File can't be opened
    */
-  Source(const InstructionSet& set, std::vector<std::string> include_path,
-         const std::string& filename);
+  Source(const InstructionSet& set,
+	 const std::vector<std::string>& include_path,
+	 const std::string& filename);
 
 
   /**
