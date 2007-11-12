@@ -113,7 +113,7 @@ There is NO WARRANTY, to the extent permitted by law.")
     source.replace_constants();
     source.replace_blocks();
     source.save(output);
-  }else
+  } else
     source.compile(output);
 
   std::exit(EXIT_SUCCESS);
