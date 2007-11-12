@@ -3,11 +3,7 @@
  */
 CREATE TABLE Environment
 (
-  id INTEGER NOT NULL,
-
   time INTEGER NOT NULL,
-
-  next_bug INTEGER,                     -- NULL if there aren't alive bugs
 
   -- the rest of the rows can't change
   size_x INTEGER NOT NULL,
@@ -15,7 +11,7 @@ CREATE TABLE Environment
 
   energy_developed INTEGER NOT NULL,
 
-  mutations_percent REAL NOT NULL,
+  mutations_probability REAL NOT NULL,  -- Values from 0 to 1
 
   time_birth INTEGER NOT NULL,
 
@@ -29,11 +25,11 @@ CREATE TABLE Environment
   energy_eat INTEGER NOT NULL,
   energy_egg INTEGER NOT NULL,
 
-  PRIMARY KEY(id),
+  PRIMARY KEY(time),
   CHECK(time >= 0),
   CHECK(size_x > 0 AND size_y > 0),
   CHECK(energy_developed >= 0),
-  CHECK(mutations_percent >= 0),
+  CHECK(mutations_probability >= 0 AND mutations_probability <= 1),
   CHECK(time_birth >= 0),
   CHECK(energy_nothing >= 0 AND energy_myself >= 0 AND
         energy_detect >= 0 AND energy_info >= 0 AND
@@ -63,28 +59,7 @@ FOR EACH ROW BEGIN
          FROM Environment) >= NEW.time;
 END;
 
-/* Check if next_bug is a valid id */
-CREATE TRIGGER Environment_insert_next_bug
-BEFORE INSERT
-ON Environment
-FOR EACH ROW BEGIN
-  SELECT RAISE(ROLLBACK, 'ID of the Next bug not found')
-  WHERE (SELECT id
-         FROM bug
-         WHERE id = NEW.next_bug) IS NULL;
-END;
-
-CREATE TRIGGER Environment_update_next_bug
-BEFORE UPDATE
-ON Environment
-FOR EACH ROW BEGIN
-SELECT RAISE(ROLLBACK, 'ID of the Next bug not found')
-  WHERE (SELECT id
-         FROM bug
-         WHERE id = NEW.next_bug) IS NULL;
-END;
-
-/* Only id, time and next_bug can change */
+/* Only time can change */
 CREATE TRIGGER Environment_update_valid_time
 BEFORE UPDATE
 ON Environment
@@ -92,7 +67,7 @@ FOR EACH ROW
 WHEN OLD.size_x != NEW.size_x OR
      OLD.size_y != NEW.size_y OR
      OLD.energy_developed != NEW.energy_developed OR
-     OLD.mutations_percent != NEW.mutations_percent OR
+     OLD.mutations_probability != NEW.mutations_probability OR
      OLD.time_birth != NEW.time_birth OR
      OLD.energy_nothing != NEW.energy_nothing OR
      OLD.energy_myself != NEW.energy_myself OR
@@ -139,10 +114,30 @@ CREATE TABLE Bug
 );
 
 CREATE INDEX Bug_index ON Bug(id);
+
 CREATE INDEX Bug_position_index ON Bug(position_x, position_y);
+
 CREATE INDEX Bug_dead_index ON Bug(dead);
 
-CREATE VIEW Bug_alive AS SELECT * FROM Bug WHERE dead IS NULL;
+CREATE VIEW Bug_egg AS
+  SELECT id, energy, position_x, position_y, orientation,
+	 birth, father_id
+  FROM Bug
+  WHERE dead IS NULL AND birth > (SELECT max(time)
+				  FROM Environment);
+
+CREATE VIEW Bug_alive AS
+  SELECT id, energy, position_x, position_y, orientation,
+	 birth, father_id
+  FROM Bug
+  WHERE dead IS NULL AND birth <= (SELECT max(time)
+				   FROM Environment);
+
+CREATE VIEW Bug_dead AS
+  SELECT id, position_x, position_y, orientation,
+	 birth, dead, father_id, killer_id
+  FROM Bug
+  WHERE dead IS NOT NULL;
 
 /* Check if the id will change */
 CREATE TRIGGER Bug_id_trigger
@@ -170,25 +165,25 @@ END;
 CREATE TRIGGER Bug_insert_father_trigger
 BEFORE INSERT
 ON Bug
-FOR EACH ROW BEGIN
+FOR EACH ROW
+WHEN NEW.father_id IS NOT NULL
+BEGIN
   SELECT RAISE(ROLLBACK, 'Father not found')
-  WHERE NEW.father_id IS NOT NULL
-         AND
-         (SELECT id
-          FROM Bug
-          WHERE id=NEW.father_id AND dead IS NULL) IS NULL;
+  WHERE (SELECT id
+         FROM Bug
+         WHERE id=NEW.father_id AND dead IS NULL) IS NULL;
 END;
 
 CREATE TRIGGER Bug_update_father_trigger
 BEFORE UPDATE
 ON Bug
-FOR EACH ROW BEGIN
+FOR EACH ROW
+WHEN NEW.father_id IS NOT NULL
+BEGIN
   SELECT RAISE(ROLLBACK, 'Father not found')
-  WHERE NEW.father_id IS NOT NULL
-         AND
-         (SELECT id
-          FROM Bug
-          WHERE id=NEW.father_id AND dead IS NULL) IS NULL;
+  WHERE (SELECT id
+         FROM Bug
+         WHERE id=NEW.father_id AND dead IS NULL) IS NULL;
 END;
 
 /* Check if killer_id is a valid id */
@@ -231,7 +226,9 @@ END;
 CREATE TRIGGER Bug_update_position_trigger
 BEFORE UPDATE
 ON Bug
-FOR EACH ROW BEGIN
+FOR EACH ROW
+WHEN OLD.id != NEW.id
+BEGIN
   SELECT RAISE(ROLLBACK, 'There is a bug in the same position')
   WHERE (SELECT id
          FROM Bug
@@ -327,7 +324,9 @@ END;
 CREATE TRIGGER Code_update_uniq_trigger
 BEFORE UPDATE
 ON Code
-FOR EACH ROW BEGIN
+FOR EACH ROW
+WHEN OLD.bug_id != NEW.bug_id
+BEGIN
   SELECT RAISE(ROLLBACK, 'id of bug already in table')
   WHERE (SELECT count(bug_id)
          FROM Code
@@ -350,23 +349,8 @@ CREATE TABLE CPU
 (
   bug_id INTEGER NOT NULL,
 
-  /* CPU registers */
-  r0 INTEGER NOT NULL DEFAULT 0,
-  r1 INTEGER NOT NULL DEFAULT 0,
-  r2 INTEGER NOT NULL DEFAULT 0,
-  r3 INTEGER NOT NULL DEFAULT 0,
-  r4 INTEGER NOT NULL DEFAULT 0,
-  r5 INTEGER NOT NULL DEFAULT 0,
-  r6 INTEGER NOT NULL DEFAULT 0,
-  r7 INTEGER NOT NULL DEFAULT 0,
-  r8 INTEGER NOT NULL DEFAULT 0,
-  r9 INTEGER NOT NULL DEFAULT 0,
-  r10 INTEGER NOT NULL DEFAULT 0,
-  r11 INTEGER NOT NULL DEFAULT 0,
-  r12 INTEGER NOT NULL DEFAULT 0,
-  pc INTEGER NOT NULL DEFAULT 0,
-  sp INTEGER NOT NULL DEFAULT 0,
-  itp INTEGER NOT NULL DEFAULT 0,
+  /* The blob is the last col for performance */
+  registers BLOB NOT NULL,
 
   PRIMARY KEY(bug_id),
   FOREIGN KEY(bug_id) REFERENCES Bug(id)
@@ -419,7 +403,9 @@ END;
 CREATE TRIGGER CPU_update_uniq_trigger
 BEFORE UPDATE
 ON CPU
-FOR EACH ROW BEGIN
+FOR EACH ROW
+WHEN OLD.bug_id != NEW.bug_id
+BEGIN
   SELECT RAISE(ROLLBACK, 'id of bug already in table')
   WHERE (SELECT count(bug_id)
          FROM CPU
