@@ -52,6 +52,11 @@ const char* program_author_email = "xoseotero@users.sourceforge.net";
 class CPU: public cpu::CPU, cpu::Object
 {
 public:
+  /**
+   * Constructor.
+   * @param filename filename from where to load the code.
+   * @exception FileAccessError problem with the file.
+   */
   CPU(const std::string& filename) throw ();
 
   /**
