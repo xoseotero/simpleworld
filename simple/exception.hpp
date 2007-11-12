@@ -49,7 +49,7 @@ public:
   {}
 
 
-  std::string& file;		/**< File where the exception is raised. */
+  std::string file;		/**< File where the exception is raised. */
   Uint32 line;			/**< Line where the exception is raised. */
 };
 
