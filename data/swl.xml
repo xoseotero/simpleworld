@@ -30,6 +30,7 @@
 
             <!-- Store operations -->
             <item> store </item>
+	    <item> storei </item>
             <item> storerr </item>
             <item> storeri </item>
 
