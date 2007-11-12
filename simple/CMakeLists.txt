@@ -2,11 +2,6 @@ INCLUDE(${CMAKE_ROOT}/Modules/TestBigEndian.cmake)
 INCLUDE(${CMAKE_ROOT}/Modules/CheckTypeSize.cmake)
 
 
-# Test for standard C++ features in the compiler
-IF(CMAKE_NO_ANSI_STREAM_HEADERS OR CMAKE_NO_STD_NAMESPACE)
-  MESSAGE(FATAL_ERROR "The compiler not support standard C++ features")
-ENDIF(CMAKE_NO_ANSI_STREAM_HEADERS OR CMAKE_NO_STD_NAMESPACE)
-
 # Check if the endianness of the system
 TEST_BIG_ENDIAN(BIG_ENDIAN)
 IF(BIG_ENDIAN)
