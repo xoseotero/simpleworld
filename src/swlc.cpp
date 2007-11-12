@@ -118,7 +118,7 @@ There is NO WARRANTY, to the extent permitted by law.")
   std::exit(EXIT_SUCCESS);
 }
 catch (const cpu::ParseError& e) {
-  std::cout << boost::format("%2%: %3%")
+  std::cout << boost::format("%1%: %2%")
     % e.source_line
     % e.what()
     << std::endl;
