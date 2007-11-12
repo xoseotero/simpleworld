@@ -25,9 +25,9 @@
 #include <string>
 #include <cstdlib>
 
+#include <getopt.h>
+
 #include <boost/format.hpp>
-#include <boost/program_options.hpp>
-namespace po = boost::program_options;
 
 #include <simple/config.hpp>
 #include <simple/types.hpp>
@@ -49,6 +49,135 @@ const char* program_version = "1.0a1";
 const char* program_years = "2006, 2007";
 const char* program_author = "Xosé Otero";
 const char* program_author_email = "xoseotero@users.sourceforge.net";
+const char* program_mailbugs = "simpleworld-list@lists.sourceforge.net";
+
+
+/**
+ * Show the usage of the program.
+ * @param error a text to show as error.
+ */
+void usage(std::string error)
+{
+  std::cerr << boost::format(\
+"%1%: %2%\n\
+Try `%1% --help' for more information.")
+    % program_short_name
+    % error
+    << std::endl;
+
+  std::exit(1);
+}
+
+/**
+ * Show the help of the program.
+ */
+void help()
+{
+  std::cout << boost::format(\
+"Usage: %1% [OPTION]... [FILE]\n\
+Simple World CPU.\n\
+\n\
+Mandatory arguments to long options are mandatory for short options too.\n\
+  -h, --help			display this help and exit\n\
+  -v, --version			output version information and exit\n\
+\n\
+Exit status is 0 if OK, 1 if minor problems, 2 if serious trouble.\n\
+\n\
+Report bugs to <%2%>.")
+    % program_short_name
+    % program_mailbugs
+    << std::endl;
+  std::exit(0);
+}
+
+/**
+ * Show the version of the program.
+ */
+void version()
+{
+  std::cout << boost::format(\
+"%1% (%2%) %3%\n\
+\n\
+Copyright (C) %4%, %5% <%6%>.\n\
+This is free software. You may redistribute copies of it under the terms of\n\
+the GNU General Public License <http://www.gnu.org/licenses/gpl.html>.\n\
+There is NO WARRANTY, to the extent permitted by law.")
+    % program_short_name
+    % program_name
+    % program_version
+    % program_years
+    % program_author
+    % program_author_email
+    << std::endl;
+
+  std::exit(0);
+}
+
+
+// information from the command line
+static std::string input;
+
+/**
+ * Parse the command line.
+ * @param argc number of parameters.
+ * @param argv parameters.
+ */
+void parse_cmd(int argc, char* argv[])
+{
+  struct option long_options[] = {
+    {"version", no_argument, NULL, 'v'},
+    {"help", no_argument, NULL, 'h'},
+
+    {NULL, 0, NULL, 0}
+  };
+
+  // avoid that getopt prints any message
+  opterr = 0;
+
+  while (true) {
+    /* getopt_long stores the option index here. */
+    int option_index = 0;
+
+    int c = getopt_long (argc, argv, "cr:e:fiInvh", long_options,
+                         &option_index);
+
+    /* Detect the end of the options. */
+    if (c == -1)
+      break;
+
+    switch (c)
+    {
+    case 'v':
+      version();
+
+      break;
+
+    case 'h':
+      help();
+
+      break;
+
+    case '?':
+      if (optind <= 1)
+        optind++;
+      usage(boost::str(boost::format("unrecognized option `%1%'")
+                       % argv[optind - 1]));
+
+      break;
+
+    default:
+      abort();
+    }
+  }
+
+  if (argc == optind)
+    usage("a object file is needed");
+  else if ((optind + 1) < argc)
+    usage("too many object files");
+
+  input = argv[optind];
+}
+
 
 class CPU: public FakeCPU, cpu::Object
 {
@@ -110,59 +239,7 @@ void CPU::next() throw (cpu::CPUStopped)
 
 int main(int argc, char *argv[])
 try {
-  std::string input;
-
-  // Declare the supported options.
-  po::options_description generic("Generic options");
-  generic.add_options()
-    ("version,v", "print version string")
-    ("help,h", "produce help message")
-    ;
-
-  po::options_description config("Configuration");
-  config.add_options()
-    ("input", po::value<std::string>(&input), "File to execute")
-    ;
-
-  po::options_description cmdline_options;
-  cmdline_options.add(generic).add(config);
-
-  // Positional arguments will be passed as "input"
-  po::positional_options_description p;
-  p.add("input", -1);
-
-  // Take arguments
-  po::variables_map vm;
- 
-  po::store(po::command_line_parser(argc,
-    argv).options(cmdline_options).positional(p).run(), vm);
-  po::notify(vm);
-
-
-  if (vm.count("version")) {
-    std::cout << boost::format(\
-"%1% (%2%) %3%\n\
-\n\
-Copyright (C) %4%, %5% <%6%>.\n\
-This is free software. You may redistribute copies of it under the terms of\n\
-the GNU General Public License <http://www.gnu.org/licenses/gpl.html>.\n\
-There is NO WARRANTY, to the extent permitted by law.")
-      % program_short_name
-      % program_name
-      % program_version
-      % program_years
-      % program_author
-      % program_author_email
-      << std::endl;
-    return 1;
-  }
-
-  // Show help if the --help is passed and if there isn't a input file
-  if (vm.count("help") or input.empty()) {
-    std::cout << cmdline_options << std::endl;
-    return 1;
-  }
-
+  parse_cmd(argc, argv);
 
   CPU cpu(input);
   cpu.execute();

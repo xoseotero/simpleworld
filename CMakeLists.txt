@@ -53,7 +53,7 @@ ENDIF(CMAKE_NO_ANSI_STREAM_HEADERS OR CMAKE_NO_STD_NAMESPACE)
 # Boost is needed
 SET(Boost_LIB_TYPE "st")
 #SET(Boost_LIB_SUFFIX "gcc41-mt-1_34")
-FIND_PACKAGE(Boost REQUIRED filesystem regex program_options unit_test_framework)
+FIND_PACKAGE(Boost REQUIRED filesystem regex unit_test_framework)
 IF(NOT Boost_FOUND)
   MESSAGE(FATAL_ERROR "\tBoost not found")
 ENDIF(NOT Boost_FOUND)
