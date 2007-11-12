@@ -2,7 +2,6 @@ PROJECT(SimpleWorld)
 INCLUDE_DIRECTORIES(.)
 SUBDIRS(sqlite3 sqlite3x xyssl
   simple world cpu db src tests)
-LINK_DIRECTORIES(cpu)
 
 
 INCLUDE(${CMAKE_ROOT}/Modules/TestForANSIStreamHeaders.cmake)
