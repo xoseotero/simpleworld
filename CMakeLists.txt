@@ -1,15 +1,31 @@
 PROJECT(SimpleWorld)
-INCLUDE_DIRECTORIES(.)
-SUBDIRS(sqlite3 sqlite3x xyssl
-  simple world cpu db src tests)
 
+SUBDIRS(sqlite3
+  sqlite3x
+  xyssl
+  simple
+  cpu
+  db
+  simpleworld
+  src
+  tests)
 
-INCLUDE(${CMAKE_ROOT}/Modules/TestForANSIStreamHeaders.cmake)
-INCLUDE(${CMAKE_ROOT}/Modules/TestForSTDNamespace.cmake)
-INCLUDE(${CMAKE_ROOT}/Modules/CheckIncludeFileCXX.cmake)
+INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}")
+
 
 # include specific modules
-set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
+
+INCLUDE(${CMAKE_ROOT}/Modules/TestForSTDNamespace.cmake)
+INCLUDE(${CMAKE_ROOT}/Modules/TestForANSIStreamHeaders.cmake)
+INCLUDE(${CMAKE_ROOT}/Modules/CheckIncludeFileCXX.cmake)
+INCLUDE(${CMAKE_ROOT}/Modules/TestCXXAcceptsFlag.cmake)
+
+
+# Test for standard C++ features in the compiler
+IF(CMAKE_NO_ANSI_STREAM_HEADERS OR CMAKE_NO_STD_NAMESPACE)
+  MESSAGE(FATAL_ERROR "The compiler not support standard C++ features")
+ENDIF(CMAKE_NO_ANSI_STREAM_HEADERS OR CMAKE_NO_STD_NAMESPACE)
 
 
 # Boost is needed
@@ -17,10 +33,11 @@ SET(Boost_LIB_TYPE "st")
 #SET(Boost_LIB_SUFFIX "gcc41-mt-1_34")
 FIND_PACKAGE(Boost REQUIRED filesystem regex program_options unit_test_framework)
 IF(NOT Boost_FOUND)
-  MESSAGE(FATAL_ERROR "Boost not found")
+  MESSAGE(FATAL_ERROR "\tBoost not found")
 ENDIF(NOT Boost_FOUND)
 
 INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIRS})
+
 
 # SQLite3
 OPTION(SQLite3_USE_INTERNAL "Use internal SQLite3 library" OFF)
@@ -31,14 +48,16 @@ ENDIF(NOT SQLite3_USE_INTERNAL)
 
 IF(NOT SQLite3_FOUND OR SQLite3_USE_INTERNAL)
   SET(SQLite3_USE_INTERNAL 1)
-  MESSAGE("Internal SQLite3 library will be used")
-  SET(SQLite3_INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/sqlite3")
-  SET(SQLite3_LIBRARIES "sqlite3")
+
+  INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/sqlite3")
+  SET(SQLite3_LIB "sqlite3")
 ELSE(NOT SQLite3_FOUND OR SQLite3_USE_INTERNAL)
   SET(SQLite3_USE_INTERNAL 0)
+
+  INCLUDE_DIRECTORIES(${SQLite3_INCLUDE_DIRS})
+  SET(SQLite3_LIB ${SQLite3_LIBRARIES})
 ENDIF(NOT SQLite3_FOUND OR SQLite3_USE_INTERNAL)
 
-INCLUDE_DIRECTORIES(${SQLite3_INCLUDE_DIRS})
 
 # SQLite3x
 OPTION(SQLite3x_USE_INTERNAL "Use internal SQLite3x library" OFF)
@@ -49,14 +68,16 @@ ENDIF(NOT SQLite3x_USE_INTERNAL)
 
 IF(NOT SQLite3x_FOUND OR SQLite3x_USE_INTERNAL)
   SET(SQLite3x_USE_INTERNAL 1)
-  MESSAGE("Internal SQLite3x library will be used")
-  SET(SQLite3x_INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/sqlite3x")
-  SET(SQLite3x_LIBRARIES "sqlite3x")
+
+  INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/sqlite3x")
+  SET(SQLite3x_LIB "sqlite3x")
 ELSE(NOT SQLite3x_FOUND OR SQLite3x_USE_INTERNAL)
   SET(SQLite3x_USE_INTERNAL 0)
+
+  INCLUDE_DIRECTORIES(${SQLite3x_INCLUDE_DIRS})
+  SET(SQLite3x_LIB ${SQLite3x_LIBRARIES})
 ENDIF(NOT SQLite3x_FOUND OR SQLite3x_USE_INTERNAL)
 
-INCLUDE_DIRECTORIES(${SQLite3x_INCLUDE_DIRS})
 
 # XySSL
 OPTION(XySSL_USE_INTERNAL "Use internal XySSL library" OFF)
@@ -67,22 +88,35 @@ ENDIF(NOT XySSL_USE_INTERNAL)
 
 IF(NOT XySSL_FOUND OR XySSL_USE_INTERNAL)
   SET(XySSL_USE_INTERNAL 1)
-  MESSAGE("Internal XySSL library will be used")
-  SET(XySSL_INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/xyssl")
-  SET(XySSL_LIBRARIES "xyssl")
+
+  INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/xyssl")
+  SET(XySSL_LIB "xyssl")
 ELSE(NOT XySSL_FOUND OR XySSL_USE_INTERNAL)
   SET(XySSL_USE_INTERNAL 0)
+
+  INCLUDE_DIRECTORIES(${XySSL_INCLUDE_DIRS})
+  SET(XySSL_LIB ${XySSL_LIBRARIES})
 ENDIF(NOT XySSL_FOUND OR XySSL_USE_INTERNAL)
 
-INCLUDE_DIRECTORIES(${XySSL_INCLUDE_DIRS})
+
+CHECK_CXX_ACCEPTS_FLAG("-Wall" CXX_ACCEPTS_WALL)
+IF(CXX_ACCEPTS_WALL)
+  ADD_DEFINITIONS("-Wall")
+ENDIF(CXX_ACCEPTS_WALL)
 
 
-OPTION(SW_DEBUG "Build the project using debugging code" OFF)
-IF(SW_DEBUG)
-  ADD_DEFINITIONS(-DDEBUG)
-ENDIF(SW_DEBUG)
+OPTION(DEBUG_MODE "Build the project using debugging code" OFF)
+IF(DEBUG_MODE)
+  SET(CMAKE_BUILD_TYPE Debug)
+  ADD_DEFINITIONS("-DDEBUG")
+ELSE(DEBUG_MODE)
+  SET(CMAKE_BUILD_TYPE Release)
+  # disable BOOST_ASSERT without affecting the definition of the
+  # standard assert
+  ADD_DEFINITIONS("-DBOOST_DISABLE_ASSERTS")
+ENDIF(DEBUG_MODE)
 
-OPTION(SW_TEST "Execute the tests" ON)
-IF(SW_TEST)
+OPTION(RUN_TESTS "Execute the tests" OFF)
+IF(RUN_TESTS)
   ENABLE_TESTING()
-ENDIF(SW_TEST)
+ENDIF(RUN_TESTS)
