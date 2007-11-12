@@ -1,0 +1,173 @@
+# @file swl/bugs/brainless/brainless.swl
+# Brainless bug.
+#
+# This bug does movements randomly until it detects a element that avoids its
+# movement. If the element is food or a egg, the bug eats it. If the element
+# is a bug, the bug attacks it. After eating, if it has enough energy, the bug
+# creates a egg.
+#
+# begin:     Fri, 07 Sep 2007 21:11:53 +0200
+# last:      $Date$
+#
+#  Copyright (C) 2007  Xosé Antón Otero Ferreira <xoseotero@gmail.com>
+#
+#  This program is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+# Initialization
+.label init
+	loadi stp stack		# Initialize the Stack Pointer
+	b main
+
+
+.include "stdlib/action.swl"
+.include "stdlib/random.swl"
+
+
+.define ENERGY_TO_CREATE_EGG 0x40	# 64
+
+
+# Main function of the bug
+.label main
+	call init_seed
+
+	.label main_loop
+	call random_value
+	modi r0 r0 0x2		# r0 = random_value % 2
+
+	loadi r1 0x0
+	beq r0 r1 main_move
+	.label main_turn	# if random_value != 0
+	call random_turn
+	b main_loop
+	.label main_move	# else (random_value == 0)
+	call random_move
+
+	loadi r1 ACTION_ERROR
+	beq r0 r1 main_detect
+	b main_loop
+
+	.label main_detect	# the bug couldn't move
+	call do_detect
+	b main_loop
+
+
+# Use the actual position of the bug as the seed of the
+# random number generator
+.label init_seed
+	world ACTION_MYSELF_POSITION
+	add r0 r1 r2
+
+	store r0 random_seed
+
+
+# Move forward or backwoard randomly
+# OUT:	r0 ACTION_SUCCESS
+.label random_move
+	# r0 = random_value % 2
+	call random_value
+	modi r0 r0 0x2
+
+	loadi r1 0x0
+	beq r0 r1 random_move_forward
+	.label random_move_backward	# if random_value != 0
+	world ACTION_MOVE_BACKWARD
+	ret
+	.label random_move_forward	# else (random_value == 0)
+	world ACTION_MOVE_FORWARD
+	ret
+
+
+# Turn on the left or on the right randomly
+# OUT:	r0 ACTION_SUCCESS
+.label random_turn
+	# r0 = random_value % 2
+	call random_value
+	modi r0 r0 0x2
+
+	loadi r1 0x0
+	beq r0 r1 random_turn_left
+	.label random_turn_right	# if random_value != 0
+	world ACTION_TURN_RIGHT
+	ret
+	.label random_turn_left		# else (random_value == 0)
+	world ACTION_TURN_LEFT
+	ret
+
+
+# Attack until error
+.label do_attack
+	loadi r2 ACTION_OK
+
+	.label do_attack_loop		# do
+	world ACTION_ATTACK
+	beq r0 r2 do_attack_loop	# while ATTACK == ACTION_OK
+
+	call do_detect
+
+	ret
+
+
+# Create a egg in front of the bug
+.label do_egg
+	world ELEMENT_EGG
+	ret
+
+
+# Eat the element that is in front of the bug
+.label do_eat
+	world ACTION_EAT
+
+	world ACTION_MYSELF_ENERGY
+	loadi r0 ENERGY_TO_CREATE_EGG
+	bgt r0 r1 do_eat_egg
+
+	.label do_eat_ret	# if MYSELF_ENERGY <= ENERGY_TO_CREATE_EGG
+	ret
+
+	.label do_eat_egg	# else (MYSELF_ENERGY > ENERGY_TO_CREATE_EGG)
+	call do_egg
+	ret
+
+
+# Detect what is in front of the bug and:
+# a) eats it if the element is food or a egg
+# b) attacks it if the element is a bug
+.label do_detect
+	world ACTION_DETECT		# r1 = ELEMENT
+
+	loadi r0 ELEMENT_NOTHING
+	bne r1 r0 do_detect_something
+	.label do_detect_nothing	# if ELEMENT == NOTHING
+	ret
+
+	.label do_detech_something	# else (ELEMENT != NOTHING)
+
+	loadi r0 ELEMENT_EGG
+	beq r1 r0 do_detect_eat
+	loadi r0 ELEMENT_FOOD
+	beq r1 r0 do_detect_eat
+
+	.label do_detect_attack		# if ELEMENT != EGG and ELEMENT != FOOD
+	call do_attack
+	ret
+
+	.label do_detect_eat	# else (DETECT == EGG or DETECT == FOOD)
+	call do_eat
+	ret
+
+
+# The stack can't be calculate a priori because there are recursive calls
+# do_detect->do_attackt->do_detect->...
+.label stack
+.block 0x40	# 64
