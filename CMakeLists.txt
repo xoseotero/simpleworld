@@ -1,6 +1,7 @@
 PROJECT(SimpleWorld)
 
-SUBDIRS(sqlite3
+SUBDIRS(getopt
+  sqlite3
   sqlite3x
   xyssl
   simple
@@ -37,6 +38,25 @@ IF(NOT Boost_FOUND)
 ENDIF(NOT Boost_FOUND)
 
 INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIRS})
+
+
+# getopt()/getopt_long()
+OPTION(getopt_USE_INTERNAL "Use internal getopt()/getopt_long()" OFF)
+
+IF(NOT getopt_USE_INTERNAL)
+  CHECK_INCLUDE_FILE_CXX(getopt.h HAVE_GETOPT_H)
+ENDIF(NOT getopt_USE_INTERNAL)
+
+IF(NOT HAVE_GETOPT_H OR getopt_USE_INTERNAL)
+  SET(getopt_USE_INTERNAL 1)
+
+  INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/getopt")
+  SET(getopt_LIB "getopt")
+ELSE(NOT HAVE_GETOPT_H OR getopt_USE_INTERNAL)
+  SET(getopt_USE_INTERNAL 0)
+
+  SET(getopt_LIB "")
+ENDIF(NOT HAVE_GETOPT_H OR getopt_USE_INTERNAL)
 
 
 # SQLite3
