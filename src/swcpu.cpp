@@ -34,9 +34,9 @@ namespace po = boost::program_options;
 #include <simple/exception.hpp>
 #include <cpu/word.hpp>
 #include <cpu/memory.hpp>
+#include <cpu/memory_file.hpp>
 #include <cpu/instruction.hpp>
 #include <cpu/cpu.hpp>
-#include <cpu/cpu_file.hpp>
 #include <cpu/object.hpp>
 namespace sw = SimpleWorld;
 namespace cpu = SimpleWorld::CPU;
@@ -49,7 +49,7 @@ const char* program_author = "Xosé Otero";
 const char* program_author_email = "xoseotero@users.sourceforge.net";
 
 
-class CPU: public cpu::CPUFile, cpu::Object
+class CPU: public cpu::CPU, cpu::Object
 {
 public:
   CPU(const std::string& filename) throw ();
@@ -59,10 +59,16 @@ public:
    * @exception CPUStopped A stop instruction was found
    */
   void next() throw (cpu::CPUStopped);
+
+protected:
+  cpu::Memory registers_;
+  cpu::MemoryFile memory_;
 };
 
 CPU::CPU(const std::string& filename) throw ()
-  : cpu::CPUFile(filename), Object(CPUFile::set_, filename)
+  : cpu::CPU(&this->registers_, &this->memory_),
+    cpu::Object(cpu::CPU::set_, filename),
+    registers_(sizeof(cpu::Word) * 16), memory_(filename)
 {
 }
 
@@ -76,11 +82,11 @@ void CPU::next() throw (cpu::CPUStopped)
   cpu::CPU::next();
 
   sw::Uint8 i = 1;
-  std::vector<sw::Uint8> regs_codes = CPUFile::set_.register_codes();
+  std::vector<sw::Uint8> regs_codes = cpu::CPU::set_.register_codes();
   std::vector<sw::Uint8>::const_iterator reg = regs_codes.begin();
   while (reg != regs_codes.end()) {
     std::cout << boost::str(boost::format("%3s = %8X")
-                            % CPUFile::set_.register_name(*reg)
+                            % cpu::CPU::set_.register_name(*reg)
                             % cpu::change_byte_order(this->registers_[*reg *
                               4]));
     if (i % 4 == 0)
