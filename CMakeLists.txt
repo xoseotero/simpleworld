@@ -140,3 +140,34 @@ OPTION(RUN_TESTS "Execute the tests" OFF)
 IF(RUN_TESTS)
   ENABLE_TESTING()
 ENDIF(RUN_TESTS)
+
+
+# Information about the state of the dependencies
+MESSAGE("Libraries used:")
+IF(Boost_FOUND)
+  MESSAGE("\tboost: external library used")
+ENDIF(Boost_FOUND)
+
+IF(getopt_USE_INTERNAL)
+  MESSAGE("\tgetopt:\tinternal library used")
+ELSE(getopt_USE_INTERNAL)
+  MESSAGE("\tgetopt:\texternal library used")
+ENDIF(getopt_USE_INTERNAL)
+
+IF(SQLite3_USE_INTERNAL)
+  MESSAGE("\tSQlite3:\tinternal library used")
+ELSE(SQLite3_USE_INTERNAL)
+  MESSAGE("\tSQlite3:\texternal library used")
+ENDIF(SQLite3_USE_INTERNAL)
+
+IF(SQLite3x_USE_INTERNAL)
+  MESSAGE("\tSQLite3x:\tinternal library used")
+ELSE(SQLite3x_USE_INTERNAL)
+  MESSAGE("\tSQLite3x:\texternal library used")
+ENDIF(SQLite3x_USE_INTERNAL)
+
+IF(XySSL_USE_INTERNAL)
+  MESSAGE("\tXySSL:\tinternal library used")
+ELSE(XySSL_USE_INTERNAL)
+  MESSAGE("\tXySSL:\tinternal library used")
+ENDIF(XySSL_USE_INTERNAL)
