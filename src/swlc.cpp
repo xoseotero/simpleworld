@@ -31,7 +31,7 @@ namespace po = boost::program_options;
 
 #include <simple/config.hpp>
 #include <simple/exception.hpp>
-#include <cpu/cpu.hpp>
+#include <cpu/memory.hpp>
 #include <cpu/source.hpp>
 namespace sw = SimpleWorld;
 namespace cpu = SimpleWorld::CPU;
@@ -105,7 +105,8 @@ There is NO WARRANTY, to the extent permitted by law.")
   }
 
   // This CPU doesn't need memory because only the instruction set is needed
-  cpu::CPU cpu(NULL);
+  cpu::Memory registers;
+  cpu::CPU cpu(&registers, NULL);
   cpu::Source source(cpu.instruction_set(), include_path, input);
   if (vm.count("preprocess")) {
     source.replace_includes();
