@@ -24,7 +24,7 @@
 #ifndef __SIMPLEWORLD_FOOD_HPP__
 #define __SIMPLEWORLD_FOOD_HPP__
 
-#include <db/food.hpp>
+#include <simpleworld/db/food.hpp>
 
 namespace SimpleWorld
 {

@@ -24,7 +24,7 @@
 #ifndef __SIMPLEWORLD_EGG_HPP__
 #define __SIMPLEWORLD_EGG_HPP__
 
-#include <db/egg.hpp>
+#include <simpleworld/db/egg.hpp>
 
 namespace SimpleWorld
 {

@@ -32,16 +32,16 @@
 
 #include <boost/format.hpp>
 
-#include <simple/types.hpp>
-#include <simple/exception.hpp>
+#include <simpleworld/ints.hpp>
+#include <simpleworld/exception.hpp>
 #include <simpleworld/types.hpp>
 #include <simpleworld/simpleworld.hpp>
 #include <simpleworld/world.hpp>
-#include <cpu/memory_file.hpp>
-#include <db/environment.hpp>
-#include <db/bug.hpp>
-#include <db/egg.hpp>
-#include <db/food.hpp>
+#include <simpleworld/cpu/memory_file.hpp>
+#include <simpleworld/db/environment.hpp>
+#include <simpleworld/db/bug.hpp>
+#include <simpleworld/db/egg.hpp>
+#include <simpleworld/db/food.hpp>
 namespace sw = SimpleWorld;
 namespace cpu = SimpleWorld::CPU;
 namespace db = SimpleWorld::DB;

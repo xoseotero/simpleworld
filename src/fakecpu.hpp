@@ -24,7 +24,7 @@
 #ifndef __FAKECPU_HPP__
 #define __FAKECPU_HPP__
 
-#include <cpu/cpu.hpp>
+#include <simpleworld/cpu/cpu.hpp>
 namespace sw = SimpleWorld;
 namespace cpu = SimpleWorld::CPU;
 

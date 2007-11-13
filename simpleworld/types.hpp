@@ -24,7 +24,7 @@
 #ifndef __SIMPLEWORLD_TYPES_HPP__
 #define __SIMPLEWORLD_TYPES_HPP__
 
-#include <simple/types.hpp>
+#include <simpleworld/ints.hpp>
 
 namespace SimpleWorld
 {

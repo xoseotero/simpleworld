@@ -1,3 +1,7 @@
+SUBDIRS(cpu
+  db)
+
+
 SET(SIMPLEWORLD_SRCS
   element.cpp
   movement.cpp

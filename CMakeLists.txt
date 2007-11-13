@@ -4,9 +4,6 @@ SUBDIRS(getopt
   sqlite3
   sqlite3x
   xyssl
-  simple
-  cpu
-  db
   simpleworld
   src
   tests)
@@ -161,6 +158,11 @@ OPTION(RUN_TESTS "Execute the tests" OFF)
 IF(RUN_TESTS)
   ENABLE_TESTING()
 ENDIF(RUN_TESTS)
+
+
+# config.hpp
+CONFIGURE_FILE(${SimpleWorld_SOURCE_DIR}/simpleworld/config.hpp.cmake
+  ${SimpleWorld_SOURCE_DIR}/simpleworld/config.hpp)
 
 
 # Information about the state of the dependencies

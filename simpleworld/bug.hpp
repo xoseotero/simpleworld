@@ -27,9 +27,9 @@
 #include <map>
 
 #include <simpleworld/egg.hpp>
-#include <cpu/memory.hpp>
-#include <cpu/cpu.hpp>
-#include <db/bug.hpp>
+#include <simpleworld/cpu/memory.hpp>
+#include <simpleworld/cpu/cpu.hpp>
+#include <simpleworld/db/bug.hpp>
 
 namespace SimpleWorld
 {

@@ -29,10 +29,10 @@
 
 #include <boost/format.hpp>
 
-#include <simple/config.hpp>
-#include <simple/exception.hpp>
-#include <cpu/memory.hpp>
-#include <cpu/source.hpp>
+#include <simpleworld/config.hpp>
+#include <simpleworld/exception.hpp>
+#include <simpleworld/cpu/memory.hpp>
+#include <simpleworld/cpu/source.hpp>
 namespace sw = SimpleWorld;
 namespace cpu = SimpleWorld::CPU;
 

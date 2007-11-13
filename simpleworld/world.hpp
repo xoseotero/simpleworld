@@ -27,8 +27,8 @@
 
 #include <boost/multi_array.hpp>
 
-#include <simple/types.hpp>
-#include <simple/exception.hpp>
+#include <simpleworld/ints.hpp>
+#include <simpleworld/exception.hpp>
 #include <simpleworld/element.hpp>
 
 namespace SimpleWorld

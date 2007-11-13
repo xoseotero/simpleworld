@@ -1,9 +1,9 @@
 #include <boost/test/unit_test.hpp>
 namespace ut = boost::unit_test;
 
-#include <simple/config.hpp>
-#include <simple/types.hpp>
-#include <cpu/word.hpp>
+#include <simpleworld/config.hpp>
+#include <simpleworld/ints.hpp>
+#include <simpleworld/cpu/word.hpp>
 namespace sw = SimpleWorld;
 namespace cpu = SimpleWorld::CPU;
 

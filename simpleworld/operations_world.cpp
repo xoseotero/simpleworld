@@ -23,11 +23,11 @@
 
 #include <cassert>
 
-#include <cpu/types.hpp>
 #include <simpleworld/types.hpp>
 #include <simpleworld/simpleworld.hpp>
 #include <simpleworld/bug.hpp>
 #include <simpleworld/movement.hpp>
+#include <simpleworld/cpu/types.hpp>
 #include "operations.hpp"
 
 #define ACTION_NOTHING 0x00

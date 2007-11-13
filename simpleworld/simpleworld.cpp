@@ -36,11 +36,11 @@
 
 #include <sqlite3x.hpp>
 
-#include <db/food.hpp>
-#include <db/egg.hpp>
-#include <db/bug.hpp>
-#include <db/cpu.hpp>
-#include <db/code.hpp>
+#include <simpleworld/db/food.hpp>
+#include <simpleworld/db/egg.hpp>
+#include <simpleworld/db/bug.hpp>
+#include <simpleworld/db/cpu.hpp>
+#include <simpleworld/db/code.hpp>
 
 #include "movement.hpp"
 #include "simpleworld.hpp"

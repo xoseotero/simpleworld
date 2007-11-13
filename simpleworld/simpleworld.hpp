@@ -32,16 +32,16 @@
 #include <list>
 #include <string>
 
-#include <simple/exception.hpp>
+#include <simpleworld/exception.hpp>
 #include <simpleworld/types.hpp>
 #include <simpleworld/world.hpp>
 #include <simpleworld/food.hpp>
 #include <simpleworld/egg.hpp>
 #include <simpleworld/bug.hpp>
-#include <db/db.hpp>
-#include <db/environment.hpp>
-#include <cpu/types.hpp>
-#include <cpu/memory.hpp>
+#include <simpleworld/db/db.hpp>
+#include <simpleworld/db/environment.hpp>
+#include <simpleworld/cpu/types.hpp>
+#include <simpleworld/cpu/memory.hpp>
 
 namespace SimpleWorld
 {

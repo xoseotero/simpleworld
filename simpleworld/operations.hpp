@@ -24,10 +24,10 @@
 #ifndef __SIMPLEWORLD_OPERATIONS_HPP__
 #define __SIMPLEWORLD_OPERATIONS_HPP__
 
-#include <cpu/types.hpp>
-#include <cpu/memory.hpp>
-#include <cpu/interrupt.hpp>
-#include <cpu/instruction.hpp>
+#include <simpleworld/cpu/types.hpp>
+#include <simpleworld/cpu/memory.hpp>
+#include <simpleworld/cpu/interrupt.hpp>
+#include <simpleworld/cpu/instruction.hpp>
 
 #define REGISTER(NUMBER) (NUMBER * sizeof(CPU::Word))
 #define REGISTER_PC REGISTER(0xd)

@@ -24,9 +24,9 @@
 #include "fakecpu.hpp"
 
 #include <simpleworld/types.hpp>
-#include <cpu/memory.hpp>
-#include <cpu/interrupt.hpp>
-#include <cpu/instruction.hpp>
+#include <simpleworld/cpu/memory.hpp>
+#include <simpleworld/cpu/interrupt.hpp>
+#include <simpleworld/cpu/instruction.hpp>
 
 #define REGISTER(NUMBER) (NUMBER * sizeof(cpu::Word))
 #define REGISTER_PC REGISTER(0xd)
