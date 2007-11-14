@@ -13,5 +13,5 @@ echo " -------------------" >> ${TEMPFILE}
 
 ${SVN} diff $* | ${DIFFSTAT} >> ${TEMPFILE}
 ${EDITOR} ${TEMPFILE}
-${SVN} ci -N -F ${TEMPFILE} $*
+${SVN} ci -F ${TEMPFILE} $*
 ${RM} ${TEMPFILE}
