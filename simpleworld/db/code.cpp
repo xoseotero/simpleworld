@@ -21,13 +21,19 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <simpleworld/config.hpp>
+
 #include <cstdio>
 #include <cstring>
 #include <cassert>
 
 #include <sqlite3x/sqlite3x.hpp>
 
+#ifdef HAVE_OPENSSL
+#include <openssl/md5.h>
+#else
 #include <xyssl/md5.h>
+#endif // HAVE_OPENSSL
 
 #include <simpleworld/cpu/types.hpp>
 #include "code.hpp"
@@ -255,18 +261,32 @@ WHERE id = ?;");
  */
 static void md5_digest(const CPU::Memory& code, unsigned char digest[16])
 {
+#ifdef HAVE_OPENSSL
+  MD5_CTX ctx;
+  MD5_Init(&ctx);
+#else
   md5_context ctx;
   md5_starts(&ctx);
+#endif // HAVE_OPENSSL
 
   CPU::Address i;
   CPU::Word word;
   for (i = 0; i < code.size(); i += sizeof(CPU::Word)) {
     word = code.get_word(i, false);
+#ifdef HAVE_OPENSSL
+    MD5_Update(&ctx, reinterpret_cast<unsigned char*>(&word),
+	       sizeof(CPU::Word));
+#else
     md5_update(&ctx, reinterpret_cast<unsigned char*>(&word),
 	       sizeof(CPU::Word));
+#endif // HAVE_OPENSSL
   }
 
+#ifdef HAVE_OPENSSL
+  MD5_Final(digest, &ctx);
+#else
   md5_finish(&ctx, digest);
+#endif // HAVE_ OPENSSL
 }
 
 /**

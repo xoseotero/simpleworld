@@ -34,4 +34,7 @@
 #cmakedefine HAVE_LONG_LONG
 #cmakedefine HAVE__INT64
 
+#cmakedefine HAVE_XYSSL
+#cmakedefine HAVE_OPENSSL
+
 #endif // __SIMPLEWORLD_CONFIG_H__
