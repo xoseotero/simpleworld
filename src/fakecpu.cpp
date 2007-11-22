@@ -47,7 +47,7 @@ cpu::Update fakeworld(cpu::Memory& regs, cpu::Memory& mem,
   // The operation can be done always.
   // The actual values of the registers are used to return the false values of
   // the operation.
-  regs.set_word(REGISTER(0), static_cast<cpu::Word>(sw::ActionOk));
+  regs.set_word(REGISTER(0), static_cast<cpu::Word>(sw::ActionSuccess));
 
   return cpu::UpdatePC;
 }
