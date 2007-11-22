@@ -34,6 +34,7 @@
 
 #include <simpleworld/ints.hpp>
 #include <simpleworld/exception.hpp>
+#include <simpleworld/worlderror.hpp>
 #include <simpleworld/types.hpp>
 #include <simpleworld/simpleworld.hpp>
 #include <simpleworld/world.hpp>
@@ -521,41 +522,41 @@ try {
 
     try {
       if (food_flag) {
-	simpleworld.add_food(position, energy);
+        simpleworld.add_food(position, energy);
 
-	std::cout << boost::format("\
+        std::cout << boost::format("\
 Food[%1%] added at (%2%, %3%) with a size of %4%")
-	  % dynamic_cast<db::Food*>(world[position])->id()
-	  % position.x
-	  % position.y
-	  % energy
-	  << std::endl;
+          % dynamic_cast<db::Food*>(world[position])->id()
+          % position.x
+          % position.y
+          % energy
+          << std::endl;
       } else {
-	simpleworld.add_egg(energy, position, orientation,
-			    cpu::MemoryFile(code_path));
+        simpleworld.add_egg(energy, position, orientation,
+                            cpu::MemoryFile(code_path));
 
-	std::cout << boost::format("\
+        std::cout << boost::format("\
 Egg[%1%] added at (%2%, %3%) with a orientation of %4% and a energy of %5%")
-	  % dynamic_cast<db::Egg*>(world[position])->id()
-	  % position.x
-	  % position.y
-	  % orientation
-	  % energy
-	  << std::endl;
+          % dynamic_cast<db::Egg*>(world[position])->id()
+          % position.x
+          % position.y
+          % orientation
+          % energy
+          << std::endl;
       }
-    } catch (const sw::InvalidPosition& e) {
-      std::cerr << boost::format("\
-(%1%, %2%) is outside of the World")
-	% e.position.x
-	% e.position.y
-	<< std::endl;
-      std::exit(1);
-    } catch (const sw::UsedPosition& e) {
-      std::cerr << boost::format("\
+    } catch (const sw::WorldError& e) {
+      if (world.used(position))
+        std::cerr << boost::format("\
 Position (%1%, %2%) is already used")
-	% e.position.x
-	% e.position.y
-	<< std::endl;
+          % position.x
+          % position.y
+          << std::endl;
+      else
+        std::cerr << boost::format("\
+(%1%, %2%) is outside of the World")
+          % position.x
+          % position.y
+          << std::endl;
       std::exit(1);
     }
   } else if (info_flag or extrainfo_flag) {
@@ -567,13 +568,14 @@ Position (%1%, %2%) is already used")
 
   std::exit(EXIT_SUCCESS);
 }
-catch (sw::Exception e) {
-  std::cout << boost::format("Exception thrown in %1%:%2%")
+catch (const sw::Exception& e) {
+  std::cout << boost::format("Exception thrown in %1%:%2% at %3%")
     % e.file
     % e.line
+    % e.function
     << std::endl;
 }
-catch (std::exception e) {
+catch (const std::exception& e) {
   std::cout << boost::format("Exception thrown: %1%") % e.what() << std::endl;
 }
 catch (...) {

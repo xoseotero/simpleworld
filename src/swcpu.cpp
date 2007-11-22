@@ -193,7 +193,7 @@ public:
    * Execute the next instruction.
    * @exception CPUStopped A stop instruction was found
    */
-  void next() throw (cpu::CPUStopped);
+  void next();
 
 protected:
   cpu::Memory registers_;
@@ -207,7 +207,7 @@ CPU::CPU(const std::string& filename) throw ()
 {
 }
 
-void CPU::next() throw (cpu::CPUStopped)
+void CPU::next()
 {
   cpu::Instruction instruction = this->fetch_instruction_();
   std::cout
@@ -247,9 +247,10 @@ try {
   std::exit(EXIT_SUCCESS);
 }
 catch (const sw::Exception& e) {
-  std::cout << boost::format("Exception thrown in %1%:%2%")
+  std::cout << boost::format("Exception thrown in %1%:%2% at %3%")
     % e.file
     % e.line
+    % e.function
     << std::endl;
 }
 catch (const std::exception& e) {

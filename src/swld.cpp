@@ -201,9 +201,10 @@ try {
   std::exit(EXIT_SUCCESS);
 }
 catch (const sw::Exception& e) {
-  std::cout << boost::format("Exception thrown in %1%:%2%")
+  std::cout << boost::format("Exception thrown in %1%:%2% at %3%")
     % e.file
     % e.line
+    % e.function
     << std::endl;
 }
 catch (const std::exception& e) {

@@ -31,6 +31,7 @@
 
 #include <simpleworld/config.hpp>
 #include <simpleworld/exception.hpp>
+#include <simpleworld/cpu/parsererror.hpp>
 #include <simpleworld/cpu/memory.hpp>
 #include <simpleworld/cpu/source.hpp>
 namespace sw = SimpleWorld;
@@ -225,16 +226,14 @@ try {
 
   std::exit(EXIT_SUCCESS);
 }
-catch (const cpu::ParseError& e) {
-  std::cout << boost::format("%1%: %2%")
-    % e.source_line
-    % e.what()
-    << std::endl;
+catch (const cpu::ParserError& e) {
+  std::cout << e.what << std::endl;
 }
 catch (const sw::Exception& e) {
-  std::cout << boost::format("Exception thrown in %1%:%2%")
+  std::cout << boost::format("Exception thrown in %1%:%2% at %3%")
     % e.file
     % e.line
+    % e.function
     << std::endl;
 }
 catch (const std::exception& e) {
