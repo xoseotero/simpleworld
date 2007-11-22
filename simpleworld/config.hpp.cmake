@@ -1,5 +1,5 @@
 /**
- * @file simpleworld/config.h
+ * @file simpleworld/config.hpp
  * Types definition.
  *
  * begin:     Tue, 23 Jan 2007 00:00:00 +0100
