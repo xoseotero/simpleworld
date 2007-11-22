@@ -25,6 +25,8 @@
 
 #include <string>
 
+#include <boost/current_function.hpp>
+
 #include <simpleworld/ints.hpp>
 
 namespace SimpleWorld
@@ -43,9 +45,9 @@ public:
    * @param function Function where the exception is raised.
    * @param what What happened.
    */
-  Exception(std::string file, Uint32 line, /*std::string function,*/
+  Exception(std::string file, Uint32 line, std::string function,
             std::string what) throw ()
-    : file(file), line(line), /*function(function),*/ what(what)
+    : file(file), line(line), function(function), what(what)
   {}
 
   virtual ~Exception() {}
@@ -53,13 +55,18 @@ public:
 
   std::string file;             /**< File where the exception is raised. */
   Uint32 line;                  /**< Line where the exception is raised. */
-  //std::string function;         /**< Function where the exception is raised. */
+  std::string function;         /**< Function where the exception is raised. */
   std::string what;             /**< What happened */
 };
 
 
+/**
+ * Macro to set the automatic values of the exceptions.
+ * @param exception Exception to call.
+ * @param what Waht happened.
+ */
 #define EXCEPTION(exception, what) \
-  (exception(__FILE__, __LINE__, what))
+  (exception(__FILE__, __LINE__, BOOST_CURRENT_FUNCTION, what))
 
 }
 

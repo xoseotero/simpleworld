@@ -41,10 +41,12 @@ public:
    * Constructor.
    * @param file File where the exception is raised.
    * @param line Line where the exception is raised.
+   * @param function Function where the exception is raised.
    * @param what What happened.
    */
-  ActionError(std::string file, Uint32 line, std::string what) throw ()
-    : WorldError(file, line, what)
+  ActionError(std::string file, Uint32 line, std::string function,
+              std::string what) throw ()
+    : WorldError(file, line, function, what)
   {}
 };
 
