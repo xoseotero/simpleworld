@@ -27,7 +27,6 @@
 #include <string>
 
 #include <simpleworld/cpu/memory.hpp>
-#include <simpleworld/cpu/file.hpp>
 
 namespace SimpleWorld
 {
@@ -43,7 +42,7 @@ public:
   /**
    * Constructor.
    * @param filename filename from where to load the code.
-   * @exception FileAccessError problem with the file.
+   * @exception IOError problem with the file.
    */
   MemoryFile(const std::string& filename);
 
@@ -51,7 +50,7 @@ public:
   /**
    * Load the code from a file.
    * @param filename filename from where to load the code into memory.
-   * @exception FileAccessError problem with the file.
+   * @exception IOError problem with the file.
    */
   void load_file(const std::string& filename);
 };

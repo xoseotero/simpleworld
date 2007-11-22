@@ -21,9 +21,11 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <cassert>
 #include <cstdlib>
 
+#include <boost/format.hpp>
+
+#include "worlderror.hpp"
 #include "movement.hpp"
 
 namespace SimpleWorld
@@ -31,8 +33,21 @@ namespace SimpleWorld
 
 Orientation turn(Orientation orientation, Turn side)
 {
-  assert(side == TurnLeft or
-         side == TurnRight);
+  if (orientation != OrientationNorth and
+      orientation != OrientationEast and
+      orientation != OrientationSouth and
+      orientation != OrientationWest)
+    throw WorldError(__FILE__, __LINE__,
+                     boost::str(boost::format("\
+Wrong orientation value (%04x)")
+                                % orientation));
+
+
+  if (side != TurnLeft and side != TurnRight)
+    throw WorldError(__FILE__, __LINE__,
+                     boost::str(boost::format("\
+Wrong turn value (%04x)")
+                                % side));
 
   switch (side) {
   case TurnLeft:
@@ -59,12 +74,21 @@ static Movement opposite(Movement movement)
 Position move(Position position, Orientation orientation, Movement movement,
               Position max)
 {
-  assert(orientation == OrientationNorth or
-         orientation == OrientationEast or
-         orientation == OrientationSouth or
-         orientation == OrientationWest);
-  assert(movement == MoveForward or
-         movement == MoveBackward);
+  if (orientation != OrientationNorth and
+      orientation != OrientationEast and
+      orientation != OrientationSouth and
+      orientation != OrientationWest)
+    throw WorldError(__FILE__, __LINE__,
+                     boost::str(boost::format("\
+Wrong orientation value (%04x)")
+                                % orientation));
+
+  if (movement != MoveForward and
+      movement != MoveBackward)
+    throw WorldError(__FILE__, __LINE__,
+                     boost::str(boost::format("\
+Wrong movement value (%04x)")
+                                % movement));
 
   switch (orientation) {
   case OrientationSouth:

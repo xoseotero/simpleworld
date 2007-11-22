@@ -27,9 +27,7 @@
 
 #include <string>
 
-#include <simpleworld/ints.hpp>
 #include <simpleworld/cpu/types.hpp>
-#include <simpleworld/cpu/exception.hpp>
 #include <simpleworld/cpu/memory.hpp>
 #include <simpleworld/cpu/instruction.hpp>
 #include <simpleworld/cpu/interrupt.hpp>
@@ -41,31 +39,6 @@ namespace SimpleWorld
  */
 namespace CPU
 {
-
-/**
- * CPU exception.
- * It's raised if the CPU is stopped after a "stop" instruction.
- */
-class CPUStopped: public std::runtime_error, public CPUException
-{
-  /**
-   * Constructor.
-   * @param file File where the exception is raised.
-   * @param line Line where the exception is raised.
-   * @param what Reason of the exception.
-   */
-public:
-  CPUStopped(std::string file, Uint32 line,
-             const std::string& what = "CPU Stopped") throw()
-    : runtime_error(what), CPUException(file, line)
-  {}
-
-  /**
-   * Destructor.
-   */
-  ~CPUStopped() throw () {}
-};
-
 
 /**
  * CPU with 16 registers of 32bits and 16bits of address space.
@@ -114,7 +87,7 @@ public:
 
   /**
    * Execute the next instruction.
-   * @exception CPUStopped A stop instruction was found
+   * @exception CPUException A stop instruction was found
    */
   virtual void next();
 

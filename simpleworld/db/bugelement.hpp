@@ -62,8 +62,8 @@ public:
    * Update the data of the class with the database.
    * changed is set to false.
    * The update() is propagated to the code.
-   * @exception DBError if there is a error in the database.
-   * @exception IDNotFound if the ID is not found in the table.
+   * @exception DBException if there is a error in the database.
+   * @exception DBException if the ID is not found in the table.
    */
   void update();
 
@@ -75,7 +75,7 @@ public:
    * update_db() in the code must be forced, a explicit call to
    * code::update_db(true) must be made.
    * @param force force the update of the database.
-   * @exception DBError if there is a error in the database.
+   * @exception DBException if there is a error in the database.
    */
   void update_db(bool force = false);
 
@@ -84,7 +84,7 @@ public:
    * The ID is updated.
    * changed is set to false.
    * The insert() is propagated to the code.
-   * @exception DBError if there is an error in the database.
+   * @exception DBException if there is an error in the database.
    */
   void insert();
 
@@ -92,7 +92,7 @@ public:
    * Remove the data from the database.
    * changed is set to false.
    * The remove() is propagated to the code.
-   * @exception DBError if there is an error in the database.
+   * @exception DBException if there is an error in the database.
    */
   void remove();
 

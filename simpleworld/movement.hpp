@@ -34,6 +34,7 @@ namespace SimpleWorld
  * @param orientation original orientation.
  * @param side where to turn.
  * @return the new orientation.
+ * @exception WorldError if orientation or side have wrong values.
  */
 Orientation turn(Orientation orientation, Turn side);
 
@@ -44,6 +45,7 @@ Orientation turn(Orientation orientation, Turn side);
  * @param movement where to move.
  * @param max maximun values for the position.
  * @return the new position.
+ * @exception WorldError if orientation or movement have wrong values.
  */
 Position move(Position position, Orientation orientation, Movement movement,
               Position max);

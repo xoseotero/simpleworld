@@ -23,7 +23,13 @@
 
 #include <fstream>
 
+#include <boost/format.hpp>
+
+#include <simpleworld/ioerror.hpp>
+
+#include "codeerror.hpp"
 #include "word.hpp"
+#include "file.hpp"
 #include "object.hpp"
 
 namespace SimpleWorld
@@ -45,15 +51,19 @@ void Object::decompile(const std::string filename) const
 
   std::ifstream is(this->filename_.c_str(), std::ios::binary);
   if (is.rdstate() & std::ifstream::failbit)
-    throw FileAccessError(__FILE__, __LINE__,
-			  filename, "Can't open file to read.");
+    throw IOError(__FILE__, __LINE__,
+                  boost::str(boost::format("\
+File %1% is not readable")
+                             % filename));
 
   // All instructions are 32bits, if the file is not X*32bits long is not valid
   is.seekg(0, std::ios_base::end);
   if ((is.tellg() % sizeof(Word)) != 0)
-    throw FileAccessError(__FILE__, __LINE__,
-			  filename,
-			  "The size of the file is not module of 32 bits.");
+    throw IOError(__FILE__, __LINE__,
+                  boost::str(boost::format("\
+The size of %1% (%2%) is not a multiple of 32bits")
+                             % filename
+			     % is.tellg()));
 
   is.seekg(0);
   while (is.read(reinterpret_cast<char*>(&instruction), sizeof(Word))) {
@@ -61,13 +71,7 @@ void Object::decompile(const std::string filename) const
     // is data.
     try {
       file.insert(i, this->decompile(instruction));
-    }
-    catch (InstructionNotFound&) {
-      char address[11];
-      std::snprintf(address, 11, "%x", instruction);
-      file.insert(i, address);
-    }
-    catch (RegisterNotFound&) {
+    } catch (const CodeError& e) {
       char address[11];
       std::snprintf(address, 11, "%x", instruction);
       file.insert(i, address);

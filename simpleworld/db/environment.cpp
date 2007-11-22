@@ -21,6 +21,9 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <boost/format.hpp>
+
+#include "exception.hpp"
 #include "environment.hpp"
 
 namespace SimpleWorld
@@ -58,7 +61,10 @@ LIMIT 1;");
 
     sqlite3x::sqlite3_cursor cursor(sql.executecursor());
     if (! cursor.step())
-      throw IDNotFound(__FILE__, __LINE__);
+      throw DBException(__FILE__, __LINE__,
+                        boost::str(boost::format("\
+time %1% not found in table Environment")
+                                   % this->id_));
 
     this->id_ = this->time = cursor.getint(0);
     this->size.x = cursor.getint(1);
@@ -76,7 +82,7 @@ LIMIT 1;");
     this->energy_eat = cursor.getint(13);
     this->energy_egg = cursor.getint(14);
   } catch (const sqlite3x::database_error& e) {
-    throw DBError(__FILE__, __LINE__, e.what());
+    throw DBException(__FILE__, __LINE__, e.what());
   }
 
 
@@ -116,7 +122,7 @@ WHERE time = ?;");
 
       sql.executenonquery();
     } catch (const sqlite3x::database_error& e) {
-      throw DBError(__FILE__, __LINE__, e.what());
+      throw DBException(__FILE__, __LINE__, e.what());
     }
 
     this->id_ = this->time;
@@ -157,7 +163,7 @@ VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
     sql.executenonquery();
     this->id_ = this->db_->insertid();
   } catch (const sqlite3x::database_error& e) {
-    throw DBError(__FILE__, __LINE__, e.what());
+    throw DBException(__FILE__, __LINE__, e.what());
   }
 
 
@@ -176,7 +182,7 @@ WHERE time = ?;");
 
     sql.executenonquery();
   } catch (const sqlite3x::database_error& e) {
-    throw DBError(__FILE__, __LINE__, e.what());
+    throw DBException(__FILE__, __LINE__, e.what());
   }
 
 

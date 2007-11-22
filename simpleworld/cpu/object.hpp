@@ -28,7 +28,6 @@
 
 #include <simpleworld/cpu/types.hpp>
 #include <simpleworld/cpu/instruction.hpp>
-#include <simpleworld/cpu/file.hpp>
 
 namespace SimpleWorld
 {
@@ -56,7 +55,7 @@ public:
    * If a unknown instruction or register is found suppose that the value
    * is data.
    * @param filename File where to save.
-   * @exception FileAccessError problem with file.
+   * @exception IOError problem with file.
    */
   void decompile(const std::string filename) const;
 
@@ -65,8 +64,8 @@ protected:
    * Decompile a instruction.
    * @param instruction Instruction encoded..
    * @return The a line with the source code.
-   * @exception InstructionNotFound instruction not found.
-   * @exception RegisterNotFound register not found.
+   * @exception CPUException if the instruction is not found.
+   * @exception CPUException if the register is not found.
    */
   std::string decompile(Word instruction) const;
 

@@ -21,6 +21,9 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <boost/format.hpp>
+
+#include "exception.hpp"
 #include "mutation.hpp"
 
 namespace SimpleWorld
@@ -53,7 +56,10 @@ WHERE id = ?;");
 
     sqlite3x::sqlite3_cursor cursor(sql.executecursor());
     if (! cursor.step())
-      throw IDNotFound(__FILE__, __LINE__);
+      throw DBException(__FILE__, __LINE__,
+                        boost::str(boost::format("\
+id %1% not found in table Mutation")
+                                   % this->id_));
 
     this->position = cursor.getint(0);
     this->original = cursor.getint(1);
@@ -67,7 +73,7 @@ WHERE id = ?;");
     } else
       this->type = Mutation::mutation;
   } catch (const sqlite3x::database_error& e) {
-    throw DBError(__FILE__, __LINE__, e.what());
+    throw DBException(__FILE__, __LINE__, e.what());
   }
 
 
@@ -97,7 +103,7 @@ WHERE id = ?;");
 
       sql.executenonquery();
     } catch (const sqlite3x::database_error& e) {
-      throw DBError(__FILE__, __LINE__, e.what());
+      throw DBException(__FILE__, __LINE__, e.what());
     }
   }
 
@@ -127,7 +133,7 @@ VALUES(?, ?, ?, ?, ?);");
 
     sql.executenonquery();
   } catch (const sqlite3x::database_error& e) {
-    throw DBError(__FILE__, __LINE__, e.what());
+    throw DBException(__FILE__, __LINE__, e.what());
   }
 
 
@@ -146,7 +152,7 @@ WHERE id = ?;");
 
     sql.executenonquery();
   } catch (const sqlite3x::database_error& e) {
-    throw DBError(__FILE__, __LINE__, e.what());
+    throw DBException(__FILE__, __LINE__, e.what());
   }
 
 

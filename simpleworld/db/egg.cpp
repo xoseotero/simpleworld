@@ -21,8 +21,11 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <boost/format.hpp>
+
 #include <sqlite3x.hpp>
 
+#include "exception.hpp"
 #include "egg.hpp"
 
 namespace SimpleWorld
@@ -57,7 +60,10 @@ WHERE id = ?;");
 
     sqlite3x::sqlite3_cursor cursor(sql.executecursor());
     if (! cursor.step())
-      throw IDNotFound(__FILE__, __LINE__);
+      throw DBException(__FILE__, __LINE__,
+                        boost::str(boost::format("\
+id %1% not found in table Bug")
+                                   % this->id_));
 
     this->energy = cursor.getint(0);
     this->position.x = cursor.getint(1);
@@ -69,7 +75,7 @@ WHERE id = ?;");
     if (cursor.isnull(5))
       this->add_null("father_id");
   } catch (const sqlite3x::database_error& e) {
-    throw DBError(__FILE__, __LINE__, e.what());
+    throw DBException(__FILE__, __LINE__, e.what());
   }
 
 
@@ -100,7 +106,7 @@ WHERE id = ?;");
 
       sql.executenonquery();
     } catch (const sqlite3x::database_error& e) {
-      throw DBError(__FILE__, __LINE__, e.what());
+      throw DBException(__FILE__, __LINE__, e.what());
     }
   }
 
@@ -130,7 +136,7 @@ VALUES(?, ?, ?, ?, ?, ?);");
     sql.executenonquery();
     this->id_ = this->db_->insertid();
   } catch (const sqlite3x::database_error& e) {
-    throw DBError(__FILE__, __LINE__, e.what());
+    throw DBException(__FILE__, __LINE__, e.what());
   }
 
 
@@ -149,7 +155,7 @@ WHERE id = ?;");
 
     sql.executenonquery();
   } catch (const sqlite3x::database_error& e) {
-    throw DBError(__FILE__, __LINE__, e.what());
+    throw DBException(__FILE__, __LINE__, e.what());
   }
 
 

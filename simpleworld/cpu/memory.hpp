@@ -26,41 +26,11 @@
 
 #include <simpleworld/ints.hpp>
 #include <simpleworld/cpu/types.hpp>
-#include <simpleworld/cpu/exception.hpp>
 
 namespace SimpleWorld
 {
 namespace CPU
 {
-
-/**
- * Memory exception.
- * It's raised if you try to get a wrong word.
- */
-class AddressOutOfRange: public std::out_of_range, public CPUException
-{
-public:
-  /**
-   * Constructor.
-   * @param file File where the exception is raised.
-   * @param line Line where the exception is raised.
-   * @param address Address out of range.
-   * @param what Reason of the exception.
-   */
-  AddressOutOfRange(std::string file, Uint32 line, Address address,
-                    const std::string& what = "Address out of range") throw()
-    : out_of_range(what), CPUException(file, line), address(address)
-  {}
-
-  /**
-   * Destructor.
-   */
-  ~AddressOutOfRange() throw () {}
-
-
-  Address address;		/**< Address out of range. */
-};
-
 
 /**
  * Memory array addressable in words.
@@ -111,7 +81,7 @@ public:
    * @param address address of the word
    * @param system_endian if the address must be in the system endianness
    * @return the word
-   * @exception AddressOutOfRange address > (size - 4)
+   * @exception MemoryError if address > (size - 3)
    */
   virtual Word get_word(Address address, bool system_endian = true) const;
 
@@ -123,16 +93,20 @@ public:
    * @param address address of the word
    * @param value value of the word
    * @param system_endian if the word is in the systen endianness
-   * @exception AddressOutOfRange address > (size - 4)
+   * @exception MemoryError if address > (size - 3)
    */
   virtual void set_word(Address address, Word value, bool system_endian = true);
 
 
   /**
    * Get a word.
+   * In big endian systems the system_endian parameter does nothing.
+   * In little endian systems the word is returned in little endian if
+   * system_endian is true and in big endian if system_endian is false.
    * @param address address of the word
+   * @param system_endian if the address must be in the system endianness
    * @return the word
-   * @exception AddressOutOfRange address > (size - 4)
+   * @exception MemoryError if address > (size - 3)
    */
   Word operator [](Address address) const
   { return this->get_word(address); }

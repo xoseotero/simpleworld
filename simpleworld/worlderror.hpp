@@ -1,11 +1,11 @@
 /**
- * @file simpleworld/egg.hpp
- * A egg in Simple World.
+ * @file simpleworld/worlderror.hpp
+ * Class thrown when a error in the World is found.
  *
- * begin:     Sat, 21 Jul 2007 12:07:02 +0200
+ * begin:     Wed, 21 Nov 2007 18:17:12 +0100
  * last:      $Date$
  *
- *  Copyright (C) 2007  Xosé Antón Otero Ferreira <xoseotero@gmail.com>
+ *  Copyright (C) 2007  Xosé Otero <xoseotero@users.sourceforge.net>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -20,29 +20,34 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#ifndef __SIMPLEWORLD_WORLDERROR_HPP__
+#define __SIMPLEWORLD_WORLDERROR_HPP__
 
-#ifndef __SIMPLEWORLD_EGG_HPP__
-#define __SIMPLEWORLD_EGG_HPP__
+#include <string>
 
-#include <simpleworld/db/egg.hpp>
+#include <simpleworld/ints.hpp>
+#include <simpleworld/exception.hpp>
 
 namespace SimpleWorld
 {
 
-class SimpleWorld;
-
-class Egg: public DB::Egg
+/**
+ * Class thrown when a error about a action is found.
+ */
+class WorldError: public Exception
 {
 public:
   /**
    * Constructor.
-   * @param sw world where the bug lives.
-   * @param id id of the egg.
-   * @exception DBException if there is a error in the database.
+   * @param file File where the exception is raised.
+   * @param line Line where the exception is raised.
+   * @param what What happened.
    */
-  Egg(SimpleWorld* sw, DB::ID id);
+  WorldError(std::string file, Uint32 line, std::string what) throw ()
+    : Exception(file, line, what)
+  {}
 };
 
 }
 
-#endif // __SIMPLEWORLD_EGG_HPP__
+#endif // __SIMPLEWORLD_WORLDERROR_HPP__

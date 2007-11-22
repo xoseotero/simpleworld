@@ -21,6 +21,10 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <boost/format.hpp>
+
+#include "exception.hpp"
+#include "wrongversion.hpp"
 #include "db.hpp"
 
 #define DATABASE_VERSION 1
@@ -31,9 +35,13 @@ namespace DB
 {
 
 DB::DB(std::string filename)
-  : sqlite3x::sqlite3_connection(filename)
+  : sqlite3x::sqlite3_connection()
 {
-  this->on_open();
+  try {
+    this->open(filename);
+  } catch (const sqlite3x::database_error& e) {
+    throw DBException(__FILE__, __LINE__, e.what());
+  }
 }
 
 
@@ -51,7 +59,7 @@ ORDER BY time;");
     while (cursor.step())
       ids.push_back(cursor.getint(0));
   } catch (const sqlite3x::database_error& e) {
-    throw DBError(__FILE__, __LINE__, e.what());
+    throw DBException(__FILE__, __LINE__, e.what());
   }
 
   return ids;
@@ -71,9 +79,9 @@ LIMIT 1;");
     if (cursor.step())
       return cursor.getint(0);
     else
-      throw IDNotFound(__FILE__, __LINE__);
+      throw DBException(__FILE__, __LINE__, "Table Environment is empty");
   } catch (const sqlite3x::database_error& e) {
-    throw DBError(__FILE__, __LINE__, e.what());
+    throw DBException(__FILE__, __LINE__, e.what());
   }
 }
 
@@ -92,7 +100,7 @@ ORDER BY birth, id;");
     while (cursor.step())
       ids.push_back(cursor.getint64(0));
   } catch (const sqlite3x::database_error& e) {
-    throw DBError(__FILE__, __LINE__, e.what());
+    throw DBException(__FILE__, __LINE__, e.what());
   }
 
   return ids;
@@ -112,7 +120,7 @@ ORDER BY birth, id;");
     while (cursor.step())
       ids.push_back(cursor.getint64(0));
   } catch (const sqlite3x::database_error& e) {
-    throw DBError(__FILE__, __LINE__, e.what());
+    throw DBException(__FILE__, __LINE__, e.what());
   }
 
   return ids;
@@ -132,7 +140,7 @@ ORDER BY birth, id;");
     while (cursor.step())
       ids.push_back(cursor.getint64(0));
   } catch (const sqlite3x::database_error& e) {
-    throw DBError(__FILE__, __LINE__, e.what());
+    throw DBException(__FILE__, __LINE__, e.what());
   }
 
   return ids;
@@ -153,7 +161,7 @@ ORDER BY id;");
     while (cursor.step())
       ids.push_back(cursor.getint64(0));
   } catch (const sqlite3x::database_error& e) {
-    throw DBError(__FILE__, __LINE__, e.what());
+    throw DBException(__FILE__, __LINE__, e.what());
   }
 
   return ids;
@@ -177,7 +185,10 @@ void DB::on_open()
 
     this->create_tables();
   } else if (this->version_ != DATABASE_VERSION)
-    throw VersionNotSupported(__FILE__, __LINE__);
+    throw WrongVersion(__FILE__, __LINE__,
+		       boost::str(boost::format("\
+Database version %1% not supported")
+				  % this->version_));
 }
 
 void DB::create_tables()
@@ -747,7 +758,7 @@ END;",
 
     transaction.commit();
   } catch (const sqlite3x::database_error& e) {
-    throw DBError(__FILE__, __LINE__, e.what());
+    throw DBException(__FILE__, __LINE__, e.what());
   }
 }
 

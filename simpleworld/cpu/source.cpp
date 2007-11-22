@@ -30,8 +30,12 @@
 #include <boost/regex.hpp>
 namespace fs = boost::filesystem;
 
+#include <simpleworld/ioerror.hpp>
+
 #include "word.hpp"
 #include "source.hpp"
+#include "exception.hpp"
+#include "parsererror.hpp"
 
 namespace SimpleWorld
 {
@@ -225,8 +229,10 @@ void Source::compile(std::string filename)
 
   std::ofstream file(filename.c_str(), std::ios::binary | std::ios::trunc);
   if (file.rdstate() & std::ofstream::failbit)
-    throw FileAccessError(__FILE__, __LINE__,
-			  filename, "File can't be opened to write.");
+    throw IOError(__FILE__, __LINE__,
+                  boost::str(boost::format("\
+File %1% is not writable")
+                             % filename));
 
   File::size_type i;
   for (i = 0; i < this->lines(); i++) {
@@ -236,8 +242,10 @@ void Source::compile(std::string filename)
     Word code = this->compile(i);
     file.write(reinterpret_cast<char*>(&code), sizeof(Word));
     if (file.fail())
-      throw FileAccessError(__FILE__, __LINE__,
-			    filename, "File can't be opened to write.");
+    throw IOError(__FILE__, __LINE__,
+                  boost::str(boost::format("\
+Can't write in file %1%")
+                             % filename));
   }
   file.close();
 }
@@ -250,17 +258,20 @@ void Source::replace_includes()
     if (this->is_include(i)) {
       fs::path filename(find_file(this->include_path_, this->get_include(i)));
       if (filename.empty())
-        throw ParseError(__FILE__, __LINE__,
-			 i, boost::str(boost::format("File %1% not found") %
-				       this->get_include(i)));
+        throw IOError(__FILE__, __LINE__,
+                      boost::str(boost::format("\
+File %1% not found")
+                                 % this->get_include(i)));
 
       std::string
         abs_path(fs::complete(filename).normalize().string());
       if (this->includes_.find(abs_path) != this->includes_.end())
-        throw ParseError(__FILE__, __LINE__,
-			 i,
-                         boost::str(boost::format("File %1% already included")
-                                    % abs_path));
+        throw ParserError(__FILE__, __LINE__,
+                          boost::str(boost::format("\
+Line: %1%\n\
+File %2% already included")
+                                     % this->get_line(i)
+                                     % abs_path));
       this->remove(i, 1);
       this->insert(i, File(abs_path));
       this->includes_.insert(abs_path);
@@ -276,9 +287,12 @@ void Source::replace_constants()
     if (this->is_constant(i)) {
       std::vector<std::string> constant(this->get_constant(i));
       if (this->constants_.find(constant[0]) != this->constants_.end())
-        throw ParseError(__FILE__, __LINE__, i,
-                         boost::str(boost::format("Name %1% already defined")
-                                    % constant[0]));
+        throw ParserError(__FILE__, __LINE__,
+                          boost::str(boost::format("\
+Line: %1%\n\
+Name %2% already defined")
+                          % this->get_line(i)
+                          % constant[0]));
 
       this->remove(i, 1);
       this->constants_.insert(std::pair<std::string,
@@ -286,9 +300,12 @@ void Source::replace_constants()
     } else if (this->is_label(i)) {
       std::string label(this->get_label(i));
       if (this->constants_.find(label) != this->constants_.end())
-        throw ParseError(__FILE__, __LINE__, i,
-			 boost::str(boost::format("Name %1% already defined") %
-                                    label));
+        throw ParserError(__FILE__, __LINE__,
+                          boost::str(boost::format("\
+Line: %1%\n\
+Name %1% already defined")
+                                     % this->get_line(i)
+                                     % label));
       char address[11];
       std::snprintf(address, 11, "0x%x", lines_code * sizeof(Word));
       this->remove(i, 1);
@@ -353,15 +370,22 @@ Word Source::compile(File::size_type line) const
     info =
       this->set_.instruction_info(this->set_.instruction_code(keywords[0]));
   }
-  catch (InstructionNotFound& e) {
-    throw ParseError(__FILE__, __LINE__,
-		     line,
-		     boost::str(boost::format("Unknown instruction %1%") %
-				keywords[0]));
+  catch (const CPUException& e) {
+    throw ParserError(__FILE__, __LINE__,
+                      boost::str(boost::format("\
+Line: %1%\n\
+%2%")
+                                 % this->get_line(line)
+                                 % e.what));
   }
 
   if ((info.nregs + info.has_inmediate + 1) != keywords.size())
-    throw ParseError(__FILE__, __LINE__, line, "Wrong number of parameters");
+    throw ParserError(__FILE__, __LINE__,
+                      boost::str(boost::format("\
+Line: %1%\n\
+Wrong number of parameters (%2%)")
+                                 % this->get_line(line)
+                                 % (keywords.size() - 1)));
 
   Instruction inst;
   try {
@@ -376,15 +400,14 @@ Word Source::compile(File::size_type line) const
       const char* str = keywords[info.nregs + 1].c_str();
       char* ptr;
       inst.address = std::strtoul(str, &ptr, 16);
-      // This error must not happen because a regular expresion was used
-      //if (ptr == str)
-      //  throw ParseError(__FILE__, __LINE__,
-      //		   line,
-      //		   boost::str(boost::format("Invalid inmediate value."));
     }
-  }
-  catch (RegisterNotFound e) {
-    throw ParseError(__FILE__, __LINE__, line, "Unknown register");
+  } catch (const CPUException& e) {
+    throw ParserError(__FILE__, __LINE__,
+                      boost::str(boost::format("\
+Line: %1%\n\
+%2%")
+                                 % this->get_line(line)
+                                 % e.what));
   }
 
   return InstructionSet::encode(inst);

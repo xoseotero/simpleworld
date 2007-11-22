@@ -32,7 +32,6 @@
 #include <list>
 #include <string>
 
-#include <simpleworld/exception.hpp>
 #include <simpleworld/types.hpp>
 #include <simpleworld/world.hpp>
 #include <simpleworld/food.hpp>
@@ -45,31 +44,6 @@
 
 namespace SimpleWorld
 {
-
-/**
- * SimpleWorld exception.
- * It's raised if a errer happens when executing an action.
- */
-class ActionException: public std::runtime_error, public Exception
-{
-public:
-  /**
-   * Constructor.
-   * @param file File where the exception is raised.
-   * @param line Line where the exception is raised.
-   * @param what Reason of the exception.
-   */
-  ActionException(std::string file, Uint32 line,
-                  const std::string& what = "Error executing an action") throw()
-    : runtime_error(what), Exception(file, line)
-  {}
-
-  /**
-   * Destructor.
-   */
-  ~ActionException() throw () {}
-};
-
 
 /**
  * Simple World: the simulation of a world and the bugs that live on it.
@@ -85,9 +59,7 @@ public:
   /**
    * Constructor.
    * @param filename File name of the database.
-   * @exception SQLiteError The database can't be opened.
-   * @exception DBError if there is a error in the database.
-   * @exception VersionNotSupported if the database version is not supported.
+   * @exception DBException if there is a error in the database.
    */
   SimpleWorld(std::string filename);
 
@@ -106,8 +78,8 @@ public:
    * @param position Position of the egg.
    * @param orientation Orientation of the egg.
    * @param code Code of the egg.
-   * @exception InvalidPosition if the position is out of the limits.
-   * @exception UsedPosition if the position is used.
+   * @exception Exception if the position is out of the limits.
+   * @exception Exception if the position is used.
    */
   void add_egg(Energy energy, Position position, Orientation orientation,
                const CPU::Memory& code);
@@ -116,8 +88,8 @@ public:
    * Add food to the World.
    * @param position Position of the food.
    * @param size Size of the food.
-   * @exception InvalidPosition if the position is out of the limits.
-   * @exception UsedPosition if the position is used.
+   * @exception Exception if the position is out of the limits.
+   * @exception Exception if the position is used.
    */
   void add_food(Position position, Energy size);
 
@@ -132,7 +104,7 @@ public:
   /**
    * Do nothing.
    * @param bug Bug that executes the action.
-   * @exception ActionException if something fails.
+   * @exception ActionError if something fails.
    */
   virtual void nothing(Bug* bug);
 
@@ -142,7 +114,7 @@ public:
    * @param info Type of information requested.
    * @param ypos Where to save the Y coord when requested the position.
    * @return The information.
-   * @exception ActionException if something fails.
+   * @exception ActionError if something fails.
    */
   virtual CPU::Word myself(Bug* bug, Info info, CPU::Word* ypos);
 
@@ -150,7 +122,7 @@ public:
    * Get the type of element that is in front of the bug.
    * @param bug Bug that executes the action.
    * @return The type of element.
-   * @exception ActionException if something fails.
+   * @exception ActionError if something fails.
    */
   virtual ElementType detect(Bug* bug);
 
@@ -160,7 +132,7 @@ public:
    * @param info Type of information requested.
    * @param ypos Where to save the Y coord when requested the position.
    * @return The information.
-   * @exception ActionException if something fails.
+   * @exception ActionError if something fails.
    */
   virtual CPU::Word information(Bug* bug, Info info, CPU::Word* ypos);
 
@@ -168,7 +140,7 @@ public:
    * Move a bug.
    * @param bug Bug that executes the action.
    * @param movement Type of movement.
-   * @exception ActionException if something fails.
+   * @exception ActionError if something fails.
    */
   virtual void move(Bug* bug, Movement movement);
 
@@ -176,7 +148,7 @@ public:
    * Turn a bug.
    * @param bug Bug that executes the action.
    * @param turn Type of turn.
-   * @exception ActionException if something fails.
+   * @exception ActionError if something fails.
    */
   virtual void turn(Bug* bug, Turn turn);
 
@@ -184,7 +156,7 @@ public:
    * Attack.
    * @param bug Bug that executes the action.
    * @param energy Energy used in the attack.
-   * @exception ActionException if something fails.
+   * @exception ActionError if something fails.
    */
   virtual void attack(Bug* bug, Energy energy);
 
@@ -192,7 +164,7 @@ public:
    * Eat what is in front of the bug.
    * @param bug Bug that executes the action.
    * @return The energy eaten.
-   * @exception ActionException if something fails.
+   * @exception ActionError if something fails.
    */
   virtual Energy eat(Bug* bug);
 
@@ -200,7 +172,7 @@ public:
    * Create a egg in front of the bug.
    * @param bug Bug that executes the action.
    * @param energy Energy transfered to the egg.
-   * @exception ActionException if something fails.
+   * @exception ActionError if something fails.
    */
   virtual void egg(Bug* bug, Energy energy);
 

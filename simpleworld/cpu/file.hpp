@@ -37,65 +37,6 @@ namespace CPU
 {
 
 /**
- * File exception.
- * It's raised if you try to access a wrond line.
- */
-class LineOutOfRange: public std::out_of_range, public CPUException
-{
-public:
-  /**
-   * Constructor.
-   * @param file File where the exception is raised.
-   * @param line Line where the exception is raised.
-   * @param fileline Line out of range.
-   * @param what Reason of the exception.
-   */
-  LineOutOfRange(std::string file, Uint32 line,
-                 std::vector<std::string>::size_type fileline,
-                 const std::string& what = "Line out of range") throw()
-    : out_of_range(what), CPUException(file, line), fileline(fileline)
-  {}
-
-  /**
-   * Destructor.
-   */
-  ~LineOutOfRange() throw () {}
-
-
-  std::vector<std::string>::size_type fileline; /**< Line out of range. */
-};
-
-/**
- * File exception.
- * It's raised if the file don't exist or can't be opened.
- */
-class FileAccessError: public std::runtime_error, public CPUException
-{
-public:
-  /**
-   * Constructor.
-   * @param file File where the exception is raised.
-   * @param line Line where the exception is raised.
-   * @param filename Name of the file.
-   * @param what Reason of the exception.
-   */
-  FileAccessError(std::string file, Uint32 line, std::string filename,
-                  const std::string& what = "Error accessing file")
-    throw ()
-    : runtime_error(what), CPUException(file, line), filename(filename)
-  {}
-
-  /**
-   * Destructor.
-   */
-  ~FileAccessError() throw () {}
-
-
-  std::string filename;		/**< Name of the file. */
-};
-
-
-/**
  * A file as a array of lines.
  */
 class File
@@ -121,7 +62,7 @@ public:
   /**
    * Constructor that opens a file.
    * @param filename File to open.
-   * @exception FileAccessError File can't be opened
+   * @exception IOError File can't be opened
    */
   File(std::string filename);
 
@@ -135,14 +76,14 @@ public:
   /**
    * Get a line.
    * @param pos Position of the line.
-   * @exception LineOutOfRange pos > lines
+   * @exception CPUException if pos > lines
    */
   std::string& get_line(size_type pos);
 
   /**
    * Get a line.
    * @param pos Position of the line.
-   * @exception LineOutOfRange pos > lines
+   * @exception CPUException if pos > lines
    */
   const std::string& get_line(size_type pos) const;
 
@@ -151,7 +92,7 @@ public:
    * Insert a new line in the file.
    * @param pos Position of the new line.
    * @param line Line to insert.
-   * @exception LineOutOfRange pos > lines
+   * @exception CPUException if pos > lines
    */
   void insert(size_type pos, const std::string& line);
 
@@ -159,7 +100,7 @@ public:
    * Insert the lines of a File in the file.
    * @param pos Position of the new line.
    * @param file File to insert.
-   * @exception LineOutOfRange pos > lines
+   * @exception CPUException if pos > lines
    */
   void insert(size_type pos, const File& file);
 
@@ -167,7 +108,7 @@ public:
    * Remove n lines from the file.
    * @param pos Position of the first line to remove.
    * @param n Number of lines to remove.
-   * @exception LineOutOfRange pos > lines or pos + n > lines
+   * @exception CPUException if pos > lines or pos + n > lines
    */
   void remove(size_type pos, size_type n);
 
@@ -177,14 +118,14 @@ public:
    *
    * Before the load, all the lines of the File are removed.
    * @param filename File to open.
-   * @exception FileAccessError File can't be opened
+   * @exception IOError File can't be opened
    */
   void load(std::string filename);
 
   /**
    * Save to a file.
    * @param filename File name where to save.
-   * @exception FileAccessError File can't be saved
+   * @exception IOError File can't be saved
    */
   void save(std::string filename) const;
 
@@ -192,14 +133,14 @@ public:
   /**
    * Get a line.
    * @param pos Position of the line.
-   * @exception LineOutOfRange pos > lines
+   * @exception CPUException if pos > lines
    */
   std::string& operator [](size_type pos);
 
   /**
    * Get a line.
    * @param pos Position of the line.
-   * @exception LineOutOfRange pos > lines
+   * @exception CPUException if pos > lines
    */
   const std::string& operator [](size_type pos) const;
 

@@ -27,6 +27,8 @@
 #include <boost/format.hpp>
 #endif
 
+#include "codeerror.hpp"
+#include "memoryerror.hpp"
 #include "cpu.hpp"
 #include "operations.hpp"
 
@@ -153,19 +155,14 @@ CPU::CPU(Memory* registers, Memory* memory)
 
 void CPU::execute()
 {
-  try {
-    while (true)
-      this->next();
-  }
-  catch (CPUStopped) {
-    // nothing
-  }
+  while (this->running())
+    this->next();
 }
 
 void CPU::next()
 {
   if (not this->running_)
-    throw CPUStopped(__FILE__, __LINE__);
+    throw CPUException(__FILE__, __LINE__, "CPU stopped");
 
   if (this->interrupt_request_) {
 #ifdef DEBUG
@@ -190,37 +187,37 @@ void CPU::next()
 #endif
 
       switch (info.func(*this->registers_, *this->memory_, this->interrupt_,
-			instruction)) {
+                        instruction)) {
       case UpdateInterrupt:
-	// Thrown a interrupt
-	this->interrupt_request_ = true;
+        // Throw a interrupt
+        this->interrupt_request_ = true;
       case UpdatePC:
-	// Update PC
-	this->registers_->set_word(REGISTER_PC,
-	                           this->registers_->get_word(REGISTER_PC) + 4);
-	break;
+        // Update PC
+        this->registers_->set_word(REGISTER_PC,
+                                   this->registers_->get_word(REGISTER_PC) + 4);
+        break;
       case Stop:
-	this->running_ = false;
-	break;
+        this->running_ = false;
+        break;
       }
-    } catch (InstructionCodeNotFound exc) {
+    } catch (const CodeError& exc) {
       // Prepare the interrupt
       this->interrupt_request_ = true;
       this->interrupt_.type = InvalidInstruction;
       this->interrupt_.r0 = static_cast<Word>(InvalidInstruction);
       this->interrupt_.r1 = this->memory_->get_word(REGISTER_PC);
-      this->interrupt_.r2 = static_cast<Word>(exc.code);
+      this->interrupt_.r2 = static_cast<Word>(instruction.code);
 
       // Update PC
       this->registers_->set_word(REGISTER_PC,
                                  this->registers_->get_word(REGISTER_PC) + 4);
-    } catch (AddressOutOfRange exc) {
+    } catch (const MemoryError& exc) {
       // Prepare the interrupt
       this->interrupt_request_ = true;
       this->interrupt_.type = InvalidMemoryLocation;
       this->interrupt_.r0 = static_cast<Word>(InvalidMemoryLocation);
       this->interrupt_.r1 = this->memory_->get_word(REGISTER_PC);
-      this->interrupt_.r2 = static_cast<Word>(exc.address);
+      this->interrupt_.r2 = static_cast<Word>(instruction.address);
 
       // Update PC
       this->registers_->set_word(REGISTER_PC,

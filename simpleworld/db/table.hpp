@@ -29,7 +29,6 @@
 #include <algorithm>
 
 #include <simpleworld/db/types.hpp>
-#include <simpleworld/db/exception.hpp>
 #include <simpleworld/db/db.hpp>
 
 namespace SimpleWorld
@@ -47,8 +46,8 @@ public:
    * Constructor.
    * @param db database.
    * @param id id of the row.
-   * @exception DBError if there is a error in the database.
-   * @exception IDNotFound if the ID is not found in the table.
+   * @exception DBException if there is a error in the database.
+   * @exception DBException if the ID is not found in the table.
    */
   Table(DB* db, ID id);
 
@@ -57,7 +56,7 @@ public:
    * insert(id) must be called before any call to update(), update_db() or
    * remove().
    * @param db database.
-   * @exception DBError if there is a error in the database.
+   * @exception DBException if there is a error in the database.
    */
   Table(DB* db);
 
@@ -83,8 +82,8 @@ public:
   /**
    * Update the data of the class with the database.
    * changed is set to false.
-   * @exception DBError if there is a error in the database.
-   * @exception IDNotFound if the ID is not found in the table.
+   * @exception DBException if there is a error in the database.
+   * @exception DBException if the ID is not found in the table.
    */
   virtual void update();
 
@@ -93,7 +92,7 @@ public:
    * true.
    * changed is set to false.
    * @param force force the update of the database.
-   * @exception DBError if there is a error in the database.
+   * @exception DBException if there is a error in the database.
    */
   virtual void update_db(bool force = false);
 
@@ -101,7 +100,7 @@ public:
    * Insert the data in the database.
    * The ID is updated.
    * changed is set to false.
-   * @exception DBError if there is an error in the database.
+   * @exception DBException if there is an error in the database.
    */
   virtual void insert();
 
@@ -110,14 +109,14 @@ public:
    * The ID is updated.
    * changed is set to false.
    * @param id id of the row.
-   * @exception DBError if there is an error in the database.
+   * @exception DBException if there is an error in the database.
    */
   virtual void insert(ID id);
 
   /**
    * Remove the data from the database.
    * changed is set to false.
-   * @exception DBError if there is an error in the database.
+   * @exception DBException if there is an error in the database.
    */
   virtual void remove();
 

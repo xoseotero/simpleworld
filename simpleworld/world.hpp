@@ -28,124 +28,10 @@
 #include <boost/multi_array.hpp>
 
 #include <simpleworld/ints.hpp>
-#include <simpleworld/exception.hpp>
 #include <simpleworld/element.hpp>
 
 namespace SimpleWorld
 {
-
-/**
- * World exception.
- * It's raised if the position is outside of the territory limits.
- */
-class InvalidPosition: public std::runtime_error, public Exception
-{
-public:
-  /**
-   * Constructor.
-   * @param file File where the exception is raised.
-   * @param line Line where the exception is raised.
-   * @param position Invalid position.
-   * @param what Reason of the exception.
-   */
-  InvalidPosition(std::string file, Uint32 line, Position position,
-                  const std::string& what = "Invalid position") throw()
-    : runtime_error(what), Exception(file, line), position(position)
-  {}
-
-  /**
-   * Destructor.
-   */
-  ~InvalidPosition() throw () {}
-
-
-  Position position;		/**< Invalid position. */
-};
-
-/**
- * World exception.
- * It's raised if the position is not used.
- */
-class UnusedPosition: public std::runtime_error, public Exception
-{
-public:
-  /**
-   * Constructor.
-   * @param file File where the exception is raised.
-   * @param line Line where the exception is raised.
-   * @param position Wrong position.
-   * @param what Reason of the exception.
-   */
-  UnusedPosition(std::string file, Uint32 line, Position position,
-                 const std::string& what = "Unused position") throw()
-    : runtime_error(what), Exception(file, line), position(position)
-  {}
-
-  /**
-   * Destructor.
-   */
-  ~UnusedPosition() throw () {}
-
-
-  Position position;		/**< Unused position. */
-};
-
-/**
- * World exception.
- * It's raised if the position is occupied.
- */
-class UsedPosition: public std::runtime_error, public Exception
-{
-public:
-  /**
-   * Constructor.
-   * @param file File where the exception is raised.
-   * @param line Line where the exception is raised.
-   * @param position Wrong position.
-   * @param what Reason of the exception.
-   */
-  UsedPosition(std::string file, Uint32 line, Position position,
-	       const std::string& what = "Invalid position") throw()
-    : runtime_error(what), Exception(file, line), position(position)
-  {}
-
-  /**
-   * Destructor.
-   */
-  ~UsedPosition() throw () {}
-
-
-  Position position;		/**< Used position. */
-};
-
-/**
- * World exception.
- * It's raised if the element is not movable.
- */
-class NoMovableElement: public std::runtime_error, public Exception
-{
-public:
-  /**
-   * Constructor.
-   * @param file File where the exception is raised.
-   * @param line Line where the exception is raised.
-   * @param element Element not movable.
-   * @param what Reason of the exception.
-   */
-  NoMovableElement(std::string file, Uint32 line, const Element& element,
-                   const std::string& what = "Element not movable") throw()
-    : runtime_error(what), Exception(file, line), element(element)
-  {}
-
-  /**
-   * Destructor.
-   */
-  ~NoMovableElement() throw () {}
-
-
-  Element element;		/**< Element not movable. */
-};
-
 
 /**
  * Simple World World.
@@ -184,16 +70,16 @@ public:
    * Add a element to the World.
    * @param element element to add.
    * @param position position of the element.
-   * @exception InvalidPosition if the position is out of the limits.
-   * @exception UsedPosition if the position is used.
+   * @exception WorldError if the position is out of the limits.
+   * @exception WorldError if the position is used.
    */
   void add(Element* element, Position position);
 
   /**
    * Remove a element from the World.
    * @param position position of the element.
-   * @exception InvalidPosition if the position is out of the limits.
-   * @exception UnusedPosition if the position is not used.
+   * @exception WorldError if the position is out of the limits.
+   * @exception WorldError if the position is not used.
    */
   void remove(Position position);
 
@@ -202,7 +88,7 @@ public:
    * Check if the position is used.
    * @param position position to check.
    * @return return true if the position is used, false if not.
-   * @exception InvalidPosition if the position is out of the limits.
+   * @exception WorldError if the position is out of the limits.
    */
   bool used(Position position) const;
 
@@ -210,8 +96,8 @@ public:
    * Get a element from the World.
    * @param position position of the element.
    * @return the element.
-   * @exception InvalidPosition if the position is out of the limits.
-   * @exception UnusedPosition if the position is not used.
+   * @exception WorldError if the position is out of the limits.
+   * @exception WorldError if the position is not used.
    */
   Element* get(Position position) const;
 
@@ -219,8 +105,8 @@ public:
    * Get a element from the World.
    * @param position position of the element.
    * @return the element.
-   * @exception InvalidPosition if the position is out of the limits.
-   * @exception UnusedPosition if the position is not used.
+   * @exception WorldError if the position is out of the limits.
+   * @exception WorldError if the position is not used.
    */
   Element* operator[](Position position) const { return this->get(position); };
 
@@ -229,10 +115,10 @@ public:
    * Move a element.
    * @param oldposition current position of the element.
    * @param newposition new position of the element.
-   * @exception InvalidPosition if the position is out of the limits.
-   * @exception UnusedPosition if the position is not used.
-   * @exception UsedPosition if the new position is used.
-   * @exception NoMovableElement if the element can't be moved.
+   * @exception WorldError if the position is out of the limits.
+   * @exception WorldError if the old position is not used.
+   * @exception WorldError if the new position is used.
+   * @exception WorldError if the element can't be moved.
    */
   void move(Position oldposition, Position newposition);
 

@@ -1,6 +1,6 @@
 /**
  * @file simpleworld/exception.hpp
- * Exception class father of the rest of Simple World exceptions.
+ * Exception base class father of the rest of Simple World exceptions.
  *
  * begin:     Sat, 11 Dec 2004 23:28:42 +0100
  * last:      $Date$
@@ -23,7 +23,6 @@
 #ifndef __SIMPLEWORLD_EXCEPTION_HPP__
 #define __SIMPLEWORLD_EXCEPTION_HPP__
 
-#include <stdexcept>
 #include <string>
 
 #include <simpleworld/ints.hpp>
@@ -32,9 +31,7 @@ namespace SimpleWorld
 {
 
 /**
- * Dummy exception class father of the rest of Simple CPU exceptions.
- *
- * It hasn't any data.
+ * Exception base class father of the rest of Simple CPU exceptions.
  */
 class Exception
 {
@@ -43,15 +40,23 @@ public:
    * Constructor.
    * @param file File where the exception is raised.
    * @param line Line where the exception is raised.
+   * @param function Function where the exception is raised.
+   * @param what What happened.
    */
-  Exception(std::string file, Uint32 line) throw ()
-    : file(file), line(line)
+  Exception(std::string file, Uint32 line, /*std::string function,*/
+            std::string what) throw ()
+    : file(file), line(line), /*function(function),*/ what(what)
   {}
 
+  virtual ~Exception() {}
 
-  std::string file;		/**< File where the exception is raised. */
-  Uint32 line;			/**< Line where the exception is raised. */
+
+  std::string file;             /**< File where the exception is raised. */
+  Uint32 line;                  /**< Line where the exception is raised. */
+  //std::string function;         /**< Function where the exception is raised. */
+  std::string what;             /**< What happened */
 };
+
 
 }
 

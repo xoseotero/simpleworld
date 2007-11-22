@@ -1,6 +1,6 @@
 /**
  * @file simpleworld/db/exception.hpp
- * Exception class father of the rest of DB exceptions.
+ * Exception class for DB exceptions.
  *
  * begin:     Mon, 01 Jan 2007 08:49:24 +0100
  * last:      $Date$
@@ -34,9 +34,7 @@ namespace DB
 {
 
 /**
- * Exception class father of the rest of DB exceptions.
- *
- * It hasn't any data.
+ * Exception class for DB exceptions.
  */
 class DBException: public Exception
 {
@@ -45,9 +43,10 @@ public:
      * Constructor.
      * @param file File where the exception is raised.
      * @param line Line where the exception is raised.
+     * @param what What happened.
      */
-  DBException(std::string file = "", Uint32 line = 0) throw ()
-    : Exception(file, line)
+  DBException(std::string file, Uint32 line, std::string what) throw ()
+    : Exception(file, line, what)
   {}
 };
 

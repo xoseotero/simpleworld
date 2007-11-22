@@ -48,8 +48,8 @@ public:
    * @param id id of the bug.
    * @param type type of element
    * @param position position of the bug.
-   * @exception DBError if there is a error in the database.
-   * @exception IDNotFound if the ID is not found in the table.
+   * @exception DBException if there is a error in the database.
+   * @exception DBException if the ID is not found in the table.
    */
   AliveBug(DB* db, ID id, ElementType type, Position position);
 
@@ -57,7 +57,7 @@ public:
    * Constructor to insert data.
    * @param db database.
    * @param type type of element
-   * @exception DBError if there is a error in the database.
+   * @exception DBException if there is a error in the database.
    */
   AliveBug(DB* db, ElementType type);
 

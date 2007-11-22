@@ -48,15 +48,15 @@ public:
    * Constructor.
    * @param db database.
    * @param bug_id id of the bug.
-   * @exception DBError if there is a error in the database.
-   * @exception IDNotFound if the ID is not found in the table.
+   * @exception DBException if there is a error in the database.
+   * @exception DBException if the ID is not found in the table.
    */
   Code(DB* db, ID bug_id);
 
   /**
    * Constructor to insert data.
    * @param db database.
-   * @exception DBError if there is a error in the database.
+   * @exception DBException if there is a error in the database.
    */
   Code(DB* db);
 
@@ -65,8 +65,8 @@ public:
    * Update the data of the class with the database.
    * changed is set to false.
    * The update() is propagated to the mutations.
-   * @exception DBError if there is a error in the database.
-   * @exception IDNotFound if the ID is not found in the table.
+   * @exception DBException if there is a error in the database.
+   * @exception DBException if the ID is not found in the table.
    */
   void update();
 
@@ -78,7 +78,7 @@ public:
    * the update_db() in the mutations must be forced, a explicit call to the
    * mutations::update_db(true) must be made.
    * @param force force the update of the database.
-   * @exception DBError if there is a error in the database.
+   * @exception DBException if there is a error in the database.
    */
   void update_db(bool force = false);
 
@@ -88,7 +88,7 @@ public:
    * changed is set to false.
    * The insert() is propagated to the mutations.
    * @param id id of the row.
-   * @exception DBError if there is an error in the database.
+   * @exception DBException if there is an error in the database.
    */
   void insert(ID bug_id);
 
@@ -96,7 +96,7 @@ public:
    * Remove the data from the database.
    * changed is set to false.
    * The remove() is propagated to the mutations.
-   * @exception DBError if there is an error in the database.
+   * @exception DBException if there is an error in the database.
    */
   void remove();
 

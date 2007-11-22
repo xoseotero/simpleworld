@@ -21,7 +21,11 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <boost/format.hpp>
+
 #include <simpleworld/config.hpp>
+
+#include "codeerror.hpp"
 #include "word.hpp"
 #include "instruction.hpp"
 
@@ -116,7 +120,10 @@ InstructionInfo InstructionSet::instruction_info(Uint8 code) const
   std::map<Uint8, InstructionInfo>::const_iterator iter =
     this->instructions_.find(code);
   if (iter == this->instructions_.end())
-    throw InstructionCodeNotFound(__FILE__, __LINE__, code);
+    throw CodeError(__FILE__, __LINE__,
+                    boost::str(boost::format("\
+Instruction %02x not found")
+                               % code));
 
   return (*iter).second;
 }
@@ -126,7 +133,10 @@ Uint8 InstructionSet::instruction_code(std::string name) const
   std::map<std::string, Uint8>::const_iterator iter =
     this->instruction_codes_.find(name);
   if (iter == this->instruction_codes_.end())
-    throw InstructionNameNotFound(__FILE__, __LINE__, name);
+    throw CodeError(__FILE__, __LINE__,
+                    boost::str(boost::format("\
+Instruction %1% not found")
+                               % name));
 
   return (*iter).second;
 }
@@ -136,7 +146,10 @@ std::string InstructionSet::register_name(Uint8 code) const
   std::map<Uint8, std::string>::const_iterator iter =
     this->registers_.find(code);
   if (iter == this->registers_.end())
-    throw RegisterCodeNotFound(__FILE__, __LINE__, code);
+    throw CodeError(__FILE__, __LINE__,
+                    boost::str(boost::format("\
+Register %02x not found")
+                               % code));
 
   return (*iter).second;
 }
@@ -146,7 +159,10 @@ Uint8 InstructionSet::register_code(std::string name) const
   std::map<std::string, Uint8>::const_iterator iter =
     this->register_codes_.find(name);
   if (iter == this->register_codes_.end())
-    throw RegisterNameNotFound(__FILE__, __LINE__, name);
+    throw CodeError(__FILE__, __LINE__,
+                    boost::str(boost::format("\
+Register %1% not found")
+                               % name));
 
   return (*iter).second;
 }
@@ -155,7 +171,10 @@ Uint8 InstructionSet::register_code(std::string name) const
 void InstructionSet::add_instruction(InstructionInfo instruction)
 {
   if (this->instructions_.find(instruction.code) != this->instructions_.end())
-    throw InstructionExist(__FILE__, __LINE__, instruction.code);
+    throw CodeError(__FILE__, __LINE__,
+                    boost::str(boost::format("\
+Instruction %02x already exists")
+                               % instruction.code));
 
   this->instructions_.insert(std::pair<Uint8,
                              InstructionInfo>(instruction.code,
@@ -177,7 +196,10 @@ void InstructionSet::remove_instruction(Uint8 code)
   std::map<Uint8, InstructionInfo>::iterator iter =
     this->instructions_.find(code);
   if (iter == this->instructions_.end())
-    throw InstructionCodeNotFound(__FILE__, __LINE__, code);
+    throw CodeError(__FILE__, __LINE__,
+                    boost::str(boost::format("\
+Instruction %02x not found")
+                               % code));
 
   this->instruction_codes_.erase((*iter).second.name);
   this->instructions_.erase(iter);
@@ -186,7 +208,10 @@ void InstructionSet::remove_instruction(Uint8 code)
 void InstructionSet::add_register(Uint8 code, std::string name)
 {
   if (this->registers_.find(code) != this->registers_.end())
-    throw RegisterExist(__FILE__, __LINE__, code);
+    throw CodeError(__FILE__, __LINE__,
+                    boost::str(boost::format("\
+Instruction %02x already exists")
+                               % code));
 
   this->registers_.insert(std::pair<Uint8, std::string>(code, name));
   this->register_codes_.insert(std::pair<std::string, Uint8>(name, code));
@@ -196,7 +221,10 @@ void InstructionSet::remove_register(Uint8 code)
 {
   std::map<Uint8, std::string>::iterator iter = this->registers_.find(code);
   if (iter == this->registers_.end())
-    throw RegisterCodeNotFound(__FILE__, __LINE__, code);
+    throw CodeError(__FILE__, __LINE__,
+                    boost::str(boost::format("\
+Register %02x not found")
+                               % code));
 
   this->register_codes_.erase((*iter).second);
   this->registers_.erase(iter);

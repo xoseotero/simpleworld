@@ -21,10 +21,66 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <boost/format.hpp>
+
+#include "worlderror.hpp"
 #include "world.hpp"
 
 namespace SimpleWorld
 {
+
+/**
+ * Check if position > max.
+ * @param position position to check.
+ * @param max maximun size of the position.
+ * @exception Exception if the position is out of range.
+ */
+inline void exception_outofrange(Position position, Position max)
+{
+  if (position.x >= max.x or position.y >= max.y)
+    throw WorldError(__FILE__, __LINE__,
+                     boost::str(boost::format(\
+"Position (%1%, %2%) is outside of the World (%1%, %2%)")
+                                % position.x
+                                % position.y
+                                % max.x
+                                % max.y));
+}
+
+/**
+ * Check if position is used.
+ * @param terrain where to search.
+ * @param position position to check.
+ * @exception Exception if the position is used.
+ */
+inline void exception_used(const boost::multi_array<Element*, 2>& terrain,
+			   Position position)
+{
+  if (terrain[position.x][position.y] != NULL)
+    throw WorldError(__FILE__, __LINE__,
+                     boost::str(boost::format(\
+"Position (%1%, %2%) is already used")
+                                % position.x
+                                % position.y));
+}
+
+/**
+ * Check if position is not used.
+ * @param terrain where to search.
+ * @param position position to check.
+ * @exception Exception if the position is not used.
+ */
+inline void exception_notused(const boost::multi_array<Element*, 2>& terrain,
+			     Position position)
+{
+  if (terrain[position.x][position.y] == NULL)
+    throw WorldError(__FILE__, __LINE__,
+                     boost::str(boost::format(\
+"Position (%1%, %2%) is not used")
+                                % position.x
+                                % position.y));
+}
+
 
 World::World(Coord width, Coord height)
   : num_elements_(0), terrain_(boost::extents[width][height])
@@ -50,23 +106,10 @@ World::World(Position size)
 }
 
 
-/**
- * Check if position > max.
- * @param position position to check.
- * @param max maximun size of the position.
- * @return if position > max.
- */
-static bool operator>(Position position, Position max)
-{
-  return position.x >= max.x or position.y >= max.y;
-}
-
 void World::add(Element* element, Position position)
 {
-  if (position > this->size_)
-    throw InvalidPosition(__FILE__, __LINE__, position);
-  if (this->terrain_[position.x][position.y] != NULL)
-    UsedPosition(__FILE__, __LINE__, position);
+  exception_outofrange(position, this->size_);
+  exception_used(this->terrain_, position);
 
   if (element != NULL) {
     this->num_elements_++;
@@ -80,10 +123,8 @@ void World::add(Element* element, Position position)
 
 void World::remove(Position position)
 {
-  if (position > this->size_)
-    throw InvalidPosition(__FILE__, __LINE__, position);
-  if (this->terrain_[position.x][position.y] == NULL)
-    UnusedPosition(__FILE__, __LINE__, position);
+  exception_outofrange(position, this->size_);
+  exception_notused(this->terrain_, position);
 
   if (this->terrain_[position.x][position.y] != NULL)
     this->num_elements_--;
@@ -93,35 +134,32 @@ void World::remove(Position position)
 
 bool World::used(Position position) const
 {
-  if (position > this->size_)
-    throw InvalidPosition(__FILE__, __LINE__, position);
+  exception_outofrange(position, this->size_);
 
   return this->terrain_[position.x][position.y] != NULL;
 }
 
 Element* World::get(Position position) const
 {
-  if (position > this->size_)
-    throw InvalidPosition(__FILE__, __LINE__, position);
+  exception_outofrange(position, this->size_);
+  exception_notused(this->terrain_, position);
 
-  Element* element = this->terrain_[position.x][position.y];
-  if (element == NULL)
-    throw UnusedPosition(__FILE__, __LINE__, position);
-
-  return element;
+  return this->terrain_[position.x][position.y];
 }
 
 
 void World::move(Position oldposition, Position newposition)
 {
+  exception_notused(this->terrain_, oldposition);
+  exception_used(this->terrain_, newposition);
+
   Element* element = this->operator[](oldposition);
-
-  // Check if the new position is used
-  if (this->terrain_[newposition.x][newposition.y] != NULL)
-    throw UsedPosition(__FILE__, __LINE__, newposition);
-
   if (not element->movable())
-    throw NoMovableElement(__FILE__, __LINE__, *element);
+    throw WorldError(__FILE__, __LINE__,
+                     boost::str(boost::format(\
+"Element in position (%1%, %2%) is not movable")
+                                % oldposition.x
+                                % oldposition.y));
 
   // Update the World
   this->terrain_[oldposition.x][oldposition.y] = NULL;

@@ -21,7 +21,10 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <boost/format.hpp>
+
 #include "word.hpp"
+#include "exception.hpp"
 
 namespace SimpleWorld
 {
@@ -31,7 +34,10 @@ namespace CPU
 Uint8 get_byte(Word word, Uint8 byte)
 {
   if (byte > 3)
-    throw ByteOutOfRange(__FILE__, __LINE__, byte);
+    throw CPUException(__FILE__, __LINE__,
+                       boost::str(boost::format("\
+Byte %08x is out of range")
+                                  % byte));
 
   return reinterpret_cast<Uint8*>(&word)[byte];
 }
@@ -39,7 +45,10 @@ Uint8 get_byte(Word word, Uint8 byte)
 void set_byte(Word* word, Uint8 byte, Uint8 value)
 {
   if (byte > 3)
-    throw ByteOutOfRange(__FILE__, __LINE__, byte);;
+    throw CPUException(__FILE__, __LINE__,
+                       boost::str(boost::format("\
+Byte %08x is out of range")
+                                  % byte));
 
   reinterpret_cast<Uint8*>(word)[byte] = value;
 }

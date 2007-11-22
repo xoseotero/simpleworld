@@ -66,7 +66,7 @@ public:
    * @param address address of the word
    * @param value value of the word
    * @param system_endian if the word is in the systen endianness
-   * @exception AddressOutOfRange address > (size - 4)
+   * @exception SimpleWorld::Exception address > (size - 4)
    */
   void set_word(CPU::Address address, CPU::Word value,
 		bool system_endian = true);

@@ -47,8 +47,8 @@ public:
    * Constructor.
    * @param db database.
    * @param bug id of the bug.
-   * @exception DBError if there is a error in the database.
-   * @exception IDNotFound if the ID is not found in the table.
+   * @exception DBException if there is a error in the database.
+   * @exception DBException if the ID is not found in the table.
    */
   DeadBug(DB* db, ID id);
 
@@ -56,7 +56,7 @@ public:
    * Constructor to convert a egg into a dead bug.
    * @param db database.
    * @param egg egg.
-   * @exception DBError if there is a error in the database.
+   * @exception DBException if there is a error in the database.
    */
   DeadBug(DB* db, Egg* egg);
 
@@ -64,7 +64,7 @@ public:
    * Constructor to convert a bug into a dead bug.
    * @param db database.
    * @param bug bug.
-   * @exception DBError if there is a error in the database.
+   * @exception DBException if there is a error in the database.
    */
   DeadBug(DB* db, Bug* bug);
 
@@ -72,8 +72,8 @@ public:
   /**
    * Update the data of the class with the database.
    * changed is set to false.
-   * @exception DBError if there is an error in the database.
-   * @exception IDNotFound if the ID is not found in the table.
+   * @exception DBException if there is an error in the database.
+   * @exception DBException if the ID is not found in the table.
    */
   void update();
 
@@ -82,14 +82,14 @@ public:
    * true.
    * changed is set to false.
    * @param force force the update of the database.
-   * @exception DBError if there is an error in the database.
+   * @exception DBException if there is an error in the database.
    */
   void update_db(bool force = false);
 
   /**
    * Remove the data from the database.
    * changed is set to false.
-   * @exception DBError if there is an error in the database.
+   * @exception DBException if there is an error in the database.
    */
   void remove();
 

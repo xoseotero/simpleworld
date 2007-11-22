@@ -29,9 +29,7 @@
 #include <map>
 #include <string>
 
-#include <simpleworld/ints.hpp>
 #include <simpleworld/cpu/types.hpp>
-#include <simpleworld/cpu/exception.hpp>
 #include <simpleworld/cpu/instruction.hpp>
 #include <simpleworld/cpu/file.hpp>
 
@@ -39,36 +37,6 @@ namespace SimpleWorld
 {
 namespace CPU
 {
-
-/**
- * Compiler exception.
- * It's raised if a error is found in the source code.
- */
-class ParseError: public std::runtime_error, public CPUException
-{
-public:
-  /**
-   * Constructor.
-   * @param file File where the exception is raised.
-   * @param line Line where the exception is raised.
-   * @param source_line Line where the error was found.
-   * @param what Reason of the error.
-   */
-  ParseError(std::string file, Uint32 line,
-	     File::size_type source_line,
-	     const std::string& what = "Parse error") throw ()
-    : runtime_error(what), CPUException(file, line), source_line(source_line)
-  {}
-
-  /**
-   * Destructor.
-   */
-  ~ParseError() throw () {}
-
-
-  File::size_type source_line;	/**< Line with the error. */
-};
-
 
 /**
  * Simple World Language source file.
@@ -86,7 +54,7 @@ public:
    * @param set Instruction set of the CPU
    * @param include_path Paths where to search the files to include.
    * @param filename File to open.
-   * @exception FileAccessError File can't be opened
+   * @exception IOError if file can't be opened
    */
   Source(const InstructionSet& set,
 	 const std::vector<std::string>& include_path,
@@ -96,28 +64,28 @@ public:
   /**
    * Compile the source code to object code.
    * @param filename File where to save.
-   * @exception FileAccessError problem with file.
-   * @exception ParseError error found in the code.
+   * @exception IOERROR if a problem with file happen.
+   * @exception ParserError error found in the code.
    */
   void compile(std::string filename);
 
 
   /**
    * Replace the .include lines with the file contents.
-   * @exception FileAccessError file can't be opened.
-   * @exception ParseError file included two times.
+   * @exception IOError if a file can't be found.
+   * @exception ParserError file included two times.
    */
   void replace_includes();
 
   /**
    * Replace the constants and labels with its value.
-   * @exception ParseError error found in the code.
+   * @exception ParserError error found in the code.
    */
   void replace_constants();
 
   /**
    * Replace the blocks of memory with the zero values.
-   * @exception ParseError error found in the code.
+   * @exception ParserError error found in the code.
    */
   void replace_blocks();
 
@@ -126,7 +94,7 @@ protected:
    * Compile a line.
    * @param line Number of the line.
    * @return the instruction compiled.
-   * @exception ParseError error found in the code.
+   * @exception ParserError error found in the code.
    */
   Word compile(File::size_type line) const;
 
@@ -135,7 +103,7 @@ protected:
    * Check if a line is a blank one.
    * @param line Number of the line.
    * @return the check result.
-   * @exception LineOutOfRange line > lines of the file.
+   * @exception CPUException if line > lines of the file.
    */
   bool is_blank(File::size_type line) const;
 
@@ -143,7 +111,7 @@ protected:
    * Check if a line is a comment.
    * @param line Number of the line.
    * @return the check result.
-   * @exception LineOutOfRange line > lines of the file.
+   * @exception CPUException if line > lines of the file.
    */
   bool is_comment(File::size_type line) const;
 
@@ -151,7 +119,7 @@ protected:
    * Check if a line is a constant definition.
    * @param line Number of the line.
    * @return the check result.
-   * @exception LineOutOfRange line > lines of the file.
+   * @exception CPUException if line > lines of the file.
    */
   bool is_constant(File::size_type line) const;
 
@@ -159,7 +127,7 @@ protected:
    * Check if a line is a block of memory.
    * @param line Number of the line.
    * @return the check result.
-   * @exception LineOutOfRange line > lines of the file.
+   * @exception CPUException if line > lines of the file.
    */
   bool is_block(File::size_type line) const;
 
@@ -167,7 +135,7 @@ protected:
    * Check if a line is a label definition.
    * @param line Number of the line.
    * @return the check result.
-   * @exception LineOutOfRange line > lines of the file.
+   * @exception CPUException if line > lines of the file.
    */
   bool is_label(File::size_type line) const;
 
@@ -175,7 +143,7 @@ protected:
    * Check if a line is a include.
    * @param line Number of the line.
    * @return the check result.
-   * @exception LineOutOfRange line > lines of the file.
+   * @exception CPUException if line > lines of the file.
    */
   bool is_include(File::size_type line) const;
 
@@ -183,7 +151,7 @@ protected:
    * Check if a line is data (32 bits number).
    * @param line Number of the line.
    * @return the check result.
-   * @exception LineOutOfRange line > lines of the file.
+   * @exception CPUException if line > lines of the file.
    */
   bool is_data(File::size_type line) const;
 
@@ -191,7 +159,7 @@ protected:
    * Check if a line is a instruction.
    * @param line Number of the line.
    * @return the check result.
-   * @exception LineOutOfRange line > lines of the file.
+   * @exception CPUException if line > lines of the file.
    */
   bool is_instruction(File::size_type line) const;
 
@@ -203,7 +171,7 @@ protected:
    * The first position is the name and the second is the value.
    * @param line Number of the line.
    * @return the components of a constant.
-   * @exception LineOutOfRange line > lines of the file.
+   * @exception CPUException if line > lines of the file.
    */
   std::vector<std::string> get_constant(File::size_type line) const;
 
@@ -213,7 +181,7 @@ protected:
    * If the line is not a block of memory zero value is returned.
    * @param line Number of the line.
    * @return the components of a constant.
-   * @exception LineOutOfRange line > lines of the file.
+   * @exception CPUException if line > lines of the file.
    */
   Address get_block(File::size_type line) const;
 
@@ -223,7 +191,7 @@ protected:
    * If the line is not a label definition a empty string is returned.
    * @param line Number of the line.
    * @return the label.
-   * @exception LineOutOfRange line > lines of the file.
+   * @exception CPUException if line > lines of the file.
    */
   std::string get_label(File::size_type line) const;
 
@@ -233,7 +201,7 @@ protected:
    * If the line is not a include a empty string is returned.
    * @param line Number of the line.
    * @return the file name.
-   * @exception LineOutOfRange line > lines of the file.
+   * @exception CPUException if line > lines of the file.
    */
   std::string get_include(File::size_type line) const;
 
@@ -243,7 +211,7 @@ protected:
    * If the line is not data 0 is returned.
    * @param line Number of the line.
    * @return the data.
-   * @exception LineOutOfRange line > lines of the file.
+   * @exception CPUException if line > lines of the file.
    */
   Word get_data(File::size_type line) const;
 
@@ -255,7 +223,7 @@ protected:
    * The firs position is the instruction and the next ones are the operators.
    * @param line Number of the line.
    * @return the components of a constant.
-   * @exception LineOutOfRange line > lines of the file.
+   * @exception CPUException if line > lines of the file.
    */
   std::vector<std::string> get_instruction(File::size_type line) const;
 

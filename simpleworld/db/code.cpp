@@ -21,6 +21,8 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <boost/format.hpp>
+
 #include <simpleworld/config.hpp>
 
 #include <cstdio>
@@ -36,6 +38,7 @@
 #endif // HAVE_OPENSSL
 
 #include <simpleworld/cpu/types.hpp>
+#include "exception.hpp"
 #include "code.hpp"
 #include "common.hpp"
 
@@ -80,7 +83,7 @@ WHERE bug_id = ?;");
     while (cursor.step())
       mutations->push_back(Mutation(db, cursor.getint64(0)));
   } catch (const sqlite3x::database_error& e) {
-    throw DBError(__FILE__, __LINE__, e.what());
+    throw DBException(__FILE__, __LINE__, e.what());
   }
 }
 
@@ -152,7 +155,10 @@ WHERE bug_id = ?;");
 
     sqlite3x::sqlite3_cursor cursor(sql.executecursor());
     if (! cursor.step())
-      throw IDNotFound(__FILE__, __LINE__);
+      throw DBException(__FILE__, __LINE__,
+                        boost::str(boost::format("\
+bug_id %1% not found in table Code")
+                                   % this->id_));
 
     this->size = cursor.getint(0);
     this->md5 = cursor.getstring(1);
@@ -168,7 +174,7 @@ WHERE bug_id = ?;");
       this->mutations.push_back(Mutation(this->db_,
                                          cursor_mutations.getint64(0)));
   } catch (const sqlite3x::database_error& e) {
-    throw DBError(__FILE__, __LINE__, e.what());
+    throw DBException(__FILE__, __LINE__, e.what());
   }
 
 
@@ -197,7 +203,7 @@ WHERE bug_id = ?;");
 
       sql.executenonquery();
     } catch (const sqlite3x::database_error& e) {
-      throw DBError(__FILE__, __LINE__, e.what());
+      throw DBException(__FILE__, __LINE__, e.what());
     }
   }
 
@@ -222,7 +228,7 @@ VALUES(?, ?, ?, ?);");
 
     sql.executenonquery();
   } catch (const sqlite3x::database_error& e) {
-    throw DBError(__FILE__, __LINE__, e.what());
+    throw DBException(__FILE__, __LINE__, e.what());
   }
 
 
@@ -243,7 +249,7 @@ WHERE id = ?;");
 
     sql.executenonquery();
   } catch (const sqlite3x::database_error& e) {
-    throw DBError(__FILE__, __LINE__, e.what());
+    throw DBException(__FILE__, __LINE__, e.what());
   }
 
 

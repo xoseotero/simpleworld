@@ -1,11 +1,11 @@
 /**
- * @file simpleworld/cpu/exception.hpp
- * Exception class father of the rest of CPU exceptions.
+ * @file simpleworld/cpu/parsererror.hpp
+ * Exception thrown when a error in the parser is found.
  *
- * begin:     Sat, 11 Dec 2004 23:28:42 +0100
+ * begin:     Fri, 16 Nov 2007 05:34:33 +0100
  * last:      $Date$
  *
- *  Copyright (C) 2004, 2006-2007  Xosé Otero <xoseotero@users.sourceforge.net>
+ *  Copyright (C) 2007  Xosé Otero <xoseotero@users.sourceforge.net>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -20,13 +20,13 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef __SIMPLEWORLD_CPU_EXCEPTION_HPP__
-#define __SIMPLEWORLD_CPU_EXCEPTION_HPP__
+#ifndef __SIMPLEWORLD_CPU_PARSERERROR_HPP__
+#define __SIMPLEWORLD_CPU_PARSERERROR_HPP__
 
 #include <string>
 
 #include <simpleworld/ints.hpp>
-#include <simpleworld/exception.hpp>
+#include <simpleworld/cpu/exception.hpp>
 
 namespace SimpleWorld
 {
@@ -34,11 +34,9 @@ namespace CPU
 {
 
 /**
- * Exception class father of the rest of CPU exceptions.
- *
- * It hasn't any data.
+ * Exception thrown when a error in the parser is found.
  */
-class CPUException: public Exception
+class ParserError: public CPUException
 {
 public:
   /**
@@ -47,12 +45,12 @@ public:
    * @param line Line where the exception is raised.
    * @param what What happened.
    */
-  CPUException(std::string file, Uint32 line, std::string what) throw ()
-    : Exception(file, line, what)
+  ParserError(std::string file, Uint32 line, std::string what) throw ()
+    : CPUException(file, line, what)
   {}
 };
 
 }
 }
 
-#endif // __SIMPLEWORLD_CPU_EXCEPTION_HPP__
+#endif // __SIMPLEWORLD_CPU_PARSERERROR_HPP__

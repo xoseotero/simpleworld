@@ -45,8 +45,8 @@ public:
    * Constructor.
    * @param db database.
    * @param bug id of the bug.
-   * @exception DBError if there is a error in the database.
-   * @exception IDNotFound if the ID is not found in the table.
+   * @exception DBException if there is a error in the database.
+   * @exception DBException if the ID is not found in the table.
    */
   Bug(DB* db, ID id);
 
@@ -54,7 +54,7 @@ public:
    * Constructor to convert a egg into a bug.
    * @param db database.
    * @param egg egg.
-   * @exception DBError if there is a error in the database.
+   * @exception DBException if there is a error in the database.
    */
   Bug(DB* db, Egg* egg);
 
@@ -63,8 +63,8 @@ public:
    * Update the data of the class with the database.
    * changed is set to false.
    * The update() is propagated to the cpu.
-   * @exception DBError if there is an error in the database.
-   * @exception IDNotFound if the ID is not found in the table.
+   * @exception DBException if there is an error in the database.
+   * @exception DBException if the ID is not found in the table.
    */
   void update();
 
@@ -76,7 +76,7 @@ public:
    * update_db() in the cpu must be forced, a explicit call to
    * cpu::update_db(true) must be made.
    * @param force force the update of the database.
-   * @exception DBError if there is an error in the database.
+   * @exception DBException if there is an error in the database.
    */
   void update_db(bool force = false);
 
@@ -84,7 +84,7 @@ public:
    * Remove the data from the database.
    * changed is set to false.
    * The remove() is propagated to the code.
-   * @exception DBError if there is an error in the database.
+   * @exception DBException if there is an error in the database.
    */
   void remove();
 

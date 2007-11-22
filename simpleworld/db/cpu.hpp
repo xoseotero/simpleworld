@@ -46,15 +46,15 @@ public:
    * Constructor.
    * @param db database.
    * @param bug_id id of the bug.
-   * @exception DBError if there is a error in the database.
-   * @exception IDNotFound if the ID is not found in the table.
+   * @exception DBException if there is a error in the database.
+   * @exception DBException if the ID is not found in the table.
    */
   CPU(DB* db, ID bug_id);
 
   /**
    * Constructor to insert data.
    * @param db database.
-   * @exception DBError if there is a error in the database.
+   * @exception DBException if there is a error in the database.
    */
   CPU(DB* db);
 
@@ -62,8 +62,8 @@ public:
   /**
    * Update the data of the class with the database.
    * changed is set to false.
-   * @exception DBError if there is a error in the database.
-   * @execption IDNotFound if the ID is not found in the table.
+   * @exception DBException if there is a error in the database.
+   * @exception DBException if the ID is not found in the table.
    */
   void update();
 
@@ -72,7 +72,7 @@ public:
    * true.
    * changed is set to false.
    * @param force force the update of the database.
-   * @exception DBError if there is a error in the database.
+   * @exception DBException if there is a error in the database.
    */
   void update_db(bool force = false);
 
@@ -81,14 +81,14 @@ public:
    * The ID is updated.
    * changed is set to false.
    * @param id id of the row.
-   * @exception DBError if there is an error in the database.
+   * @exception DBException if there is an error in the database.
    */
   void insert(ID bug_id);
 
   /**
    * Remove the data from the database.
    * changed is set to false.
-   * @exception DBError if there is an error in the database.
+   * @exception DBException if there is an error in the database.
    */
   void remove();
 

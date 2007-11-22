@@ -38,8 +38,7 @@ public:
    * Constructor.
    * @param sw world where the bug lives.
    * @param id id of the food.
-   * @exception DBError if there is a error in the database.
-   * @exception IDNotFound if the ID is not found in the table.
+   * @exception DBException if there is a error in the database.
    */
   Food(SimpleWorld* db, DB::ID id);
 };

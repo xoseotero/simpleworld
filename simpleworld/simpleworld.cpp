@@ -28,11 +28,11 @@
 
 #if DEBUG
 #include <iostream>
-#include <boost/format.hpp>
 #endif // DEBUG
 
 #include <vector>
-#include <cassert>
+
+#include <boost/format.hpp>
 
 #include <sqlite3x.hpp>
 
@@ -42,6 +42,8 @@
 #include <simpleworld/db/cpu.hpp>
 #include <simpleworld/db/code.hpp>
 
+#include "exception.hpp"
+#include "actionerror.hpp"
 #include "movement.hpp"
 #include "simpleworld.hpp"
 
@@ -104,11 +106,6 @@ void SimpleWorld::add_egg(Energy energy,
                           Position position, Orientation orientation,
                           const CPU::Memory& code)
 {
-  // this can throw a InvalidPosition
-  if (this->world_->used(position))
-    throw UsedPosition(__FILE__, __LINE__, position);
-
-
   // begin a transaction
   sqlite3x::sqlite3_transaction transaction(*this);
 
@@ -132,11 +129,6 @@ void SimpleWorld::add_egg(Energy energy,
 
 void SimpleWorld::add_food(Position position, Energy size)
 {
-  // this can throw a InvalidPosition
-  if (this->world_->used(position))
-    throw UsedPosition(__FILE__, __LINE__, position);
-
-
   // begin a transaction
   sqlite3x::sqlite3_transaction transaction(*this);
 
@@ -217,7 +209,10 @@ CPU::Word SimpleWorld::myself(Bug* bug, Info info, CPU::Word* ypos)
     return static_cast<CPU::Word>(bug->orientation);
 
   default:
-    throw ActionException(__FILE__, __LINE__, "Unknown type of information");
+    throw ActionError(__FILE__, __LINE__,
+		    boost::str(boost::format(\
+"Type of information (%04x) unknown")
+			       % info));
   }
 }
 
@@ -243,14 +238,29 @@ CPU::Word SimpleWorld::information(Bug* bug, Info info, CPU::Word* ypos)
     << std::endl;
 #endif // DEBUG
 
-  Element* target = this->world_->get(this->front(bug));
-  assert(target != NULL and target->type != ElementNothing);
+  bug->energy -= this->env_->energy_info;
+  bug->changed = true;
+
+  Position front = this->front(bug);
+  Element* target = this->world_->get(front);
+  if (target == NULL or target->type == ElementNothing)
+    throw ActionError(__FILE__, __LINE__,
+                      boost::str(boost::format("\
+There is nothing in (%1%, %2%")
+                                 % front.x
+                                 % front.y));
+
+  if (target->type == ElementFood and (info == InfoID or
+                                       info == InfoEnergy or
+                                       info == InfoOrientation))
+      throw ActionError(__FILE__, __LINE__,
+                        boost::str(boost::format("\
+The element in (%1%, %2%) is food")
+                                   % front.x
+                                   % front.y));
 
   switch (info) {
   case InfoID:  // Only eggs and bugs
-    if (target->type == ElementFood)
-      throw ActionException(__FILE__, __LINE__, "The target is food");
-
     return static_cast<CPU::Word>(static_cast< ::SimpleWorld::DB::BugElement* >(target)->id());
 
   case InfoSize: // Every element
@@ -260,9 +270,6 @@ CPU::Word SimpleWorld::information(Bug* bug, Info info, CPU::Word* ypos)
       return static_cast<CPU::Word>(static_cast< ::SimpleWorld::DB::BugElement* >(target)->code.size);
 
   case InfoEnergy: // Only eggs and bugs
-    if (target->type == ElementFood)
-      throw ActionException(__FILE__, __LINE__, "The target is food");
-
     return static_cast<CPU::Word>(static_cast< ::SimpleWorld::DB::AliveBug* >(target)->energy);
 
   case InfoPosition: // Every element
@@ -270,13 +277,13 @@ CPU::Word SimpleWorld::information(Bug* bug, Info info, CPU::Word* ypos)
     return static_cast<CPU::Word>(target->position.x);
 
   case InfoOrientation: // Only eggs and bugs
-    if (target->type == ElementFood)
-      throw ActionException(__FILE__, __LINE__, "The target is food");
-
     return static_cast<CPU::Word>(static_cast< ::SimpleWorld::DB::BugElement* >(target)->orientation);
 
   default:
-    throw ActionException(__FILE__, __LINE__, "Unknown type of information");
+    throw ActionError(__FILE__, __LINE__,
+		    boost::str(boost::format(\
+"Type of information (%04x) unknown")
+			       % info));
   }
 }
 
@@ -288,8 +295,14 @@ void SimpleWorld::move(Bug* bug, Movement movement)
     << std::endl;
 #endif // DEBUG
 
-  this->world_->move(bug->position, this->front(bug));
+  bug->energy -= this->env_->energy_move;
   bug->changed = true;
+
+  try {
+    this->world_->move(bug->position, this->front(bug));
+  } catch (const Exception& e) {
+    throw ActionError(__FILE__, __LINE__, e.what);
+  }
 }
 
 void SimpleWorld::turn(Bug* bug, Turn turn)
@@ -300,11 +313,14 @@ void SimpleWorld::turn(Bug* bug, Turn turn)
     << std::endl;
 #endif // DEBUG
 
-  assert(turn == TurnLeft or turn == TurnRight);
-
   bug->energy -= this->env_->energy_turn;
-  bug->orientation = ::SimpleWorld::turn(bug->orientation, turn);
   bug->changed = true;
+
+  try {
+    bug->orientation = ::SimpleWorld::turn(bug->orientation, turn);
+  } catch (const Exception& e) {
+    throw ActionError(__FILE__, __LINE__, e.what);
+  }
 }
 
 /**
@@ -320,9 +336,10 @@ void SimpleWorld::attack(Bug* bug, Energy energy)
     << std::endl;
 #endif // DEBUG
 
+  bug->energy -= this->env_->energy_attack;
+  bug->changed = true;
+
   // TODO: Do something :)
-  //bug->energy -= this->env_->energy_attack;
-  //bug->changed = true;
 }
 
 /**
@@ -338,9 +355,10 @@ Energy SimpleWorld::eat(Bug* bug)
     << std::endl;
 #endif // DEBUG
 
+  bug->energy -= this->env_->energy_eat;
+  bug->changed = true;
+
   // TODO: Do something :)
-  //bug->energy -= this->env_->energy_eat;
-  //bug->changed = true;
 
   return 0;
 }
@@ -358,9 +376,10 @@ void SimpleWorld::egg(Bug* bug, Energy energy)
     << std::endl;
 #endif // DEBUG
 
+  bug->energy -= this->env_->energy_egg;
+  bug->changed = true;
+
   // TODO: Do something :)
-  //bug->energy -= this->env_->energy_egg;
-  //bug->changed = true;
 }
 
 

@@ -23,11 +23,13 @@
 
 #include <cassert>
 
-#include <simpleworld/types.hpp>
-#include <simpleworld/simpleworld.hpp>
-#include <simpleworld/bug.hpp>
-#include <simpleworld/movement.hpp>
 #include <simpleworld/cpu/types.hpp>
+
+#include "types.hpp"
+#include "actionerror.hpp"
+#include "simpleworld.hpp"
+#include "bug.hpp"
+#include "movement.hpp"
 #include "operations.hpp"
 
 #define ACTION_NOTHING 0x00
@@ -66,9 +68,9 @@ CPU::Update world(CPU::Memory& regs, CPU::Memory& mem,
   case ACTION_NOTHING:
     try {
       bug->world->nothing(bug);
-      regs.set_word(REGISTER(0), static_cast<CPU::Word>(ActionOk));
-    } catch (ActionException) {
-      regs.set_word(REGISTER(0), static_cast<CPU::Word>(ActionError));
+      regs.set_word(REGISTER(0), static_cast<CPU::Word>(ActionSuccess));
+    } catch (const ActionError& e) {
+      regs.set_word(REGISTER(0), static_cast<CPU::Word>(ActionFailure));
     }
     break;
 
@@ -77,9 +79,9 @@ CPU::Update world(CPU::Memory& regs, CPU::Memory& mem,
       regs.set_word(REGISTER(1),
                     static_cast<CPU::Word>(bug->world->myself(bug, InfoID,
                       NULL)));
-      regs.set_word(REGISTER(0), static_cast<CPU::Word>(ActionOk));
-    } catch (ActionException) {
-      regs.set_word(REGISTER(0), static_cast<CPU::Word>(ActionError));
+      regs.set_word(REGISTER(0), static_cast<CPU::Word>(ActionSuccess));
+    } catch (const ActionError& e) {
+      regs.set_word(REGISTER(0), static_cast<CPU::Word>(ActionFailure));
     }
     break;
   case ACTION_MYSELFSIZE:
@@ -87,9 +89,9 @@ CPU::Update world(CPU::Memory& regs, CPU::Memory& mem,
       regs.set_word(REGISTER(1),
                     static_cast<CPU::Word>(bug->world->myself(bug, InfoSize,
                       NULL)));
-      regs.set_word(REGISTER(0), static_cast<CPU::Word>(ActionOk));
-    } catch (ActionException) {
-      regs.set_word(REGISTER(0), static_cast<CPU::Word>(ActionError));
+      regs.set_word(REGISTER(0), static_cast<CPU::Word>(ActionSuccess));
+    } catch (const ActionError& e) {
+      regs.set_word(REGISTER(0), static_cast<CPU::Word>(ActionFailure));
     }
     break;
   case ACTION_MYSELFENERGY:
@@ -97,18 +99,18 @@ CPU::Update world(CPU::Memory& regs, CPU::Memory& mem,
       regs.set_word(REGISTER(1),
                     static_cast<CPU::Word>(bug->world->myself(bug, InfoEnergy,
                       NULL)));
-      regs.set_word(REGISTER(0), static_cast<CPU::Word>(ActionOk));
-    } catch (ActionException) {
-      regs.set_word(REGISTER(0), static_cast<CPU::Word>(ActionError));
+      regs.set_word(REGISTER(0), static_cast<CPU::Word>(ActionSuccess));
+    } catch (const ActionError& e) {
+      regs.set_word(REGISTER(0), static_cast<CPU::Word>(ActionFailure));
     }
     break;
   case ACTION_MYSELFPOSITION:
     try {
       regs.set_word(REGISTER(1), bug->world->myself(bug, InfoPosition, &ypos));
       regs.set_word(REGISTER(2), ypos);
-      regs.set_word(REGISTER(0), static_cast<CPU::Word>(ActionOk));
-    } catch (ActionException) {
-      regs.set_word(REGISTER(0), static_cast<CPU::Word>(ActionError));
+      regs.set_word(REGISTER(0), static_cast<CPU::Word>(ActionSuccess));
+    } catch (const ActionError& e) {
+      regs.set_word(REGISTER(0), static_cast<CPU::Word>(ActionFailure));
     }
     break;
   case ACTION_MYSELFORIENTATION:
@@ -116,9 +118,9 @@ CPU::Update world(CPU::Memory& regs, CPU::Memory& mem,
       regs.set_word(REGISTER(1),
                     static_cast<CPU::Word>(bug->world->myself(bug,
                       InfoOrientation, NULL)));
-      regs.set_word(REGISTER(0), static_cast<CPU::Word>(ActionOk));
-    } catch (ActionException) {
-      regs.set_word(REGISTER(0), static_cast<CPU::Word>(ActionError));
+      regs.set_word(REGISTER(0), static_cast<CPU::Word>(ActionSuccess));
+    } catch (const ActionError& e) {
+      regs.set_word(REGISTER(0), static_cast<CPU::Word>(ActionFailure));
     }
     break;
 
@@ -126,9 +128,9 @@ CPU::Update world(CPU::Memory& regs, CPU::Memory& mem,
     try {
       regs.set_word(REGISTER(1),
                     static_cast<CPU::Word>(bug->world->detect(bug)));
-      regs.set_word(REGISTER(0), static_cast<CPU::Word>(ActionOk));
-    } catch (ActionException) {
-      regs.set_word(REGISTER(0), static_cast<CPU::Word>(ActionError));
+      regs.set_word(REGISTER(0), static_cast<CPU::Word>(ActionSuccess));
+    } catch (const ActionError& e) {
+      regs.set_word(REGISTER(0), static_cast<CPU::Word>(ActionFailure));
     }
     break;
 
@@ -137,9 +139,9 @@ CPU::Update world(CPU::Memory& regs, CPU::Memory& mem,
       regs.set_word(REGISTER(1),
                     static_cast<CPU::Word>(bug->world->information(bug, InfoID,
                       NULL)));
-      regs.set_word(REGISTER(0), static_cast<CPU::Word>(ActionOk));
-    } catch (ActionException) {
-      regs.set_word(REGISTER(0), static_cast<CPU::Word>(ActionError));
+      regs.set_word(REGISTER(0), static_cast<CPU::Word>(ActionSuccess));
+    } catch (const ActionError& e) {
+      regs.set_word(REGISTER(0), static_cast<CPU::Word>(ActionFailure));
     }
     break;
   case ACTION_INFOSIZE:
@@ -147,9 +149,9 @@ CPU::Update world(CPU::Memory& regs, CPU::Memory& mem,
       regs.set_word(REGISTER(1),
                     static_cast<CPU::Word>(bug->world->information(bug,
                       InfoSize, NULL)));
-      regs.set_word(REGISTER(0), static_cast<CPU::Word>(ActionOk));
-    } catch (ActionException) {
-      regs.set_word(REGISTER(0), static_cast<CPU::Word>(ActionError));
+      regs.set_word(REGISTER(0), static_cast<CPU::Word>(ActionSuccess));
+    } catch (const ActionError& e) {
+      regs.set_word(REGISTER(0), static_cast<CPU::Word>(ActionFailure));
     }
     break;
   case ACTION_INFOENERGY:
@@ -157,9 +159,9 @@ CPU::Update world(CPU::Memory& regs, CPU::Memory& mem,
       regs.set_word(REGISTER(1),
                     static_cast<CPU::Word>(bug->world->information(bug,
                       InfoEnergy, NULL)));
-      regs.set_word(REGISTER(0), static_cast<CPU::Word>(ActionOk));
-    } catch (ActionException) {
-      regs.set_word(REGISTER(0), static_cast<CPU::Word>(ActionError));
+      regs.set_word(REGISTER(0), static_cast<CPU::Word>(ActionSuccess));
+    } catch (const ActionError& e) {
+      regs.set_word(REGISTER(0), static_cast<CPU::Word>(ActionFailure));
     }
     break;
   case ACTION_INFOPOSITION:
@@ -167,9 +169,9 @@ CPU::Update world(CPU::Memory& regs, CPU::Memory& mem,
       regs.set_word(REGISTER(1),
                     bug->world->information(bug, InfoPosition, &ypos));
       regs.set_word(REGISTER(2), ypos);
-      regs.set_word(REGISTER(0), static_cast<CPU::Word>(ActionOk));
-    } catch (ActionException) {
-      regs.set_word(REGISTER(0), static_cast<CPU::Word>(ActionError));
+      regs.set_word(REGISTER(0), static_cast<CPU::Word>(ActionSuccess));
+    } catch (const ActionError& e) {
+      regs.set_word(REGISTER(0), static_cast<CPU::Word>(ActionFailure));
     }
     break;
   case ACTION_INFOORIENTATION:
@@ -177,75 +179,75 @@ CPU::Update world(CPU::Memory& regs, CPU::Memory& mem,
       regs.set_word(REGISTER(1),
                     static_cast<CPU::Word>(bug->world->information(bug,
                       InfoOrientation, NULL)));
-      regs.set_word(REGISTER(0), static_cast<CPU::Word>(ActionOk));
-    } catch (ActionException) {
-      regs.set_word(REGISTER(0), static_cast<CPU::Word>(ActionError));
+      regs.set_word(REGISTER(0), static_cast<CPU::Word>(ActionSuccess));
+    } catch (const ActionError& e) {
+      regs.set_word(REGISTER(0), static_cast<CPU::Word>(ActionFailure));
     }
     break;
 
   case ACTION_MOVEFORWARD:
     try {
       bug->world->move(bug, MoveForward);
-      regs.set_word(REGISTER(0), static_cast<CPU::Word>(ActionOk));
-    } catch (ActionException) {
-      regs.set_word(REGISTER(0), static_cast<CPU::Word>(ActionError));
+      regs.set_word(REGISTER(0), static_cast<CPU::Word>(ActionSuccess));
+    } catch (const ActionError& e) {
+      regs.set_word(REGISTER(0), static_cast<CPU::Word>(ActionFailure));
     }
     break;
   case ACTION_MOVEBACKWARD:
     try {
       bug->world->move(bug, MoveBackward);
-      regs.set_word(REGISTER(0), static_cast<CPU::Word>(ActionOk));
-    } catch (ActionException) {
-      regs.set_word(REGISTER(0), static_cast<CPU::Word>(ActionError));
+      regs.set_word(REGISTER(0), static_cast<CPU::Word>(ActionSuccess));
+    } catch (const ActionError& e) {
+      regs.set_word(REGISTER(0), static_cast<CPU::Word>(ActionFailure));
     }
     break;
 
   case ACTION_TURNLEFT:
     try {
       bug->world->turn(bug, TurnLeft);
-      regs.set_word(REGISTER(0), static_cast<CPU::Word>(ActionOk));
-    } catch (ActionException) {
-      regs.set_word(REGISTER(0), static_cast<CPU::Word>(ActionError));
+      regs.set_word(REGISTER(0), static_cast<CPU::Word>(ActionSuccess));
+    } catch (const ActionError& e) {
+      regs.set_word(REGISTER(0), static_cast<CPU::Word>(ActionFailure));
     }
     break;
   case ACTION_TURNRIGHT:
     try {
       bug->world->turn(bug, TurnRight);
-      regs.set_word(REGISTER(0), static_cast<CPU::Word>(ActionOk));
-    } catch (ActionException) {
-      regs.set_word(REGISTER(0), static_cast<CPU::Word>(ActionError));
+      regs.set_word(REGISTER(0), static_cast<CPU::Word>(ActionSuccess));
+    } catch (const ActionError& e) {
+      regs.set_word(REGISTER(0), static_cast<CPU::Word>(ActionFailure));
     }
     break;
 
   case ACTION_ATTACK:
     try {
       bug->world->attack(bug, static_cast<Energy>(regs[REGISTER(0)]));
-      regs.set_word(REGISTER(0), static_cast<CPU::Word>(ActionOk));
-    } catch (ActionException) {
-      regs.set_word(REGISTER(0), static_cast<CPU::Word>(ActionError));
+      regs.set_word(REGISTER(0), static_cast<CPU::Word>(ActionSuccess));
+    } catch (const ActionError& e) {
+      regs.set_word(REGISTER(0), static_cast<CPU::Word>(ActionFailure));
     }
     break;
 
   case ACTION_EAT:
     try {
       regs.set_word(REGISTER(1), static_cast<CPU::Word>(bug->world->eat(bug)));
-      regs.set_word(REGISTER(0), static_cast<CPU::Word>(ActionOk));
-    } catch (ActionException) {
-      regs.set_word(REGISTER(0), static_cast<CPU::Word>(ActionError));
+      regs.set_word(REGISTER(0), static_cast<CPU::Word>(ActionSuccess));
+    } catch (const ActionError& e) {
+      regs.set_word(REGISTER(0), static_cast<CPU::Word>(ActionFailure));
     }
     break;
 
   case ACTION_EGG:
     try {
       bug->world->egg(bug, static_cast<Energy>(regs[REGISTER(0)]));
-      regs.set_word(REGISTER(0), static_cast<CPU::Word>(ActionOk));
-    } catch (ActionException) {
-      regs.set_word(REGISTER(0), static_cast<CPU::Word>(ActionError));
+      regs.set_word(REGISTER(0), static_cast<CPU::Word>(ActionSuccess));
+    } catch (const ActionError& e) {
+      regs.set_word(REGISTER(0), static_cast<CPU::Word>(ActionFailure));
     }
     break;
 
   default:
-    regs.set_word(REGISTER(0), static_cast<CPU::Word>(ActionError));
+    regs.set_word(REGISTER(0), static_cast<CPU::Word>(ActionFailure));
     break;
   }
 

@@ -43,15 +43,15 @@ public:
    * Constructor.
    * @param db database.
    * @param bug id of the egg.
-   * @exception DBError if there is a error in the database.
-   * @exception IDNotFound if the ID is not found in the table.
+   * @exception DBException if there is a error in the database.
+   * @exception DBException if the ID is not found in the table.
    */
   Egg(DB* db, ID id);
 
   /**
    * Constructor to insert data.
    * @param db database.
-   * @exception DBError if there is a error in the database.
+   * @exception DBException if there is a error in the database.
    */
   Egg(DB* db);
 
@@ -59,8 +59,8 @@ public:
   /**
    * Update the data of the class with the database.
    * changed is set to false.
-   * @exception DBError if there is an error in the database.
-   * @exception IDNotFound if the ID is not found in the table.
+   * @exception DBException if there is an error in the database.
+   * @exception DBException if the ID is not found in the table.
    */
   void update();
 
@@ -69,7 +69,7 @@ public:
    * true.
    * changed is set to false.
    * @param force force the update of the database.
-   * @exception DBError if there is an error in the database.
+   * @exception DBException if there is an error in the database.
    */
   void update_db(bool force = false);
 
@@ -77,14 +77,14 @@ public:
    * Insert the data in the database.
    * The ID is updated.
    * changed is set to false.
-   * @exception DBError if there is an error in the database.
+   * @exception DBException if there is an error in the database.
    */
   void insert();
 
   /**
    * Remove the data from the database.
    * changed is set to false.
-   * @exception DBError if there is an error in the database.
+   * @exception DBException if there is an error in the database.
    */
   void remove();
 };

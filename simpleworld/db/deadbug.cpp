@@ -21,8 +21,11 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <boost/format.hpp>
+
 #include <sqlite3x.hpp>
 
+#include "exception.hpp"
 #include "deadbug.hpp"
 
 namespace SimpleWorld
@@ -67,7 +70,10 @@ WHERE id = ?;");
 
     sqlite3x::sqlite3_cursor cursor(sql.executecursor());
     if (! cursor.step())
-      throw IDNotFound(__FILE__, __LINE__);
+      throw DBException(__FILE__, __LINE__,
+                        boost::str(boost::format("\
+id %1% not found in table Bug")
+                                   % this->id_));
 
     this->position.x = cursor.getint(0);
     this->position.y = cursor.getint(1);
@@ -84,7 +90,7 @@ WHERE id = ?;");
       this->add_null("killer_id");
 
   } catch (const sqlite3x::database_error& e) {
-    throw DBError(__FILE__, __LINE__, e.what());
+    throw DBException(__FILE__, __LINE__, e.what());
   }
 
 
@@ -120,7 +126,7 @@ WHERE id = ?;");
 
       sql.executenonquery();
     } catch (const sqlite3x::database_error& e) {
-      throw DBError(__FILE__, __LINE__, e.what());
+      throw DBException(__FILE__, __LINE__, e.what());
     }
   }
 
@@ -140,7 +146,7 @@ WHERE id = ?;");
 
     sql.executenonquery();
   } catch (const sqlite3x::database_error& e) {
-    throw DBError(__FILE__, __LINE__, e.what());
+    throw DBException(__FILE__, __LINE__, e.what());
   }
 
 

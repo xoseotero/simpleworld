@@ -26,7 +26,6 @@
 
 #include <simpleworld/ints.hpp>
 #include <simpleworld/cpu/types.hpp>
-#include <simpleworld/cpu/exception.hpp>
 
 
 namespace SimpleWorld
@@ -35,40 +34,11 @@ namespace CPU
 {
 
 /**
- * Word exception.
- * It's raised if you try to access to a not existing bit.
- */
-class ByteOutOfRange: public std::out_of_range, public CPUException
-{
-public:
-  /**
-   * Constructor.
-   * @param file File where the exception is raised
-   * @param line Line where the exception is raised
-   * @param byte Value out of range.
-   * @param what Reason for the exception
-   */
-  ByteOutOfRange(std::string file, Uint32 line, Uint8 byte,
-                 const std::string& what = "Bit out of range") throw ()
-    : out_of_range(what), CPUException(file, line), byte(byte)
-  {}
-
-  /**
-   * Destructor.
-   */
-  ~ByteOutOfRange() throw () {}
-
-
-  Uint8 byte;			/**< Byte out of range. */
-};
-
-
-/**
  * Return the value of a byte in a word.
  * @param word Word.
  * @param byte number of byte to get.
  * @return the byte value.
- * @exception ByteOutOfRange byte > 3
+ * @exception CPUException if byte > 3
  */
 Uint8 get_byte(Word word, Uint8 byte);
 
@@ -78,7 +48,7 @@ Uint8 get_byte(Word word, Uint8 byte);
  * @param byte Number of byte to change.
  * @param value New value for the byte.
  * @return the byte value.
- * @exception ByteOutOfRange byte > 3
+ * @exception CPUException if byte > 3
  */
 void set_byte(Word* word, Uint8 byte, Uint8 value);
 

@@ -30,7 +30,6 @@
 
 #include <simpleworld/ints.hpp>
 #include <simpleworld/cpu/types.hpp>
-#include <simpleworld/cpu/exception.hpp>
 #include <simpleworld/cpu/memory.hpp>
 #include <simpleworld/cpu/interrupt.hpp>
 
@@ -38,234 +37,6 @@ namespace SimpleWorld
 {
 namespace CPU
 {
-
-/**
- * Instruction exception.
- * It's raised if the instruction can't be found.
- */
-class InstructionNotFound: public std::runtime_error, public CPUException
-{
-public:
-  /**
-   * Constructor.
-   * @param file File where the exception is raised.
-   * @param line Line where the exception is raised.
-   * @param what Reason of the exception.
-   */
-  InstructionNotFound(std::string file, Uint32 line,
-                      const std::string& what = "Instruction not found")
-    throw ()
-    : runtime_error(what), CPUException(file, line)
-  {}
-
-  /**
-   * Destructor.
-   */
-  ~InstructionNotFound() throw () {}
-};
-
-/**
- * Instruction exception.
- * It's raised if the instruction code can't be found.
- */
-class InstructionCodeNotFound: public InstructionNotFound
-{
-public:
-  /**
-   * Constructor.
-   * @param file File where the exception is raised.
-   * @param line Line where the exception is raised.
-   * @param code Code of the instruction.
-   * @param what Reason of the exception.
-   */
-  InstructionCodeNotFound(std::string file, Uint32 line,
-			  Uint8 code,
-			  const std::string& what = "Instruction code not found")
-    throw ()
-    : InstructionNotFound(file, line), code(code)
-  {}
-
-  /**
-   * Destructor.
-   */
-  ~InstructionCodeNotFound() throw () {}
-
-
-  Uint8 code;			/**< Code of the instruction. */
-};
-
-/**
- * Instruction exception.
- * It's raised if the instruction name can't be found.
- */
-class InstructionNameNotFound: public InstructionNotFound
-{
-public:
-  /**
-   * Constructor.
-   * @param file File where the exception is raised.
-   * @param line Line where the exception is raised.
-   * @param name Name of the instruction.
-   * @param what Reason of the exception.
-   */
-  InstructionNameNotFound(std::string file, Uint32 line,
-			  std::string name,
-			  const std::string& what = "Instruction name not found")
-    throw ()
-    : InstructionNotFound(file, line), name(name)
-  {}
-
-  /**
-   * Destructor.
-   */
-  ~InstructionNameNotFound() throw () {}
-
-
-  std::string name;		/**< Name of the instruction  */
-};
-
-/**
- * Instruction exception.
- * It's raised if the instruction already exist.
- */
-class InstructionExist: public std::runtime_error, public CPUException
-{
-public:
-  /**
-   * Constructor.
-   * @param file File where the exception is raised.
-   * @param line Line where the exception is raised.
-   * @param code Code of the Instruction.
-   * @param what Reason of the exception.
-   */
-  InstructionExist(std::string file, Uint32 line, Uint8 code,
-                   const std::string& what = "The instruction already exist")
-    throw ()
-    : runtime_error(what), CPUException(file, line)
-  {}
-
-  /**
-   * Destructor.
-   */
-  ~InstructionExist() throw () {}
-
-
-  Uint8 code;			/**< Code of the instruction. */
-};
-
-/**
- * Instruction exception.
- * It's raised if the register can't be found.
- */
-class RegisterNotFound: public std::runtime_error, public CPUException
-{
-public:
-  /**
-   * Constructor.
-   * @param file File where the exception is raised.
-   * @param line Line where the exception is raised.
-   * @param what Reason of the exception.
-   */
-  RegisterNotFound(std::string file, Uint32 line,
-                   const std::string& what = "Register not found") throw ()
-    : runtime_error(what), CPUException(file, line)
-  {}
-
-  /**
-   * Destructor.
-   */
-  ~RegisterNotFound() throw () {}
-};
-
-/**
- * Instruction exception.
- * It's raised if the register code can't be found.
- */
-class RegisterCodeNotFound: public RegisterNotFound
-{
-public:
-  /**
-   * Constructor.
-   * @param file File where the exception is raised.
-   * @param line Line where the exception is raised.
-   * @param code Code of the instruction
-   * @param what Reason of the exception.
-   */
-  RegisterCodeNotFound(std::string file, Uint32 line,
-		       Uint8 code,
-		       const std::string& what = "Register code not found")
-    throw ()
-    : RegisterNotFound(file, line), code(code)
-  {}
-
-  /**
-   * Destructor.
-   */
-  ~RegisterCodeNotFound() throw () {}
-
-
-  Uint8 code;			/**< Code of the register. */
-};
-
-/**
- * Instruction exception.
- * It's raised if the register name can't be found.
- */
-class RegisterNameNotFound: public RegisterNotFound
-{
-public:
-  /**
-   * Constructor.
-   * @param file File where the exception is raised.
-   * @param line Line where the exception is raised.
-   * @param name Name of the instruction
-   * @param what Reason of the exception.
-   */
-  RegisterNameNotFound(std::string file, Uint32 line,
-		       std::string name,
-		       const std::string& what = "Register name not found")
-    throw ()
-    : RegisterNotFound(file, line), name(name)
-  {}
-
-  /**
-   * Destructor.
-   */
-  ~RegisterNameNotFound() throw () {}
-
-
-  std::string name;		/**< Name of the register. */
-};
-
-/**
- * Instruction exception.
- * It's raised if the register already exist.
- */
-class RegisterExist: public std::runtime_error, public CPUException
-{
-public:
-  /**
-   * Constructor.
-   * @param file File where the exception is raised.
-   * @param line Line where the exception is raised.
-   * @param code Code of the register.
-   * @param what Reason of the exception.
-   */
-  RegisterExist(std::string file, Uint32 line, Uint8 code,
-                const std::string& what = "The register already exist")
-    throw ()
-    : runtime_error(what),  CPUException(file,line)
-  {}
-
-  /**
-   * Destructor.
-   */
-  ~RegisterExist() throw () {}
-
-
-  Uint8 code;			/**< Code of the register. */
-};
-
 
 /**
  * Struct of a instruction.
@@ -364,7 +135,7 @@ public:
    * Info about the instruction.
    * @param code code of the instruction.
    * @return the info about the instruction.
-   * @exception InstructionCodeNotFound instruction not found.
+   * @exception CodeError if the instruction is not found.
    */
   InstructionInfo instruction_info(Uint8 code) const;
 
@@ -372,7 +143,7 @@ public:
    * Code of the instruction.
    * @param name name of the instruction.
    * @return the code of the instruction.
-   * @exception InstructionNameNotFound instruction not found.
+   * @exception CodeError if the instruction is not found.
    */
   Uint8 instruction_code(std::string name) const;
 
@@ -380,7 +151,7 @@ public:
    * Name of the register.
    * @param code code of the register.
    * @return the name of the register.
-   * @exception RegisterCodeNotFound register not found.
+   * @exception CodeError if the register is not found.
    */
   std::string register_name(Uint8 code) const;
 
@@ -388,7 +159,7 @@ public:
    * Code of the register.
    * @param name name of the register.
    * @return the code of the register.
-   * @exception RegisterNameNotFound register not found.
+   * @exception CodeError if the register is not found.
    */
   Uint8 register_code(std::string name) const;
 
@@ -396,7 +167,7 @@ public:
   /**
    * Add a new instruction.
    * @param instruction instruction to add.
-   * @exception InstructionExist the instruction already exist.
+   * @exception CodeError if the instruction already exist.
    */
   void add_instruction(InstructionInfo instruction);
 
@@ -407,7 +178,7 @@ public:
    * @param nregs registers used.
    * @param has_inmediate if the instruction uses the inmediate space.
    * @param func function that executes the operation.
-   * @exception InstructionExist the instruction already exist.
+   * @exception CodeError if the instruction already exist.
    */
   void add_instruction(Uint8 code, std::string name, Uint8 nregs, bool
                        has_inmediate, Operation func);
@@ -415,7 +186,7 @@ public:
   /**
    * Remove a instruction.
    * @param code code of the instruction.
-   * @exception InstructionCodeNotFound instruction not found.
+   * @exception CodeError if instruction is not found.
    */
   void remove_instruction(Uint8 code);
 
@@ -423,14 +194,14 @@ public:
    * Add a new register.
    * @param code code of the register.
    * @param name name of the register.
-   * @exception RegisterExist the register already exist.
+   * @exception CodeError if the register already exist.
    */
   void add_register(Uint8 code, std::string name);
 
   /**
    * Remove a register.
    * @param code code of the register.
-   * @exception RegisterCodeNotFound register not found.
+   * @exception CPUexception if the register is not found.
    */
   void remove_register(Uint8 code);
 

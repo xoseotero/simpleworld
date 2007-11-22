@@ -31,7 +31,6 @@
 #include <simpleworld/ints.hpp>
 #include <simpleworld/types.hpp>
 #include <simpleworld/db/types.hpp>
-#include <simpleworld/db/exception.hpp>
 
 namespace SimpleWorld
 {
@@ -42,81 +41,6 @@ namespace DB
 {
 
 /**
- * DB exception.
- * It's raised if the a error in the database happen.
- */
-class DBError: public std::runtime_error, public DBException
-{
-  /**
-   * Constructor.
-   * @param file File where the exception is raised.
-   * @param line Line where the exception is raised.
-   * @param what Reason of the exception.
-   */
-public:
-  DBError(std::string file = "", Uint32 line = 0,
-          const std::string& what = "Database Error") throw()
-    : runtime_error(what), DBException(file, line)
-  {}
-
-  /**
-   * Destructor.
-   */
-  ~DBError() throw () {}
-};
-
-/**
- * DB exception.
- * It's raised if the version of the database is not supported.
- */
-class VersionNotSupported: public std::runtime_error, public DBException
-{
-  /**
-   * Constructor.
-   * @param file File where the exception is raised.
-   * @param line Line where the exception is raised.
-   * @param what Reason of the exception.
-   */
-public:
-  VersionNotSupported(std::string file = "", Uint32 line = 0,
-		      const std::string& what =
-		      "Database version not supported.")
-    throw()
-    : runtime_error(what), DBException(file, line)
-  {}
-
-  /**
-   * Destructor.
-   */
-  ~VersionNotSupported() throw () {}
-};
-
-/**
- * Table exception.
- * It's raised if the ID is not found in the table.
- */
-class IDNotFound: public std::runtime_error, public DBException
-{
-  /**
-   * Constructor.
-   * @param file File where the exception is raised.
-   * @param line Line where the exception is raised.
-   * @param what Reason of the exception.
-   */
-public:
-  IDNotFound(std::string file = "", Uint32 line = 0,
-	     const std::string& what = "ID not found") throw()
-    : runtime_error(what), DBException(file, line)
-  {}
-
-  /**
-   * Destructor.
-   */
-  ~IDNotFound() throw () {}
-};
-
-
-/**
  * Simple World Data Base management.
  */
 class DB: public sqlite3x::sqlite3_connection
@@ -125,9 +49,9 @@ public:
   /**
    * Constructor.
    * @param filename File name of the database.
-   * @exception SQLiteError The database can't be opened.
-   * @exception DBError if there is a error in the database.
-   * @exception VersionNotSupported if the database version is not supported.
+   * @exception DBException if the database can't be opened.
+   * @exception DBException if there is a error in the database.
+   * @exception WrongVersion if the database version is not supported.
    */
   DB(std::string filename);
 
@@ -142,15 +66,15 @@ public:
   /**
    * List of all the environments (changes), ordered by it's time.
    * @return the list of environments.
-   * @exception DBError if there is a error in the database.
+   * @exception DBException if there is a error in the database.
    */
   std::vector<Time> environments();
 
   /**
    * Get the last environment (change).
    * @return the environment.
-   * @exception DBError if there is a error in the database.
-   * @exception IDNotFound if there is any environments.
+   * @exception DBException if there is a error in the database.
+   * @exception DBException if there is any environments.
    */
   Time last_environment();
 
@@ -158,21 +82,21 @@ public:
   /**
    * List of all the bugs, ordered by its birth.
    * @return the list of bugs.
-   * @exception DBError if there is a error in the database.
+   * @exception DBException if there is a error in the database.
    */
   std::vector<ID> bugs();
 
   /**
    * List of the alive bugs, ordered by its birth.
    * @return the list of bugs.
-   * @exception DBError if there is a error in the database.
+   * @exception DBException if there is a error in the database.
    */
   std::vector<ID> alive_bugs();
 
   /**
    * List of eggs, ordered by its birth.
    * @return the list of eggs.
-   * @exception DBError if there is a error in the database.
+   * @exception DBException if there is a error in the database.
    */
   std::vector<ID> eggs();
 
@@ -180,7 +104,7 @@ public:
   /**
    * List of the food.
    * @return the list of food.
-   * @exception DBError if there is a error in the database.
+   * @exception DBException if there is a error in the database.
    */
   std::vector<ID> food();
 
@@ -189,12 +113,13 @@ protected:
    * This function is called when open() succeeds. Subclasses
    * which wish to do custom db initialization or sanity checks
    * may do them here.
+   * @exception WrongVersion if the database version is not supported.
    */
   void on_open();
 
   /**
    * Create the tables.
-   * @exception DBError The tables can't be created.
+   * @exception DBException The tables can't be created.
    */
   void create_tables();
 

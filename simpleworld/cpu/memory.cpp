@@ -23,9 +23,12 @@
 
 #include <algorithm>
 
+#include <boost/format.hpp>
+
 #include <simpleworld/config.hpp>
 #include "word.hpp"
 #include "memory.hpp"
+#include "memoryerror.hpp"
 
 namespace SimpleWorld
 {
@@ -81,18 +84,19 @@ void Memory::resize(Address size)
 Word Memory::get_word(Address address, bool system_endian) const
 {
   if (address > (this->size_ - (sizeof(Word) - 1)))
-    throw AddressOutOfRange(__FILE__, __LINE__, address);
+    throw MemoryError(__FILE__, __LINE__,
+                      boost::str(boost::format("\
+Address %08x is out of range")
+                                 % address));
 
 #ifdef IS_BIG_ENDIAN
   return *(reinterpret_cast<Word*>(&this->memory_[address]));
 #else
   if (system_endian)
     if (address % 2 == 0)
-      return
-      change_byte_order(*(reinterpret_cast<Word*>(&this->memory_[address])));
+      return change_byte_order(*(reinterpret_cast<Word*>(&this->memory_[address])));
     else
-      return
-change_byte_order_middle(*(reinterpret_cast<Word*>(&this->memory_[address])));
+      return change_byte_order_middle(*(reinterpret_cast<Word*>(&this->memory_[address])));
   else
     return *(reinterpret_cast<Word*>(&this->memory_[address]));
 #endif
@@ -102,7 +106,11 @@ change_byte_order_middle(*(reinterpret_cast<Word*>(&this->memory_[address])));
 void Memory::set_word(Address address, Uint32 value, bool system_endian)
 {
   if (address > (this->size_ - (sizeof(Word) - 1)))
-    throw AddressOutOfRange(__FILE__, __LINE__, address);
+    throw MemoryError(__FILE__, __LINE__,
+                      boost::str(boost::format("\
+Address %08x is out of range")
+                                 % address));
+
 
 #ifdef IS_BIG_ENDIAN
   *(reinterpret_cast<Uint32*>(&this->memory_[address])) = value;
