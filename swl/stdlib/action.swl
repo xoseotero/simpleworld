@@ -64,8 +64,8 @@
 # SUCCESS #
 ###########
 # Success status of the actions
-.define ACTION_OK			0x0
-.define ACTION_ERROR			0x1
+.define ACTION_SUCCESS			0x0
+.define ACTION_FAILURE			0x1
 
 
 ##########

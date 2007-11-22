@@ -91,8 +91,8 @@ enum ElementType {
  * Status of a action.
  */
 enum ActionStatus {
-  ActionOk = 0,
-  ActionError = 1
+  ActionSuccess = 0,
+  ActionFailure = 1
 };
 
 
