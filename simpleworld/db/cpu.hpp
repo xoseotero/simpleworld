@@ -80,7 +80,7 @@ public:
    * Insert the data in the database with a specific id.
    * The ID is updated.
    * changed is set to false.
-   * @param id id of the row.
+   * @param bug_id id of the bug.
    * @exception DBException if there is an error in the database.
    */
   void insert(ID bug_id);

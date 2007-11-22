@@ -40,7 +40,7 @@ public:
    * @param id id of the food.
    * @exception DBException if there is a error in the database.
    */
-  Food(SimpleWorld* db, DB::ID id);
+  Food(SimpleWorld* sw, DB::ID id);
 };
 
 }

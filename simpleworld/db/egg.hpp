@@ -42,7 +42,7 @@ public:
   /**
    * Constructor.
    * @param db database.
-   * @param bug id of the egg.
+   * @param id id of the egg.
    * @exception DBException if there is a error in the database.
    * @exception DBException if the ID is not found in the table.
    */

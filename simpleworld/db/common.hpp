@@ -44,7 +44,7 @@ namespace DB
 
 /**
  * Bind a block of memory to a sqlite3_command.
- * @param cursor pointer to a cursor of SQLite3x.
+ * @param sql pointer to a command of SQLite3x.
  * @param index row where the BLOB is stored.
  * @param memory the block of memory.
  */

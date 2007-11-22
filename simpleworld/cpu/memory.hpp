@@ -99,12 +99,11 @@ public:
 
 
   /**
-   * Get a word.
+   * Get a word in the system endian.
    * In big endian systems the system_endian parameter does nothing.
    * In little endian systems the word is returned in little endian if
    * system_endian is true and in big endian if system_endian is false.
    * @param address address of the word
-   * @param system_endian if the address must be in the system endianness
    * @return the word
    * @exception MemoryError if address > (size - 3)
    */

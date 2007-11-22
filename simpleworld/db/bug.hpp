@@ -44,7 +44,7 @@ public:
   /**
    * Constructor.
    * @param db database.
-   * @param bug id of the bug.
+   * @param id id of the bug.
    * @exception DBException if there is a error in the database.
    * @exception DBException if the ID is not found in the table.
    */

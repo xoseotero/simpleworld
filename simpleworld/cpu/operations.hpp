@@ -215,6 +215,7 @@ Update b(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst);
  * if REGISTERS[FIRST] == REGISTERS[SECOND] -> PC = ADDRESS
  * @param regs the registers.
  * @param mem the memory.
+ * @param interrupt interrupt.
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
@@ -226,6 +227,7 @@ Update beq(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst);
  * if REGISTERS[FIRST] != REGISTERS[SECOND] -> PC = ADDRESS
  * @param regs the registers.
  * @param mem the memory.
+ * @param interrupt interrupt.
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
@@ -237,6 +239,7 @@ Update bne(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst);
  * if REGISTERS[FIRST] < REGISTERS[SECOND] -> PC = ADDRESS
  * @param regs the registers.
  * @param mem the memory.
+ * @param interrupt interrupt.
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
@@ -248,6 +251,7 @@ Update blt(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst);
  * if REGISTERS[FIRST] < REGISTERS[SECOND] -> PC = ADDRESS
  * @param regs the registers.
  * @param mem the memory.
+ * @param interrupt interrupt.
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
@@ -259,6 +263,7 @@ Update bltu(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst);
  * if REGISTERS[FIRST] > REGISTERS[SECOND] -> PC = ADDRESS
  * @param regs the registers.
  * @param mem the memory.
+ * @param interrupt interrupt.
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
@@ -270,6 +275,7 @@ Update bgt(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst);
  * if REGISTERS[FIRST] > REGISTERS[SECOND] -> PC = ADDRESS
  * @param regs the registers.
  * @param mem the memory.
+ * @param interrupt interrupt.
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
@@ -281,6 +287,7 @@ Update bgtu(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst);
  * if REGISTERS[FIRST] <= REGISTERS[SECOND] -> PC = ADDRESS
  * @param regs the registers.
  * @param mem the memory.
+ * @param interrupt interrupt.
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
@@ -292,6 +299,7 @@ Update ble(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst);
  * if REGISTERS[FIRST] <= REGISTERS[SECOND] -> PC = ADDRESS
  * @param regs the registers.
  * @param mem the memory.
+ * @param interrupt interrupt.
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
@@ -303,6 +311,7 @@ Update bleu(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst);
  * if REGISTERS[FIRST] >= REGISTERS[SECOND] -> PC = ADDRESS
  * @param regs the registers.
  * @param mem the memory.
+ * @param interrupt interrupt.
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
@@ -314,6 +323,7 @@ Update bge(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst);
  * if REGISTERS[FIRST] >= REGISTERS[SECOND] -> PC = ADDRESS
  * @param regs the registers.
  * @param mem the memory.
+ * @param interrupt interrupt.
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
@@ -327,6 +337,7 @@ Update bgeu(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst);
  * PUSH(PC) and PC = ADDRESS
  * @param regs the registers.
  * @param mem the memory.
+ * @param interrupt interrupt.
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
@@ -337,6 +348,7 @@ Update call(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst);
  *
  * @param regs the registers.
  * @param mem the memory.
+ * @param interrupt interrupt.
  * @param interrupt interrupt.
  * @param inst the instruction.
  * @return if the PC must be updated.

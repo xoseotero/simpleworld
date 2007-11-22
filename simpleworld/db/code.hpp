@@ -87,7 +87,7 @@ public:
    * The ID is updated.
    * changed is set to false.
    * The insert() is propagated to the mutations.
-   * @param id id of the row.
+   * @param bug_id id of the bug.
    * @exception DBException if there is an error in the database.
    */
   void insert(ID bug_id);
