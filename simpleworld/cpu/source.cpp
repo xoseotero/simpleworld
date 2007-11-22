@@ -229,10 +229,9 @@ void Source::compile(std::string filename)
 
   std::ofstream file(filename.c_str(), std::ios::binary | std::ios::trunc);
   if (file.rdstate() & std::ofstream::failbit)
-    throw IOError(__FILE__, __LINE__,
-                  boost::str(boost::format("\
+    throw EXCEPTION(IOError, boost::str(boost::format("\
 File %1% is not writable")
-                             % filename));
+                                        % filename));
 
   File::size_type i;
   for (i = 0; i < this->lines(); i++) {
@@ -242,10 +241,9 @@ File %1% is not writable")
     Word code = this->compile(i);
     file.write(reinterpret_cast<char*>(&code), sizeof(Word));
     if (file.fail())
-    throw IOError(__FILE__, __LINE__,
-                  boost::str(boost::format("\
+      throw EXCEPTION(IOError, boost::str(boost::format("\
 Can't write in file %1%")
-                             % filename));
+                                           % filename));
   }
   file.close();
 }
@@ -258,20 +256,18 @@ void Source::replace_includes()
     if (this->is_include(i)) {
       fs::path filename(find_file(this->include_path_, this->get_include(i)));
       if (filename.empty())
-        throw IOError(__FILE__, __LINE__,
-                      boost::str(boost::format("\
+        throw EXCEPTION(IOError, boost::str(boost::format("\
 File %1% not found")
-                                 % this->get_include(i)));
+                                            % this->get_include(i)));
 
       std::string
         abs_path(fs::complete(filename).normalize().string());
       if (this->includes_.find(abs_path) != this->includes_.end())
-        throw ParserError(__FILE__, __LINE__,
-                          boost::str(boost::format("\
+        throw EXCEPTION(ParserError, boost::str(boost::format("\
 Line: %1%\n\
 File %2% already included")
-                                     % this->get_line(i)
-                                     % abs_path));
+                                                % this->get_line(i)
+                                                % abs_path));
       this->remove(i, 1);
       this->insert(i, File(abs_path));
       this->includes_.insert(abs_path);
@@ -287,12 +283,11 @@ void Source::replace_constants()
     if (this->is_constant(i)) {
       std::vector<std::string> constant(this->get_constant(i));
       if (this->constants_.find(constant[0]) != this->constants_.end())
-        throw ParserError(__FILE__, __LINE__,
-                          boost::str(boost::format("\
+        throw EXCEPTION(ParserError, boost::str(boost::format("\
 Line: %1%\n\
 Name %2% already defined")
-                          % this->get_line(i)
-                          % constant[0]));
+                                                % this->get_line(i)
+                                                % constant[0]));
 
       this->remove(i, 1);
       this->constants_.insert(std::pair<std::string,
@@ -300,12 +295,11 @@ Name %2% already defined")
     } else if (this->is_label(i)) {
       std::string label(this->get_label(i));
       if (this->constants_.find(label) != this->constants_.end())
-        throw ParserError(__FILE__, __LINE__,
-                          boost::str(boost::format("\
+        throw EXCEPTION(ParserError, boost::str(boost::format("\
 Line: %1%\n\
 Name %1% already defined")
-                                     % this->get_line(i)
-                                     % label));
+                                                % this->get_line(i)
+                                                % label));
       char address[11];
       std::snprintf(address, 11, "0x%x", lines_code * sizeof(Word));
       this->remove(i, 1);
@@ -371,21 +365,19 @@ Word Source::compile(File::size_type line) const
       this->set_.instruction_info(this->set_.instruction_code(keywords[0]));
   }
   catch (const CPUException& e) {
-    throw ParserError(__FILE__, __LINE__,
-                      boost::str(boost::format("\
+    throw EXCEPTION(ParserError, boost::str(boost::format("\
 Line: %1%\n\
 %2%")
-                                 % this->get_line(line)
-                                 % e.what));
+                                            % this->get_line(line)
+                                            % e.what));
   }
 
   if ((info.nregs + info.has_inmediate + 1) != keywords.size())
-    throw ParserError(__FILE__, __LINE__,
-                      boost::str(boost::format("\
+    throw EXCEPTION(ParserError, boost::str(boost::format("\
 Line: %1%\n\
 Wrong number of parameters (%2%)")
-                                 % this->get_line(line)
-                                 % (keywords.size() - 1)));
+                                            % this->get_line(line)
+                                            % (keywords.size() - 1)));
 
   Instruction inst;
   try {
@@ -402,12 +394,11 @@ Wrong number of parameters (%2%)")
       inst.address = std::strtoul(str, &ptr, 16);
     }
   } catch (const CPUException& e) {
-    throw ParserError(__FILE__, __LINE__,
-                      boost::str(boost::format("\
+    throw EXCEPTION(ParserError, boost::str(boost::format("\
 Line: %1%\n\
 %2%")
-                                 % this->get_line(line)
-                                 % e.what));
+                                            % this->get_line(line)
+                                            % e.what));
   }
 
   return InstructionSet::encode(inst);

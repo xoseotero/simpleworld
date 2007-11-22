@@ -58,6 +58,9 @@ public:
 };
 
 
+#define EXCEPTION(exception, what) \
+  (exception(__FILE__, __LINE__, what))
+
 }
 
 #endif // __SIMPLEWORLD_EXCEPTION_HPP__

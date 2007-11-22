@@ -34,10 +34,9 @@ namespace CPU
 Uint8 get_byte(Word word, Uint8 byte)
 {
   if (byte > 3)
-    throw CPUException(__FILE__, __LINE__,
-                       boost::str(boost::format("\
+    throw EXCEPTION(CPUException, boost::str(boost::format("\
 Byte %08x is out of range")
-                                  % byte));
+                                             % byte));
 
   return reinterpret_cast<Uint8*>(&word)[byte];
 }
@@ -45,10 +44,9 @@ Byte %08x is out of range")
 void set_byte(Word* word, Uint8 byte, Uint8 value)
 {
   if (byte > 3)
-    throw CPUException(__FILE__, __LINE__,
-                       boost::str(boost::format("\
+    throw EXCEPTION(CPUException, boost::str(boost::format("\
 Byte %08x is out of range")
-                                  % byte));
+                                             % byte));
 
   reinterpret_cast<Uint8*>(word)[byte] = value;
 }

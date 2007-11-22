@@ -51,18 +51,16 @@ void Object::decompile(const std::string filename) const
 
   std::ifstream is(this->filename_.c_str(), std::ios::binary);
   if (is.rdstate() & std::ifstream::failbit)
-    throw IOError(__FILE__, __LINE__,
-                  boost::str(boost::format("\
+    throw EXCEPTION(IOError, boost::str(boost::format("\
 File %1% is not readable")
-                             % filename));
+                                        % filename));
 
   // All instructions are 32bits, if the file is not X*32bits long is not valid
   is.seekg(0, std::ios_base::end);
   if ((is.tellg() % sizeof(Word)) != 0)
-    throw IOError(__FILE__, __LINE__,
-                  boost::str(boost::format("\
+    throw EXCEPTION(IOError, boost::str(boost::format("\
 The size of %1% (%2%) is not a multiple of 32bits")
-                             % filename
+                                        % filename
 			     % is.tellg()));
 
   is.seekg(0);

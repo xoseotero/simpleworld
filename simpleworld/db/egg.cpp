@@ -60,10 +60,9 @@ WHERE id = ?;");
 
     sqlite3x::sqlite3_cursor cursor(sql.executecursor());
     if (! cursor.step())
-      throw DBException(__FILE__, __LINE__,
-                        boost::str(boost::format("\
+      throw EXCEPTION(DBException, boost::str(boost::format("\
 id %1% not found in table Bug")
-                                   % this->id_));
+                                              % this->id_));
 
     this->energy = cursor.getint(0);
     this->position.x = cursor.getint(1);
@@ -75,7 +74,7 @@ id %1% not found in table Bug")
     if (cursor.isnull(5))
       this->add_null("father_id");
   } catch (const sqlite3x::database_error& e) {
-    throw DBException(__FILE__, __LINE__, e.what());
+    throw EXCEPTION(DBException, e.what());
   }
 
 
@@ -106,7 +105,7 @@ WHERE id = ?;");
 
       sql.executenonquery();
     } catch (const sqlite3x::database_error& e) {
-      throw DBException(__FILE__, __LINE__, e.what());
+      throw EXCEPTION(DBException, e.what());
     }
   }
 
@@ -136,7 +135,7 @@ VALUES(?, ?, ?, ?, ?, ?);");
     sql.executenonquery();
     this->id_ = this->db_->insertid();
   } catch (const sqlite3x::database_error& e) {
-    throw DBException(__FILE__, __LINE__, e.what());
+    throw EXCEPTION(DBException, e.what());
   }
 
 
@@ -155,7 +154,7 @@ WHERE id = ?;");
 
     sql.executenonquery();
   } catch (const sqlite3x::database_error& e) {
-    throw DBException(__FILE__, __LINE__, e.what());
+    throw EXCEPTION(DBException, e.what());
   }
 
 

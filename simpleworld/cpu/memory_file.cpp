@@ -47,18 +47,16 @@ void MemoryFile::load_file(const std::string& filename)
 {
   std::ifstream is(filename.c_str(), std::ios::binary);
   if (is.rdstate() & std::ifstream::failbit)
-    throw IOError(__FILE__, __LINE__,
-                  boost::str(boost::format("\
+    throw EXCEPTION(IOError, boost::str(boost::format("\
 File %1% is not readable")
-                             % filename));
+                                        % filename));
 
   // All instructions are 32bits, if the file is not X*32bits long is not valid
   boost::uintmax_t size = fs::file_size(filename);
   if ((size % sizeof(Word)) != 0)
-    throw IOError(__FILE__, __LINE__,
-                  boost::str(boost::format("\
+    throw EXCEPTION(IOError, boost::str(boost::format("\
 The size of %1% (%2%) is not a multiple of 32bits")
-                             % filename
+                                        % filename
 			     % size));
 
   // @TODO: File can be greater than the Address type.

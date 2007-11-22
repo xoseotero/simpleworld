@@ -59,10 +59,9 @@ File::size_type File::lines() const
 std::string& File::get_line(File::size_type pos)
 {
   if ((pos + 1) > this->lines_.size())
-    throw CPUException(__FILE__, __LINE__,
-                       boost::str(boost::format("\
+    throw EXCEPTION(CPUException, boost::str(boost::format("\
 Line %1% is out of range")
-                                  % pos));
+                                             % pos));
 
   return this->lines_[pos];
 }
@@ -70,10 +69,9 @@ Line %1% is out of range")
 const std::string& File::get_line(File::size_type pos) const
 {
   if ((pos + 1) > this->lines_.size())
-    throw CPUException(__FILE__, __LINE__,
-                       boost::str(boost::format("\
+    throw EXCEPTION(CPUException, boost::str(boost::format("\
 Line %1% is out of range")
-                                  % pos));
+                                             % pos));
 
   return this->lines_[pos];
 }
@@ -81,10 +79,9 @@ Line %1% is out of range")
 void File::insert(File::size_type pos, const std::string& line)
 {
   if (pos > this->lines_.size())
-    throw CPUException(__FILE__, __LINE__,
-                       boost::str(boost::format("\
+    throw EXCEPTION(CPUException, boost::str(boost::format("\
 Line %1% is out of range")
-                                  % pos));
+                                             % pos));
 
   this->lines_.insert(this->lines_.begin() + pos, line);
 }
@@ -92,10 +89,9 @@ Line %1% is out of range")
 void File::insert(File::size_type pos, const File& file)
 {
   if (pos > this->lines_.size())
-    throw CPUException(__FILE__, __LINE__,
-                       boost::str(boost::format("\
+    throw EXCEPTION(CPUException, boost::str(boost::format("\
 Line %1% is out of range")
-                                  % pos));
+                                             % pos));
 
   this->lines_.insert(this->lines_.begin() + pos,
                       file.lines_.begin(), file.lines_.end());
@@ -104,10 +100,9 @@ Line %1% is out of range")
 void File::remove(File::size_type pos, File::size_type n)
 {
   if ((pos + 1) > this->lines_.size())
-    throw CPUException(__FILE__, __LINE__,
-                       boost::str(boost::format("\
+    throw EXCEPTION(CPUException, boost::str(boost::format("\
 Line %1% is out of range")
-                                  % pos));
+                                             % pos));
 
   this->lines_.erase(this->lines_.begin() + pos);
 }
@@ -119,10 +114,9 @@ void File::load(std::string filename)
 
   std::ifstream is(filename.c_str());
   if (is.rdstate() & std::ifstream::failbit)
-    throw IOError(__FILE__, __LINE__,
-                  boost::str(boost::format("\
+    throw EXCEPTION(IOError, boost::str(boost::format("\
 File %1% is not readable")
-                             % filename));
+                                        % filename));
 
   std::string str;
   while (std::getline(is, str))
@@ -133,10 +127,9 @@ void File::save(std::string filename) const
 {
   std::ofstream os(filename.c_str());
   if (os.rdstate() & std::ofstream::failbit)
-    throw IOError(__FILE__, __LINE__,
-                  boost::str(boost::format("\
+    throw EXCEPTION(IOError, boost::str(boost::format("\
 File %1% is not writable")
-                             % filename));
+                                        % filename));
 
   std::vector<std::string>::const_iterator iter = this->lines_.begin();
   while (iter != this->lines_.end()) {

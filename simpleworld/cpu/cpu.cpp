@@ -162,7 +162,7 @@ void CPU::execute()
 void CPU::next()
 {
   if (not this->running_)
-    throw CPUException(__FILE__, __LINE__, "CPU stopped");
+    throw EXCEPTION(CPUException, "CPU stopped");
 
   if (this->interrupt_request_) {
 #ifdef DEBUG

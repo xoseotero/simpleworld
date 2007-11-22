@@ -38,13 +38,12 @@ namespace SimpleWorld
 inline void exception_outofrange(Position position, Position max)
 {
   if (position.x >= max.x or position.y >= max.y)
-    throw WorldError(__FILE__, __LINE__,
-                     boost::str(boost::format(\
+    throw EXCEPTION(WorldError, boost::str(boost::format(\
 "Position (%1%, %2%) is outside of the World (%1%, %2%)")
-                                % position.x
-                                % position.y
-                                % max.x
-                                % max.y));
+                                           % position.x
+                                           % position.y
+                                           % max.x
+                                           % max.y));
 }
 
 /**
@@ -57,11 +56,10 @@ inline void exception_used(const boost::multi_array<Element*, 2>& terrain,
 			   Position position)
 {
   if (terrain[position.x][position.y] != NULL)
-    throw WorldError(__FILE__, __LINE__,
-                     boost::str(boost::format(\
+    throw EXCEPTION(WorldError, boost::str(boost::format(\
 "Position (%1%, %2%) is already used")
-                                % position.x
-                                % position.y));
+                                           % position.x
+                                           % position.y));
 }
 
 /**
@@ -74,11 +72,10 @@ inline void exception_notused(const boost::multi_array<Element*, 2>& terrain,
 			     Position position)
 {
   if (terrain[position.x][position.y] == NULL)
-    throw WorldError(__FILE__, __LINE__,
-                     boost::str(boost::format(\
+    throw EXCEPTION(WorldError, boost::str(boost::format(\
 "Position (%1%, %2%) is not used")
-                                % position.x
-                                % position.y));
+                                           % position.x
+                                           % position.y));
 }
 
 
@@ -155,11 +152,10 @@ void World::move(Position oldposition, Position newposition)
 
   Element* element = this->operator[](oldposition);
   if (not element->movable())
-    throw WorldError(__FILE__, __LINE__,
-                     boost::str(boost::format(\
+    throw EXCEPTION(WorldError, boost::str(boost::format(\
 "Element in position (%1%, %2%) is not movable")
-                                % oldposition.x
-                                % oldposition.y));
+                                           % oldposition.x
+                                           % oldposition.y));
 
   // Update the World
   this->terrain_[oldposition.x][oldposition.y] = NULL;

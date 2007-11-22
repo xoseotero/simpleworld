@@ -40,7 +40,7 @@ DB::DB(std::string filename)
   try {
     this->open(filename);
   } catch (const sqlite3x::database_error& e) {
-    throw DBException(__FILE__, __LINE__, e.what());
+    throw EXCEPTION(DBException, e.what());
   }
 }
 
@@ -59,7 +59,7 @@ ORDER BY time;");
     while (cursor.step())
       ids.push_back(cursor.getint(0));
   } catch (const sqlite3x::database_error& e) {
-    throw DBException(__FILE__, __LINE__, e.what());
+    throw EXCEPTION(DBException, e.what());
   }
 
   return ids;
@@ -79,9 +79,9 @@ LIMIT 1;");
     if (cursor.step())
       return cursor.getint(0);
     else
-      throw DBException(__FILE__, __LINE__, "Table Environment is empty");
+      throw EXCEPTION(DBException, "Table Environment is empty");
   } catch (const sqlite3x::database_error& e) {
-    throw DBException(__FILE__, __LINE__, e.what());
+    throw EXCEPTION(DBException, e.what());
   }
 }
 
@@ -100,7 +100,7 @@ ORDER BY birth, id;");
     while (cursor.step())
       ids.push_back(cursor.getint64(0));
   } catch (const sqlite3x::database_error& e) {
-    throw DBException(__FILE__, __LINE__, e.what());
+    throw EXCEPTION(DBException, e.what());
   }
 
   return ids;
@@ -120,7 +120,7 @@ ORDER BY birth, id;");
     while (cursor.step())
       ids.push_back(cursor.getint64(0));
   } catch (const sqlite3x::database_error& e) {
-    throw DBException(__FILE__, __LINE__, e.what());
+    throw EXCEPTION(DBException, e.what());
   }
 
   return ids;
@@ -140,7 +140,7 @@ ORDER BY birth, id;");
     while (cursor.step())
       ids.push_back(cursor.getint64(0));
   } catch (const sqlite3x::database_error& e) {
-    throw DBException(__FILE__, __LINE__, e.what());
+    throw EXCEPTION(DBException, e.what());
   }
 
   return ids;
@@ -161,7 +161,7 @@ ORDER BY id;");
     while (cursor.step())
       ids.push_back(cursor.getint64(0));
   } catch (const sqlite3x::database_error& e) {
-    throw DBException(__FILE__, __LINE__, e.what());
+    throw EXCEPTION(DBException, e.what());
   }
 
   return ids;
@@ -185,10 +185,9 @@ void DB::on_open()
 
     this->create_tables();
   } else if (this->version_ != DATABASE_VERSION)
-    throw WrongVersion(__FILE__, __LINE__,
-		       boost::str(boost::format("\
+    throw EXCEPTION(WrongVersion, boost::str(boost::format("\
 Database version %1% not supported")
-				  % this->version_));
+                                             % this->version_));
 }
 
 void DB::create_tables()
@@ -740,6 +739,7 @@ FOR EACH ROW BEGIN\n\
          WHERE position_x=NEW.position_x AND position_y=NEW.position_y)\n\
         IS NOT NULL;\n\
 END;",
+
     NULL
   };
 
@@ -758,7 +758,7 @@ END;",
 
     transaction.commit();
   } catch (const sqlite3x::database_error& e) {
-    throw DBException(__FILE__, __LINE__, e.what());
+    throw EXCEPTION(DBException, e.what());
   }
 }
 

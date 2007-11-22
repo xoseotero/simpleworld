@@ -37,17 +37,15 @@ Orientation turn(Orientation orientation, Turn side)
       orientation != OrientationEast and
       orientation != OrientationSouth and
       orientation != OrientationWest)
-    throw WorldError(__FILE__, __LINE__,
-                     boost::str(boost::format("\
+    throw EXCEPTION(WorldError, boost::str(boost::format("\
 Wrong orientation value (%04x)")
-                                % orientation));
+                                           % orientation));
 
 
   if (side != TurnLeft and side != TurnRight)
-    throw WorldError(__FILE__, __LINE__,
-                     boost::str(boost::format("\
+    throw EXCEPTION(WorldError, boost::str(boost::format("\
 Wrong turn value (%04x)")
-                                % side));
+                                           % side));
 
   switch (side) {
   case TurnLeft:
@@ -78,17 +76,15 @@ Position move(Position position, Orientation orientation, Movement movement,
       orientation != OrientationEast and
       orientation != OrientationSouth and
       orientation != OrientationWest)
-    throw WorldError(__FILE__, __LINE__,
-                     boost::str(boost::format("\
+    throw EXCEPTION(WorldError, boost::str(boost::format("\
 Wrong orientation value (%04x)")
-                                % orientation));
+                                           % orientation));
 
   if (movement != MoveForward and
       movement != MoveBackward)
-    throw WorldError(__FILE__, __LINE__,
-                     boost::str(boost::format("\
+    throw EXCEPTION(WorldError, boost::str(boost::format("\
 Wrong movement value (%04x)")
-                                % movement));
+                                           % movement));
 
   switch (orientation) {
   case OrientationSouth:

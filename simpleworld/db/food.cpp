@@ -58,16 +58,15 @@ WHERE id = ?;");
 
     sqlite3x::sqlite3_cursor cursor(sql.executecursor());
     if (! cursor.step())
-      throw DBException(__FILE__, __LINE__,
-                        boost::str(boost::format("\
+      throw EXCEPTION(DBException, boost::str(boost::format("\
 id %1% not found in table Food")
-                                   % this->id_));
+                                              % this->id_));
 
     this->position.x = cursor.getint(0);
     this->position.y = cursor.getint(1);
     this->size = cursor.getint(2);
   } catch (const sqlite3x::database_error& e) {
-    throw DBException(__FILE__, __LINE__, e.what());
+    throw EXCEPTION(DBException, e.what());
   }
 
 
@@ -91,7 +90,7 @@ WHERE id = ?;");
 
       sql.executenonquery();
     } catch (const sqlite3x::database_error& e) {
-      throw DBException(__FILE__, __LINE__, e.what());
+      throw EXCEPTION(DBException, e.what());
     }
   }
 
@@ -114,7 +113,7 @@ VALUES(?, ?, ?);");
     sql.executenonquery();
     this->id_ = this->db_->insertid();
   } catch (const sqlite3x::database_error& e) {
-    throw DBException(__FILE__, __LINE__, e.what());
+    throw EXCEPTION(DBException, e.what());
   }
 
 
@@ -133,7 +132,7 @@ WHERE id = ?;");
 
     sql.executenonquery();
   } catch (const sqlite3x::database_error& e) {
-    throw DBException(__FILE__, __LINE__, e.what());
+    throw EXCEPTION(DBException, e.what());
   }
 
 

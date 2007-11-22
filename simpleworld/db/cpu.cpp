@@ -57,14 +57,13 @@ WHERE bug_id = ?;");
 
     sqlite3x::sqlite3_cursor cursor(sql.executecursor());
     if (! cursor.step())
-      throw DBException(__FILE__, __LINE__,
-                        boost::str(boost::format("\
+      throw EXCEPTION(DBException, boost::str(boost::format("\
 bug_id %1% not found in table CPU")
-                                   % this->id_));
+                                              % this->id_));
 
     this->registers = get_memory(&cursor, 0);
   } catch (const sqlite3x::database_error& e) {
-    throw DBException(__FILE__, __LINE__, e.what());
+    throw EXCEPTION(DBException, e.what());
   }
 
 
@@ -86,7 +85,7 @@ WHERE bug_id = ?;");
 
       sql.executenonquery();
     } catch (const sqlite3x::database_error& e) {
-      throw DBException(__FILE__, __LINE__, e.what());
+      throw EXCEPTION(DBException, e.what());
     }
   }
 
@@ -107,7 +106,7 @@ VALUES(?, ?);");
 
     sql.executenonquery();
   } catch (const sqlite3x::database_error& e) {
-    throw DBException(__FILE__, __LINE__, e.what());
+    throw EXCEPTION(DBException, e.what());
   }
 
 
@@ -126,7 +125,7 @@ WHERE bug_id = ?;");
 
     sql.executenonquery();
   } catch (const sqlite3x::database_error& e) {
-    throw DBException(__FILE__, __LINE__, e.what());
+    throw EXCEPTION(DBException, e.what());
   }
 
 

@@ -209,10 +209,9 @@ CPU::Word SimpleWorld::myself(Bug* bug, Info info, CPU::Word* ypos)
     return static_cast<CPU::Word>(bug->orientation);
 
   default:
-    throw ActionError(__FILE__, __LINE__,
-		    boost::str(boost::format(\
+    throw EXCEPTION(ActionError, boost::str(boost::format(\
 "Type of information (%04x) unknown")
-			       % info));
+                                            % info));
   }
 }
 
@@ -244,20 +243,18 @@ CPU::Word SimpleWorld::information(Bug* bug, Info info, CPU::Word* ypos)
   Position front = this->front(bug);
   Element* target = this->world_->get(front);
   if (target == NULL or target->type == ElementNothing)
-    throw ActionError(__FILE__, __LINE__,
-                      boost::str(boost::format("\
+    throw EXCEPTION(ActionError, boost::str(boost::format("\
 There is nothing in (%1%, %2%")
-                                 % front.x
-                                 % front.y));
+                                            % front.x
+                                            % front.y));
 
   if (target->type == ElementFood and (info == InfoID or
                                        info == InfoEnergy or
                                        info == InfoOrientation))
-      throw ActionError(__FILE__, __LINE__,
-                        boost::str(boost::format("\
+    throw EXCEPTION(ActionError, boost::str(boost::format("\
 The element in (%1%, %2%) is food")
-                                   % front.x
-                                   % front.y));
+                                            % front.x
+                                            % front.y));
 
   switch (info) {
   case InfoID:  // Only eggs and bugs
@@ -280,10 +277,9 @@ The element in (%1%, %2%) is food")
     return static_cast<CPU::Word>(static_cast< ::SimpleWorld::DB::BugElement* >(target)->orientation);
 
   default:
-    throw ActionError(__FILE__, __LINE__,
-		    boost::str(boost::format(\
+    throw EXCEPTION(ActionError, boost::str(boost::format(\
 "Type of information (%04x) unknown")
-			       % info));
+                                            % info));
   }
 }
 
@@ -301,7 +297,7 @@ void SimpleWorld::move(Bug* bug, Movement movement)
   try {
     this->world_->move(bug->position, this->front(bug));
   } catch (const Exception& e) {
-    throw ActionError(__FILE__, __LINE__, e.what);
+    throw EXCEPTION(ActionError, e.what);
   }
 }
 
@@ -319,7 +315,7 @@ void SimpleWorld::turn(Bug* bug, Turn turn)
   try {
     bug->orientation = ::SimpleWorld::turn(bug->orientation, turn);
   } catch (const Exception& e) {
-    throw ActionError(__FILE__, __LINE__, e.what);
+    throw EXCEPTION(ActionError, e.what);
   }
 }
 
