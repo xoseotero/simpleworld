@@ -1,11 +1,11 @@
 /**
- * @file simpleworld/config.hpp
- * Types definition.
+ * @file src/printexc.cpp
+ * Print a exception.
  *
- * begin:     Tue, 23 Jan 2007 00:00:00 +0100
+ * begin:     Thu, 22 Nov 2007 06:03:01 +0100
  * last:      $Date$
  *
- *  Copyright (C) 2007, Xosé Otero <xoseotero@users.sourceforge.net>
+ *  Copyright (C) 2007  Xosé Otero <xoseotero@users.sourceforge.net>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -20,22 +20,19 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef __SIMPLEWORLD_CONFIG_H__
-#define __SIMPLEWORLD_CONFIG_H__
 
-#define EXIT_SUCCESS 0
+#ifndef __PRINTEXC_HPP__
+#define __PRINTEXC_HPP__
 
-#cmakedefine IS_BIG_ENDIAN
-#cmakedefine IS_LITTLE_ENDIAN
+#include <simpleworld/exception.hpp>
+namespace sw = SimpleWorld;
 
-#cmakedefine UNIX
-#cmakedefine WIN32
+/**
+ * Print a exception.
+ * @param os Where to print.
+ * @param exc Exception to print.
+ * @return A reference to os.
+ */
+std::ostream& operator <<(std::ostream& os, const sw::Exception& exc);
 
-#cmakedefine HAVE_LONG_LONG
-#cmakedefine HAVE__INT64
-
-#cmakedefine HAVE_XYSSL
-#cmakedefine HAVE_OPENSSL
-#cmakedefine HAVE_CXXABI_H
-
-#endif // __SIMPLEWORLD_CONFIG_H__
+#endif // __PRINTEXC_HPP__

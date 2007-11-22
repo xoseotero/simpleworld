@@ -11,9 +11,10 @@
 #
 # The second option was used
 
-SET(fakecpu_SRCS
+SET(common_SRCS
+  printexc.cpp
   fakecpu.cpp)
-ADD_LIBRARY(fakecpu STATIC ${fakecpu_SRCS})
+ADD_LIBRARY(common STATIC ${common_SRCS})
 
 
 ADD_EXECUTABLE(simpleworld_exe simpleworld.cpp)
@@ -21,6 +22,7 @@ TARGET_LINK_LIBRARIES(simpleworld_exe
   simpleworld_cpu
   simpleworld_db
   simpleworld
+  common
   ${getopt_LIB}
   ${Boost_filesystem_LIBRARY}
   ${Boost_regex_LIBRARY}
@@ -34,7 +36,9 @@ SET_TARGET_PROPERTIES(simpleworld_exe PROPERTIES
   INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
 
 ADD_EXECUTABLE(swlc swlc.cpp)
-TARGET_LINK_LIBRARIES(swlc simpleworld_cpu fakecpu
+TARGET_LINK_LIBRARIES(swlc
+  simpleworld_cpu
+  common
   ${getopt_LIB}
   ${Boost_program_options_LIBRARY} ${Boost_filesystem_LIBRARY}
   ${Boost_regex_LIBRARY})
@@ -43,7 +47,9 @@ SET_TARGET_PROPERTIES(swlc PROPERTIES
   INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
 
 ADD_EXECUTABLE(swld swld.cpp)
-TARGET_LINK_LIBRARIES(swld simpleworld_cpu fakecpu
+TARGET_LINK_LIBRARIES(swld
+  simpleworld_cpu
+  common
   ${getopt_LIB}
   ${Boost_program_options_LIBRARY} ${Boost_filesystem_LIBRARY} ${Boost_regex_LIBRARY})
 SET_TARGET_PROPERTIES(swld PROPERTIES
@@ -51,7 +57,9 @@ SET_TARGET_PROPERTIES(swld PROPERTIES
   INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
 
 ADD_EXECUTABLE(swcpu swcpu.cpp)
-TARGET_LINK_LIBRARIES(swcpu simpleworld_cpu fakecpu
+TARGET_LINK_LIBRARIES(swcpu
+  simpleworld_cpu
+  common
   ${getopt_LIB}
   ${Boost_program_options_LIBRARY} ${Boost_filesystem_LIBRARY}
   ${Boost_regex_LIBRARY})

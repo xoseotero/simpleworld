@@ -47,6 +47,11 @@ IF(CMAKE_NO_ANSI_STREAM_HEADERS OR CMAKE_NO_STD_NAMESPACE)
 ENDIF(CMAKE_NO_ANSI_STREAM_HEADERS OR CMAKE_NO_STD_NAMESPACE)
 
 
+# Check for GCC cxxabi.h, for demangle the name of the clases returned by
+# typeid(*).name() in this compiler
+CHECK_INCLUDE_FILE_CXX("cxxabi.h" HAVE_CXXABI_H)
+
+
 # Boost is needed
 SET(Boost_LIB_TYPE "st")
 #SET(Boost_LIB_SUFFIX "gcc41-mt-1_34")

@@ -47,6 +47,8 @@ namespace sw = SimpleWorld;
 namespace cpu = SimpleWorld::CPU;
 namespace db = SimpleWorld::DB;
 
+#include "printexc.hpp"
+
 #define DEFAULT_ENERGY 64
 
 // information about he program.
@@ -569,11 +571,7 @@ Position (%1%, %2%) is already used")
   std::exit(EXIT_SUCCESS);
 }
 catch (const sw::Exception& e) {
-  std::cout << boost::format("Exception thrown in %1%:%2% at %3%")
-    % e.file
-    % e.line
-    % e.function
-    << std::endl;
+  std::cout << e << std::endl;
 }
 catch (const std::exception& e) {
   std::cout << boost::format("Exception thrown: %1%") % e.what() << std::endl;

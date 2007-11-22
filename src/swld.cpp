@@ -36,6 +36,7 @@
 namespace sw = SimpleWorld;
 namespace cpu = SimpleWorld::CPU;
 
+#include "printexc.hpp"
 #include "fakecpu.hpp"
 
 #define DEFAULT_OUTPUT "out.swl"
@@ -201,11 +202,7 @@ try {
   std::exit(EXIT_SUCCESS);
 }
 catch (const sw::Exception& e) {
-  std::cout << boost::format("Exception thrown in %1%:%2% at %3%")
-    % e.file
-    % e.line
-    % e.function
-    << std::endl;
+  std::cout << e << std::endl;
 }
 catch (const std::exception& e) {
   std::cout << boost::format("Exception thrown: %1%") % e.what() << std::endl;
