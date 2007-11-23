@@ -241,29 +241,34 @@ Instruction CPU::fetch_instruction_() const
 
 void CPU::interrupt_handler_()
 {
+  if (not this->interrupt_request_)
+    return;
+
   Word itp = this->registers_->get_word(REGISTER_ITP);
-  Word handler =
-    this->memory_->get_word(itp + this->interrupt_.type * sizeof(Word));
-  if (this->interrupt_request_ and itp != 0 and handler != 0) {
-    // Save all the registers in the stack
-    Sint8 i;
-    for (i = 0; i < 16; i++) {
-      // Store a register:
-      // Save the register in the top of the stack
-      this->registers_->set_word(REGISTER_STP,
-                                 this->registers_->get_word(REGISTER(i)));
-      // Update stack pointer
-      this->registers_->set_word(REGISTER_STP,
-                                 this->registers_->get_word(REGISTER_STP) - 4);
+  if (itp != 0) {
+    Word handler =
+      this->memory_->get_word(itp + this->interrupt_.type * sizeof(Word));
+    if (handler != 0) {
+      // Save all the registers in the stack
+      Sint8 i;
+      for (i = 0; i < 16; i++) {
+        // Store a register:
+        // Save the register in the top of the stack
+        this->registers_->set_word(REGISTER_STP,
+                                   this->registers_->get_word(REGISTER(i)));
+        // Update stack pointer
+        this->registers_->set_word(REGISTER_STP,
+                                   this->registers_->get_word(REGISTER_STP) - 4);
+      }
+
+      // Store the information of the interrupt
+      this->registers_->set_word(REGISTER(0), this->interrupt_.r0);
+      this->registers_->set_word(REGISTER(1), this->interrupt_.r1);
+      this->registers_->set_word(REGISTER(2), this->interrupt_.r2);
+
+      // Update the PC with the interrupt handler location
+      this->registers_->set_word(REGISTER_PC, handler);
     }
-
-    // Store the information of the interrupt
-    this->registers_->set_word(REGISTER(0), this->interrupt_.r0);
-    this->registers_->set_word(REGISTER(1), this->interrupt_.r1);
-    this->registers_->set_word(REGISTER(2), this->interrupt_.r2);
-
-    // Update the PC with the interrupt handler location
-    this->registers_->set_word(REGISTER_PC, handler);
   }
 
   // Clear the interrupt request
