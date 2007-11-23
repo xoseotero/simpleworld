@@ -107,9 +107,9 @@ WHERE id = ?;");
       sql.bind(4, static_cast<int>(this->orientation));
       sql.bind(5, static_cast<int>(this->birth));
       if (this->is_null("father_id"))
-	sql.bind(6);
+        sql.bind(6);
       else
-	sql.bind(6, static_cast<sqlite3x::int64_t>(this->father_id));
+        sql.bind(6, static_cast<sqlite3x::int64_t>(this->father_id));
       sql.bind(7, this->id_);
 
       sql.executenonquery();

@@ -69,7 +69,7 @@ public:
    * @exception SimpleWorld::Exception address > (size - 4)
    */
   void set_word(CPU::Address address, CPU::Word value,
-		bool system_endian = true);
+                bool system_endian = true);
 
 
   /**

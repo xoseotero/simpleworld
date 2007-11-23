@@ -68,7 +68,7 @@ enum Update {
  * @return if the PC must be updated.
  */
 typedef Update (*Operation) (Memory& regs, Memory& mem, Interrupt& interrupt,
-			     Instruction inst);
+                             Instruction inst);
 
 /**
  * Information about instruction's parameters.

@@ -439,7 +439,7 @@ void SimpleWorld::on_open()
 Position SimpleWorld::front(Bug* bug)
 {
   return ::SimpleWorld::move(bug->position, bug->orientation,
-			     MoveForward, this->world_->size());
+                             MoveForward, this->world_->size());
 }
 
 

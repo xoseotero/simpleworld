@@ -129,8 +129,8 @@ public:
   bool is_null(std::string colname) const
   {
     return std::find(this->null.begin(),
-		     this->null.end(),
-		     colname) != this->null.end();
+                     this->null.end(),
+                     colname) != this->null.end();
   }
 
   /**
@@ -149,8 +149,8 @@ public:
   void remove_null(std::string colname)
   {
     this->null.erase(std::find(this->null.begin(),
-			       this->null.end(),
-			       colname));
+                               this->null.end(),
+                               colname));
   }
 
 

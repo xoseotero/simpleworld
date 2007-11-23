@@ -85,7 +85,7 @@ Update loadi(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst)
 }
 
 Update loadrr(Memory& regs, Memory& mem, Interrupt& interrupt,
-	      Instruction inst)
+              Instruction inst)
 {
   regs.set_word(REGISTER(inst.first),
                 mem[regs[REGISTER(inst.second)] +
@@ -95,7 +95,7 @@ Update loadrr(Memory& regs, Memory& mem, Interrupt& interrupt,
 }
 
 Update loadri(Memory& regs, Memory& mem, Interrupt& interrupt,
-	      Instruction inst)
+              Instruction inst)
 {
   regs.set_word(REGISTER(inst.first),
                 mem[regs[REGISTER(inst.second)] + inst.address]);
@@ -113,7 +113,7 @@ Update store(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst)
 }
 
 Update storerr(Memory& regs, Memory& mem, Interrupt& interrupt,
-	       Instruction inst)
+               Instruction inst)
 {
   mem.set_word(regs[inst.first] + regs[inst.address], regs[inst.second]);
 
@@ -121,7 +121,7 @@ Update storerr(Memory& regs, Memory& mem, Interrupt& interrupt,
 }
 
 Update storeri(Memory& regs, Memory& mem, Interrupt& interrupt,
-	       Instruction inst)
+               Instruction inst)
 {
   mem.set_word(regs[inst.first] + inst.address, regs[inst.second]);
 

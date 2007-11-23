@@ -77,14 +77,14 @@ void help()
 Simple World Language compiler.\n\
 \n\
 Mandatory arguments to long options are mandatory for short options too.\n\
-  -E, --preprocess		preprocess only; do not compile\n\
-  -I, --include=PATH		add a directory where to search the\n\
-                    		included files\n\
-  -o, --output=FILE		place the output into FILE\n\
-                   		the default value is %2%\n\
+  -E, --preprocess           preprocess only; do not compile\n\
+  -I, --include=PATH         add a directory where to search the\n\
+                               included files\n\
+  -o, --output=FILE          place the output into FILE\n\
+                               the default value is %2%\n\
 \n\
-  -h, --help			display this help and exit\n\
-  -v, --version			output version information and exit\n\
+  -h, --help                 display this help and exit\n\
+  -v, --version              output version information and exit\n\
 \n\
 Exit status is 0 if OK, 1 if minor problems, 2 if serious trouble.\n\
 \n\
@@ -154,7 +154,7 @@ void parse_cmd(int argc, char* argv[])
     int option_index = 0;
 
     int c = getopt_long(argc, argv, "EI:o:vh", long_options,
-			&option_index);
+                        &option_index);
 
     /* Detect the end of the options. */
     if (c == -1)

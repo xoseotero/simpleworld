@@ -61,7 +61,7 @@ File %1% is not readable")
     throw EXCEPTION(IOError, boost::str(boost::format("\
 The size of %1% (%2%) is not a multiple of 32bits")
                                         % filename
-			     % is.tellg()));
+                                        % is.tellg()));
 
   is.seekg(0);
   while (is.read(reinterpret_cast<char*>(&instruction), sizeof(Word))) {

@@ -57,8 +57,8 @@ public:
    * @exception IOError if file can't be opened
    */
   Source(const InstructionSet& set,
-	 const std::vector<std::string>& include_path,
-	 const std::string& filename);
+         const std::vector<std::string>& include_path,
+         const std::string& filename);
 
 
   /**

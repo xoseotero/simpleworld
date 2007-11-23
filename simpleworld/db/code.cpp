@@ -280,10 +280,10 @@ static void md5_digest(const CPU::Memory& code, unsigned char digest[16])
     word = code.get_word(i, false);
 #ifdef HAVE_OPENSSL
     MD5_Update(&ctx, reinterpret_cast<unsigned char*>(&word),
-	       sizeof(CPU::Word));
+               sizeof(CPU::Word));
 #else
     md5_update(&ctx, reinterpret_cast<unsigned char*>(&word),
-	       sizeof(CPU::Word));
+               sizeof(CPU::Word));
 #endif // HAVE_OPENSSL
   }
 

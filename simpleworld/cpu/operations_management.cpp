@@ -34,7 +34,7 @@ Update stop(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst)
 }
 
 Update restart(Memory& regs, Memory& mem, Interrupt& interrupt,
-	       Instruction inst)
+               Instruction inst)
 {
   Uint8 i;
   for (i = 0; i < 16; i++)

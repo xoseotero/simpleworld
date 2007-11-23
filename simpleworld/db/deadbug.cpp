@@ -114,13 +114,13 @@ WHERE id = ?;");
       //assert(not this->is_null("dead"));
       sql.bind(5, static_cast<int>(this->dead));
       if (this->is_null("father_id"))
-	sql.bind(6);
+        sql.bind(6);
       else
-	sql.bind(6, static_cast<sqlite3x::int64_t>(this->father_id));
+        sql.bind(6, static_cast<sqlite3x::int64_t>(this->father_id));
       if (this->is_null("killer_id"))
-	sql.bind(7);
+        sql.bind(7);
       else
-	sql.bind(7, static_cast<sqlite3x::int64_t>(this->killer_id));
+        sql.bind(7, static_cast<sqlite3x::int64_t>(this->killer_id));
       sql.bind(8, this->id_);
 
       sql.executenonquery();

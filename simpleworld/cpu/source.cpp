@@ -210,7 +210,7 @@ static fs::path find_file(const std::vector<std::string>& path,
 
 
 Source::Source(const InstructionSet& set,
-	       const std::vector<std::string>& include_path,
+               const std::vector<std::string>& include_path,
                const std::string& filename)
   : File(filename), set_(set), include_path_(include_path)
 {
@@ -340,7 +340,7 @@ void Source::replace_blocks()
 
         this->remove(i, 1);
         while (size-- > 0)
-	  this->insert(i, "0x00000000");
+          this->insert(i, "0x00000000");
       }
     }
 }

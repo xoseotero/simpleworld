@@ -80,7 +80,7 @@ Update multl(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst)
 }
 
 Update multli(Memory& regs, Memory& mem, Interrupt& interrupt,
-	      Instruction inst)
+              Instruction inst)
 {
   Sint64 result = static_cast<Sint32>(regs[REGISTER(inst.second)]) *
     static_cast<Sint32>(inst.address);
@@ -91,7 +91,7 @@ Update multli(Memory& regs, Memory& mem, Interrupt& interrupt,
 }
 
 Update multlu(Memory& regs, Memory& mem, Interrupt& interrupt,
-	      Instruction inst)
+              Instruction inst)
 {
   Uint64 result = regs[REGISTER(inst.second)] * regs[REGISTER(inst.address)];
   regs.set_word(REGISTER(inst.first),
@@ -101,7 +101,7 @@ Update multlu(Memory& regs, Memory& mem, Interrupt& interrupt,
 }
 
 Update multlui(Memory& regs, Memory& mem, Interrupt& interrupt,
-	       Instruction inst)
+               Instruction inst)
 {
   Uint64 result = regs[REGISTER(inst.second)] *
     static_cast<Uint32>(inst.address);
@@ -122,7 +122,7 @@ Update multh(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst)
 }
 
 Update multhi(Memory& regs, Memory& mem, Interrupt& interrupt,
-	      Instruction inst)
+              Instruction inst)
 {
   Sint64 result = static_cast<Sint32>(regs[REGISTER(inst.second)]) *
     static_cast<Sint32>(inst.address);
@@ -133,7 +133,7 @@ Update multhi(Memory& regs, Memory& mem, Interrupt& interrupt,
 }
 
 Update multhu(Memory& regs, Memory& mem, Interrupt& interrupt,
-	      Instruction inst)
+              Instruction inst)
 {
   Uint64 result = regs[REGISTER(inst.second)] * regs[REGISTER(inst.address)];
   regs.set_word(REGISTER(inst.first),

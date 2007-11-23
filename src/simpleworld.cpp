@@ -86,26 +86,26 @@ void help()
 The simulation of a world and the bugs that live on it.\n\
 \n\
 Mandatory arguments to long options are mandatory for short options too.\n\
-  -c, --create			create a void world\n\
-  -r, --run=CYCLES		run CYCLES cycles in the world\n\
-  -e, --egg=PATH		add a egg to the world\n\
-  -f, --food			add food to the world\n\
-  -i, --info			show information about the world\n\
-  -I, --extrainfo		show information about the world and its\n\
-                 		elements (eggs, bugs and food)\n\
+  -c, --create               create a void world\n\
+  -r, --run=CYCLES           run CYCLES cycles in the world\n\
+  -e, --egg=PATH             add a egg to the world\n\
+  -f, --food                 add food to the world\n\
+  -i, --info                 show information about the world\n\
+  -I, --extrainfo            show information about the world and its\n\
+                               elements (eggs, bugs and food)\n\
 \n\
-      --position=X,Y		position of the element added\n\
-                    		if not set, a random position is calculated\n\
-      --orientation=ORIENTATION	orientation of the element added\n\
-                               	valid values are: north, east, south and \
-west\n\
-                               	if not set, a random orientation is\n\
-                               	calculated\n\
-      --energy=ENERGY		energy of the element added\n\
-                     		if not set, the default value is %2%\n\
+      --position=X,Y         position of the element added\n\
+                               if not set, a random position is calculated\n\
+      --orientation=ORIENTATION
+                             orientation of the element added\n\
+                               valid values are: north, east, south and west\n\
+                               if not set, a random orientation is\n\
+                               calculated\n\
+      --energy=ENERGY        energy of the element added\n\
+                               if not set, the default value is %2%\n\
 \n\
-  -h, --help			display this help and exit\n\
-  -v, --version			output version information and exit\n\
+  -h, --help                 display this help and exit\n\
+  -v, --version              output version information and exit\n\
 \n\
 Exit status is 0 if OK, 1 if minor problems, 2 if serious trouble.\n\
 \n\
@@ -195,7 +195,7 @@ void parse_cmd(int argc, char* argv[])
     int option_index = 0;
 
     int c = getopt_long(argc, argv, "cr:e:fiInvh", long_options,
-			&option_index);
+                        &option_index);
 
     /* Detect the end of the options. */
     if (c == -1)
@@ -211,11 +211,11 @@ void parse_cmd(int argc, char* argv[])
     case 'r':
       run_flag = true;
       {
-	char* endptr;
-	cycles = std::strtoul(optarg, &endptr, 10);
-	if (*endptr != '\0')
-	  usage(boost::str(boost::format("invalid argument `%1%'")
-			   % optarg));
+        char* endptr;
+        cycles = std::strtoul(optarg, &endptr, 10);
+        if (*endptr != '\0')
+          usage(boost::str(boost::format("invalid argument `%1%'")
+                           % optarg));
       }
 
       break;
@@ -243,24 +243,24 @@ void parse_cmd(int argc, char* argv[])
 
     case 'p':
       if (sscanf(optarg, "%u,%u", &position.x, &position.y) != 2)
-	usage(boost::str(boost::format("Invalid value for --position (%1%)")
-			 % optarg));
+        usage(boost::str(boost::format("Invalid value for --position (%1%)")
+                         % optarg));
       position_set = true;
 
       break;
 
     case 'o':
       if (strcasecmp(optarg, "north") == 0)
-	orientation = sw::OrientationNorth;
+        orientation = sw::OrientationNorth;
       else if (strcasecmp(optarg, "east") == 0)
-	orientation = sw::OrientationEast;
+        orientation = sw::OrientationEast;
       else if (strcasecmp(optarg, "south") == 0)
-	orientation = sw::OrientationSouth;
+        orientation = sw::OrientationSouth;
       else if (strcasecmp(optarg, "west") == 0)
-	orientation = sw::OrientationWest;
+        orientation = sw::OrientationWest;
       else
-	usage(boost::str(boost::format("Invalid value for --orientation (%1%)")
-			 % optarg));
+        usage(boost::str(boost::format("Invalid value for --orientation (%1%)")
+                         % optarg));
 
       orientation_set = true;
 
@@ -268,11 +268,11 @@ void parse_cmd(int argc, char* argv[])
 
     case 'n':
       {
-	char* endptr;
-	energy = std::strtoul(optarg, &endptr, 10);
-	if (*endptr != '\0')
-	  usage(boost::str(boost::format("invalid argument `%1%'")
-			   % optarg));
+        char* endptr;
+        energy = std::strtoul(optarg, &endptr, 10);
+        if (*endptr != '\0')
+          usage(boost::str(boost::format("invalid argument `%1%'")
+                           % optarg));
       }
 
       break;
@@ -321,7 +321,7 @@ void parse_cmd(int argc, char* argv[])
  * @param environment environment of the World.
  */
 void show_world_info(const db::Environment& environment,
-		     const sw::World& world)
+                     const sw::World& world)
 {
   std::cout << boost::format("\
 Size:\t%1% x %2%\n\
@@ -378,100 +378,100 @@ void show_world_elements(const sw::World& world)
   for (i.x = 0; i.x < size.x; i.x++)
     for (i.y = 0; i.y < size.y; i.y++) {
       if (not world.used(i))
-	continue;
+        continue;
 
 
       sw::Element* element = world[i];
 
       switch (element->type) {
       case sw::ElementEgg:
-	{
-	  db::Egg* egg = dynamic_cast<db::Egg*>(element);
+        {
+          db::Egg* egg = dynamic_cast<db::Egg*>(element);
 
-	  std::cout << boost::format("\
+          std::cout << boost::format("\
 Egg[%1%] at (%2%, %3%):\n\
 \tOrientation:\t%4%\n\
 \tEnergy:\t%5%\n\
 \n\
 \tBirth:\t%6%\n\
 \tFather:\t%7%")
-	    % egg->id()
+            % egg->id()
 
-	    % egg->position.x
-	    % egg->position.y
-	    % egg->orientation
+            % egg->position.x
+            % egg->position.y
+            % egg->orientation
 
-	    % egg->energy
+            % egg->energy
 
-	    % egg->birth
-	    % egg->father_id
+            % egg->birth
+            % egg->father_id
 
-	    << std::endl;
-	  }
+            << std::endl;
+        }
 
-	element_found = true;
+        element_found = true;
 
-	break;
+        break;
 
       case sw::ElementBug:
-	{
-	  db::Bug* bug = dynamic_cast<db::Bug*>(element);
+        {
+          db::Bug* bug = dynamic_cast<db::Bug*>(element);
 
-	  std::cout << boost::format("\
+          std::cout << boost::format("\
 Bug[%1%] at (%2%, %3%):\n\
 \tOrientation:\t%4%\n\
 \tEnergy:\t%5%\n\
 \n\
 \tBirth:\t%6%\n\
 \tFather:\t%7%")
-	    % bug->id()
+            % bug->id()
 
-	    % bug->position.x
-	    % bug->position.y
-	    % bug->orientation
+            % bug->position.x
+            % bug->position.y
+            % bug->orientation
 
-	    % bug->energy
+            % bug->energy
 
-	    % bug->birth
-	    % bug->father_id
+            % bug->birth
+            % bug->father_id
 
-	    << std::endl;
-	}
+            << std::endl;
+        }
 
-	element_found = true;
+        element_found = true;
 
-	break;
+        break;
 
       case sw::ElementFood:
-	{
-	  db::Food* food = dynamic_cast<db::Food*>(element);
+        {
+          db::Food* food = dynamic_cast<db::Food*>(element);
 
-	  std::cout << boost::format("\
+          std::cout << boost::format("\
 Food[%1%] at (%2%, %3%):\n\
 \tSize:\t%4%")
-	    % food->id()
+            % food->id()
 
-	    % food->position.x
-	    % food->position.y
+            % food->position.x
+            % food->position.y
 
-	    % food->size
-	    << std::endl;
-	}
+            % food->size
+            << std::endl;
+        }
 
-	element_found = true;
+        element_found = true;
 
-	break;
+        break;
 
       default:
-	std::cout << boost::format("\
+        std::cout << boost::format("\
 Unknown element at (%1%, %2%)")
-	  % element->position.x
-	  % element->position.y
-	  << std::endl;
+          % element->position.x
+          % element->position.y
+          << std::endl;
 
-	element_found = true;
+        element_found = true;
 
-	break;
+        break;
       }
     }
 
@@ -491,7 +491,7 @@ sw::Position random_position(const sw::Position& max)
 sw::Orientation random_orientation()
 {
   return static_cast<sw::Orientation>(float(4) *
-				      (std::rand() / (RAND_MAX + 1.0)));
+                                      (std::rand() / (RAND_MAX + 1.0)));
 }
 
 

@@ -53,7 +53,7 @@ inline void exception_outofrange(Position position, Position max)
  * @exception Exception if the position is used.
  */
 inline void exception_used(const boost::multi_array<Element*, 2>& terrain,
-			   Position position)
+                           Position position)
 {
   if (terrain[position.x][position.y] != NULL)
     throw EXCEPTION(WorldError, boost::str(boost::format(\
@@ -69,7 +69,7 @@ inline void exception_used(const boost::multi_array<Element*, 2>& terrain,
  * @exception Exception if the position is not used.
  */
 inline void exception_notused(const boost::multi_array<Element*, 2>& terrain,
-			     Position position)
+                              Position position)
 {
   if (terrain[position.x][position.y] == NULL)
     throw EXCEPTION(WorldError, boost::str(boost::format(\

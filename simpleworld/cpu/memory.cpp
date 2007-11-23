@@ -116,10 +116,10 @@ Address %08x is out of range")
   if (system_endian)
     if (address % 2 == 0)
       *(reinterpret_cast<Uint32*>(&this->memory_[address])) =
-	change_byte_order(value);
+        change_byte_order(value);
     else
       *(reinterpret_cast<Uint32*>(&this->memory_[address])) =
-	change_byte_order_middle(value);
+        change_byte_order_middle(value);
   else
     *(reinterpret_cast<Uint32*>(&this->memory_[address])) = value;
 #endif

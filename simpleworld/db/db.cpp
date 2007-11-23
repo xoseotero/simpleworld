@@ -176,7 +176,7 @@ void DB::on_open()
   // by default) and the version of the database (user_version is set to
   // DATABASE_VERSION) to check if the database is compatible
   this->version_ = this->executeint("PRAGMA user_version;");
-  if (this->version_ == 0) {	// Data base was created now
+  if (this->version_ == 0) {    // Data base was created now
     //sqlite3x::sqlite3_command sql(*this, "PRAGMA user_version = '?';");
     //sql.bind(1, static_cast<int>(DATABASE_VERSION));
     sqlite3x::sqlite3_command sql(*this, "PRAGMA user_version = 1;");
@@ -325,23 +325,23 @@ CREATE INDEX Bug_dead_index ON Bug(dead);",
     "\
 CREATE VIEW Bug_egg AS\n\
   SELECT id, energy, position_x, position_y, orientation,\n\
-	 birth, father_id\n\
+         birth, father_id\n\
   FROM Bug\n\
   WHERE dead IS NULL AND birth > (SELECT max(time)\n\
-				    FROM Environment);",
+                                  FROM Environment);",
 
     "\
 CREATE VIEW Bug_alive AS\n\
   SELECT id, energy, position_x, position_y, orientation,\n\
-	 birth, father_id\n\
+         birth, father_id\n\
   FROM Bug\n\
   WHERE dead IS NULL AND birth <= (SELECT max(time)\n\
-				   FROM Environment);",
+                                   FROM Environment);",
 
     "\
 CREATE VIEW Bug_dead AS\n\
   SELECT id, position_x, position_y, orientation,\n\
-	 birth, dead, father_id, killer_id\n\
+         birth, dead, father_id, killer_id\n\
   FROM Bug\n\
   WHERE dead IS NOT NULL;",
 

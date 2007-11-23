@@ -57,7 +57,7 @@ File %1% is not readable")
     throw EXCEPTION(IOError, boost::str(boost::format("\
 The size of %1% (%2%) is not a multiple of 32bits")
                                         % filename
-			     % size));
+                                        % size));
 
   // @TODO: File can be greater than the Address type.
   this->resize(size);

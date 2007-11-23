@@ -50,7 +50,7 @@ void Memory::resize(CPU::Address size)
 
 
 void Memory::set_word(CPU::Address address, CPU::Word value,
-		      bool system_endian)
+                      bool system_endian)
 {
   CPU::Memory::set_word(address, value, system_endian);
 

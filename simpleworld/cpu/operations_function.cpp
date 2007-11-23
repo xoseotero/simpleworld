@@ -42,7 +42,7 @@ Update call(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst)
 }
 
 Update interrupt(Memory& regs, Memory& mem, Interrupt& interrupt,
-		 Instruction inst)
+                 Instruction inst)
 {
   interrupt.type = SoftwareInterrupt;
   interrupt.r0 = static_cast<Word>(SoftwareInterrupt);

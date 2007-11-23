@@ -138,10 +138,10 @@ void Environment::insert()
   try {
     sql.prepare("\
 INSERT INTO Environment(time, size_x, size_y,\n\
-			energy_developed, mutations_probability, time_birth,\n\
-			energy_nothing, energy_myself, energy_detect,\n\
-			energy_info, energy_move, energy_turn,\n\
-			energy_attack, energy_eat, energy_egg)\n\
+                        energy_developed, mutations_probability, time_birth,\n\
+                        energy_nothing, energy_myself, energy_detect,\n\
+                        energy_info, energy_move, energy_turn,\n\
+                        energy_attack, energy_eat, energy_egg)\n\
 VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
     sql.bind(1, static_cast<int>(this->time));
     sql.bind(2, static_cast<ID>(this->size.x));

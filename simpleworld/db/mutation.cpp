@@ -91,13 +91,13 @@ SET position = ?, original = ?, mutated = ?, bug_id\n\
 WHERE id = ?;");
       sql.bind(1, static_cast<int>(this->position));
       if (this->type == Mutation::addition)
-	sql.bind(2);
+        sql.bind(2);
       else
-	sql.bind(2, static_cast<int>(this->original));
+        sql.bind(2, static_cast<int>(this->original));
       if (this->type == Mutation::deletion)
-	sql.bind(3);
+        sql.bind(3);
       else
-	sql.bind(3, static_cast<int>(this->mutated));
+        sql.bind(3, static_cast<int>(this->mutated));
       sql.bind(4, this->id_);
 
       sql.executenonquery();

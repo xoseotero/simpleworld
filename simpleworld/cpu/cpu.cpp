@@ -168,7 +168,7 @@ void CPU::next()
 #ifdef DEBUG
     std::cout << boost::str(boost::format("Interrupt: 0x%8x")
                             % this->interrupt_.type)
-	      << std::endl;
+              << std::endl;
 #endif
     this->interrupt_handler_();
   } else {
@@ -178,12 +178,12 @@ void CPU::next()
 #ifdef DEBUG
       std::cout << "Instruction info:";
       std::cout
-	<< boost::str(boost::format("code: %d, name: %s, nregs: %d, has_i: %d")
-		      % static_cast<int>(info.code)
-		      % info.name
-		      % static_cast<int>(info.nregs)
-		      % static_cast<int>(info.has_inmediate))
-	<< std::endl;
+        << boost::str(boost::format("code: %d, name: %s, nregs: %d, has_i: %d")
+                      % static_cast<int>(info.code)
+                      % info.name
+                      % static_cast<int>(info.nregs)
+                      % static_cast<int>(info.has_inmediate))
+        << std::endl;
 #endif
 
       switch (info.func(*this->registers_, *this->memory_, this->interrupt_,

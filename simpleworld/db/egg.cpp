@@ -98,9 +98,9 @@ WHERE id = ?;");
       sql.bind(4, static_cast<int>(this->orientation));
       sql.bind(5, static_cast<int>(this->birth));
       if (this->is_null("father_id"))
-	sql.bind(6);
+        sql.bind(6);
       else
-	sql.bind(6, static_cast<sqlite3x::int64_t>(this->father_id));
+        sql.bind(6, static_cast<sqlite3x::int64_t>(this->father_id));
       sql.bind(7, this->id_);
 
       sql.executenonquery();
@@ -120,7 +120,7 @@ void Egg::insert()
   try {
     sql.prepare("\
 INSERT INTO Bug(energy, position_x, position_y, orientation,\n\
-		birth, father_id)\n\
+                birth, father_id)\n\
 VALUES(?, ?, ?, ?, ?, ?);");
     sql.bind(1, static_cast<int>(this->energy));
     sql.bind(2, static_cast<int>(this->position.x));
