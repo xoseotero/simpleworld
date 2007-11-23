@@ -38,13 +38,6 @@ InstructionSet::InstructionSet()
 {
 }
 
-InstructionSet::InstructionSet(const InstructionSet& set)
-  : instructions_(set.instructions_),
-    instruction_codes_(set.instruction_codes_), registers_(set.registers_),
-    register_codes_(set.register_codes_)
-{
-}
-
 
 Word InstructionSet::encode(const Instruction& instruction)
 {

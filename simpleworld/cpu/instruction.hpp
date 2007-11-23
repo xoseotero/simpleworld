@@ -96,12 +96,6 @@ public:
    */
   InstructionSet();
 
-  /**
-   * Copy constructor.
-   * @param set instruction set to copy.
-   */
-  InstructionSet(const InstructionSet& set);
-
 
   /**
    * Encode the instruction to a Word (in big endian).
