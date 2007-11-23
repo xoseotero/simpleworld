@@ -26,8 +26,8 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __SIMPLEWORLD_SIMPLEWORLD_HPP__
-#define __SIMPLEWORLD_SIMPLEWORLD_HPP__
+#ifndef SIMPLEWORLD_SIMPLEWORLD_HPP
+#define SIMPLEWORLD_SIMPLEWORLD_HPP
 
 #include <list>
 #include <string>
@@ -218,4 +218,4 @@ private:
 
 }
 
-#endif // __SIMPLEWORLD_SIMPLEWORLD_HPP__
+#endif // SIMPLEWORLD_SIMPLEWORLD_HPP

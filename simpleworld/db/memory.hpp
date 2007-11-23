@@ -21,8 +21,8 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __SIMPLEWORLD_DB_MEMORY_HPP__
-#define __SIMPLEWORLD_DB_MEMORY_HPP__
+#ifndef SIMPLEWORLD_DB_MEMORY_HPP
+#define SIMPLEWORLD_DB_MEMORY_HPP
 
 #include <simpleworld/cpu/memory.hpp>
 
@@ -93,4 +93,4 @@ private:
 }
 }
 
-#endif // __SIMPLEWORLD_DB_MEMORY_HPP__
+#endif // SIMPLEWORLD_DB_MEMORY_HPP

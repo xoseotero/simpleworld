@@ -21,8 +21,8 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __SIMPLEWORLD_EGG_HPP__
-#define __SIMPLEWORLD_EGG_HPP__
+#ifndef SIMPLEWORLD_EGG_HPP
+#define SIMPLEWORLD_EGG_HPP
 
 #include <simpleworld/db/egg.hpp>
 
@@ -45,4 +45,4 @@ public:
 
 }
 
-#endif // __SIMPLEWORLD_EGG_HPP__
+#endif // SIMPLEWORLD_EGG_HPP

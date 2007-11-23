@@ -21,8 +21,8 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __SIMPLEWORLD_DB_COMMON_HPP__
-#define __SIMPLEWORLD_DB_COMMON_HPP__
+#ifndef SIMPLEWORLD_DB_COMMON_HPP
+#define SIMPLEWORLD_DB_COMMON_HPP
 
 #include <sqlite3x.hpp>
 
@@ -53,4 +53,4 @@ void bind_memory(sqlite3x::sqlite3_command* sql, int index,
 }
 }
 
-#endif // __SIMPLEWORLD_DB_COMMON_HPP__
+#endif // SIMPLEWORLD_DB_COMMON_HPP

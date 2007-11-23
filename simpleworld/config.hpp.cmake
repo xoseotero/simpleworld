@@ -20,8 +20,8 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef __SIMPLEWORLD_CONFIG_H__
-#define __SIMPLEWORLD_CONFIG_H__
+#ifndef SIMPLEWORLD_CONFIG_H
+#define SIMPLEWORLD_CONFIG_H
 
 #define EXIT_SUCCESS 0
 
@@ -38,4 +38,4 @@
 #cmakedefine HAVE_OPENSSL
 #cmakedefine HAVE_CXXABI_H
 
-#endif // __SIMPLEWORLD_CONFIG_H__
+#endif // SIMPLEWORLD_CONFIG_H

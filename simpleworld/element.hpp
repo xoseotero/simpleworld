@@ -21,8 +21,8 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __SIMPLEWORLD_ELEMENT_HPP__
-#define __SIMPLEWORLD_ELEMENT_HPP__
+#ifndef SIMPLEWORLD_ELEMENT_HPP
+#define SIMPLEWORLD_ELEMENT_HPP
 
 #include <simpleworld/types.hpp>
 
@@ -72,4 +72,4 @@ private:
 
 }
 
-#endif // __SIMPLEWORLD_ELEMENT_HPP__
+#endif // SIMPLEWORLD_ELEMENT_HPP

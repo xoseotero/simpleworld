@@ -21,8 +21,8 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __FAKECPU_HPP__
-#define __FAKECPU_HPP__
+#ifndef FAKECPU_HPP
+#define FAKECPU_HPP
 
 #include <simpleworld/cpu/cpu.hpp>
 namespace sw = SimpleWorld;
@@ -43,4 +43,4 @@ public:
   FakeCPU(cpu::Memory* registers, cpu::Memory* memory);
 };
 
-#endif // __FAKECPU_HPP__
+#endif // FAKECPU_HPP

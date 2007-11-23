@@ -21,8 +21,8 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __SIMPLEWORLD_MOVEMENT_HPP__
-#define __SIMPLEWORLD_MOVEMENT_HPP__
+#ifndef SIMPLEWORLD_MOVEMENT_HPP
+#define SIMPLEWORLD_MOVEMENT_HPP
 
 #include <simpleworld/types.hpp>
 
@@ -52,4 +52,4 @@ Position move(Position position, Orientation orientation, Movement movement,
 
 }
 
-#endif // __SIMPLEWORLD_MOVEMENT_HPP__
+#endif // SIMPLEWORLD_MOVEMENT_HPP

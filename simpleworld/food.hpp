@@ -21,8 +21,8 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __SIMPLEWORLD_FOOD_HPP__
-#define __SIMPLEWORLD_FOOD_HPP__
+#ifndef SIMPLEWORLD_FOOD_HPP
+#define SIMPLEWORLD_FOOD_HPP
 
 #include <simpleworld/db/food.hpp>
 
@@ -45,4 +45,4 @@ public:
 
 }
 
-#endif // __SIMPLEWORLD_FOOD_HPP__
+#endif // SIMPLEWORLD_FOOD_HPP

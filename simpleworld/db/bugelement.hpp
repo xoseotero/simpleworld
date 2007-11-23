@@ -21,8 +21,8 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __SIMPLEWORLD_DB_BUGELEMENT_HPP__
-#define __SIMPLEWORLD_DB_BUGELEMENT_HPP__
+#ifndef SIMPLEWORLD_DB_BUGELEMENT_HPP
+#define SIMPLEWORLD_DB_BUGELEMENT_HPP
 
 #include <simpleworld/types.hpp>
 #include <simpleworld/element.hpp>
@@ -110,4 +110,4 @@ public:
 }
 }
 
-#endif // __SIMPLEWORLD_DB_BUGELEMENT_HPP__
+#endif // SIMPLEWORLD_DB_BUGELEMENT_HPP

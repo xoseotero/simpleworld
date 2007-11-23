@@ -21,8 +21,8 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __SIMPLEWORLD_CPU_OPERATIONS_HPP__
-#define __SIMPLEWORLD_CPU_OPERATIONS_HPP__
+#ifndef SIMPLEWORLD_CPU_OPERATIONS_HPP
+#define SIMPLEWORLD_CPU_OPERATIONS_HPP
 
 #include <simpleworld/cpu/types.hpp>
 #include <simpleworld/cpu/memory.hpp>
@@ -858,4 +858,4 @@ Update rri(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst);
 }
 }
 
-#endif // __SIMPLEWORLD_CPU_OPERATIONS_HPP__
+#endif // SIMPLEWORLD_CPU_OPERATIONS_HPP

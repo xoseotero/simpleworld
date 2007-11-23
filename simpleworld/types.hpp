@@ -21,8 +21,8 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __SIMPLEWORLD_TYPES_HPP__
-#define __SIMPLEWORLD_TYPES_HPP__
+#ifndef SIMPLEWORLD_TYPES_HPP
+#define SIMPLEWORLD_TYPES_HPP
 
 #include <simpleworld/ints.hpp>
 
@@ -115,4 +115,4 @@ enum Info {
 
 }
 
-#endif // __SIMPLEWORLD_TYPES_HPP__
+#endif // SIMPLEWORLD_TYPES_HPP

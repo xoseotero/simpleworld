@@ -20,8 +20,8 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef __SIMPLEWORLD_ACTIONERROR_HPP__
-#define __SIMPLEWORLD_ACTIONERROR_HPP__
+#ifndef SIMPLEWORLD_ACTIONERROR_HPP
+#define SIMPLEWORLD_ACTIONERROR_HPP
 
 #include <string>
 
@@ -52,4 +52,4 @@ public:
 
 }
 
-#endif // __SIMPLEWORLD_ACTIONERROR_HPP__
+#endif // SIMPLEWORLD_ACTIONERROR_HPP

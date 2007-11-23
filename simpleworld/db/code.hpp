@@ -21,8 +21,8 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __SIMPLEWORLD_DB_CODE_HPP__
-#define __SIMPLEWORLD_DB_CODE_HPP__
+#ifndef SIMPLEWORLD_DB_CODE_HPP
+#define SIMPLEWORLD_DB_CODE_HPP
 
 #include <vector>
 #include <string>
@@ -118,4 +118,4 @@ public:
 }
 }
 
-#endif // __SIMPLEWORLD_DB_CODE_HPP__
+#endif // SIMPLEWORLD_DB_CODE_HPP

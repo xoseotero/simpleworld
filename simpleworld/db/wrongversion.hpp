@@ -21,8 +21,8 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __SIMPLEWORLD_DB_WRONGVERSION_HPP__
-#define __SIMPLEWORLD_DB_WRONGVERSION_HPP__
+#ifndef SIMPLEWORLD_DB_WRONGVERSION_HPP
+#define SIMPLEWORLD_DB_WRONGVERSION_HPP
 
 #include <string>
 
@@ -56,4 +56,4 @@ public:
 }
 }
 
-#endif // __SIMPLEWORLD_DB_WRONGVERSION_HPP__
+#endif // SIMPLEWORLD_DB_WRONGVERSION_HPP

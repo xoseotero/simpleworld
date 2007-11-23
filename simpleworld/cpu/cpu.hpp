@@ -22,8 +22,8 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __SIMPLEWORLD_CPU_CPU_HPP__
-#define __SIMPLEWORLD_CPU_CPU_HPP__
+#ifndef SIMPLEWORLD_CPU_CPU_HPP
+#define SIMPLEWORLD_CPU_CPU_HPP
 
 #include <string>
 
@@ -117,4 +117,4 @@ private:
 }
 }
 
-#endif // __SIMPLEWORLD_CPU_CPU_HPP__
+#endif // SIMPLEWORLD_CPU_CPU_HPP

@@ -21,8 +21,8 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __PRINTEXC_HPP__
-#define __PRINTEXC_HPP__
+#ifndef PRINTEXC_HPP
+#define PRINTEXC_HPP
 
 #include <simpleworld/exception.hpp>
 namespace sw = SimpleWorld;
@@ -35,4 +35,4 @@ namespace sw = SimpleWorld;
  */
 std::ostream& operator <<(std::ostream& os, const sw::Exception& exc);
 
-#endif // __PRINTEXC_HPP__
+#endif // PRINTEXC_HPP

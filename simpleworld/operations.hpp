@@ -21,8 +21,8 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __SIMPLEWORLD_OPERATIONS_HPP__
-#define __SIMPLEWORLD_OPERATIONS_HPP__
+#ifndef SIMPLEWORLD_OPERATIONS_HPP
+#define SIMPLEWORLD_OPERATIONS_HPP
 
 #include <simpleworld/cpu/types.hpp>
 #include <simpleworld/cpu/memory.hpp>
@@ -50,4 +50,4 @@ CPU::Update world(CPU::Memory& regs, CPU::Memory& mem,
 
 }
 
-#endif // __SIMPLEWORLD_OPERATIONS_HPP__
+#endif // SIMPLEWORLD_OPERATIONS_HPP

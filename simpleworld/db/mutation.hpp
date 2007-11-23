@@ -21,8 +21,8 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __SIMPLEWORLD_DB_MUTATION_HPP__
-#define __SIMPLEWORLD_DB_MUTATION_HPP__
+#ifndef SIMPLEWORLD_DB_MUTATION_HPP
+#define SIMPLEWORLD_DB_MUTATION_HPP
 
 #include <vector>
 
@@ -114,4 +114,4 @@ public:
 }
 }
 
-#endif // __SIMPLEWORLD_DB_MUTATION_HPP__
+#endif // SIMPLEWORLD_DB_MUTATION_HPP

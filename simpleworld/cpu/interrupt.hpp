@@ -21,8 +21,8 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __SIMPLEWORLD_CPU_INTERRUPT_HPP__
-#define __SIMPLEWORLD_CPU_INTERRUPT_HPP__
+#ifndef SIMPLEWORLD_CPU_INTERRUPT_HPP
+#define SIMPLEWORLD_CPU_INTERRUPT_HPP
 
 #include <simpleworld/cpu/memory.hpp>
 
@@ -69,4 +69,4 @@ public:
 }
 }
 
-#endif // __SIMPLEWORLD_CPU_INTERRUPT_HPP__
+#endif // SIMPLEWORLD_CPU_INTERRUPT_HPP

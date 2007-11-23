@@ -21,8 +21,8 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __SIMPLEWORLD_BUG_HPP__
-#define __SIMPLEWORLD_BUG_HPP__
+#ifndef SIMPLEWORLD_BUG_HPP
+#define SIMPLEWORLD_BUG_HPP
 
 #include <map>
 
@@ -75,4 +75,4 @@ public:
 
 }
 
-#endif // __SIMPLEWORLD_BUG_HPP__
+#endif // SIMPLEWORLD_BUG_HPP

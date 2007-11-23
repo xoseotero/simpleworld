@@ -21,8 +21,8 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __SIMPLEWORLD_DB_TYPES_HPP__
-#define __SIMPLEWORLD_DB_TYPES_HPP__
+#ifndef SIMPLEWORLD_DB_TYPES_HPP
+#define SIMPLEWORLD_DB_TYPES_HPP
 
 #include <sqlite3x.hpp>
 
@@ -36,4 +36,4 @@ typedef int64_t ID;
 }
 }
 
-#endif // __SIMPLEWORLD_DB_TYPES_HPP__
+#endif // SIMPLEWORLD_DB_TYPES_HPP

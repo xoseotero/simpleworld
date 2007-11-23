@@ -21,8 +21,8 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __SIMPLEWORLD_CPU_WORD_HPP__
-#define __SIMPLEWORLD_CPU_WORD_HPP__
+#ifndef SIMPLEWORLD_CPU_WORD_HPP
+#define SIMPLEWORLD_CPU_WORD_HPP
 
 #include <simpleworld/ints.hpp>
 #include <simpleworld/cpu/types.hpp>
@@ -71,4 +71,4 @@ Word change_byte_order_middle(Word word);
 }
 }
 
-#endif // __SIMPLEWORLD_CPU_WORD_HPP__
+#endif // SIMPLEWORLD_CPU_WORD_HPP

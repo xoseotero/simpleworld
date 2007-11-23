@@ -20,8 +20,8 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef __SIMPLEWORLD_CPU_PARSERERROR_HPP__
-#define __SIMPLEWORLD_CPU_PARSERERROR_HPP__
+#ifndef SIMPLEWORLD_CPU_PARSERERROR_HPP
+#define SIMPLEWORLD_CPU_PARSERERROR_HPP
 
 #include <string>
 
@@ -55,4 +55,4 @@ public:
 }
 }
 
-#endif // __SIMPLEWORLD_CPU_PARSERERROR_HPP__
+#endif // SIMPLEWORLD_CPU_PARSERERROR_HPP

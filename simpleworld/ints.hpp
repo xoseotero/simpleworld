@@ -22,8 +22,8 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef __SIMPLEWORLD_INTS_HPP__
-#define __SIMPLEWORLD_INTS_HPP__
+#ifndef SIMPLEWORLD_INTS_HPP
+#define SIMPLEWORLD_INTS_HPP
 
 #include <simpleworld/config.hpp>
 
@@ -63,4 +63,4 @@ typedef unsigned __int64 Uint64;     /**< Signed integer with 64 bits long */
 
 }
 
-#endif // __SIMPLEWORLD_INTS_HPP__
+#endif // SIMPLEWORLD_INTS_HPP
