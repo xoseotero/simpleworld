@@ -42,21 +42,21 @@ namespace CPU
  * Struct of a instruction.
  */
 struct Instruction {
-  Uint8 code;         /**< Code of the instruction */
-  Uint8 first:4;      /**< First operand of the operation (destiny) */
-  Uint8 second:4;     /**< Second operand of the operation (first source) */
-  Address address;     /**< Memory address or third operand of the operation
-			   (second source) */
+  Uint8 code;                   /**< Code of the instruction */
+  Uint8 first:4;                /**< First operand of the operation (destiny) */
+  Uint8 second:4;               /**< Second operand of the operation (first source) */
+  Address address;              /**< Memory address or third operand of the operation
+                                     (second source) */
 };
 
 /**
  * How to update the CPU after a instruction.
  */
 enum Update {
-  None,               /**< Do nothing */
-  UpdatePC,           /**< Update the program counter */
-  UpdateInterrupt,	      /**< Interrupt request */
-  Stop                /**< Stop the CPU */
+  None,                         /**< Do nothing */
+  UpdatePC,                     /**< Update the program counter */
+  UpdateInterrupt,              /**< Interrupt request */
+  Stop                          /**< Stop the CPU */
 };
 
 /**
@@ -74,11 +74,11 @@ typedef Update (*Operation) (Memory& regs, Memory& mem, Interrupt& interrupt,
  * Information about instruction's parameters.
  */
 struct InstructionInfo {
-  Uint8 code;         /**< Code of the instruction */
-  std::string name;   /**< Instruction name */
-  Uint8 nregs;        /**< Registers used */
-  bool has_inmediate; /**< The instruction uses the inmediate space */
-  Operation func;     /**< Function that execute the operation */
+  Uint8 code;                   /**< Code of the instruction */
+  std::string name;             /**< Instruction name */
+  Uint8 nregs;                  /**< Registers used */
+  bool has_inmediate;           /**< The instruction uses the inmediate space */
+  Operation func;               /**< Function that execute the operation */
 };
 
 

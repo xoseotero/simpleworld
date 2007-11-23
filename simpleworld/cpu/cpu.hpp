@@ -95,10 +95,10 @@ protected:
   Memory* registers_;
   Memory* memory_;
 
-  bool interrupt_request_;	/**< If a interrupt was thrown. */
+  bool interrupt_request_;      /**< If a interrupt was thrown. */
   Interrupt interrupt_;
 
-  InstructionSet set_; /**< Instruction set */
+  InstructionSet set_;          /**< Instruction set */
 
   bool running_;
 

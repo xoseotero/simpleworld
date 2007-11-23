@@ -166,8 +166,8 @@ public:
   bool changed;
 
 protected:
-  DB* db_;				/**< DB connection */
-  ID id_;				/**< ID of the table */
+  DB* db_;                      /**< DB connection */
+  ID id_;                       /**< ID of the table */
 };
 
 }
