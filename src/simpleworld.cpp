@@ -96,7 +96,7 @@ Mandatory arguments to long options are mandatory for short options too.\n\
 \n\
       --position=X,Y         position of the element added\n\
                                if not set, a random position is calculated\n\
-      --orientation=ORIENTATION
+      --orientation=ORIENTATION\n\
                              orientation of the element added\n\
                                valid values are: north, east, south and west\n\
                                if not set, a random orientation is\n\
