@@ -243,8 +243,7 @@ void CPU::interrupt_handler_()
 {
   Word itp = this->registers_->get_word(REGISTER_ITP);
   Word handler =
-    this->memory_->get_word(this->registers_->get_word(REGISTER_ITP +
-      this->interrupt_.type * sizeof(Word)));
+    this->memory_->get_word(itp + this->interrupt_.type * sizeof(Word));
   if (this->interrupt_request_ and itp != 0 and handler != 0) {
     // Save all the registers in the stack
     Sint8 i;
