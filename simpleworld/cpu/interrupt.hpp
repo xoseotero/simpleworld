@@ -54,11 +54,10 @@ enum EventType {
 
 
 /**
- *
+ * Structure of a interrupt.
  */
-class Interrupt
+struct Interrupt
 {
-public:
   InterruptType type;
 
   Word r0;
