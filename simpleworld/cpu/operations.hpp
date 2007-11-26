@@ -28,6 +28,7 @@
 #include <simpleworld/cpu/memory.hpp>
 #include <simpleworld/cpu/interrupt.hpp>
 #include <simpleworld/cpu/instruction.hpp>
+#include <simpleworld/cpu/isa.hpp>
 
 #define REGISTER(NUMBER) (NUMBER * sizeof(Word))
 #define REGISTER_PC REGISTER(0xd)

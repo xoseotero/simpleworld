@@ -27,7 +27,7 @@
 #include <string>
 
 #include <simpleworld/cpu/types.hpp>
-#include <simpleworld/cpu/instruction.hpp>
+#include <simpleworld/cpu/isa.hpp>
 
 namespace SimpleWorld
 {
@@ -44,10 +44,10 @@ class Object
 public:
   /**
    * Constructor.
-   * @param set Instruction set of the CPU
+   * @param isa Instruction set architecture of the CPU
    * @param filename File to open.
    */
-  Object(const InstructionSet& set, const std::string& filename);
+  Object(const ISA& isa, const std::string& filename);
 
 
   /**
@@ -70,7 +70,7 @@ protected:
   std::string decompile(Word instruction) const;
 
 private:
-  const InstructionSet& set_;
+  const ISA& isa_;
   std::string filename_;
 };
 

@@ -33,7 +33,7 @@ Bug::Bug(SimpleWorld* sw, DB::ID id)
 {
   Bug::bugs[this->registers_] = this;
 
-  this->set_.add_instruction(0x38, "world", 0, true, ::SimpleWorld::world);
+  this->isa_.add_instruction(0x38, "world", 0, true, ::SimpleWorld::world);
 }
 
 Bug::Bug(SimpleWorld* sw, Egg* egg)
@@ -41,7 +41,7 @@ Bug::Bug(SimpleWorld* sw, Egg* egg)
 {
   Bug::bugs[this->registers_] = this;
 
-  this->set_.add_instruction(0x38, "world", 0, true, ::SimpleWorld::world);
+  this->isa_.add_instruction(0x38, "world", 0, true, ::SimpleWorld::world);
 }
 
 

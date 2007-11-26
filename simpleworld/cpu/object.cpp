@@ -29,6 +29,7 @@
 
 #include "codeerror.hpp"
 #include "word.hpp"
+#include "instruction.hpp"
 #include "file.hpp"
 #include "object.hpp"
 
@@ -37,8 +38,8 @@ namespace SimpleWorld
 namespace CPU
 {
 
-Object::Object(const InstructionSet& set, const std::string& filename)
-  : set_(set), filename_(filename)
+Object::Object(const ISA& isa, const std::string& filename)
+  : isa_(isa), filename_(filename)
 {
 }
 
@@ -83,23 +84,23 @@ The size of %1% (%2%) is not a multiple of 32bits")
 
 std::string Object::decompile(Word instruction) const
 {
-  Instruction inst = InstructionSet::decode(instruction);
-  InstructionInfo info = this->set_.instruction_info(inst.code);
+  Instruction inst = Instruction::decode(instruction);
+  InstructionInfo info = this->isa_.instruction_info(inst.code);
 
   std::string result;
   result += info.name;
   if (info.nregs > 0) {
     result += " ";
-    result += this->set_.register_name(inst.first);
+    result += this->isa_.register_name(inst.first);
   }
   if (info.nregs > 1) {
     result += " ";
-    result += this->set_.register_name(inst.second);
+    result += this->isa_.register_name(inst.second);
   }
   // Instruction::address can store the third register or a inmediate value
   if (info.nregs > 2) {
     result += " ";
-    result += this->set_.register_name(static_cast<Uint8>(inst.address));
+    result += this->isa_.register_name(static_cast<Uint8>(inst.address));
   } else if (info.has_inmediate) {
     char address[7];
     std::snprintf(address, 7, "0x%x", inst.address);

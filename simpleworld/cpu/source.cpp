@@ -33,6 +33,7 @@ namespace fs = boost::filesystem;
 #include <simpleworld/ioerror.hpp>
 
 #include "word.hpp"
+#include "instruction.hpp"
 #include "source.hpp"
 #include "exception.hpp"
 #include "parsererror.hpp"
@@ -209,10 +210,10 @@ static fs::path find_file(const std::vector<std::string>& path,
 }
 
 
-Source::Source(const InstructionSet& set,
+Source::Source(const ISA& isa,
                const std::vector<std::string>& include_path,
                const std::string& filename)
-  : File(filename), set_(set), include_path_(include_path)
+  : File(filename), isa_(isa), include_path_(include_path)
 {
   // The main file can't be included
   // Using the absolute path
@@ -362,7 +363,7 @@ Word Source::compile(File::size_type line) const
   InstructionInfo info;
   try {
     info =
-      this->set_.instruction_info(this->set_.instruction_code(keywords[0]));
+      this->isa_.instruction_info(this->isa_.instruction_code(keywords[0]));
   }
   catch (const CPUException& e) {
     throw EXCEPTION(ParserError, boost::str(boost::format("\
@@ -383,11 +384,11 @@ Wrong number of parameters (%2%)")
   try {
     inst.code = info.code;
     if (info.nregs >= 1)
-      inst.first = this->set_.register_code(keywords[1]);
+      inst.first = this->isa_.register_code(keywords[1]);
     if (info.nregs >= 2)
-      inst.second = this->set_.register_code(keywords[2]);
+      inst.second = this->isa_.register_code(keywords[2]);
     if (info.nregs == 3)
-      inst.address = this->set_.register_code(keywords[3]);
+      inst.address = this->isa_.register_code(keywords[3]);
     else if (info.has_inmediate) {
       const char* str = keywords[info.nregs + 1].c_str();
       char* ptr;
@@ -401,7 +402,7 @@ Line: %1%\n\
                                             % e.what));
   }
 
-  return InstructionSet::encode(inst);
+  return Instruction::encode(inst);
 }
 
 

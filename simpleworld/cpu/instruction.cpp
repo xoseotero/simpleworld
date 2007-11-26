@@ -1,6 +1,6 @@
 /**
  * @file simpleworld/cpu/instruction.cpp
- * Instruction set.
+ * Struct of a instruction.
  *
  * begin:     Wed, 08 Nov 2006 16:29:51 +0100
  * last:      $Date$
@@ -25,7 +25,6 @@
 
 #include <simpleworld/config.hpp>
 
-#include "codeerror.hpp"
 #include "word.hpp"
 #include "instruction.hpp"
 
@@ -34,12 +33,7 @@ namespace SimpleWorld
 namespace CPU
 {
 
-InstructionSet::InstructionSet()
-{
-}
-
-
-Word InstructionSet::encode(const Instruction& instruction)
+Word Instruction::encode(const Instruction& instruction)
 {
   Word word;
 
@@ -58,7 +52,7 @@ Word InstructionSet::encode(const Instruction& instruction)
   return word;
 }
 
-Instruction InstructionSet::decode(Word word)
+Instruction Instruction::decode(Word word)
 {
   Instruction instruction;
 
@@ -77,142 +71,6 @@ Instruction InstructionSet::decode(Word word)
 #endif
 
   return instruction;
-}
-
-
-std::vector<Uint8> InstructionSet::instruction_codes() const
-{
-  std::vector<Uint8> instructions;
-
-  std::map<Uint8, InstructionInfo>::const_iterator iter =
-    this->instructions_.begin();
-  while (iter != this->instructions_.end()) {
-    instructions.push_back((*iter).first);
-    ++iter;
-  }
-
-  return instructions;
-}
-
-std::vector<Uint8> InstructionSet::register_codes() const
-{
-  std::vector<Uint8> registers;
-
-  std::map<Uint8, std::string>::const_iterator iter = this->registers_.begin();
-  while (iter != this->registers_.end()) {
-    registers.push_back((*iter).first);
-    ++iter;
-  }
-
-  return registers;
-}
-
-
-InstructionInfo InstructionSet::instruction_info(Uint8 code) const
-{
-  std::map<Uint8, InstructionInfo>::const_iterator iter =
-    this->instructions_.find(code);
-  if (iter == this->instructions_.end())
-    throw EXCEPTION(CodeError, boost::str(boost::format("\
-Instruction %02x not found")
-                                          % code));
-
-  return (*iter).second;
-}
-
-Uint8 InstructionSet::instruction_code(std::string name) const
-{
-  std::map<std::string, Uint8>::const_iterator iter =
-    this->instruction_codes_.find(name);
-  if (iter == this->instruction_codes_.end())
-    throw EXCEPTION(CodeError, boost::str(boost::format("\
-Instruction %1% not found")
-                                          % name));
-
-  return (*iter).second;
-}
-
-std::string InstructionSet::register_name(Uint8 code) const
-{
-  std::map<Uint8, std::string>::const_iterator iter =
-    this->registers_.find(code);
-  if (iter == this->registers_.end())
-    throw EXCEPTION(CodeError, boost::str(boost::format("\
-Register %02x not found")
-                                          % code));
-
-  return (*iter).second;
-}
-
-Uint8 InstructionSet::register_code(std::string name) const
-{
-  std::map<std::string, Uint8>::const_iterator iter =
-    this->register_codes_.find(name);
-  if (iter == this->register_codes_.end())
-    throw EXCEPTION(CodeError, boost::str(boost::format("\
-Register %1% not found")
-                                          % name));
-
-  return (*iter).second;
-}
-
-
-void InstructionSet::add_instruction(InstructionInfo instruction)
-{
-  if (this->instructions_.find(instruction.code) != this->instructions_.end())
-    throw EXCEPTION(CodeError, boost::str(boost::format("\
-Instruction %02x already exists")
-                                          % instruction.code));
-
-  this->instructions_.insert(std::pair<Uint8,
-                             InstructionInfo>(instruction.code,
-                                              instruction));
-  this->instruction_codes_.insert(std::pair<std::string,
-                                  Uint8>(instruction.name,
-                                         instruction.code));
-}
-
-void InstructionSet::add_instruction(Uint8 code, std::string name, Uint8 nregs,
-                                     bool has_inmediate, Operation func)
-{
-  InstructionInfo info = {code, name, nregs, has_inmediate, func};
-  this->add_instruction(info);
-}
-
-void InstructionSet::remove_instruction(Uint8 code)
-{
-  std::map<Uint8, InstructionInfo>::iterator iter =
-    this->instructions_.find(code);
-  if (iter == this->instructions_.end())
-    throw EXCEPTION(CodeError, boost::str(boost::format("\
-Instruction %02x not found")
-                                          % code));
-
-  this->instruction_codes_.erase((*iter).second.name);
-  this->instructions_.erase(iter);
-}
-
-void InstructionSet::add_register(Uint8 code, std::string name)
-{
-  if (this->registers_.find(code) != this->registers_.end())
-    throw EXCEPTION(CodeError, boost::str(boost::format("\
-Instruction %02x already exists")
-                                          % code));
-
-  this->registers_.insert(std::pair<Uint8, std::string>(code, name));
-  this->register_codes_.insert(std::pair<std::string, Uint8>(name, code));
-}
-
-void InstructionSet::remove_register(Uint8 code)
-{
-  std::map<Uint8, std::string>::iterator iter = this->registers_.find(code);
-  if (iter == this->registers_.end())
-    throw EXCEPTION(CodeError, boost::str(boost::format("\
-Register %02x not found")
-                                          % code));
-
-  this->register_codes_.erase((*iter).second);
-  this->registers_.erase(iter);
 }
 
 }

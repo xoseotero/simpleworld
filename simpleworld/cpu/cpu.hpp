@@ -30,6 +30,7 @@
 #include <simpleworld/cpu/types.hpp>
 #include <simpleworld/cpu/memory.hpp>
 #include <simpleworld/cpu/instruction.hpp>
+#include <simpleworld/cpu/isa.hpp>
 #include <simpleworld/cpu/interrupt.hpp>
 
 namespace SimpleWorld
@@ -59,7 +60,7 @@ public:
    * Instruction set of the CPU.
    * @return the instruction set.
    */
-  const InstructionSet& instruction_set() const { return this->set_; }
+  const ISA& instruction_set() const { return this->isa_; }
 
   /**
    * Registers of the CPU.
@@ -98,7 +99,7 @@ protected:
   bool interrupt_request_;      /**< If a interrupt was thrown. */
   Interrupt interrupt_;
 
-  InstructionSet set_;          /**< Instruction set */
+  ISA isa_;          /**< Instruction set */
 
   bool running_;
 

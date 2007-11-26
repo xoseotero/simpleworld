@@ -30,7 +30,7 @@
 #include <string>
 
 #include <simpleworld/cpu/types.hpp>
-#include <simpleworld/cpu/instruction.hpp>
+#include <simpleworld/cpu/isa.hpp>
 #include <simpleworld/cpu/file.hpp>
 
 namespace SimpleWorld
@@ -51,12 +51,12 @@ class Source: public File
 public:
   /**
    * Constructor.
-   * @param set Instruction set of the CPU
+   * @param isa Instruction set architecture of the CPU
    * @param include_path Paths where to search the files to include.
    * @param filename File to open.
    * @exception IOError if file can't be opened
    */
-  Source(const InstructionSet& set,
+  Source(const ISA& isa,
          const std::vector<std::string>& include_path,
          const std::string& filename);
 
@@ -228,7 +228,7 @@ protected:
   std::vector<std::string> get_instruction(File::size_type line) const;
 
 private:
-  const InstructionSet& set_;
+  const ISA& isa_;
   std::vector<std::string> include_path_;
   std::set<std::string> includes_;
   std::map<std::string, std::string> constants_;
