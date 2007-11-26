@@ -154,7 +154,7 @@ void ISA::add_register(Uint8 code, std::string name)
 {
   if (this->registers_.find(code) != this->registers_.end())
     throw EXCEPTION(CodeError, boost::str(boost::format("\
-Instruction %02x already exists")
+Register %02x already exists")
                                           % code));
 
   this->registers_.insert(std::pair<Uint8, std::string>(code, name));
