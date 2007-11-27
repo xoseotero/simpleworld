@@ -173,8 +173,8 @@ void CPU::next()
 
   if (this->interrupt_request_) {
 #ifdef DEBUG
-    std::cout << "Interrupt info:";
-    std::cout << boost::str(boost::format("code: 0x%2x, name: %s")
+    std::cout << boost::str(boost::format("\
+Interrupt info:\tcode: 0x%02x, name: %s")
                             % static_cast<int>(this->interrupt_.code)
                             % this->isa_.interrupt_name(this->interrupt_.code))
               << std::endl;
@@ -185,9 +185,9 @@ void CPU::next()
     try {
       InstructionInfo info = this->isa_.instruction_info(instruction.code);
 #ifdef DEBUG
-      std::cout << "Instruction info:";
       std::cout
-        << boost::str(boost::format("code: 0x%2x, name: %s, nregs: %d, has_i: %d")
+        << boost::str(boost::format("\
+Instruction info:\tcode: 0x%02x, name: %s, nregs: %d, has_i: %d")
                       % static_cast<int>(info.code)
                       % info.name
                       % static_cast<int>(info.nregs)
@@ -243,7 +243,7 @@ void CPU::next()
 Instruction CPU::fetch_instruction_() const
 {
 #ifdef DEBUG
-  std::cout << boost::str(boost::format("Instruction[0x%8x]: 0x%8x")
+  std::cout << boost::str(boost::format("Instruction[0x%08x]: 0x%08x")
     % this->registers_->get_word(REGISTER_PC)
     % this->memory_->get_word(this->registers_->get_word(REGISTER_PC), false))
     << std::endl;
