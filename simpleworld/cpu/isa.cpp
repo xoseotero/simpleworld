@@ -65,6 +65,19 @@ std::vector<Uint8> ISA::register_codes() const
   return registers;
 }
 
+std::vector<Uint8> ISA::interrupt_codes() const
+{
+  std::vector<Uint8> interrupts;
+
+  std::map<Uint8, std::string>::const_iterator iter = this->interrupts_.begin();
+  while (iter != this->interrupts_.end()) {
+    interrupts.push_back((*iter).first);
+    ++iter;
+  }
+
+  return interrupts;
+}
+
 
 InstructionInfo ISA::instruction_info(Uint8 code) const
 {
@@ -109,6 +122,30 @@ Uint8 ISA::register_code(std::string name) const
   if (iter == this->register_codes_.end())
     throw EXCEPTION(CodeError, boost::str(boost::format("\
 Register %1% not found")
+                                          % name));
+
+  return (*iter).second;
+}
+
+std::string ISA::interrupt_name(Uint8 code) const
+{
+  std::map<Uint8, std::string>::const_iterator iter =
+    this->interrupts_.find(code);
+  if (iter == this->interrupts_.end())
+    throw EXCEPTION(CodeError, boost::str(boost::format("\
+Interrupt %02x not found")
+                                          % code));
+
+  return (*iter).second;
+}
+
+Uint8 ISA::interrupt_code(std::string name) const
+{
+  std::map<std::string, Uint8>::const_iterator iter =
+    this->interrupt_codes_.find(name);
+  if (iter == this->interrupt_codes_.end())
+    throw EXCEPTION(CodeError, boost::str(boost::format("\
+Interrupt %1% not found")
                                           % name));
 
   return (*iter).second;
@@ -171,6 +208,29 @@ Register %02x not found")
 
   this->register_codes_.erase((*iter).second);
   this->registers_.erase(iter);
+}
+
+void ISA::add_interrupt(Uint8 code, std::string name)
+{
+  if (this->interrupts_.find(code) != this->interrupts_.end())
+    throw EXCEPTION(CodeError, boost::str(boost::format("\
+Interrupt %02x already exists")
+                                          % code));
+
+  this->interrupts_.insert(std::pair<Uint8, std::string>(code, name));
+  this->interrupt_codes_.insert(std::pair<std::string, Uint8>(name, code));
+}
+
+void ISA::remove_interrupt(Uint8 code)
+{
+  std::map<Uint8, std::string>::iterator iter = this->interrupts_.find(code);
+  if (iter == this->interrupts_.end())
+    throw EXCEPTION(CodeError, boost::str(boost::format("\
+Interrupt %02x not found")
+                                          % code));
+
+  this->interrupt_codes_.erase((*iter).second);
+  this->interrupts_.erase(iter);
 }
 
 }

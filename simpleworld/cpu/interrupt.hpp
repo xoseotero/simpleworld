@@ -1,6 +1,6 @@
 /**
  * @file simpleworld/cpu/interrupt.hpp
- * Definition of the interrupts and events.
+ * Structure of a interrupt.
  *
  * begin:     Mon, 18 Jun 2007 04:51:55 +0200
  * last:      $Date$
@@ -32,37 +32,18 @@ namespace CPU
 {
 
 /**
- * Types of interrupts.
- */
-enum InterruptType {
-  TimerInterrupt = 0,
-  SoftwareInterrupt = 1,
-  InvalidInstruction = 2,
-  InvalidMemoryLocation = 3,
-  DivisionByZero = 4,
-  InvalidWorldCommand = 5,
-  WorldEvent = 6
-};
-
-
-/**
- * Types of events.
- */
-enum EventType {
-  Attack = 0
-};
-
-
-/**
  * Structure of a interrupt.
  */
 struct Interrupt
 {
-  InterruptType type;
+  Uint8 code;                   /**< Code of the interrupt */
 
-  Word r0;
-  Word r1;
-  Word r2;
+  Word r0;                      /**< Word stored in r0 when the interrupt
+                                     handler is executed */
+  Word r1;                      /**< Word stored in r1 when the interrupt
+                                     handler is executed */
+  Word r2;                      /**< Word stored in r2 when the interrupt
+                                     handler is executed */
 };
 
 }

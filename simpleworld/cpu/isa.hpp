@@ -50,16 +50,20 @@ enum Update {
 };
 
 
+class ISA;                      /**< Forward declaration of ISA, needed
+                                     for the definition of Operation. */
+
 /**
  * Pointer to a function that executes a instruction.
+ * @param isa the instruction set architecture.
  * @param regs the registers.
  * @param mem the memory.
  * @param interrupt interrupt.
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-typedef Update (*Operation) (Memory& regs, Memory& mem, Interrupt& interrupt,
-                             Instruction inst);
+typedef Update (*Operation) (ISA& isa, Memory& regs, Memory& mem,
+                             Interrupt& interrupt, Instruction inst);
 
 /**
  * Information about instruction's parameters.
@@ -78,6 +82,7 @@ struct InstructionInfo {
  *
  * Set of instructions: Each instruction has a code and a name.
  * Set of registers: Each register has a code and a name.
+ * Set of interrupts: Each interrupt has a code and a name.
  */
 class ISA
 {
@@ -99,6 +104,12 @@ public:
    * @return the register codes.
    */
   std::vector<Uint8> register_codes() const;
+
+  /**
+   * Interrupt codes.
+   * @return the interrupt codes.
+   */
+  std::vector<Uint8> interrupt_codes() const;
 
 
   /**
@@ -132,6 +143,22 @@ public:
    * @exception CodeError if the register is not found.
    */
   Uint8 register_code(std::string name) const;
+
+  /**
+   * Name of the interrupt.
+   * @param code code of the interrupt.
+   * @return the name of the interrupt.
+   * @exception CodeError if the interrupt is not found.
+   */
+  std::string interrupt_name(Uint8 code) const;
+
+  /**
+   * Code of the interrupt.
+   * @param name name of the interrupt.
+   * @return the code of the interrupt.
+   * @exception CodeError if the interrupt is not found.
+   */
+  Uint8 interrupt_code(std::string name) const;
 
 
   /**
@@ -175,11 +202,30 @@ public:
    */
   void remove_register(Uint8 code);
 
+  /**
+   * Add a new interrupt.
+   * @param code code of the interrupt.
+   * @param name name of the interrupt.
+   * @exception CodeError if the interrupt already exist.
+   */
+  void add_interrupt(Uint8 code, std::string name);
+
+  /**
+   * Remove a interrupt.
+   * @param code code of the interrupt.
+   * @exception CPUexception if the interrupt is not found.
+   */
+  void remove_interrupt(Uint8 code);
+
 private:
   std::map<Uint8, InstructionInfo> instructions_;
   std::map<std::string, Uint8> instruction_codes_;
+
   std::map<Uint8, std::string> registers_;
   std::map<std::string, Uint8> register_codes_;
+
+  std::map<Uint8, std::string> interrupts_;
+  std::map<std::string, Uint8> interrupt_codes_;
 };
 
 }

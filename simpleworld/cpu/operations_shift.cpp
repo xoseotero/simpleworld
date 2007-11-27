@@ -29,7 +29,8 @@ namespace SimpleWorld
 namespace CPU
 {
 
-Update sll(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst)
+Update sll(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
+           Instruction inst)
 {
   regs.set_word(REGISTER(inst.first),
                 regs[REGISTER(inst.second)] << regs[REGISTER(inst.address)]);
@@ -37,7 +38,8 @@ Update sll(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst)
   return UpdatePC;
 }
 
-Update slli(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst)
+Update slli(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
+            Instruction inst)
 {
   regs.set_word(REGISTER(inst.first),
                 regs[REGISTER(inst.second)] << inst.address);
@@ -45,7 +47,8 @@ Update slli(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst)
   return UpdatePC;
 }
 
-Update srl(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst)
+Update srl(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
+           Instruction inst)
 {
   regs.set_word(REGISTER(inst.first),
                 regs[REGISTER(inst.second)] >> regs[REGISTER(inst.address)]);
@@ -53,7 +56,8 @@ Update srl(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst)
   return UpdatePC;
 }
 
-Update srli(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst)
+Update srli(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
+            Instruction inst)
 {
   regs.set_word(REGISTER(inst.first),
                 regs[REGISTER(inst.second)] >> inst.address);
@@ -61,7 +65,8 @@ Update srli(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst)
   return UpdatePC;
 }
 
-Update sla(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst)
+Update sla(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
+           Instruction inst)
 {
   regs.set_word(REGISTER(inst.first),
                 regs[REGISTER(inst.second)] << regs[REGISTER(inst.address)]);
@@ -69,7 +74,8 @@ Update sla(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst)
   return UpdatePC;
 }
 
-Update slai(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst)
+Update slai(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
+            Instruction inst)
 {
   regs.set_word(REGISTER(inst.first),
                 regs[REGISTER(inst.second)] << inst.address);
@@ -77,7 +83,8 @@ Update slai(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst)
   return UpdatePC;
 }
 
-Update sra(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst)
+Update sra(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
+           Instruction inst)
 {
 #ifdef IS_BIG_ENDIAN
   Uint32 sign = regs[REGISTER(inst.second)] & 0x80000000;
@@ -91,7 +98,8 @@ Update sra(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst)
   return UpdatePC;
 }
 
-Update srai(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst)
+Update srai(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
+            Instruction inst)
 {
 #ifdef IS_BIG_ENDIAN
   Uint32 sign = regs[REGISTER(inst.second)] & 0x80000000;
@@ -104,7 +112,8 @@ Update srai(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst)
   return UpdatePC;
 }
 
-Update rl(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst)
+Update rl(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
+          Instruction inst)
 {
   regs.set_word(REGISTER(inst.first),
                 regs[REGISTER(inst.second)] << regs[REGISTER(inst.address)] |
@@ -114,7 +123,8 @@ Update rl(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst)
   return UpdatePC;
 }
 
-Update rli(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst)
+Update rli(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
+           Instruction inst)
 {
   regs.set_word(REGISTER(inst.first),
                 regs[REGISTER(inst.second)] << inst.address |
@@ -123,7 +133,8 @@ Update rli(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst)
   return UpdatePC;
 }
 
-Update rr(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst)
+Update rr(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
+          Instruction inst)
 {
   regs.set_word(REGISTER(inst.first),
                 regs[REGISTER(inst.second)] >> regs[REGISTER(inst.address)] |
@@ -133,7 +144,8 @@ Update rr(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst)
   return UpdatePC;
 }
 
-Update rri(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst)
+Update rri(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
+           Instruction inst)
 {
   regs.set_word(REGISTER(inst.first),
                 regs[REGISTER(inst.second)] >> inst.address |

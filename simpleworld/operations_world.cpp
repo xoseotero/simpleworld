@@ -55,7 +55,7 @@
 namespace SimpleWorld
 {
 
-CPU::Update world(CPU::Memory& regs, CPU::Memory& mem,
+CPU::Update world(CPU::ISA& isa, CPU::Memory& regs, CPU::Memory& mem,
                   CPU::Interrupt& interrupt, CPU::Instruction inst)
 {
   std::map<CPU::Memory*, Bug*>::iterator iter = Bug::bugs.find(&regs);

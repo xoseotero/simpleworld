@@ -97,6 +97,14 @@ enum ActionStatus {
 
 
 /**
+ * Types of events.
+ */
+enum EventType {
+  Attack = 0
+};
+
+
+/**
  * Energy of a element.
  */
 typedef Uint32 Energy;

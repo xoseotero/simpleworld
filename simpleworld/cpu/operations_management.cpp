@@ -28,12 +28,13 @@ namespace SimpleWorld
 namespace CPU
 {
 
-Update stop(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst)
+Update stop(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
+            Instruction inst)
 {
   return Stop;
 }
 
-Update restart(Memory& regs, Memory& mem, Interrupt& interrupt,
+Update restart(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
                Instruction inst)
 {
   Uint8 i;

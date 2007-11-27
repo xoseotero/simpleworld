@@ -29,7 +29,8 @@ namespace SimpleWorld
 namespace CPU
 {
 
-Update call(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst)
+Update call(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
+            Instruction inst)
 {
   // Save the program counter (pc) in the top of the stack
   mem.set_word(regs[REGISTER_STP], regs[REGISTER_PC]);
@@ -41,16 +42,18 @@ Update call(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst)
   return None;
 }
 
-Update interrupt(Memory& regs, Memory& mem, Interrupt& interrupt,
+Update interrupt(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
                  Instruction inst)
 {
-  interrupt.type = SoftwareInterrupt;
-  interrupt.r0 = static_cast<Word>(SoftwareInterrupt);
+  Word code = static_cast<Word>(isa.interrupt_code("SoftwareInterrupt"));
+  interrupt.code = code;
+  interrupt.r0 = code;
   interrupt.r1 = inst.address;
   return UpdateInterrupt;
 }
 
-Update ret(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst)
+Update ret(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
+           Instruction inst)
 {
   // Update stack pointer
   regs.set_word(REGISTER_STP, regs[REGISTER_STP] + 4);
@@ -60,7 +63,8 @@ Update ret(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst)
   return UpdatePC;
 }
 
-Update reti(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst)
+Update reti(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
+            Instruction inst)
 {
   Sint8 i;
   for (i = 15; i >= 0; i--) {

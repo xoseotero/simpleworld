@@ -28,14 +28,16 @@ namespace SimpleWorld
 namespace CPU
 {
 
-Update lnot(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst)
+Update lnot(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
+            Instruction inst)
 {
   regs.set_word(REGISTER(inst.first), ~ regs[REGISTER(inst.second)]);
 
   return UpdatePC;
 }
 
-Update lor(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst)
+Update lor(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
+           Instruction inst)
 {
   regs.set_word(REGISTER(inst.first),
                 regs[REGISTER(inst.second)] | regs[REGISTER(inst.address)]);
@@ -43,7 +45,8 @@ Update lor(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst)
   return UpdatePC;
 }
 
-Update lori(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst)
+Update lori(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
+            Instruction inst)
 {
   regs.set_word(REGISTER(inst.first),
                 regs[REGISTER(inst.second)] | inst.address);
@@ -51,7 +54,8 @@ Update lori(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst)
   return UpdatePC;
 }
 
-Update land(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst)
+Update land(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
+            Instruction inst)
 {
   regs.set_word(REGISTER(inst.first),
                 regs[REGISTER(inst.second)] & regs[REGISTER(inst.address)]);
@@ -59,7 +63,8 @@ Update land(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst)
   return UpdatePC;
 }
 
-Update landi(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst)
+Update landi(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
+             Instruction inst)
 {
   regs.set_word(REGISTER(inst.first),
                 regs[REGISTER(inst.second)] & inst.address);
@@ -67,7 +72,8 @@ Update landi(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst)
   return UpdatePC;
 }
 
-Update lxor(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst)
+Update lxor(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
+            Instruction inst)
 {
   regs.set_word(REGISTER(inst.first),
                 regs[REGISTER(inst.second)] ^ regs[REGISTER(inst.address)]);
@@ -75,7 +81,8 @@ Update lxor(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst)
   return UpdatePC;
 }
 
-Update lxori(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst)
+Update lxori(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
+             Instruction inst)
 {
   regs.set_word(REGISTER(inst.first),
                 regs[REGISTER(inst.second)] ^ inst.address);

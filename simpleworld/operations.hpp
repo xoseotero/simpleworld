@@ -28,6 +28,7 @@
 #include <simpleworld/cpu/memory.hpp>
 #include <simpleworld/cpu/interrupt.hpp>
 #include <simpleworld/cpu/instruction.hpp>
+#include <simpleworld/cpu/isa.hpp>
 
 #define REGISTER(NUMBER) (NUMBER * sizeof(CPU::Word))
 #define REGISTER_PC REGISTER(0xd)
@@ -39,13 +40,14 @@ namespace SimpleWorld
 
 /**
  * Make a action in the world.
+ * @param isa the instruction set architecture.
  * @param regs the registers.
  * @param mem the memory.
  * @param interrupt interrupt.
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-CPU::Update world(CPU::Memory& regs, CPU::Memory& mem,
+CPU::Update world(CPU::ISA& isa, CPU::Memory& regs, CPU::Memory& mem,
                   CPU::Interrupt& interrupt, CPU::Instruction inst);
 
 }

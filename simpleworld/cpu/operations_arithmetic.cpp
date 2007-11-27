@@ -37,7 +37,8 @@ namespace SimpleWorld
 namespace CPU
 {
 
-Update add(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst)
+Update add(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
+           Instruction inst)
 {
   regs.set_word(REGISTER(inst.first), regs[REGISTER(inst.second)] +
                 regs[REGISTER(inst.address)]);
@@ -45,7 +46,8 @@ Update add(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst)
   return UpdatePC;
 }
 
-Update addi(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst)
+Update addi(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
+            Instruction inst)
 {
   regs.set_word(REGISTER(inst.first), regs[REGISTER(inst.second)] +
                 inst.address);
@@ -53,7 +55,8 @@ Update addi(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst)
   return UpdatePC;
 }
 
-Update sub(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst)
+Update sub(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
+           Instruction inst)
 {
   regs.set_word(REGISTER(inst.first), regs[REGISTER(inst.second)] -
                 regs[REGISTER(inst.address)]);
@@ -61,7 +64,8 @@ Update sub(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst)
   return UpdatePC;
 }
 
-Update subi(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst)
+Update subi(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
+            Instruction inst)
 {
   regs.set_word(REGISTER(inst.first), regs[REGISTER(inst.second)] -
                 inst.address);
@@ -69,7 +73,8 @@ Update subi(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst)
   return UpdatePC;
 }
 
-Update multl(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst)
+Update multl(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
+             Instruction inst)
 {
   Sint64 result = static_cast<Sint32>(regs[REGISTER(inst.second)]) *
     static_cast<Sint32>(regs[REGISTER(inst.address)]);
@@ -79,7 +84,7 @@ Update multl(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst)
   return UpdatePC;
 }
 
-Update multli(Memory& regs, Memory& mem, Interrupt& interrupt,
+Update multli(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
               Instruction inst)
 {
   Sint64 result = static_cast<Sint32>(regs[REGISTER(inst.second)]) *
@@ -90,7 +95,7 @@ Update multli(Memory& regs, Memory& mem, Interrupt& interrupt,
   return UpdatePC;
 }
 
-Update multlu(Memory& regs, Memory& mem, Interrupt& interrupt,
+Update multlu(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
               Instruction inst)
 {
   Uint64 result = regs[REGISTER(inst.second)] * regs[REGISTER(inst.address)];
@@ -100,7 +105,7 @@ Update multlu(Memory& regs, Memory& mem, Interrupt& interrupt,
   return UpdatePC;
 }
 
-Update multlui(Memory& regs, Memory& mem, Interrupt& interrupt,
+Update multlui(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
                Instruction inst)
 {
   Uint64 result = regs[REGISTER(inst.second)] *
@@ -111,7 +116,8 @@ Update multlui(Memory& regs, Memory& mem, Interrupt& interrupt,
   return UpdatePC;
 }
 
-Update multh(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst)
+Update multh(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
+             Instruction inst)
 {
   Sint64 result = static_cast<Sint32>(regs[REGISTER(inst.second)]) *
     static_cast<Sint32>(regs[REGISTER(inst.address)]);
@@ -121,7 +127,7 @@ Update multh(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst)
   return UpdatePC;
 }
 
-Update multhi(Memory& regs, Memory& mem, Interrupt& interrupt,
+Update multhi(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
               Instruction inst)
 {
   Sint64 result = static_cast<Sint32>(regs[REGISTER(inst.second)]) *
@@ -132,7 +138,7 @@ Update multhi(Memory& regs, Memory& mem, Interrupt& interrupt,
   return UpdatePC;
 }
 
-Update multhu(Memory& regs, Memory& mem, Interrupt& interrupt,
+Update multhu(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
               Instruction inst)
 {
   Uint64 result = regs[REGISTER(inst.second)] * regs[REGISTER(inst.address)];
@@ -142,7 +148,8 @@ Update multhu(Memory& regs, Memory& mem, Interrupt& interrupt,
   return UpdatePC;
 }
 
-Update multhui(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst)
+Update multhui(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
+               Instruction inst)
 {
   Uint64 result = regs[REGISTER(inst.second)] * inst.address;
   regs.set_word(REGISTER(inst.first),
@@ -151,13 +158,14 @@ Update multhui(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst
   return UpdatePC;
 }
 
-Update div(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst)
+Update div(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
+           Instruction inst)
 {
   Word dividend = static_cast<Sint32>(regs[REGISTER(inst.second)]);
   Word divisor = static_cast<Sint32>(regs[REGISTER(inst.address)]);
   if (divisor == 0) {
-    interrupt.type = DivisionByZero;
-    interrupt.r0 = static_cast<Word>(DivisionByZero);
+    Word code = static_cast<Word>(isa.interrupt_code("DivisionByZero"));
+    interrupt.code = interrupt.r0 = code;
     interrupt.r1 = regs[REGISTER_PC];
     interrupt.r2 = dividend;
 
@@ -169,13 +177,14 @@ Update div(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst)
   }
 }
 
-Update divi(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst)
+Update divi(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
+            Instruction inst)
 {
   Word dividend = static_cast<Sint32>(regs[REGISTER(inst.second)]);
   Word divisor = static_cast<Sint32>(inst.address);
   if (divisor == 0) {
-    interrupt.type = DivisionByZero;
-    interrupt.r0 = static_cast<Word>(DivisionByZero);
+    Word code = static_cast<Word>(isa.interrupt_code("DivisionByZero"));
+    interrupt.code = interrupt.r0 = code;
     interrupt.r1 = regs[REGISTER_PC];
     interrupt.r2 = dividend;
 
@@ -187,13 +196,14 @@ Update divi(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst)
   }
 }
 
-Update divu(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst)
+Update divu(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
+            Instruction inst)
 {
   Word dividend = regs[REGISTER(inst.second)];
                        Word divisor = regs[REGISTER(inst.address)];
   if (divisor == 0) {
-    interrupt.type = DivisionByZero;
-    interrupt.r0 = static_cast<Word>(DivisionByZero);
+    Word code = static_cast<Word>(isa.interrupt_code("DivisionByZero"));
+    interrupt.code = interrupt.r0 = code;
     interrupt.r1 = regs[REGISTER_PC];
     interrupt.r2 = dividend;
 
@@ -205,13 +215,14 @@ Update divu(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst)
   }
 }
 
-Update divui(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst)
+Update divui(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
+             Instruction inst)
 {
   Word dividend = regs[REGISTER(inst.second)];
   Word divisor = inst.address;
   if (divisor == 0) {
-    interrupt.type = DivisionByZero;
-    interrupt.r0 = static_cast<Word>(DivisionByZero);
+    Word code = static_cast<Word>(isa.interrupt_code("DivisionByZero"));
+    interrupt.code = interrupt.r0 = code;
     interrupt.r1 = regs[REGISTER_PC];
     interrupt.r2 = dividend;
 
@@ -223,13 +234,14 @@ Update divui(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst)
   }
 }
 
-Update mod(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst)
+Update mod(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
+           Instruction inst)
 {
   Word dividend = static_cast<Sint32>(regs[REGISTER(inst.second)]);
   Word divisor = static_cast<Sint32>(regs[REGISTER(inst.address)]);
   if (divisor == 0) {
-    interrupt.type = DivisionByZero;
-    interrupt.r0 = static_cast<Word>(DivisionByZero);
+    Word code = static_cast<Word>(isa.interrupt_code("DivisionByZero"));
+    interrupt.code = interrupt.r0 = code;
     interrupt.r1 = regs[REGISTER_PC];
     interrupt.r2 = dividend;
 
@@ -241,13 +253,14 @@ Update mod(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst)
   }
 }
 
-Update modi(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst)
+Update modi(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
+            Instruction inst)
 {
   Word dividend = static_cast<Sint32>(regs[REGISTER(inst.second)]);
   Word divisor = static_cast<Sint32>(inst.address);
   if (divisor == 0) {
-    interrupt.type = DivisionByZero;
-    interrupt.r0 = static_cast<Word>(DivisionByZero);
+    Word code = static_cast<Word>(isa.interrupt_code("DivisionByZero"));
+    interrupt.code = interrupt.r0 = code;
     interrupt.r1 = regs[REGISTER_PC];
     interrupt.r2 = dividend;
 
@@ -259,13 +272,14 @@ Update modi(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst)
   }
 }
 
-Update modu(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst)
+Update modu(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
+            Instruction inst)
 {
   Word dividend = regs[REGISTER(inst.second)];
   Word divisor = regs[REGISTER(inst.address)];
   if (divisor == 0) {
-    interrupt.type = DivisionByZero;
-    interrupt.r0 = static_cast<Word>(DivisionByZero);
+    Word code = static_cast<Word>(isa.interrupt_code("DivisionByZero"));
+    interrupt.code = interrupt.r0 = code;
     interrupt.r1 = regs[REGISTER_PC];
     interrupt.r2 = dividend;
 
@@ -277,13 +291,14 @@ Update modu(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst)
   }
 }
 
-Update modui(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst)
+Update modui(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
+             Instruction inst)
 {
   Word dividend = regs[REGISTER(inst.second)];
   Word divisor = inst.address;
   if (divisor == 0) {
-    interrupt.type = DivisionByZero;
-    interrupt.r0 = static_cast<Word>(DivisionByZero);
+    Word code = static_cast<Word>(isa.interrupt_code("DivisionByZero"));
+    interrupt.code = interrupt.r0 = code;
     interrupt.r1 = regs[REGISTER_PC];
     interrupt.r2 = dividend;
 

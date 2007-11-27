@@ -33,6 +33,9 @@ Bug::Bug(SimpleWorld* sw, DB::ID id)
 {
   Bug::bugs[this->registers_] = this;
 
+  this->isa_.add_interrupt(0x5, "InvalidWorldCommand");
+  this->isa_.add_interrupt(0x6, "WorldEvent");
+
   this->isa_.add_instruction(0x38, "world", 0, true, ::SimpleWorld::world);
 }
 
@@ -40,6 +43,9 @@ Bug::Bug(SimpleWorld* sw, Egg* egg)
   : DB::Bug(sw, egg), CPU(&this->cpu.registers, &this->code.code), world(sw)
 {
   Bug::bugs[this->registers_] = this;
+
+  this->isa_.add_interrupt(0x5, "InvalidWorldCommand");
+  this->isa_.add_interrupt(0x6, "WorldEvent");
 
   this->isa_.add_instruction(0x38, "world", 0, true, ::SimpleWorld::world);
 }

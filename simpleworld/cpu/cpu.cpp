@@ -63,6 +63,13 @@ CPU::CPU(Memory* registers, Memory* memory)
   this->isa_.add_register(0xe, "stp");
   this->isa_.add_register(0xf, "itp");
 
+  // Interrupts
+  this->isa_.add_interrupt(0x0, "TimerInterrupt");
+  this->isa_.add_interrupt(0x1, "SoftwareInterrupt");
+  this->isa_.add_interrupt(0x2, "InvalidInstruction");
+  this->isa_.add_interrupt(0x3, "InvalidMemoryLocation");
+  this->isa_.add_interrupt(0x4, "DivisionByZero");
+
   // Instructions
   // Management operations
   this->isa_.add_instruction(0x00, "stop", 0, false, stop);
@@ -166,8 +173,10 @@ void CPU::next()
 
   if (this->interrupt_request_) {
 #ifdef DEBUG
-    std::cout << boost::str(boost::format("Interrupt: 0x%8x")
-                            % this->interrupt_.type)
+    std::cout << "Interrupt info:";
+    std::cout << boost::str(boost::format("code: 0x%2x, name: %s")
+                            % static_cast<int>(this->interrupt_.code)
+                            % this->isa_.interrupt_name(this->interrupt_.code))
               << std::endl;
 #endif
     this->interrupt_handler_();
@@ -178,7 +187,7 @@ void CPU::next()
 #ifdef DEBUG
       std::cout << "Instruction info:";
       std::cout
-        << boost::str(boost::format("code: %d, name: %s, nregs: %d, has_i: %d")
+        << boost::str(boost::format("code: 0x%2x, name: %s, nregs: %d, has_i: %d")
                       % static_cast<int>(info.code)
                       % info.name
                       % static_cast<int>(info.nregs)
@@ -186,8 +195,8 @@ void CPU::next()
         << std::endl;
 #endif
 
-      switch (info.func(*this->registers_, *this->memory_, this->interrupt_,
-                        instruction)) {
+      switch (info.func(this->isa_, *this->registers_, *this->memory_,
+                        this->interrupt_, instruction)) {
       case UpdateInterrupt:
         // Throw a interrupt
         this->interrupt_request_ = true;
@@ -203,8 +212,10 @@ void CPU::next()
     } catch (const CodeError& exc) {
       // Prepare the interrupt
       this->interrupt_request_ = true;
-      this->interrupt_.type = InvalidInstruction;
-      this->interrupt_.r0 = static_cast<Word>(InvalidInstruction);
+
+      Word code =
+        static_cast<Word>(this->isa_.interrupt_code("InvalidInstruction"));
+      this->interrupt_.code = this->interrupt_.r0 = code;
       this->interrupt_.r1 = this->memory_->get_word(REGISTER_PC);
       this->interrupt_.r2 = static_cast<Word>(instruction.code);
 
@@ -214,8 +225,10 @@ void CPU::next()
     } catch (const MemoryError& exc) {
       // Prepare the interrupt
       this->interrupt_request_ = true;
-      this->interrupt_.type = InvalidMemoryLocation;
-      this->interrupt_.r0 = static_cast<Word>(InvalidMemoryLocation);
+
+      Uint8 code =
+        static_cast<Word>(this->isa_.interrupt_code("InvalidMemoryLocation"));
+      this->interrupt_.code = this->interrupt_.r0 = code;
       this->interrupt_.r1 = this->memory_->get_word(REGISTER_PC);
       this->interrupt_.r2 = static_cast<Word>(instruction.address);
 
@@ -247,7 +260,7 @@ void CPU::interrupt_handler_()
   Word itp = this->registers_->get_word(REGISTER_ITP);
   if (itp != 0) {
     Word handler =
-      this->memory_->get_word(itp + this->interrupt_.type * sizeof(Word));
+      this->memory_->get_word(itp + this->interrupt_.code * sizeof(Word));
     if (handler != 0) {
       // Save all the registers in the stack
       Sint8 i;

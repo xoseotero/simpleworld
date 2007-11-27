@@ -30,14 +30,16 @@ namespace CPU
 {
 
 /* Move operations */
-Update move(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst)
+Update move(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
+            Instruction inst)
 {
   regs.set_word(REGISTER(inst.first), regs[REGISTER(inst.second)]);
 
   return UpdatePC;
 }
 
-Update swap(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst)
+Update swap(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
+            Instruction inst)
 {
   regs.set_word(REGISTER(inst.first),
                 regs[REGISTER(inst.second)] << 16 |
@@ -48,7 +50,8 @@ Update swap(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst)
 
 
 /* Stack operations */
-Update push(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst)
+Update push(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
+            Instruction inst)
 {
   // Save the register in the top of the stack
   regs.set_word(REGISTER_STP, regs[REGISTER(inst.first)]);
@@ -58,7 +61,8 @@ Update push(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst)
   return UpdatePC;
 }
 
-Update pop(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst)
+Update pop(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
+           Instruction inst)
 {
   // Update stack pointer
   regs.set_word(REGISTER_STP, regs[REGISTER_STP] + 4);
@@ -70,21 +74,23 @@ Update pop(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst)
 
 
 /* Load operations */
-Update load(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst)
+Update load(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
+            Instruction inst)
 {
   regs.set_word(REGISTER(inst.first), mem[inst.address]);
 
   return UpdatePC;
 }
 
-Update loadi(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst)
+Update loadi(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
+             Instruction inst)
 {
   regs.set_word(REGISTER(inst.first), inst.address);
 
   return UpdatePC;
 }
 
-Update loadrr(Memory& regs, Memory& mem, Interrupt& interrupt,
+Update loadrr(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
               Instruction inst)
 {
   regs.set_word(REGISTER(inst.first),
@@ -94,7 +100,7 @@ Update loadrr(Memory& regs, Memory& mem, Interrupt& interrupt,
   return UpdatePC;
 }
 
-Update loadri(Memory& regs, Memory& mem, Interrupt& interrupt,
+Update loadri(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
               Instruction inst)
 {
   regs.set_word(REGISTER(inst.first),
@@ -105,14 +111,15 @@ Update loadri(Memory& regs, Memory& mem, Interrupt& interrupt,
 
 
 /* Store operations */
-Update store(Memory& regs, Memory& mem, Interrupt& interrupt, Instruction inst)
+Update store(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
+             Instruction inst)
 {
   mem.set_word(inst.address, regs[REGISTER(inst.first)]);
 
   return UpdatePC;
 }
 
-Update storerr(Memory& regs, Memory& mem, Interrupt& interrupt,
+Update storerr(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
                Instruction inst)
 {
   mem.set_word(regs[inst.first] + regs[inst.address], regs[inst.second]);
@@ -120,7 +127,7 @@ Update storerr(Memory& regs, Memory& mem, Interrupt& interrupt,
   return UpdatePC;
 }
 
-Update storeri(Memory& regs, Memory& mem, Interrupt& interrupt,
+Update storeri(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
                Instruction inst)
 {
   mem.set_word(regs[inst.first] + inst.address, regs[inst.second]);
