@@ -171,7 +171,7 @@ void SimpleWorld::run(Time cycles)
 void SimpleWorld::nothing(Bug* bug)
 {
 #ifdef DEBUG
-  std::cerr << boost::format("Bug %1% doing action nothing")
+  std::cout << boost::format("Bug %1% doing action nothing")
     % bug->id()
     << std::endl;
 #endif // DEBUG
@@ -183,7 +183,7 @@ void SimpleWorld::nothing(Bug* bug)
 CPU::Word SimpleWorld::myself(Bug* bug, Info info, CPU::Word* ypos)
 {
 #ifdef DEBUG
-  std::cerr << boost::format("Bug %1% doing action myself")
+  std::cout << boost::format("Bug %1% doing action myself")
     % bug->id()
     << std::endl;
 #endif // DEBUG
@@ -218,7 +218,7 @@ CPU::Word SimpleWorld::myself(Bug* bug, Info info, CPU::Word* ypos)
 ElementType SimpleWorld::detect(Bug* bug)
 {
 #ifdef DEBUG
-  std::cerr << boost::format("Bug %1% doing action detect")
+  std::cout << boost::format("Bug %1% doing action detect")
     % bug->id()
     << std::endl;
 #endif // DEBUG
@@ -232,7 +232,7 @@ ElementType SimpleWorld::detect(Bug* bug)
 CPU::Word SimpleWorld::information(Bug* bug, Info info, CPU::Word* ypos)
 {
 #ifdef DEBUG
-  std::cerr << boost::format("Bug %1% doing action information")
+  std::cout << boost::format("Bug %1% doing action information")
     % bug->id()
     << std::endl;
 #endif // DEBUG
@@ -286,7 +286,7 @@ The element in (%1%, %2%) is food")
 void SimpleWorld::move(Bug* bug, Movement movement)
 {
 #ifdef DEBUG
-  std::cerr << boost::format("Bug %1% doing action move")
+  std::cout << boost::format("Bug %1% doing action move")
     % bug->id()
     << std::endl;
 #endif // DEBUG
@@ -304,7 +304,7 @@ void SimpleWorld::move(Bug* bug, Movement movement)
 void SimpleWorld::turn(Bug* bug, Turn turn)
 {
 #ifdef DEBUG
-  std::cerr << boost::format("Bug %1% doing action turn")
+  std::cout << boost::format("Bug %1% doing action turn")
     % bug->id()
     << std::endl;
 #endif // DEBUG
@@ -327,7 +327,7 @@ void SimpleWorld::turn(Bug* bug, Turn turn)
 void SimpleWorld::attack(Bug* bug, Energy energy)
 {
 #ifdef DEBUG
-  std::cerr << boost::format("Bug %1% doing action attack")
+  std::cout << boost::format("Bug %1% doing action attack")
     % bug->id()
     << std::endl;
 #endif // DEBUG
@@ -346,7 +346,7 @@ void SimpleWorld::attack(Bug* bug, Energy energy)
 Energy SimpleWorld::eat(Bug* bug)
 {
 #ifdef DEBUG
-  std::cerr << boost::format("Bug %1% doing action eat")
+  std::cout << boost::format("Bug %1% doing action eat")
     % bug->id()
     << std::endl;
 #endif // DEBUG
@@ -367,7 +367,7 @@ Energy SimpleWorld::eat(Bug* bug)
 void SimpleWorld::egg(Bug* bug, Energy energy)
 {
 #ifdef DEBUG
-  std::cerr << boost::format("Bug %1% doing action egg")
+  std::cout << boost::format("Bug %1% doing action egg")
     % bug->id()
     << std::endl;
 #endif // DEBUG
