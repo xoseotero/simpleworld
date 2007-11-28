@@ -15,7 +15,13 @@ IF(RUN_TESTS)
     ${Boost_program_options_LIBRARY} ${Boost_filesystem_LIBRARY}
     ${Boost_regex_LIBRARY} ${Boost_unit_test_framework_LIBRARY})
 
+  ADD_EXECUTABLE(isa_test isa_test.cpp)
+  TARGET_LINK_LIBRARIES(isa_test simpleworld_cpu
+    ${Boost_program_options_LIBRARY} ${Boost_filesystem_LIBRARY}
+    ${Boost_regex_LIBRARY} ${Boost_unit_test_framework_LIBRARY})
+
   ADD_TEST(word.hpp word_test)
   ADD_TEST(memory.hpp memory_test)
   ADD_TEST(instruction.hpp instruction_test)
+  ADD_TEST(isa.hpp isa_test)
 ENDIF(RUN_TESTS)
