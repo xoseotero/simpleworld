@@ -1,5 +1,6 @@
+#define BOOST_TEST_MODULE Unit test for memory.hpp
+#define BOOST_TEST_DYN_LINK
 #include <boost/test/unit_test.hpp>
-namespace ut = boost::unit_test;
 
 #include <simpleworld/config.hpp>
 #include <simpleworld/ints.hpp>
@@ -9,7 +10,7 @@ namespace sw = SimpleWorld;
 namespace cpu = SimpleWorld::CPU;
 
 
-void memory_exception()
+BOOST_AUTO_TEST_CASE(memory_exception)
 {
   BOOST_CHECKPOINT("Getting memory exception");
 
@@ -17,7 +18,7 @@ void memory_exception()
   memory.get_word(15 * 4 + 1);
 }
 
-void memory_is_zeroed()
+BOOST_AUTO_TEST_CASE(memory_is_zeroed)
 {
   BOOST_CHECKPOINT("Checking if memory is zeroed");
 
@@ -27,7 +28,7 @@ void memory_is_zeroed()
     BOOST_CHECK_EQUAL(memory.get_word(i), 0);
 }
 
-void memory_checking_words()
+BOOST_AUTO_TEST_CASE(memory_checking_words)
 {
   BOOST_CHECKPOINT("Getting words from memory");
 
@@ -41,7 +42,7 @@ void memory_checking_words()
 }
 
 #ifdef IS_LITTLE_ENDIAN
-void memory_set_big_endian()
+BOOST_AUTO_TEST_CASE(memory_set_big_endian)
 {
   BOOST_CHECKPOINT("Setting big endian words");
 
@@ -54,7 +55,7 @@ void memory_set_big_endian()
     BOOST_CHECK_EQUAL(memory.get_word(i), i);
 }
 
-void memory_get_big_endian()
+BOOST_AUTO_TEST_CASE(memory_get_big_endian)
 {
   BOOST_CHECKPOINT("Getting big endian words");
 
@@ -68,7 +69,7 @@ void memory_get_big_endian()
 }
 #endif
 
-void memory_get_non_aligned()
+BOOST_AUTO_TEST_CASE(memory_get_non_aligned)
 {
   BOOST_CHECKPOINT("Getting a non aligned word");
 
@@ -79,7 +80,7 @@ void memory_get_non_aligned()
   BOOST_CHECK_EQUAL(memory.get_word(2), 0x456789ab);
 }
 
-void memory_Set_non_aligned()
+BOOST_AUTO_TEST_CASE(memory_Set_non_aligned)
 {
   BOOST_CHECKPOINT("Setting a non aligned word");
 
@@ -88,21 +89,4 @@ void memory_Set_non_aligned()
   memory.set_word(2, 0xaabbccdd);
 
   BOOST_CHECK_EQUAL(memory.get_word(2), 0xaabbccdd);
-}
-
-
-ut::test_suite* init_unit_test_suite(int argc, char* argv[])
-{
-  ut::test_suite* test = BOOST_TEST_SUITE("Unit test for memory.h");
-
-  //test->add(BOOST_TEST_CASE(&memory_exception), 1);
-  test->add(BOOST_TEST_CASE(&memory_is_zeroed));
-  test->add(BOOST_TEST_CASE(&memory_checking_words));
-#ifdef IS_LITTLE_ENDIAN
-  test->add(BOOST_TEST_CASE(&memory_set_big_endian));
-  test->add(BOOST_TEST_CASE(&memory_get_big_endian));
-#endif
-  test->add(BOOST_TEST_CASE(&memory_get_non_aligned));
-
-  return test;
 }

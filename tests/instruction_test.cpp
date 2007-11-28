@@ -1,7 +1,8 @@
 #include <algorithm>
 
+#define BOOST_TEST_MODULE Unit test for instruction.hpp
+#define BOOST_TEST_DYN_LINK
 #include <boost/test/unit_test.hpp>
-namespace ut = boost::unit_test;
 
 #include <simpleworld/config.hpp>
 #include <simpleworld/ints.hpp>
@@ -10,7 +11,7 @@ namespace sw = SimpleWorld;
 namespace cpu = SimpleWorld::CPU;
 
 
-void instruction_encode()
+BOOST_AUTO_TEST_CASE(instruction_encode)
 {
   BOOST_CHECKPOINT("Encode a instruction");
 
@@ -26,7 +27,7 @@ void instruction_encode()
 #endif
 }
 
-void instruction_decode()
+BOOST_AUTO_TEST_CASE(instruction_decode)
 {
   BOOST_CHECKPOINT("Decode a instruction");
 
@@ -43,7 +44,7 @@ void instruction_decode()
   BOOST_CHECK_EQUAL(inst.address, 0x5678);
 }
 
-void instruction_add_register()
+BOOST_AUTO_TEST_CASE(instruction_add_register)
 {
   BOOST_CHECKPOINT("Add a register");
 
@@ -63,7 +64,7 @@ void instruction_add_register()
   set.remove_register(code);
 }
 
-void instruction_add_instruction()
+BOOST_AUTO_TEST_CASE(instruction_add_instruction)
 {
   BOOST_CHECKPOINT("Add a instruction");
 
@@ -88,17 +89,4 @@ void instruction_add_instruction()
               instructions.end());
 
   set.remove_instruction(info.code);
-}
-
-
-ut::test_suite* init_unit_test_suite(int argc, char* argv[])
-{
-  ut::test_suite* test = BOOST_TEST_SUITE("Unit test for instruction.h");
-
-  test->add(BOOST_TEST_CASE(&instruction_encode));
-  test->add(BOOST_TEST_CASE(&instruction_decode));
-  test->add(BOOST_TEST_CASE(&instruction_add_register));
-  test->add(BOOST_TEST_CASE(&instruction_add_instruction));
-
-  return test;
 }
