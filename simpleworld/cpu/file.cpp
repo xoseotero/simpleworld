@@ -104,7 +104,8 @@ void File::remove(File::size_type pos, File::size_type n)
 Line %1% is out of range")
                                              % pos));
 
-  this->lines_.erase(this->lines_.begin() + pos);
+  this->lines_.erase(this->lines_.begin() + pos,
+                     this->lines_.begin() + pos + n);
 }
 
 
