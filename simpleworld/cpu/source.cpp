@@ -195,7 +195,7 @@ static const boost::regex re_inst3(BEGIN_LINE
  * @return the path to the file found.
  */
 static fs::path find_file(const std::vector<std::string>& path,
-                             const std::string& filename)
+                          const std::string& filename)
 {
   std::vector<std::string>::const_iterator iter = path.begin();
   while (iter != path.end()) {
