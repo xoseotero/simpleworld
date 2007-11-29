@@ -1,4 +1,4 @@
-#define BOOST_TEST_MODULE Unit test for file.hpp
+#define BOOST_TEST_MODULE Unit test for CPU::File
 #define BOOST_TEST_DYN_LINK
 #include <boost/filesystem/path.hpp>
 #include <boost/test/unit_test.hpp>

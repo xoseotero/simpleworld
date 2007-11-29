@@ -1,4 +1,4 @@
-#define BOOST_TEST_MODULE Unit test for word.hpp
+#define BOOST_TEST_MODULE Unit test for cpu/word.hpp
 #define BOOST_TEST_DYN_LINK
 #include <boost/test/unit_test.hpp>
 
