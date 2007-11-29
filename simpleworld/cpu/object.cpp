@@ -25,6 +25,7 @@
 
 #include <boost/format.hpp>
 
+#include <simpleworld/config.hpp>
 #include <simpleworld/ioerror.hpp>
 
 #include "codeerror.hpp"
@@ -72,7 +73,11 @@ The size of %1% (%2%) is not a multiple of 32bits")
       file.insert(i, this->decompile(instruction));
     } catch (const CodeError& e) {
       char address[11];
-      std::snprintf(address, 11, "%x", instruction);
+#ifdef IS_BIG_ENDIAN
+      std::snprintf(address, 11, "0x%x", instruction);
+#else
+      std::snprintf(address, 11, "0x%x", change_byte_order(instruction));
+#endif // IS_BIG_ENDIAN
       file.insert(i, address);
     }
 
