@@ -57,10 +57,10 @@ public:
 
 
   /**
-   * Instruction set of the CPU.
-   * @return the instruction set.
+   * Instruction set architecture of the CPU.
+   * @return the instruction set architecture.
    */
-  const ISA& instruction_set() const { return this->isa_; }
+  const ISA& isa() const { return this->isa_; }
 
   /**
    * Registers of the CPU.
