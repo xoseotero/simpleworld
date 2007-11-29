@@ -305,7 +305,7 @@ Name %1% already defined")
       std::snprintf(address, 11, "0x%x", lines_code * sizeof(Word));
       this->remove(i, 1);
       this->constants_.insert(std::pair<std::string, std::string>(label,
-        address));
+                                                                  address));
     } else if (this->is_instruction(i) or this->is_data(i)) {
       lines_code++;
       i++;

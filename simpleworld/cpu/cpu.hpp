@@ -99,7 +99,7 @@ protected:
   bool interrupt_request_;      /**< If a interrupt was thrown. */
   Interrupt interrupt_;
 
-  ISA isa_;          /**< Instruction set */
+  ISA isa_;                     /**< Instruction set */
 
   bool running_;
 
