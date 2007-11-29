@@ -10,7 +10,7 @@ namespace cpu = SimpleWorld::CPU;
 
 
 #define FILE_LOAD (TESTDATA "file_load.txt")
-#define FILE_SAVE (TESTDATA "file_save.txt")
+#define FILE_SAVE (TESTOUTPUT "file_save.txt")
 
 
 BOOST_AUTO_TEST_CASE(file_empty)

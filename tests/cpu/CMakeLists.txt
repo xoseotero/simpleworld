@@ -1,4 +1,5 @@
 ADD_DEFINITIONS("-DTESTDATA=\\\"${CMAKE_SOURCE_DIR}/tests/cpu/\\\"")
+ADD_DEFINITIONS("-DTESTOUTPUT=\\\"${CMAKE_BINARY_DIR}/tests/cpu/\\\"")
 
 # Only if RUN_TESTS is set
 IF(RUN_TESTS)

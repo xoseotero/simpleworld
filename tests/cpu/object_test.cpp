@@ -15,7 +15,7 @@ namespace cpu = SimpleWorld::CPU;
 
 #define OBJECT (TESTDATA "object.swo")
 #define OBJECT_SOURCE (TESTDATA "object.swl")
-#define OBJECT_SAVE (TESTDATA "object_save.swl")
+#define OBJECT_SAVE (TESTOUTPUT "object_save.swl")
 
 
 /**
