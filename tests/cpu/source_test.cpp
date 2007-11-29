@@ -3,9 +3,7 @@
 
 #define BOOST_TEST_MODULE Unit test for CPU::Source
 #define BOOST_TEST_DYN_LINK
-#include <boost/filesystem/path.hpp>
 #include <boost/test/unit_test.hpp>
-namespace fs = boost::filesystem;
 
 #include <simpleworld/cpu/memory.hpp>
 #include <simpleworld/cpu/cpu.hpp>
@@ -13,6 +11,14 @@ namespace fs = boost::filesystem;
 #include <simpleworld/cpu/source.hpp>
 namespace sw = SimpleWorld;
 namespace cpu = SimpleWorld::CPU;
+
+
+#define SOURCE (TESTDATA "source.swl")
+#define SOURCE_INCLUDES (TESTDATA "source_includes.swl")
+#define SOURCE_CONSTANTS (TESTDATA "source_constants.swl")
+#define SOURCE_BLOCKS (TESTDATA "source_blocks.swl")
+#define SOURCE_PREPROCESS (TESTDATA "source_preprocess.swl")
+#define INCLUDE_DIR (TESTDATA "include")
 
 
 /**
@@ -39,106 +45,64 @@ BOOST_AUTO_TEST_CASE(source_replace_includes)
 {
   BOOST_CHECKPOINT("Replace the includes from the SWL");
 
-  fs::path source(TESTDATA, fs::native);
-  source /= "cpu";
-  source /= "source.swl";
-
-  fs::path source_includes(TESTDATA, fs::native);
-  source_includes /= "cpu";
-  source_includes /= "source_includes.swl";
-
   std::vector<std::string> include_path;
-  fs::path include_dir(TESTDATA, fs::native);
-  include_dir /= "cpu";
-  include_dir /= "include";
-  include_path.push_back(include_dir.string());
+  include_path.push_back(INCLUDE_DIR);
 
   cpu::Memory registers;
   cpu::CPU cpu(&registers, NULL);
-  cpu::Source compiler(cpu.isa(), include_path, source.string());
+  cpu::Source compiler(cpu.isa(), include_path, SOURCE);
 
   compiler.replace_includes();
 
-  BOOST_CHECK(compare_swl(compiler,
-                          cpu::File(source_includes.string())));
+  BOOST_CHECK(compare_swl(compiler, cpu::File(SOURCE_INCLUDES)));
 }
 
 BOOST_AUTO_TEST_CASE(source_replace_constants)
 {
   BOOST_CHECKPOINT("Replace the constants from the SWL");
 
-  fs::path source(TESTDATA, fs::native);
-  source /= "cpu";
-  source /= "source.swl";
-
-  fs::path source_constants(TESTDATA, fs::native);
-  source_constants /= "cpu";
-  source_constants /= "source_constants.swl";
-
   std::vector<std::string> include_path;
 
   cpu::Memory registers;
   cpu::CPU cpu(&registers, NULL);
-  cpu::Source compiler(cpu.isa(), include_path, source.string());
+  cpu::Source compiler(cpu.isa(), include_path, SOURCE);
 
   compiler.replace_constants();
 
-  BOOST_CHECK(compare_swl(compiler,
-                          cpu::File(source_constants.string())));
+  BOOST_CHECK(compare_swl(compiler, cpu::File(SOURCE_CONSTANTS)));
 }
 
 BOOST_AUTO_TEST_CASE(source_replace_blocks)
 {
   BOOST_CHECKPOINT("Replace the blocks from the SWL");
 
-  fs::path source(TESTDATA, fs::native);
-  source /= "cpu";
-  source /= "source.swl";
-
-  fs::path source_blocks(TESTDATA, fs::native);
-  source_blocks /= "cpu";
-  source_blocks /= "source_blocks.swl";
-
   std::vector<std::string> include_path;
 
   cpu::Memory registers;
   cpu::CPU cpu(&registers, NULL);
-  cpu::Source compiler(cpu.isa(), include_path, source.string());
+  cpu::Source compiler(cpu.isa(), include_path, SOURCE);
 
   compiler.replace_blocks();
 
-  BOOST_CHECK(compare_swl(compiler,
-                          cpu::File(source_blocks.string())));
+  BOOST_CHECK(compare_swl(compiler, cpu::File(SOURCE_BLOCKS)));
 }
 
 BOOST_AUTO_TEST_CASE(source_preprocess)
 {
   BOOST_CHECKPOINT("Preprocess the SWL");
 
-  fs::path source(TESTDATA, fs::native);
-  source /= "cpu";
-  source /= "source.swl";
-
-  fs::path source_preprocess(TESTDATA, fs::native);
-  source_preprocess /= "cpu";
-  source_preprocess /= "source_preprocess.swl";
-
   std::vector<std::string> include_path;
-  fs::path include_dir(TESTDATA, fs::native);
-  include_dir /= "cpu";
-  include_dir /= "include";
-  include_path.push_back(include_dir.string());
+  include_path.push_back(INCLUDE_DIR);
 
   cpu::Memory registers;
   cpu::CPU cpu(&registers, NULL);
-  cpu::Source compiler(cpu.isa(), include_path, source.string());
+  cpu::Source compiler(cpu.isa(), include_path, SOURCE);
 
   compiler.replace_includes();
   compiler.replace_constants();
   compiler.replace_blocks();
 
-  BOOST_CHECK(compare_swl(compiler,
-                          cpu::File(source_preprocess.string())));
+  BOOST_CHECK(compare_swl(compiler, cpu::File(SOURCE_PREPROCESS)));
 }
 
 // A unit test for Source::compile() can't be made because, by design, a

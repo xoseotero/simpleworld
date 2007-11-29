@@ -1,3 +1,5 @@
+ADD_DEFINITIONS("-DTESTDATA=\\\"${CMAKE_SOURCE_DIR}/tests/cpu/\\\"")
+
 # Only if RUN_TESTS is set
 IF(RUN_TESTS)
   ADD_EXECUTABLE(word_test word_test.cpp)

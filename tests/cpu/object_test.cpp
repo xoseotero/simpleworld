@@ -2,9 +2,7 @@
 
 #define BOOST_TEST_MODULE Unit test for CPU::Object
 #define BOOST_TEST_DYN_LINK
-#include <boost/filesystem/path.hpp>
 #include <boost/test/unit_test.hpp>
-namespace fs = boost::filesystem;
 
 #include <simpleworld/cpu/memory.hpp>
 #include <simpleworld/cpu/cpu.hpp>
@@ -13,6 +11,11 @@ namespace fs = boost::filesystem;
 #include <simpleworld/cpu/object.hpp>
 namespace sw = SimpleWorld;
 namespace cpu = SimpleWorld::CPU;
+
+
+#define OBJECT (TESTDATA "object.swo")
+#define OBJECT_SOURCE (TESTDATA "object.swl")
+#define OBJECT_SAVE (TESTDATA "object_save.swl")
 
 
 /**
@@ -39,24 +42,11 @@ BOOST_AUTO_TEST_CASE(object_decompile)
 {
   BOOST_CHECKPOINT("Replace the includes from the SWL");
 
-  fs::path object(TESTDATA, fs::native);
-  object /= "cpu";
-  object /= "object.swo";
-
-  fs::path object_save(TESTDATA, fs::native);
-  object_save /= "cpu";
-  object_save /= "object_save.swl";
-
-  fs::path object_source(TESTDATA, fs::native);
-  object_source /= "cpu";
-  object_source /= "object.swl";
-
   cpu::Memory registers;
   cpu::CPU cpu(&registers, NULL);
-  cpu::Object decompiler(cpu.isa(), object.string());
+  cpu::Object decompiler(cpu.isa(), OBJECT);
 
-  decompiler.decompile(object_save.string());
+  decompiler.decompile(OBJECT_SAVE);
 
-  BOOST_CHECK(compare_swl(cpu::File(object_save.string()),
-                          cpu::File(object_source.string())));
+  BOOST_CHECK(compare_swl(cpu::File(OBJECT_SAVE), cpu::File(OBJECT_SOURCE)));
 }

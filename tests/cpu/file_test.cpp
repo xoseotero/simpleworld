@@ -1,14 +1,16 @@
 #define BOOST_TEST_MODULE Unit test for CPU::File
 #define BOOST_TEST_DYN_LINK
-#include <boost/filesystem/path.hpp>
 #include <boost/test/unit_test.hpp>
-namespace fs = boost::filesystem;
 
 #include <simpleworld/config.hpp>
 #include <simpleworld/ints.hpp>
 #include <simpleworld/cpu/file.hpp>
 namespace sw = SimpleWorld;
 namespace cpu = SimpleWorld::CPU;
+
+
+#define FILE_LOAD (TESTDATA "file_load.txt")
+#define FILE_SAVE (TESTDATA "file_save.txt")
 
 
 BOOST_AUTO_TEST_CASE(file_empty)
@@ -124,10 +126,7 @@ BOOST_AUTO_TEST_CASE(file_load)
 
   cpu::File file;
 
-  fs::path path(TESTDATA, fs::native);
-  path /= "cpu";
-  path /= "file_load.txt";
-  file.load(path.string());
+  file.load(FILE_LOAD);
   BOOST_CHECK_EQUAL(file.lines(), 3);
   BOOST_CHECK(file.get_line(0) == "First line");
   BOOST_CHECK(file.get_line(1) == "Second line");
@@ -144,19 +143,12 @@ BOOST_AUTO_TEST_CASE(file_save)
   file.insert(1, "Second line");
   file.insert(2, "Third line");
 
-  fs::path path(TESTDATA, fs::native);
-  path /= "cpu";
-  path /= "file_save.txt";
-  file.save(path.string());
+  file.save(FILE_SAVE);
 
 
   // Compare with the original file
-  fs::path orig_path(TESTDATA, fs::native);
-  orig_path /= "cpu";
-  orig_path /= "file_load.txt";
-
-  cpu::File file1(orig_path.string());
-  cpu::File file2(path.string());
+  cpu::File file1(FILE_LOAD);
+  cpu::File file2(FILE_SAVE);
 
   BOOST_CHECK_EQUAL(file1.lines(), file2.lines());
   cpu::File::size_type i;

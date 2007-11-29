@@ -1,4 +1,2 @@
 SUBDIRS(
   cpu)
-
-ADD_DEFINITIONS("-DTESTDATA=\\\"${CMAKE_SOURCE_DIR}/tests\\\"")
