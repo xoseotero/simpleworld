@@ -12,7 +12,7 @@
        # some operations
        add r0 r1 r2
        move r0 r1
-       swap r2
+       swap r2 r2
 
        push r0
        div r0 r1 r2

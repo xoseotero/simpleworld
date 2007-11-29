@@ -1,0 +1,70 @@
+stop
+restart
+move r0 r1
+swap r2 r3
+push r4
+pop r5
+load r6 0x1adc
+loadi r7 0x1adc
+loadrr r8 r9 r10
+loadri r11 r12 0x1
+store pc 0xafff
+storerr stp itp r0
+storeri r0 r0 0x1
+b 0xffff
+beq r0 r1 0x0
+bne r0 r1 0x0
+blt r0 r1 0x0
+bltu r0 r1 0x0
+bgt r0 r1 0x0
+bgtu r0 r1 0x0
+ble r0 r1 0x0
+bleu r0 r1 0x0
+bge r0 r1 0x0
+bgeu r0 r1 0x0
+call 0x0
+int 0x5
+ret
+reti
+add r0 r1 r2
+addi r2 r2 0x1
+sub r0 r1 r2
+subi r2 r2 0x1
+multl r0 r1 r2
+multli r0 r1 0x1
+multlu r0 r1 r2
+multlui r0 r1 0x1
+multh r0 r1 r2
+multhi r0 r1 0x1
+multhu r0 r1 r2
+multhui r0 r1 0x1
+div r0 r1 r2
+divi r0 r1 0x1
+divu r0 r1 r2
+divui r0 r1 0x1
+mod r0 r1 r2
+modi r0 r1 0x1
+modu r0 r1 r2
+modui r0 r1 0x1
+not r0 r0
+or r0 r1 r2
+ori r0 r2 0x0
+and r0 r1 r2
+andi r0 r1 0xffff
+xor r0 r1 r2
+xori r0 r1 0xffff
+sll r5 r6 r12
+slli r5 r6 0x1
+srl r5 r6 r11
+srli r5 r6 0x2
+sla r5 r6 r10
+slai r5 r6 0x3
+sra r5 r6 r9
+srai r5 r6 0x4
+rl r5 r6 r8
+rli r5 r6 0x5
+rr r5 r6 r7
+rri r5 r6 0x6
+0x1234abcd
+0xabcd0123
+0x1ef56789
