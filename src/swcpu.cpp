@@ -203,7 +203,7 @@ protected:
 
 CPU::CPU(const std::string& filename) throw ()
   : FakeCPU(&this->registers_, &this->memory_),
-    cpu::Object(cpu::CPU::set_, filename),
+    cpu::Object(cpu::CPU::isa_, filename),
     registers_(sizeof(cpu::Word) * 16), memory_(filename)
 {
 }
@@ -212,17 +212,17 @@ void CPU::next()
 {
   cpu::Instruction instruction = this->fetch_instruction_();
   std::cout
-    << this->decompile(cpu::InstructionSet::encode(instruction))
+    << this->decompile(cpu::Instruction::encode(instruction))
     << std::endl;
 
   FakeCPU::next();
 
   sw::Uint8 i = 1;
-  std::vector<sw::Uint8> regs_codes = cpu::CPU::set_.register_codes();
+  std::vector<sw::Uint8> regs_codes = cpu::CPU::isa_.register_codes();
   std::vector<sw::Uint8>::const_iterator reg = regs_codes.begin();
   while (reg != regs_codes.end()) {
     std::cout << boost::str(boost::format("%3s = %8X")
-                            % cpu::CPU::set_.register_name(*reg)
+                            % cpu::CPU::isa_.register_name(*reg)
                             % cpu::change_byte_order(this->registers_[*reg *
                               4]));
     if (i % 4 == 0)

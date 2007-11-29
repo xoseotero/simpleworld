@@ -197,7 +197,7 @@ try {
   // This CPU doesn't need memory because only the instruction set is needed
   cpu::Memory registers;
   FakeCPU cpu(&registers, NULL);
-  cpu::Object(cpu.instruction_set(), input).decompile(output);
+  cpu::Object(cpu.isa(), input).decompile(output);
 
   std::exit(EXIT_SUCCESS);
 }

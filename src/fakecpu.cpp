@@ -27,6 +27,7 @@
 #include <simpleworld/cpu/memory.hpp>
 #include <simpleworld/cpu/interrupt.hpp>
 #include <simpleworld/cpu/instruction.hpp>
+#include <simpleworld/cpu/isa.hpp>
 
 #define REGISTER(NUMBER) (NUMBER * sizeof(cpu::Word))
 #define REGISTER_PC REGISTER(0xd)
@@ -35,13 +36,14 @@
 
 /**
  * Fake World operation that does nothing.
+ * @param isa the instruction set architecture.
  * @param regs the registers.
  * @param mem the memory.
  * @param interrupt interrupt.
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-cpu::Update fakeworld(cpu::Memory& regs, cpu::Memory& mem,
+cpu::Update fakeworld(cpu::ISA& isa, cpu::Memory& regs, cpu::Memory& mem,
                       cpu::Interrupt& interrupt, cpu::Instruction inst)
 {
   // The operation can be done always.
@@ -56,5 +58,5 @@ cpu::Update fakeworld(cpu::Memory& regs, cpu::Memory& mem,
 FakeCPU::FakeCPU(cpu::Memory* registers, cpu::Memory* memory)
   : cpu::CPU(registers, memory)
 {
-  this->set_.add_instruction(0x38, "world", 0, true, fakeworld);
+  this->isa_.add_instruction(0x38, "world", 0, true, fakeworld);
 }

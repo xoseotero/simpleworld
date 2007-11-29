@@ -216,7 +216,7 @@ try {
   // This CPU doesn't need memory because only the instruction set is needed
   cpu::Memory registers;
   FakeCPU cpu(&registers, NULL);
-  cpu::Source source(cpu.instruction_set(), include_path, input);
+  cpu::Source source(cpu.isa(), include_path, input);
   if (preprocess_set) {
     source.replace_includes();
     source.replace_constants();
