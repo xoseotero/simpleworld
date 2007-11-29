@@ -317,12 +317,15 @@ Name %1% already defined")
     std::map<std::string, std::string>::const_iterator iter =
       this->constants_.begin();
     while (iter != this->constants_.end()) {
-      this->get_line(i) =
-        boost::regex_replace(this->get_line(i),
-                             boost::regex(std::string(BEGIN_WORD) +
-                                          (*iter).first +
-                                          std::string(END_WORD)),
-                             (*iter).second);
+      // Don't replace constants in comments
+      // TODO: the constants is replaced if the it is in a inline comment
+      if (not this->is_comment(i))
+        this->get_line(i) =
+          boost::regex_replace(this->get_line(i),
+                               boost::regex(std::string(BEGIN_WORD) +
+                                            (*iter).first +
+                                            std::string(END_WORD)),
+                               (*iter).second);
 
       ++iter;
     }
