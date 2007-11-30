@@ -21,7 +21,6 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <simpleworld/config.hpp>
 #include "operations.hpp"
 
 namespace SimpleWorld
@@ -86,11 +85,7 @@ Update slai(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
 Update sra(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
            Instruction inst)
 {
-#ifdef IS_BIG_ENDIAN
   Uint32 sign = regs[REGISTER(inst.second)] & 0x80000000;
-#else
-  Uint32 sign = regs[REGISTER(inst.second)] & 0x00000001;
-#endif
   regs.set_word(REGISTER(inst.first),
                 (regs[REGISTER(inst.second)] >>
                  regs[REGISTER(inst.address)]) | sign);
@@ -101,11 +96,7 @@ Update sra(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
 Update srai(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
             Instruction inst)
 {
-#ifdef IS_BIG_ENDIAN
   Uint32 sign = regs[REGISTER(inst.second)] & 0x80000000;
-#else
-  Uint32 sign = regs[REGISTER(inst.second)] & 0x00000001;
-#endif
   regs.set_word(REGISTER(inst.first),
                 (regs[REGISTER(inst.second)] >> inst.address) | sign);
 
