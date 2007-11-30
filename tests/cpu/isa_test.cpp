@@ -11,10 +11,11 @@ namespace sw = SimpleWorld;
 namespace cpu = SimpleWorld::CPU;
 
 
+/**
+ * .Add a register.
+ */
 BOOST_AUTO_TEST_CASE(instruction_add_register)
 {
-  BOOST_CHECKPOINT("Add a register");
-
   cpu::ISA isa;
 
   sw::Uint32 code = 0xfd;
@@ -31,10 +32,11 @@ BOOST_AUTO_TEST_CASE(instruction_add_register)
   isa.remove_register(code);
 }
 
+/**
+ * Add a interrupt.
+ */
 BOOST_AUTO_TEST_CASE(instruction_add_interrupt)
 {
-  BOOST_CHECKPOINT("Add a interrupt");
-
   cpu::ISA isa;
 
   sw::Uint32 code = 0xfd;
@@ -51,10 +53,11 @@ BOOST_AUTO_TEST_CASE(instruction_add_interrupt)
   isa.remove_interrupt(code);
 }
 
+/**
+ * Add a instruction.
+ */
 BOOST_AUTO_TEST_CASE(instruction_add_instruction)
 {
-  BOOST_CHECKPOINT("Add a instruction");
-
   cpu::ISA isa;
   cpu::InstructionInfo info;
   info.code = 0xfd;

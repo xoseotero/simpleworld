@@ -9,17 +9,19 @@ namespace sw = SimpleWorld;
 namespace cpu = SimpleWorld::CPU;
 
 
+///**
+// * Getting exception.
+// */
 //BOOST_AUTO_TEST_CASE(word_exception)
 //{
-//  BOOST_CHECKPOINT("Getting exception");
-//
 //  cpu::get_byte(0, 4);
 //}
 
+/**
+ * Getting bytes.
+ */
 BOOST_AUTO_TEST_CASE(word_get_bytes)
 {
-  BOOST_CHECKPOINT("Getting bytes");
-
   sw::Uint32 value = 0xAABBCCDD;
 #ifdef IS_BIG_ENDIAN
   BOOST_CHECK_EQUAL(cpu::get_byte(value, 0), 0xaa);
@@ -34,10 +36,11 @@ BOOST_AUTO_TEST_CASE(word_get_bytes)
 #endif
 }
 
+/**
+ * Setting bytes.
+ */
 BOOST_AUTO_TEST_CASE(word_set_bytes)
 {
-  BOOST_CHECKPOINT("Setting bytes");
-
   sw::Uint32 value = 0;
 #ifdef IS_BIG_ENDIAN
   cpu::set_byte(&value, 0, 0xaa);
@@ -54,16 +57,18 @@ BOOST_AUTO_TEST_CASE(word_set_bytes)
   BOOST_CHECK_EQUAL(value, 0xaabbccdd);
 }
 
+/**
+ * Changing byte order.
+ */
 BOOST_AUTO_TEST_CASE(word_change_endianness)
 {
-  BOOST_CHECKPOINT("Changing byte order");
-
   BOOST_CHECK_EQUAL(0x01234567, cpu::change_byte_order(0x67452301));
 }
 
+/**
+ * Changing byte order (middle).
+ */
 BOOST_AUTO_TEST_CASE(word_change_endianness_middle)
 {
-  BOOST_CHECKPOINT("Changing byte order (middle)");
-
   BOOST_CHECK_EQUAL(0x01234567, cpu::change_byte_order_middle(0x23016745));
 }

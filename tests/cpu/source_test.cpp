@@ -41,10 +41,11 @@ bool compare_swl(const cpu::File& file1, const cpu::File& file2)
 }
 
 
+/**
+ * Replace the includes from the SWL.
+ */
 BOOST_AUTO_TEST_CASE(source_replace_includes)
 {
-  BOOST_CHECKPOINT("Replace the includes from the SWL");
-
   std::vector<std::string> include_path;
   include_path.push_back(INCLUDE_DIR);
 
@@ -57,10 +58,11 @@ BOOST_AUTO_TEST_CASE(source_replace_includes)
   BOOST_CHECK(compare_swl(compiler, cpu::File(SOURCE_INCLUDES)));
 }
 
+/**
+ * Replace the constants from the SWL.
+ */
 BOOST_AUTO_TEST_CASE(source_replace_constants)
 {
-  BOOST_CHECKPOINT("Replace the constants from the SWL");
-
   std::vector<std::string> include_path;
 
   cpu::Memory registers;
@@ -72,10 +74,11 @@ BOOST_AUTO_TEST_CASE(source_replace_constants)
   BOOST_CHECK(compare_swl(compiler, cpu::File(SOURCE_CONSTANTS)));
 }
 
+/**
+ * Replace the blocks from the SWL.
+ */
 BOOST_AUTO_TEST_CASE(source_replace_blocks)
 {
-  BOOST_CHECKPOINT("Replace the blocks from the SWL");
-
   std::vector<std::string> include_path;
 
   cpu::Memory registers;
@@ -87,10 +90,11 @@ BOOST_AUTO_TEST_CASE(source_replace_blocks)
   BOOST_CHECK(compare_swl(compiler, cpu::File(SOURCE_BLOCKS)));
 }
 
+/**
+ * Preprocess the SWL.
+ */
 BOOST_AUTO_TEST_CASE(source_preprocess)
 {
-  BOOST_CHECKPOINT("Preprocess the SWL");
-
   std::vector<std::string> include_path;
   include_path.push_back(INCLUDE_DIR);
 

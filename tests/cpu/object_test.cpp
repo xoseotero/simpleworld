@@ -38,10 +38,11 @@ bool compare_swl(const cpu::File& file1, const cpu::File& file2)
 }
 
 
+/**
+ * Replace the includes from the SWL.
+ */
 BOOST_AUTO_TEST_CASE(object_decompile)
 {
-  BOOST_CHECKPOINT("Replace the includes from the SWL");
-
   cpu::Memory registers;
   cpu::CPU cpu(&registers, NULL);
   cpu::Object decompiler(cpu.isa(), OBJECT);

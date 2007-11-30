@@ -10,28 +10,31 @@ namespace sw = SimpleWorld;
 namespace cpu = SimpleWorld::CPU;
 
 
+/**
+ * Getting memory exception.
+ */
 BOOST_AUTO_TEST_CASE(memory_exception)
 {
-  BOOST_CHECKPOINT("Getting memory exception");
-
   cpu::Memory memory(16 * 4);
   memory.get_word(15 * 4 + 1);
 }
 
+/**
+ * Checking if memory is zeroed.
+ */
 BOOST_AUTO_TEST_CASE(memory_is_zeroed)
 {
-  BOOST_CHECKPOINT("Checking if memory is zeroed");
-
   cpu::Memory memory(16 * 4);
   sw::Uint8 i;
   for (i = 0; i < 16 * 4; i += 4)
     BOOST_CHECK_EQUAL(memory.get_word(i), 0);
 }
 
+/**
+ * Getting words from memory.
+ */
 BOOST_AUTO_TEST_CASE(memory_checking_words)
 {
-  BOOST_CHECKPOINT("Getting words from memory");
-
   cpu::Memory memory(16 * 4);
   sw::Uint8 i;
   for (i = 0; i < 16 * 4; i += 4)
@@ -42,10 +45,11 @@ BOOST_AUTO_TEST_CASE(memory_checking_words)
 }
 
 #ifdef IS_LITTLE_ENDIAN
+/**
+ * Setting big endian words.
+ */
 BOOST_AUTO_TEST_CASE(memory_set_big_endian)
 {
-  BOOST_CHECKPOINT("Setting big endian words");
-
   cpu::Memory memory(16 * 4);
   sw::Uint8 i;
   for (i = 0; i < 16 * 4; i += 4)
@@ -55,10 +59,11 @@ BOOST_AUTO_TEST_CASE(memory_set_big_endian)
     BOOST_CHECK_EQUAL(memory.get_word(i), i);
 }
 
+/**
+ * Getting big endian words.
+ */
 BOOST_AUTO_TEST_CASE(memory_get_big_endian)
 {
-  BOOST_CHECKPOINT("Getting big endian words");
-
   cpu::Memory memory(16 * 4);
   sw::Uint8 i;
   for (i = 0; i < 16 * 4; i += 4)
@@ -69,10 +74,11 @@ BOOST_AUTO_TEST_CASE(memory_get_big_endian)
 }
 #endif
 
+/**
+ * Getting a non aligned word.
+ */
 BOOST_AUTO_TEST_CASE(memory_get_non_aligned)
 {
-  BOOST_CHECKPOINT("Getting a non aligned word");
-
   cpu::Memory memory(2 * 4);
   memory.set_word(0, 0x01234567);
   memory.set_word(4, 0x89abcdef);
@@ -80,10 +86,11 @@ BOOST_AUTO_TEST_CASE(memory_get_non_aligned)
   BOOST_CHECK_EQUAL(memory.get_word(2), 0x456789ab);
 }
 
+/**
+ * Setting a non aligned word.
+ */
 BOOST_AUTO_TEST_CASE(memory_Set_non_aligned)
 {
-  BOOST_CHECKPOINT("Setting a non aligned word");
-
   cpu::Memory memory(2 * 4);
   memory.set_word(0, 0x01234567);
   memory.set_word(2, 0xaabbccdd);

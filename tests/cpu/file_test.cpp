@@ -13,27 +13,30 @@ namespace cpu = SimpleWorld::CPU;
 #define FILE_SAVE (TESTOUTPUT "file_save.txt")
 
 
+/**
+ * Create a empty file.
+ */
 BOOST_AUTO_TEST_CASE(file_empty)
 {
-  BOOST_CHECKPOINT("Create a empty file");
-
   cpu::File file;
   BOOST_CHECK_EQUAL(file.lines(), 0);
 }
 
+/**
+ * Create a new file.
+ */
 BOOST_AUTO_TEST_CASE(file_new)
 {
-  BOOST_CHECKPOINT("Create a new file");
-
   cpu::File file;
 
   BOOST_CHECK_EQUAL(file.lines(), 0);
 }
 
+/**
+ * Insert lines into a new file.
+ */
 BOOST_AUTO_TEST_CASE(file_insert_lines)
 {
-  BOOST_CHECKPOINT("Insert lines into a new file");
-
   // insert at the begining
   cpu::File file1;
 
@@ -79,10 +82,11 @@ BOOST_AUTO_TEST_CASE(file_insert_lines)
   BOOST_CHECK(file3.get_line(2) == "Second line");
 }
 
+/**
+ * Remove lines from a file.
+ */
 BOOST_AUTO_TEST_CASE(file_remove)
 {
-  BOOST_CHECKPOINT("Remove lines from a file");
-
   cpu::File file;
 
   file.insert(0, "First line");
@@ -120,10 +124,11 @@ BOOST_AUTO_TEST_CASE(file_remove)
   BOOST_CHECK_EQUAL(file.lines(), 0);
 }
 
+/**
+ * Load a file.
+ */
 BOOST_AUTO_TEST_CASE(file_load)
 {
-  BOOST_CHECKPOINT("Load a file");
-
   cpu::File file;
 
   file.load(FILE_LOAD);
@@ -133,10 +138,11 @@ BOOST_AUTO_TEST_CASE(file_load)
   BOOST_CHECK(file.get_line(2) == "Third line");
 }
 
+/**
+ * Save a file.
+ */
 BOOST_AUTO_TEST_CASE(file_save)
 {
-  BOOST_CHECKPOINT("Save a file");
-
   cpu::File file;
 
   file.insert(0, "First line");

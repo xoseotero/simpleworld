@@ -11,10 +11,11 @@ namespace sw = SimpleWorld;
 namespace cpu = SimpleWorld::CPU;
 
 
+/**
+ * Encode a instruction.
+ */
 BOOST_AUTO_TEST_CASE(instruction_encode)
 {
-  BOOST_CHECKPOINT("Encode a instruction");
-
   cpu::Instruction inst;
   inst.code = 0x12;
   inst.first = 0x3;
@@ -27,10 +28,11 @@ BOOST_AUTO_TEST_CASE(instruction_encode)
 #endif
 }
 
+/**
+ * Decode a instruction.
+ */
 BOOST_AUTO_TEST_CASE(instruction_decode)
 {
-  BOOST_CHECKPOINT("Decode a instruction");
-
 #ifdef IS_BIG_ENDIAN
   sw::Uint32 inst_coded = 0x12345678;
 #else
