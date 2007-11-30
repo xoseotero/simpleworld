@@ -68,7 +68,7 @@
 	world ACTION_MYSELF_POSITION
 	add r0 r1 r2
 
-	store r0 random_seed
+	call random_seed
 
 	ret
 
