@@ -20,35 +20,85 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Linear Congruential Generator (LCG)
-# Vi = A * V(i-1) + B
 # http://en.wikipedia.org/wiki/Linear_congruential_generator
+# The GNU libc LCG algorithm is used: Vi = (A * V(i-1) + B) & C
 
 
 
 # Constants for calculate next random value
 .label random_a
-0x19660d		# 1664525
+0x41c64e6d
 .label random_b
-0x3c6ef35f		# 1013904223
+0x3039
+.label random_c
+0x7fffffff
 
 # Seed zero by default
-.label random_seed
+.label random_seed1
 0x0
+.label random_seed2
+0xffffffff
+
+# Word with all the bits to 1 (to calculate the complement)
+.label random_complement
+0xffffffff
+
+
+# Update the value of the seed
+# IN:  r0 the new value for the seed
+.label random_seed
+	# the second word of the seed is the complement of the first one
+	load r1 random_complement
+	xor r1 r0 r1
+
+	store r0 random_seed1
+	store r1 random_seed2
+
+	ret
+
+
+
+# Update the seed with a iteration of the LCG algorithm
+# IN:  r0 the seed
+# OUT: r0 the new value of the seed
+.label random_lcg
+	load r1 random_a
+	load r2 random_b
+	load r3 random_c
+
+	# LCG in the seed
+	multl r0 r0 r1
+	add r0 r0 r2
+	and r0 r0 r3
+
+	ret
 
 
 
 # Calculate a new random value
 # OUT: r0 the random value
 .label random_value
-	load r0 random_seed
-	load r1 random_a
-	load r2 random_b
+	# LCG in the two seeds
+	load r0 random_seed1
+	call random_lcg
+	push r0
 
-	# Vi = A * V(i - 1) + B
-	multl r0 r0 r1
-	add r0 r0 r2
+	load r0 random_seed2
+	call random_lcg
 
-	# Update seed
-	store r0 random_seed
+	# seed1 in r1
+	# seed2 in r0
+	pop r1
+
+	# Update seeds
+	store r1 random_seed1
+	store r0 random_seed2
+
+	# Calculate the new word using the most value bits of the words
+	# (the LCG algorith only returns 31 bits, the MLB = 0)
+	srli r1 r1 0x0f		# r1 = (r1 >> 15) << 16
+	slli r1 r1 0x10
+	srli r0 r0 0x0f		# r0 = r0 >> 15
+	or r0 r0 r1		# r0 = r0 | r1
 
 	ret
