@@ -70,6 +70,8 @@
 
 	store r0 random_seed
 
+	ret
+
 
 # Move forward or backwoard randomly
 # OUT:	r0 ACTION_SUCCESS
