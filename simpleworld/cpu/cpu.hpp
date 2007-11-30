@@ -27,6 +27,7 @@
 
 #include <string>
 
+#include <simpleworld/ints.hpp>
 #include <simpleworld/cpu/types.hpp>
 #include <simpleworld/cpu/memory.hpp>
 #include <simpleworld/cpu/instruction.hpp>
@@ -85,6 +86,13 @@ public:
    * Execute all the code until a stop instruction is found.
    */
   void execute();
+
+  /**
+   * Execute some cycles (or until a stop instruction is found).
+   * @param cycles number of cycles to execute.
+   * @return cycles remaining (> 0 if the CPU was stopped.
+   */
+  Uint8 execute(Uint8 cycles);
 
   /**
    * Execute the next instruction.

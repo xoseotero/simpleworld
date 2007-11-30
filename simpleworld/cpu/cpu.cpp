@@ -166,6 +166,17 @@ void CPU::execute()
     this->next();
 }
 
+Uint8 CPU::execute(Uint8 cycles)
+{
+  while (this->running() and (cycles > 0)) {
+    this->next();
+
+    cycles--;
+  }
+
+  return cycles;
+}
+
 void CPU::next()
 {
   if (not this->running_)
