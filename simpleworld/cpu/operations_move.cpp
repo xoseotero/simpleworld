@@ -122,7 +122,8 @@ Update store(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
 Update storerr(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
                Instruction inst)
 {
-  mem.set_word(regs[inst.first] + regs[inst.address], regs[inst.second]);
+  mem.set_word(regs[REGISTER(inst.second)] + regs[REGISTER(inst.address)],
+               regs[REGISTER(inst.first)]);
 
   return UpdatePC;
 }
@@ -130,7 +131,8 @@ Update storerr(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
 Update storeri(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
                Instruction inst)
 {
-  mem.set_word(regs[inst.first] + inst.address, regs[inst.second]);
+  mem.set_word(regs[REGISTER(inst.second)] + inst.address,
+               regs[REGISTER(inst.first)]);
 
   return UpdatePC;
 }
