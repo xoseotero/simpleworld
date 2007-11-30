@@ -211,14 +211,30 @@ static fs::path find_file(const std::vector<std::string>& path,
 
 
 Source::Source(const ISA& isa,
+               const std::vector<std::string>& include_path)
+  : File(), isa_(isa), include_path_(include_path)
+{
+}
+
+Source::Source(const ISA& isa,
                const std::vector<std::string>& include_path,
                const std::string& filename)
   : File(filename), isa_(isa), include_path_(include_path)
 {
+  this->load(filename);
+}
+
+
+void Source::load(std::string filename)
+{
+  File::load(filename);
+
+  // Clear the includes in a reload
+  this->includes_.clear();
+
   // The main file can't be included
-  // Using the absolute path
   std::string abs_path(fs::complete(fs::path(filename)).normalize().string());
-  this->includes_.insert(abs_path);
+  this->includes_.insert(abs_path); // Using the absolute path
 }
 
 

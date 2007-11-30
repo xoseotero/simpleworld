@@ -50,6 +50,14 @@ class Source: public File
 {
 public:
   /**
+   * Constructor for a empty file.
+   * @param isa Instruction set architecture of the CPU
+   * @param include_path Paths where to search the files to include.
+   */
+  Source(const ISA& isa,
+         const std::vector<std::string>& include_path);
+
+  /**
    * Constructor.
    * @param isa Instruction set architecture of the CPU
    * @param include_path Paths where to search the files to include.
@@ -59,6 +67,15 @@ public:
   Source(const ISA& isa,
          const std::vector<std::string>& include_path,
          const std::string& filename);
+
+
+  /**
+   * Load from a file.
+   * Before the load, all the lines of the File are removed.
+   * @param filename File to open.
+   * @exception IOError File can't be opened
+   */
+  void load(std::string filename);
 
 
   /**
