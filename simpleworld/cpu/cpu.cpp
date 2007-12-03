@@ -209,13 +209,14 @@ Instruction info:\tcode: 0x%02x, name: %s, nregs: %d, has_i: %d")
 
     switch (info.func(this->isa_, *this->registers_, *this->memory_,
                       this->interrupt_, instruction)) {
-    case UpdateInterrupt:
-      // Throw a interrupt
-      this->interrupt_request_ = true;
     case UpdatePC:
       // Update PC
       this->registers_->set_word(REGISTER_PC,
                                  this->registers_->get_word(REGISTER_PC) + 4);
+      break;
+    case UpdateInterrupt:
+      // Throw a interrupt
+      this->interrupt_request_ = true;
       break;
     case Stop:
       this->running_ = false;
