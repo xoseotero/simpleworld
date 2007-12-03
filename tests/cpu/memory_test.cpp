@@ -27,6 +27,7 @@
 
 #include <simpleworld/config.hpp>
 #include <simpleworld/ints.hpp>
+#include <simpleworld/cpu/memoryerror.hpp>
 #include <simpleworld/cpu/word.hpp>
 #include <simpleworld/cpu/memory.hpp>
 namespace sw = SimpleWorld;
@@ -39,7 +40,8 @@ namespace cpu = SimpleWorld::CPU;
 BOOST_AUTO_TEST_CASE(memory_exception)
 {
   cpu::Memory memory(16 * 4);
-  memory.get_word(15 * 4 + 1);
+  BOOST_CHECK_THROW(memory.get_word(15 * 4 + 1), cpu::MemoryError);
+  BOOST_CHECK_THROW(memory.set_word(15 * 4 + 1, 0), cpu::MemoryError);
 }
 
 /**
