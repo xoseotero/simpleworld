@@ -191,62 +191,62 @@ Interrupt info:\tcode: 0x%02x, name: %s")
               << std::endl;
 #endif
     this->interrupt_handler_();
-  } else {
-    Instruction instruction = this->fetch_instruction_();
-    try {
-      InstructionInfo info = this->isa_.instruction_info(instruction.code);
+  }
+
+  Instruction instruction = this->fetch_instruction_();
+  try {
+    InstructionInfo info = this->isa_.instruction_info(instruction.code);
 #ifdef DEBUG
-      std::cout
-        << boost::str(boost::format("\
+    std::cout
+      << boost::str(boost::format("\
 Instruction info:\tcode: 0x%02x, name: %s, nregs: %d, has_i: %d")
-                      % static_cast<int>(info.code)
-                      % info.name
-                      % static_cast<int>(info.nregs)
-                      % static_cast<int>(info.has_inmediate))
-        << std::endl;
+                    % static_cast<int>(info.code)
+                    % info.name
+                    % static_cast<int>(info.nregs)
+                    % static_cast<int>(info.has_inmediate))
+      << std::endl;
 #endif
 
-      switch (info.func(this->isa_, *this->registers_, *this->memory_,
-                        this->interrupt_, instruction)) {
-      case UpdateInterrupt:
-        // Throw a interrupt
-        this->interrupt_request_ = true;
-      case UpdatePC:
-        // Update PC
-        this->registers_->set_word(REGISTER_PC,
-                                   this->registers_->get_word(REGISTER_PC) + 4);
-        break;
-      case Stop:
-        this->running_ = false;
-        break;
-      }
-    } catch (const CodeError& exc) {
-      // Prepare the interrupt
+    switch (info.func(this->isa_, *this->registers_, *this->memory_,
+                      this->interrupt_, instruction)) {
+    case UpdateInterrupt:
+      // Throw a interrupt
       this->interrupt_request_ = true;
-
-      Word code =
-        static_cast<Word>(this->isa_.interrupt_code("InvalidInstruction"));
-      this->interrupt_.code = this->interrupt_.r0 = code;
-      this->interrupt_.r1 = this->memory_->get_word(REGISTER_PC);
-      this->interrupt_.r2 = static_cast<Word>(instruction.code);
-
+    case UpdatePC:
       // Update PC
       this->registers_->set_word(REGISTER_PC,
                                  this->registers_->get_word(REGISTER_PC) + 4);
-    } catch (const MemoryError& exc) {
-      // Prepare the interrupt
-      this->interrupt_request_ = true;
-
-      Uint8 code =
-        static_cast<Word>(this->isa_.interrupt_code("InvalidMemoryLocation"));
-      this->interrupt_.code = this->interrupt_.r0 = code;
-      this->interrupt_.r1 = this->memory_->get_word(REGISTER_PC);
-      this->interrupt_.r2 = static_cast<Word>(instruction.address);
-
-      // Update PC
-      this->registers_->set_word(REGISTER_PC,
-                                 this->registers_->get_word(REGISTER_PC) + 4);
+      break;
+    case Stop:
+      this->running_ = false;
+      break;
     }
+  } catch (const CodeError& exc) {
+    // Prepare the interrupt
+    this->interrupt_request_ = true;
+
+    Word code =
+      static_cast<Word>(this->isa_.interrupt_code("InvalidInstruction"));
+    this->interrupt_.code = this->interrupt_.r0 = code;
+    this->interrupt_.r1 = this->memory_->get_word(REGISTER_PC);
+    this->interrupt_.r2 = static_cast<Word>(instruction.code);
+
+    // Update PC
+    this->registers_->set_word(REGISTER_PC,
+                               this->registers_->get_word(REGISTER_PC) + 4);
+  } catch (const MemoryError& exc) {
+    // Prepare the interrupt
+    this->interrupt_request_ = true;
+
+    Uint8 code =
+      static_cast<Word>(this->isa_.interrupt_code("InvalidMemoryLocation"));
+    this->interrupt_.code = this->interrupt_.r0 = code;
+    this->interrupt_.r1 = this->memory_->get_word(REGISTER_PC);
+    this->interrupt_.r2 = static_cast<Word>(instruction.address);
+
+    // Update PC
+    this->registers_->set_word(REGISTER_PC,
+                               this->registers_->get_word(REGISTER_PC) + 4);
   }
 }
 
