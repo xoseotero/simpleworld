@@ -21,16 +21,10 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <simpleworld/config.hpp>
 #include "operations.hpp"
 
-#ifdef IS_BIG_ENDIAN
 #define HIGHBITS_64BITS SINT64(0xFFFFFFFF00000000)
 #define LOWBITS_64BITS SINT64(0x00000000FFFFFFFF)
-#else
-#define HIGHBITS_64BITS SINT64(0x00000000FFFFFFFF)
-#define LOWBITS_64BITS SINT64(0xFFFFFFFF00000000)
-#endif
 
 namespace SimpleWorld
 {
@@ -141,7 +135,8 @@ Update multhi(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
 Update multhu(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
               Instruction inst)
 {
-  Uint64 result = regs[REGISTER(inst.second)] * regs[REGISTER(inst.address)];
+  Uint64 result = static_cast<Uint64>(regs[REGISTER(inst.second)]) *
+    regs[REGISTER(inst.address)];
   regs.set_word(REGISTER(inst.first),
                 static_cast<Uint32>((result & HIGHBITS_64BITS) >> 32));
 
@@ -151,7 +146,8 @@ Update multhu(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
 Update multhui(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
                Instruction inst)
 {
-  Uint64 result = regs[REGISTER(inst.second)] * inst.address;
+  Uint64 result = static_cast<Uint64>(regs[REGISTER(inst.second)]) *
+    inst.address;
   regs.set_word(REGISTER(inst.first),
                 static_cast<Uint32>((result & HIGHBITS_64BITS) >> 32));
 
