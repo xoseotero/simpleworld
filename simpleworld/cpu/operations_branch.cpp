@@ -28,9 +28,17 @@ namespace SimpleWorld
 namespace CPU
 {
 
+// Before executing each operation, it's checked if the address is valid.
+// If the addres is out of range, a Invalid Memory location is raised
+// giving the as data.
+
+
 Update b(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
          Instruction inst)
 {
+  // Check if the address is valid.
+  mem[inst.address];
+
   regs.set_word(REGISTER_PC, inst.address);
 
   return None;
@@ -39,6 +47,9 @@ Update b(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
 Update beq(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
            Instruction inst)
 {
+  // Check if the address is valid.
+  mem[inst.address];
+
   if (regs[REGISTER(inst.first)] == regs[REGISTER(inst.second)]) {
     regs.set_word(REGISTER_PC, inst.address);
     return None;
@@ -50,6 +61,9 @@ Update beq(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
 Update bne(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
            Instruction inst)
 {
+  // Check if the address is valid.
+  mem[inst.address];
+
   if (regs[REGISTER(inst.first)] != regs[REGISTER(inst.second)]) {
     regs.set_word(REGISTER_PC, inst.address);
     return None;
@@ -61,6 +75,9 @@ Update bne(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
 Update blt(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
            Instruction inst)
 {
+  // Check if the address is valid.
+  mem[inst.address];
+
   if (static_cast<Sint32>(regs[REGISTER(inst.first)]) <
       static_cast<Sint32>(regs[REGISTER(inst.second)])) {
     regs.set_word(REGISTER_PC, inst.address);
@@ -73,6 +90,9 @@ Update blt(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
 Update bltu(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
             Instruction inst)
 {
+  // Check if the address is valid.
+  mem[inst.address];
+
   if (regs[REGISTER(inst.first)] < regs[REGISTER(inst.second)]) {
     regs.set_word(REGISTER_PC, inst.address);
     return None;
@@ -84,6 +104,9 @@ Update bltu(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
 Update bgt(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
            Instruction inst)
 {
+  // Check if the address is valid.
+  mem[inst.address];
+
   if (static_cast<Sint32>(regs[REGISTER(inst.first)]) >
       static_cast<Sint32>(regs[REGISTER(inst.second)])) {
     regs.set_word(REGISTER_PC, inst.address);
@@ -96,6 +119,9 @@ Update bgt(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
 Update bgtu(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
             Instruction inst)
 {
+  // Check if the address is valid.
+  mem[inst.address];
+
   if (regs[REGISTER(inst.first)] > regs[REGISTER(inst.second)]) {
     regs.set_word(REGISTER_PC, inst.address);
     return None;
@@ -107,6 +133,9 @@ Update bgtu(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
 Update ble(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
            Instruction inst)
 {
+  // Check if the address is valid.
+  mem[inst.address];
+
   if (static_cast<Sint32>(regs[REGISTER(inst.first)]) <=
       static_cast<Sint32>(regs[REGISTER(inst.second)])) {
     regs.set_word(REGISTER_PC, inst.address);
@@ -119,6 +148,9 @@ Update ble(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
 Update bleu(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
             Instruction inst)
 {
+  // Check if the address is valid.
+  mem[inst.address];
+
   if (regs[REGISTER(inst.first)] <= regs[REGISTER(inst.second)]) {
     regs.set_word(REGISTER_PC, inst.address);
     return None;
@@ -130,6 +162,9 @@ Update bleu(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
 Update bge(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
            Instruction inst)
 {
+  // Check if the address is valid.
+  mem[inst.address];
+
   if (static_cast<Sint32>(regs[REGISTER(inst.first)]) >=
       static_cast<Sint32>(regs[REGISTER(inst.second)])) {
     regs.set_word(REGISTER_PC, inst.address);
@@ -142,6 +177,9 @@ Update bge(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
 Update bgeu(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
             Instruction inst)
 {
+  // Check if the address is valid.
+  mem[inst.address];
+
   if (regs[REGISTER(inst.first)] >= regs[REGISTER(inst.second)]) {
     regs.set_word(REGISTER_PC, inst.address);
     return None;

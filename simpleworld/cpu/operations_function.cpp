@@ -32,6 +32,11 @@ namespace CPU
 Update call(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
             Instruction inst)
 {
+  // Check if the address is valid.
+  // If the addres is out of range, a Invalid Memory location is raised
+  // giving this instruction as data.
+  mem[inst.address];
+
   // Save the program counter (pc) in the top of the stack
   mem.set_word(regs[REGISTER_STP], regs[REGISTER_PC]);
   // Update stack pointer
