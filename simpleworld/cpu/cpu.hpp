@@ -113,6 +113,8 @@ protected:
 
   /**
    * Decode the current instruction.
+   * @return the current instruction decoded.
+   * @exception MemoryError if pc is out of range.
    */
   Instruction fetch_instruction_() const;
 
