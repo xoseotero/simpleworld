@@ -188,7 +188,7 @@ void CPU::next()
 Interrupt info:\tcode: 0x%02x, name: %s")
                             % static_cast<int>(this->interrupt_.code)
                             % this->isa_.interrupt_name(this->interrupt_.code))
-              << std::endl;
+                            << std::endl;
 #endif
     this->interrupt_handler_();
   }
@@ -197,14 +197,13 @@ Interrupt info:\tcode: 0x%02x, name: %s")
   try {
     InstructionInfo info = this->isa_.instruction_info(instruction.code);
 #ifdef DEBUG
-    std::cout
-      << boost::str(boost::format("\
+    std::cout << boost::str(boost::format("\
 Instruction info:\tcode: 0x%02x, name: %s, nregs: %d, has_i: %d")
-                    % static_cast<int>(info.code)
-                    % info.name
-                    % static_cast<int>(info.nregs)
-                    % static_cast<int>(info.has_inmediate))
-      << std::endl;
+                            % static_cast<int>(info.code)
+                            % info.name
+                            % static_cast<int>(info.nregs)
+                            % static_cast<int>(info.has_inmediate))
+                            << std::endl;
 #endif
 
     switch (info.func(this->isa_, *this->registers_, *this->memory_,
