@@ -83,7 +83,7 @@ void Memory::resize(Address size)
 
 Word Memory::get_word(Address address, bool system_endian) const
 {
-  if (address > (this->size_ - (sizeof(Word) - 1)))
+  if (address > (this->size_ - sizeof(Word)))
     throw EXCEPTION(MemoryError, boost::str(boost::format("\
 Address %08x is out of range")
                                             % address));
@@ -104,7 +104,7 @@ Address %08x is out of range")
 
 void Memory::set_word(Address address, Uint32 value, bool system_endian)
 {
-  if (address > (this->size_ - (sizeof(Word) - 1)))
+  if (address > (this->size_ - sizeof(Word)))
     throw EXCEPTION(MemoryError, boost::str(boost::format("\
 Address %08x is out of range")
                                             % address));
