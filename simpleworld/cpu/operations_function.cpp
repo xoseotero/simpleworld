@@ -72,7 +72,7 @@ Update reti(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
     // Update stack pointer
     regs.set_word(REGISTER_STP, regs[REGISTER_STP] + 4);
     // Restore the register
-    regs.set_word(REGISTER(i), regs[REGISTER_STP]);
+    regs.set_word(REGISTER(i), mem[regs[REGISTER_STP]]);
   }
 
   return UpdatePC;
