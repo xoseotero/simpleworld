@@ -230,10 +230,6 @@ Instruction info:\tcode: 0x%02x, name: %s, nregs: %d, has_i: %d")
     this->interrupt_.code = this->interrupt_.r0 = code;
     this->interrupt_.r1 = this->memory_->get_word(REGISTER_PC);
     this->interrupt_.r2 = static_cast<Word>(instruction.code);
-
-    // Update PC
-    this->registers_->set_word(REGISTER_PC,
-                               this->registers_->get_word(REGISTER_PC) + 4);
   } catch (const MemoryError& exc) {
     // Prepare the interrupt
     this->interrupt_request_ = true;
@@ -243,10 +239,6 @@ Instruction info:\tcode: 0x%02x, name: %s, nregs: %d, has_i: %d")
     this->interrupt_.code = this->interrupt_.r0 = code;
     this->interrupt_.r1 = this->memory_->get_word(REGISTER_PC);
     this->interrupt_.r2 = static_cast<Word>(instruction.address);
-
-    // Update PC
-    this->registers_->set_word(REGISTER_PC,
-                               this->registers_->get_word(REGISTER_PC) + 4);
   }
 }
 
@@ -292,6 +284,12 @@ void CPU::interrupt_handler_()
 
     // Update the PC with the interrupt handler location
     this->registers_->set_word(REGISTER_PC, handler);
+  } else {
+    // Update PC to avoid a loop when a interrupt not handler is found.
+    // The interrupt is not handler, so a call to reti isn't executed
+    // and the pc isn't updated.
+    this->registers_->set_word(REGISTER_PC,
+                               this->registers_->get_word(REGISTER_PC) + 4);
   }
 
   // Clear the interrupt request
