@@ -45,7 +45,7 @@ namespace cpu = SimpleWorld::CPU;
  */
 BOOST_AUTO_TEST_CASE(word_get_bytes)
 {
-  sw::Uint32 value = 0xAABBCCDD;
+  sw::Uint32 value = 0xaabbccdd;
 #ifdef IS_BIG_ENDIAN
   BOOST_CHECK_EQUAL(cpu::get_byte(value, 0), 0xaa);
   BOOST_CHECK_EQUAL(cpu::get_byte(value, 1), 0xbb);

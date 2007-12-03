@@ -58,7 +58,7 @@ Instruction Instruction::decode(Word word)
 
   instruction.code = get_byte(word, 0);
   instruction.first = get_byte(word, 1) >> 4;
-  instruction.second = get_byte(word, 1) & 0x0F;
+  instruction.second = get_byte(word, 1) & 0x0f;
 
 #ifdef IS_BIG_ENDIAN
   set_byte(&instruction.address, 0, get_byte(word, 2));

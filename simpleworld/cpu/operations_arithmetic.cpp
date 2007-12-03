@@ -23,8 +23,8 @@
 
 #include "operations.hpp"
 
-#define HIGHBITS_64BITS SINT64(0xFFFFFFFF00000000)
-#define LOWBITS_64BITS SINT64(0x00000000FFFFFFFF)
+#define HIGHBITS_64BITS SINT64(0xffffffff00000000)
+#define LOWBITS_64BITS SINT64(0x00000000ffffffff)
 
 namespace SimpleWorld
 {
