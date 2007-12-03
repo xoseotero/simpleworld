@@ -37,9 +37,6 @@ namespace cpu = SimpleWorld::CPU;
 
 
 #define SOURCE (TESTDATA "source.swl")
-#define SOURCE_INCLUDES (TESTDATA "source_includes.swl")
-#define SOURCE_CONSTANTS (TESTDATA "source_constants.swl")
-#define SOURCE_BLOCKS (TESTDATA "source_blocks.swl")
 #define SOURCE_PREPROCESS (TESTDATA "source_preprocess.swl")
 #define INCLUDE_DIR (TESTDATA "include")
 
@@ -65,55 +62,6 @@ bool compare_swl(const cpu::File& file1, const cpu::File& file2)
 
 
 /**
- * Replace the includes from the SWL.
- */
-BOOST_AUTO_TEST_CASE(source_replace_includes)
-{
-  std::vector<std::string> include_path;
-  include_path.push_back(INCLUDE_DIR);
-
-  cpu::Memory registers;
-  cpu::CPU cpu(&registers, NULL);
-  cpu::Source compiler(cpu.isa(), include_path, SOURCE);
-
-  compiler.replace_includes();
-
-  BOOST_CHECK(compare_swl(compiler, cpu::File(SOURCE_INCLUDES)));
-}
-
-/**
- * Replace the constants from the SWL.
- */
-BOOST_AUTO_TEST_CASE(source_replace_constants)
-{
-  std::vector<std::string> include_path;
-
-  cpu::Memory registers;
-  cpu::CPU cpu(&registers, NULL);
-  cpu::Source compiler(cpu.isa(), include_path, SOURCE);
-
-  compiler.replace_constants();
-
-  BOOST_CHECK(compare_swl(compiler, cpu::File(SOURCE_CONSTANTS)));
-}
-
-/**
- * Replace the blocks from the SWL.
- */
-BOOST_AUTO_TEST_CASE(source_replace_blocks)
-{
-  std::vector<std::string> include_path;
-
-  cpu::Memory registers;
-  cpu::CPU cpu(&registers, NULL);
-  cpu::Source compiler(cpu.isa(), include_path, SOURCE);
-
-  compiler.replace_blocks();
-
-  BOOST_CHECK(compare_swl(compiler, cpu::File(SOURCE_BLOCKS)));
-}
-
-/**
  * Preprocess the SWL.
  */
 BOOST_AUTO_TEST_CASE(source_preprocess)
@@ -125,9 +73,7 @@ BOOST_AUTO_TEST_CASE(source_preprocess)
   cpu::CPU cpu(&registers, NULL);
   cpu::Source compiler(cpu.isa(), include_path, SOURCE);
 
-  compiler.replace_includes();
-  compiler.replace_constants();
-  compiler.replace_blocks();
+  compiler.preprocess();
 
   BOOST_CHECK(compare_swl(compiler, cpu::File(SOURCE_PREPROCESS)));
 }

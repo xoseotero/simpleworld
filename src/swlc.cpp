@@ -218,9 +218,7 @@ try {
   FakeCPU cpu(&registers, NULL);
   cpu::Source source(cpu.isa(), include_path, input);
   if (preprocess_set) {
-    source.replace_includes();
-    source.replace_constants();
-    source.replace_blocks();
+    source.preprocess();
     source.save(output);
   } else
     source.compile(output);

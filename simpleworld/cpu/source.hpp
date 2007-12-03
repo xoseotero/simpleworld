@@ -79,6 +79,14 @@ public:
 
 
   /**
+   * Preprocess the source code.
+   * @exception IOError if a file can't be found.
+   * @exception ParserError file included two times.
+   */
+  void preprocess();
+
+
+  /**
    * Compile the source code to object code.
    * @param filename File where to save.
    * @exception IOERROR if a problem with file happen.
@@ -87,6 +95,7 @@ public:
   void compile(std::string filename);
 
 
+protected:
   /**
    * Replace the .include lines with the file contents.
    * @exception IOError if a file can't be found.
@@ -106,7 +115,7 @@ public:
    */
   void replace_blocks();
 
-protected:
+
   /**
    * Compile a line.
    * @param line Number of the line.

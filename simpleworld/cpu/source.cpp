@@ -238,11 +238,17 @@ void Source::load(std::string filename)
 }
 
 
-void Source::compile(std::string filename)
+void Source::preprocess()
 {
   this->replace_includes();
-  this->replace_constants();
   this->replace_blocks();
+  this->replace_constants();
+}
+
+
+void Source::compile(std::string filename)
+{
+  this->preprocess();
 
   std::ofstream file(filename.c_str(), std::ios::binary | std::ios::trunc);
   if (file.rdstate() & std::ofstream::failbit)
