@@ -193,8 +193,9 @@ Interrupt info:\tcode: 0x%02x, name: %s")
     this->interrupt_handler_();
   }
 
-  Instruction instruction = this->fetch_instruction_();
+  Instruction instruction;
   try {
+    instruction = this->fetch_instruction_();
     InstructionInfo info = this->isa_.instruction_info(instruction.code);
 #ifdef DEBUG
     std::cout << boost::str(boost::format("\
@@ -237,8 +238,16 @@ Instruction info:\tcode: 0x%02x, name: %s, nregs: %d, has_i: %d")
     Uint8 code =
       static_cast<Word>(this->isa_.interrupt_code("InvalidMemoryLocation"));
     this->interrupt_.code = this->interrupt_.r0 = code;
-    this->interrupt_.r1 = this->memory_->get_word(REGISTER_PC);
-    this->interrupt_.r2 = static_cast<Word>(instruction.address);
+    try {
+      // The pc could be out of range
+      this->interrupt_.r1 = this->memory_->get_word(REGISTER_PC);
+    } catch (const MemoryError& exc) {
+      // Set the instruction as 0.
+      // This is a value that can't raise a exception, because is a "stop",
+      // so the code can know that the pc was out of range.
+      this->interrupt_.r1 = 0;
+    }
+      this->interrupt_.r2 = static_cast<Word>(instruction.address);
   }
 }
 
