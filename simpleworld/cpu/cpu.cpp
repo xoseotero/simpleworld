@@ -282,7 +282,7 @@ void CPU::interrupt_handler_()
                                    this->registers_->get_word(REGISTER(i)));
         // Update stack pointer
         this->registers_->set_word(REGISTER_STP,
-                                   this->registers_->get_word(REGISTER_STP) - 4);
+                                   this->registers_->get_word(REGISTER_STP) + 4);
       }
 
       // Store the information of the interrupt

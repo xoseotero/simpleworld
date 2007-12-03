@@ -56,7 +56,7 @@ Update push(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
   // Save the register in the top of the stack
   mem.set_word(regs[REGISTER_STP], regs[REGISTER(inst.first)]);
   // Update stack pointer
-  regs.set_word(REGISTER_STP, regs[REGISTER_STP] - 4);
+  regs.set_word(REGISTER_STP, regs[REGISTER_STP] + 4);
 
   return UpdatePC;
 }
@@ -65,7 +65,7 @@ Update pop(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
            Instruction inst)
 {
   // Update stack pointer
-  regs.set_word(REGISTER_STP, regs[REGISTER_STP] + 4);
+  regs.set_word(REGISTER_STP, regs[REGISTER_STP] - 4);
   // Restore the register
   regs.set_word(REGISTER(inst.first), mem[regs[REGISTER_STP]]);
 
