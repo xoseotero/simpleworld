@@ -270,8 +270,8 @@ void CPU::interrupt_handler_()
     for (i = 0; i < 16; i++) {
       // Store a register:
       // Save the register in the top of the stack
-      this->registers_->set_word(REGISTER_STP,
-                                 this->registers_->get_word(REGISTER(i)));
+      this->memory_->set_word(this->registers_->get_word(REGISTER_STP),
+                              this->registers_->get_word(REGISTER(i)));
       // Update stack pointer
       this->registers_->set_word(REGISTER_STP,
                                  this->registers_->get_word(REGISTER_STP) + 4);
