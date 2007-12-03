@@ -28,7 +28,11 @@
 #define BOOST_TEST_DYN_LINK
 #include <boost/test/unit_test.hpp>
 
+#include <simpleworld/cpu/types.hpp>
+#include <simpleworld/cpu/instruction.hpp>
 #include <simpleworld/cpu/memory.hpp>
+#include <simpleworld/cpu/memory_file.hpp>
+#include <simpleworld/cpu/isa.hpp>
 #include <simpleworld/cpu/cpu.hpp>
 #include <simpleworld/cpu/file.hpp>
 #include <simpleworld/cpu/source.hpp>
@@ -38,11 +42,13 @@ namespace cpu = SimpleWorld::CPU;
 
 #define SOURCE (TESTDATA "source.swl")
 #define SOURCE_PREPROCESS (TESTDATA "source_preprocess.swl")
+#define SOURCE_SWO (TESTDATA "source.swo")
+#define SOURCE_SAVE (TESTOUTPUT "source_save.swo")
 #define INCLUDE_DIR (TESTDATA "include")
 
 
 /**
- * Check if two files are identical.
+ * Check if two source files are identical.
  * @param file1 the first file.
  * @param file2 the second file.
  * @return true if they are equal, false if not.
@@ -56,6 +62,49 @@ bool compare_swl(const cpu::File& file1, const cpu::File& file2)
   for (i = 0; i < file1.lines(); i++)
     if (file1[i] != file2[i])
       return false;
+
+  return true;
+}
+
+/**
+ * Check if two object files are identical.
+ * @param file1 the file name of the first file.
+ * @param file2 the file name of the second file.
+ * @return true if they are equal, false if not.
+ */
+bool compare_swo(const std::string& file1, const std::string& file2)
+{
+  cpu::Memory registers;
+  cpu::CPU cpu(&registers, NULL);
+  cpu::ISA isa = cpu.isa();
+
+  cpu::MemoryFile memory1(file1);
+  cpu::MemoryFile memory2(file2);
+
+  if (memory1.size() != memory2.size())
+    return false;
+
+  cpu::Address i;
+  for (i = 0; i < memory1.size(); i += sizeof(cpu::Word)) {
+    cpu::Instruction inst1 =
+      cpu::Instruction::decode(memory1.get_word(i, false));
+    cpu::Instruction inst2 =
+      cpu::Instruction::decode(memory2.get_word(i, false));
+
+    if (inst1.code != inst2.code)
+      return false;
+
+    cpu::InstructionInfo info = isa.instruction_info(inst1.code);
+    if (info.nregs >= 1)
+      if (inst1.first != inst2.first)
+        return false;
+    if (info.nregs >= 2)
+      if (inst1.second != inst2.second)
+        return false;
+    if (info.nregs == 3 or info.has_inmediate)
+      if (inst1.address != inst2.address)
+        return false;
+  }
 
   return true;
 }
@@ -78,9 +127,19 @@ BOOST_AUTO_TEST_CASE(source_preprocess)
   BOOST_CHECK(compare_swl(compiler, cpu::File(SOURCE_PREPROCESS)));
 }
 
-// A unit test for Source::compile() can't be made because, by design, a
-// instruction in SWL can have random bits if not all the members of
-// CPU::Instruction are not needed.
-// For example, a instruction without parameters, stop for example, only uses
-// the code and first, second and address won't be initialized to zero.
-// This way, the bugs have random bits for the mutations.
+/**
+ * Create object code.
+ */
+BOOST_AUTO_TEST_CASE(source_swo)
+{
+  std::vector<std::string> include_path;
+  include_path.push_back(INCLUDE_DIR);
+
+  cpu::Memory registers;
+  cpu::CPU cpu(&registers, NULL);
+  cpu::Source compiler(cpu.isa(), include_path, SOURCE);
+
+  compiler.compile(SOURCE_SAVE);
+
+  BOOST_CHECK(compare_swo(SOURCE_SWO, SOURCE_SAVE));
+}
