@@ -23,7 +23,6 @@
 
 #include "operations.hpp"
 
-#define HIGHBITS_64BITS SINT64(0xffffffff00000000)
 #define LOWBITS_64BITS SINT64(0x00000000ffffffff)
 
 namespace SimpleWorld
@@ -115,8 +114,7 @@ Update multh(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
 {
   Sint64 result = static_cast<Sint32>(regs[REGISTER(inst.second)]) *
     static_cast<Sint32>(regs[REGISTER(inst.address)]);
-  regs.set_word(REGISTER(inst.first),
-                static_cast<Sint32>((result & HIGHBITS_64BITS) >> 32));
+  regs.set_word(REGISTER(inst.first), static_cast<Sint32>(result >> 32));
 
   return UpdatePC;
 }
@@ -126,8 +124,7 @@ Update multhi(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
 {
   Sint64 result = static_cast<Sint32>(regs[REGISTER(inst.second)]) *
     static_cast<Sint32>(inst.address);
-  regs.set_word(REGISTER(inst.first),
-                static_cast<Sint32>((result & HIGHBITS_64BITS) >> 32));
+  regs.set_word(REGISTER(inst.first), static_cast<Sint32>(result >> 32));
 
   return UpdatePC;
 }
@@ -137,8 +134,7 @@ Update multhu(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
 {
   Uint64 result = static_cast<Uint64>(regs[REGISTER(inst.second)]) *
     regs[REGISTER(inst.address)];
-  regs.set_word(REGISTER(inst.first),
-                static_cast<Uint32>((result & HIGHBITS_64BITS) >> 32));
+  regs.set_word(REGISTER(inst.first), static_cast<Uint32>(result >> 32));
 
   return UpdatePC;
 }
@@ -148,8 +144,7 @@ Update multhui(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
 {
   Uint64 result = static_cast<Uint64>(regs[REGISTER(inst.second)]) *
     inst.address;
-  regs.set_word(REGISTER(inst.first),
-                static_cast<Uint32>((result & HIGHBITS_64BITS) >> 32));
+  regs.set_word(REGISTER(inst.first), static_cast<Uint32>(result >> 32));
 
   return UpdatePC;
 }
