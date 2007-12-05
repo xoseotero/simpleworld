@@ -75,6 +75,7 @@ public:
    */
   const Memory memory() const { return *this->memory_; }
 
+
   /**
    * Return if the CPU is running
    * @return true if the CPU is running, false if not
@@ -101,13 +102,13 @@ public:
   virtual void next();
 
 protected:
+  ISA isa_;                     /**< Instruction set */
+
   Memory* registers_;
   Memory* memory_;
 
   bool interrupt_request_;      /**< If a interrupt was thrown. */
   Interrupt interrupt_;
-
-  ISA isa_;                     /**< Instruction set */
 
   bool running_;
 
