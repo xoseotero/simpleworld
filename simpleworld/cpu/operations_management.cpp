@@ -31,7 +31,7 @@ namespace CPU
 Update stop(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
             Instruction inst)
 {
-  return Stop;
+  return UpdateStop;
 }
 
 Update restart(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
@@ -41,7 +41,7 @@ Update restart(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
   for (i = 0; i < 16; i++)
     regs.set_word(REGISTER(i), 0);
 
-  return None;
+  return UpdateNone;
 }
 
 }

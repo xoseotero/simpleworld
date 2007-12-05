@@ -44,7 +44,7 @@ Update call(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
   // Execute the function
   regs.set_word(REGISTER_PC, inst.address);
 
-  return None;
+  return UpdateNone;
 }
 
 Update interrupt(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,

@@ -41,7 +41,7 @@ Update b(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
 
   regs.set_word(REGISTER_PC, inst.address);
 
-  return None;
+  return UpdateNone;
 }
 
 Update beq(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
@@ -52,7 +52,7 @@ Update beq(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
 
   if (regs[REGISTER(inst.first)] == regs[REGISTER(inst.second)]) {
     regs.set_word(REGISTER_PC, inst.address);
-    return None;
+    return UpdateNone;
   }
 
   return UpdatePC;
@@ -66,7 +66,7 @@ Update bne(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
 
   if (regs[REGISTER(inst.first)] != regs[REGISTER(inst.second)]) {
     regs.set_word(REGISTER_PC, inst.address);
-    return None;
+    return UpdateNone;
   }
 
   return UpdatePC;
@@ -81,7 +81,7 @@ Update blt(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
   if (static_cast<Sint32>(regs[REGISTER(inst.first)]) <
       static_cast<Sint32>(regs[REGISTER(inst.second)])) {
     regs.set_word(REGISTER_PC, inst.address);
-    return None;
+    return UpdateNone;
   }
 
   return UpdatePC;
@@ -95,7 +95,7 @@ Update bltu(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
 
   if (regs[REGISTER(inst.first)] < regs[REGISTER(inst.second)]) {
     regs.set_word(REGISTER_PC, inst.address);
-    return None;
+    return UpdateNone;
   }
 
   return UpdatePC;
@@ -110,7 +110,7 @@ Update bgt(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
   if (static_cast<Sint32>(regs[REGISTER(inst.first)]) >
       static_cast<Sint32>(regs[REGISTER(inst.second)])) {
     regs.set_word(REGISTER_PC, inst.address);
-    return None;
+    return UpdateNone;
   }
 
   return UpdatePC;
@@ -124,7 +124,7 @@ Update bgtu(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
 
   if (regs[REGISTER(inst.first)] > regs[REGISTER(inst.second)]) {
     regs.set_word(REGISTER_PC, inst.address);
-    return None;
+    return UpdateNone;
   }
 
   return UpdatePC;
@@ -139,7 +139,7 @@ Update ble(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
   if (static_cast<Sint32>(regs[REGISTER(inst.first)]) <=
       static_cast<Sint32>(regs[REGISTER(inst.second)])) {
     regs.set_word(REGISTER_PC, inst.address);
-    return None;
+    return UpdateNone;
   }
 
   return UpdatePC;
@@ -153,7 +153,7 @@ Update bleu(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
 
   if (regs[REGISTER(inst.first)] <= regs[REGISTER(inst.second)]) {
     regs.set_word(REGISTER_PC, inst.address);
-    return None;
+    return UpdateNone;
   }
 
   return UpdatePC;
@@ -168,7 +168,7 @@ Update bge(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
   if (static_cast<Sint32>(regs[REGISTER(inst.first)]) >=
       static_cast<Sint32>(regs[REGISTER(inst.second)])) {
     regs.set_word(REGISTER_PC, inst.address);
-    return None;
+    return UpdateNone;
   }
 
   return UpdatePC;
@@ -182,7 +182,7 @@ Update bgeu(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
 
   if (regs[REGISTER(inst.first)] >= regs[REGISTER(inst.second)]) {
     regs.set_word(REGISTER_PC, inst.address);
-    return None;
+    return UpdateNone;
   }
 
   return UpdatePC;

@@ -218,7 +218,7 @@ Instruction info:\tcode: 0x%02x, name: %s, nregs: %d, has_i: %d")
       // Throw a interrupt
       this->interrupt_request_ = true;
       break;
-    case Stop:
+    case UpdateStop:
       this->running_ = false;
       break;
     }

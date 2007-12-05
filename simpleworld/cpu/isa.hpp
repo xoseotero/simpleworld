@@ -43,10 +43,10 @@ namespace CPU
  * How to update the CPU after a instruction.
  */
 enum Update {
-  None,                         /**< Do nothing */
+  UpdateNone,                   /**< Do nothing */
   UpdatePC,                     /**< Update the program counter */
   UpdateInterrupt,              /**< Interrupt request */
-  Stop                          /**< Stop the CPU */
+  UpdateStop                    /**< Stop the CPU */
 };
 
 
