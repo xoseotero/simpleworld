@@ -101,6 +101,12 @@ public:
    */
   virtual void next();
 
+
+  /**
+   * Throw the Timer Interrupt.
+   */
+  void timer_interrupt();
+
 protected:
   ISA isa_;                     /**< Instruction set */
 

@@ -2,6 +2,7 @@ Simple World 1.0a2:
 	* Optional use of OpennSSL if available
 	* Change the store instructions to have the same parameters and
 	  order than the load ones.
+	* Send TimerInterrupt to the alive bugs each 64 cycles.
 
 Simple World 1.0a1 (2007/11/12):
         * First alpha of Simple World

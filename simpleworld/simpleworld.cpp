@@ -153,7 +153,8 @@ void SimpleWorld::run(Time cycles)
     // execute each cycle in a transaction
     sqlite3x::sqlite3_transaction transaction(*this);
 
-    // @todo send the timer event
+    if (this->env_->time % 64 == 0)
+      this->bugs_timer();
     this->bugs_run();
     this->eggs_birth();
 
@@ -467,6 +468,17 @@ void SimpleWorld::eggs_birth()
        ++remove)
     this->eggs_.remove(*remove);
 
+}
+
+void SimpleWorld::bugs_timer()
+{
+  // throw the Timer Interrupt in each bug
+  std::list<Bug*>::iterator current;
+  for (current = this->bugs_.begin();
+       current != this->bugs_.end();
+       ++current)
+    // throw the interrupt
+    (*current)->timer_interrupt();
 }
 
 void SimpleWorld::bugs_run()

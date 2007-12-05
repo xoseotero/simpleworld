@@ -252,6 +252,15 @@ Instruction info:\tcode: 0x%02x, name: %s, nregs: %d, has_i: %d")
 }
 
 
+void CPU::timer_interrupt()
+{
+  this->interrupt_request_ = true;
+
+  Word code = static_cast<Word>(this->isa_.interrupt_code("TimerInterrupt"));
+  this->interrupt_.code = this->interrupt_.r0 = code;
+}
+
+
 Instruction CPU::fetch_instruction_() const
 {
 #ifdef DEBUG

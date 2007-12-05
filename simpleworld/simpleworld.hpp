@@ -198,6 +198,11 @@ protected:
   void eggs_birth();
 
   /**
+   * Throw the Timer Interrupt in all the alive bugs.
+   */
+  void bugs_timer();
+
+  /**
    * Execute a cycle in all the alive bugs.
    */
   void bugs_run();
