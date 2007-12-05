@@ -74,7 +74,7 @@ public:
    * Get the last environment (change).
    * @return the environment.
    * @exception DBException if there is a error in the database.
-   * @exception DBException if there is any environments.
+   * @exception DBException if there isn't any environments.
    */
   Time last_environment();
 
