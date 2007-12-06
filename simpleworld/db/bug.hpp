@@ -28,7 +28,6 @@
 
 #include <simpleworld/db/alivebug.hpp>
 #include <simpleworld/db/cpu.hpp>
-#include <simpleworld/db/egg.hpp>
 
 namespace SimpleWorld
 {
@@ -50,13 +49,9 @@ public:
    */
   Bug(DB* db, ID id);
 
-  /**
-   * Constructor to convert a egg into a bug.
-   * @param db database.
-   * @param egg egg.
-   * @exception DBException if there is a error in the database.
-   */
-  Bug(DB* db, Egg* egg);
+
+  ID die(Time dead);
+  ID die(Time dead, ID killer_id);
 
 
   /**

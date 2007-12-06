@@ -43,13 +43,19 @@ Bug::Bug(DB* db, ID id)
   this->update();
 }
 
-Bug::Bug(DB* db, Egg* egg)
-  : AliveBug(db, egg->id(), ElementBug, egg->position), cpu(db)
-{
-  this->cpu.insert(egg->id());
 
-  this->update();
-  this->type = ElementBug;
+ID Bug::die(Time dead)
+{
+  this->cpu.remove();
+
+  return AliveBug::die(dead);
+}
+
+ID Bug::die(Time dead, ID killer_id)
+{
+  this->cpu.remove();
+
+  return AliveBug::die(dead, killer_id);
 }
 
 

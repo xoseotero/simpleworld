@@ -454,8 +454,7 @@ void SimpleWorld::eggs_birth()
        ++egg) {
     if ((*egg)->birth <= this->env_->time) {
       // convert the egg to a bug
-      Bug* bug = new Bug(this, (*egg));
-      bug->update_db(true);
+      Bug* bug = new Bug(this, (*egg)->be_born());
 
       this->bugs_.push_back(bug);
       to_remove.push_back(*egg);
@@ -465,9 +464,10 @@ void SimpleWorld::eggs_birth()
   std::vector<Egg*>::iterator remove;
   for (remove = to_remove.begin();
        remove != to_remove.end();
-       ++remove)
+       ++remove) {
+    delete (*remove);
     this->eggs_.remove(*remove);
-
+  }
 }
 
 void SimpleWorld::bugs_timer()

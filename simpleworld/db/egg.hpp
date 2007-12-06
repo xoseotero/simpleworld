@@ -56,6 +56,9 @@ public:
   Egg(DB* db);
 
 
+  ID be_born();
+
+
   /**
    * Update the data of the class with the database.
    * changed is set to false.

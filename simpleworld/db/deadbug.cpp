@@ -40,21 +40,6 @@ DeadBug::DeadBug(DB* db, ID id)
   this->update();
 }
 
-DeadBug::DeadBug(DB* db, Egg* egg)
-  : BugElement(db, egg->id(), ElementNothing, egg->position)
-{
-  this->update();
-  this->type = ElementNothing;
-}
-
-DeadBug::DeadBug(DB* db, Bug* bug)
-  : BugElement(db, bug->id(), ElementNothing, bug->position)
-{
-  bug->cpu.remove();
-  this->update();
-  this->type = ElementNothing;
-}
-
 
 void DeadBug::update()
 {

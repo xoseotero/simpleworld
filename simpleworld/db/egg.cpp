@@ -27,6 +27,7 @@
 
 #include "exception.hpp"
 #include "egg.hpp"
+#include "cpu.hpp"
 
 namespace SimpleWorld
 {
@@ -43,6 +44,15 @@ Egg::Egg(DB* db, ID id)
 Egg::Egg(DB* db)
   : AliveBug(db, ElementEgg)
 {
+}
+
+
+ID Egg::be_born()
+{
+  this->type = ElementBug;
+  CPU(this->db_).insert(this->id_);
+
+  return this->id_;
 }
 
 

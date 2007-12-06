@@ -62,6 +62,10 @@ public:
   AliveBug(DB* db, ElementType type);
 
 
+  virtual ID die(Time dead);
+  virtual ID die(Time dead, ID killer_id);
+
+
   // Data
   Energy energy;
 };

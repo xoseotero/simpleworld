@@ -29,8 +29,6 @@
 #include <simpleworld/db/types.hpp>
 #include <simpleworld/db/db.hpp>
 #include <simpleworld/db/bugelement.hpp>
-#include <simpleworld/db/egg.hpp>
-#include <simpleworld/db/bug.hpp>
 
 namespace SimpleWorld
 {
@@ -51,22 +49,6 @@ public:
    * @exception DBException if the ID is not found in the table.
    */
   DeadBug(DB* db, ID id);
-
-  /**
-   * Constructor to convert a egg into a dead bug.
-   * @param db database.
-   * @param egg egg.
-   * @exception DBException if there is a error in the database.
-   */
-  DeadBug(DB* db, Egg* egg);
-
-  /**
-   * Constructor to convert a bug into a dead bug.
-   * @param db database.
-   * @param bug bug.
-   * @exception DBException if there is a error in the database.
-   */
-  DeadBug(DB* db, Bug* bug);
 
 
   /**

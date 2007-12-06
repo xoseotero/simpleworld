@@ -47,14 +47,6 @@ public:
    */
   Bug(SimpleWorld* sw, DB::ID id);
 
-  /**
-   * Constructor for convert a egg into a bug.
-   * @param sw world where the bug lives.
-   * @param egg egg.
-   * @exception DBException if there is a error in the database.
-   */
-  Bug(SimpleWorld* sw, Egg* egg);
-
 
   /**
    * The bug has been attacked.
