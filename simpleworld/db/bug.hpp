@@ -50,7 +50,19 @@ public:
   Bug(DB* db, ID id);
 
 
+  /*
+   * Convert the alive bug in a dead bug.
+   * @param dead When the bug dead.
+   * @return The id of the new food.
+   */
   ID die(Time dead);
+
+  /*
+   * Convert the alive bug in a dead bug.
+   * @param dead When the bug dead.
+   * @param killer_id Who killed it.
+   * @return The id of the new food.
+   */
   ID die(Time dead, ID killer_id);
 
 

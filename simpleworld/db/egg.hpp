@@ -56,6 +56,10 @@ public:
   Egg(DB* db);
 
 
+  /**
+   * Convert the egg in a bug.
+   * @return The ID of the new bug.
+   */
   ID be_born();
 
 
