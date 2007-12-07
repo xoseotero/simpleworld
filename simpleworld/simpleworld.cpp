@@ -447,26 +447,17 @@ Position SimpleWorld::front(Bug* bug)
 void SimpleWorld::eggs_birth()
 {
   // check for the birthday of each egg
+  std::list<Egg*> eggs;
   std::list<Egg*>::iterator egg;
-  std::vector<Egg*> to_remove;
-  for (egg = this->eggs_.begin();
-       egg != this->eggs_.end();
-       ++egg) {
+  for (egg = eggs.begin(); egg != eggs.end(); ++egg) {
     if ((*egg)->birth <= this->env_->time) {
       // convert the egg to a bug
       Bug* bug = new Bug(this, (*egg)->be_born());
 
       this->bugs_.push_back(bug);
-      to_remove.push_back(*egg);
+      delete (*egg);
+      this->eggs_.remove(*egg);
     }
-  }
-
-  std::vector<Egg*>::iterator remove;
-  for (remove = to_remove.begin();
-       remove != to_remove.end();
-       ++remove) {
-    delete (*remove);
-    this->eggs_.remove(*remove);
   }
 }
 
