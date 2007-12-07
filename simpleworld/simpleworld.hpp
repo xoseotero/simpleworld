@@ -203,6 +203,15 @@ protected:
   void bugs_timer();
 
   /**
+   * Substract some energy to the bug.
+   * If the bug has not enough energy, it's converted in food.
+   * @param bug The bug.
+   * @param energy The energy.
+   * @exception BugDeath If the bug die.
+   */
+  void substract_energy(Bug* bug, Energy energy);
+
+  /**
    * Execute a cycle in all the alive bugs.
    */
   void bugs_run();

@@ -36,6 +36,7 @@
 
 #include <sqlite3x.hpp>
 
+#include <simpleworld/db/types.hpp>
 #include <simpleworld/db/food.hpp>
 #include <simpleworld/db/egg.hpp>
 #include <simpleworld/db/bug.hpp>
@@ -44,6 +45,7 @@
 
 #include "exception.hpp"
 #include "actionerror.hpp"
+#include "bugdeath.hpp"
 #include "movement.hpp"
 #include "simpleworld.hpp"
 
@@ -177,7 +179,7 @@ void SimpleWorld::nothing(Bug* bug)
     << std::endl;
 #endif // DEBUG
 
-  bug->energy -= this->env_->energy_nothing;
+  this->substract_energy(bug, this->env_->energy_nothing);
   bug->changed = true;
 }
 
@@ -189,7 +191,7 @@ CPU::Word SimpleWorld::myself(Bug* bug, Info info, CPU::Word* ypos)
     << std::endl;
 #endif // DEBUG
 
-  bug->energy -= this->env_->energy_myself;
+  this->substract_energy(bug, this->env_->energy_myself);
   bug->changed = true;
 
   switch (info) {
@@ -224,7 +226,7 @@ ElementType SimpleWorld::detect(Bug* bug)
     << std::endl;
 #endif // DEBUG
 
-  bug->energy -= this->env_->energy_detect;
+  this->substract_energy(bug, this->env_->energy_detect);
   bug->changed = true;
 
   return bug->type;
@@ -238,7 +240,7 @@ CPU::Word SimpleWorld::information(Bug* bug, Info info, CPU::Word* ypos)
     << std::endl;
 #endif // DEBUG
 
-  bug->energy -= this->env_->energy_info;
+  this->substract_energy(bug, this->env_->energy_info);
   bug->changed = true;
 
   Position front = this->front(bug);
@@ -292,7 +294,7 @@ void SimpleWorld::move(Bug* bug, Movement movement)
     << std::endl;
 #endif // DEBUG
 
-  bug->energy -= this->env_->energy_move;
+  this->substract_energy(bug, this->env_->energy_move);
   bug->changed = true;
 
   try {
@@ -310,7 +312,7 @@ void SimpleWorld::turn(Bug* bug, Turn turn)
     << std::endl;
 #endif // DEBUG
 
-  bug->energy -= this->env_->energy_turn;
+  this->substract_energy(bug, this->env_->energy_turn);
   bug->changed = true;
 
   try {
@@ -333,7 +335,7 @@ void SimpleWorld::attack(Bug* bug, Energy energy)
     << std::endl;
 #endif // DEBUG
 
-  bug->energy -= this->env_->energy_attack;
+  this->substract_energy(bug, this->env_->energy_attack);
   bug->changed = true;
 
   // TODO: Do something :)
@@ -352,7 +354,7 @@ Energy SimpleWorld::eat(Bug* bug)
     << std::endl;
 #endif // DEBUG
 
-  bug->energy -= this->env_->energy_eat;
+  this->substract_energy(bug, this->env_->energy_eat);
   bug->changed = true;
 
   // TODO: Do something :)
@@ -373,7 +375,7 @@ void SimpleWorld::egg(Bug* bug, Energy energy)
     << std::endl;
 #endif // DEBUG
 
-  bug->energy -= this->env_->energy_egg;
+  this->substract_energy(bug, this->env_->energy_egg);
   bug->changed = true;
 
   // TODO: Do something :)
@@ -447,7 +449,7 @@ Position SimpleWorld::front(Bug* bug)
 void SimpleWorld::eggs_birth()
 {
   // check for the birthday of each egg
-  std::list<Egg*> eggs;
+  std::list<Egg*> eggs = this->eggs_;
   std::list<Egg*>::iterator egg;
   for (egg = eggs.begin(); egg != eggs.end(); ++egg) {
     if ((*egg)->birth <= this->env_->time) {
@@ -472,15 +474,51 @@ void SimpleWorld::bugs_timer()
     (*current)->timer_interrupt();
 }
 
+void SimpleWorld::substract_energy(Bug* bug, Energy energy)
+{
+  if (bug->energy <= energy)
+    throw EXCEPTION(BugDeath, boost::str(boost::format("\
+Bug %1% is death")
+                                         % bug->id()));
+
+  bug->energy -= energy;
+}
+
 void SimpleWorld::bugs_run()
 {
   // execute a instruction in each bug
-  std::list<Bug*>::iterator current;
-  for (current = this->bugs_.begin();
-       current != this->bugs_.end();
-       ++current)
-    // execute a instruction
-    (*current)->next();
+  std::list<Bug*> bugs = this->bugs_;
+  std::list<Bug*>::iterator bug;
+  for (bug = bugs.begin(); bug != bugs.end(); ++bug) {
+    try {
+      // execute a instruction
+      (*bug)->next();
+    } catch (const BugDeath& e) {
+      // the bug is death
+#ifdef DEBUG
+      std::cout << boost::format("Bug %1% died")
+        % (*bug)->id()
+                << std::endl;
+#endif // DEBUG
+
+      // Convert the bug in food
+      Food* food = new Food(this, (*bug)->die(this->env_->time));
+      this->foods_.push_back(food);
+#ifdef DEBUG
+      std::cout << boost::format("\
+Food[%1%] added at (%2%, %3%) with a size of %4%")
+        % food->id()
+        % food->position.x
+        % food->position.y
+        % food->size
+                << std::endl;
+#endif // DEBUG
+
+      // Remove the dead bug
+      this->bugs_.remove(*bug);
+      delete(*bug);
+    }
+  }
 }
 
 void SimpleWorld::update_db()
