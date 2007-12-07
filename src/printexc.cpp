@@ -47,12 +47,14 @@ std::ostream& operator <<(std::ostream& os, const sw::Exception& exc)
 
   return os << boost::format("\
 Exception %1% thrown:\n\
-\twhere:\tfile: %2%, line: %3%, function: %4%\n\
+\tin file:\t%2%\n\
+\tin function:\t%3%\n\
+\tin line:\t%4%\n\
 \twhy:\t%5%")
     % class_name
     % exc.file
-    % exc.line
     % exc.function
+    % exc.line
     % exc.what
     << std::endl;
 }
