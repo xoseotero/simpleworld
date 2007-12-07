@@ -47,6 +47,11 @@ public:
    */
   Bug(SimpleWorld* sw, DB::ID id);
 
+  /**
+   * Destructor.
+   */
+  ~Bug();
+
 
   /**
    * The bug has been attacked.

@@ -21,6 +21,8 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <cassert>
+
 #include <simpleworld/simpleworld.hpp>
 #include <simpleworld/operations.hpp>
 #include "bug.hpp"
@@ -37,6 +39,13 @@ Bug::Bug(SimpleWorld* sw, DB::ID id)
   this->isa_.add_interrupt(0x6, "WorldEvent");
 
   this->isa_.add_instruction(0x38, "world", 0, true, ::SimpleWorld::world);
+}
+
+Bug::~Bug()
+{
+  assert(Bug::bugs.find(this->registers_) != Bug::bugs.end());
+
+  Bug::bugs.erase(this->registers_);
 }
 
 
