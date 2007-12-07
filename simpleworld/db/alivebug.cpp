@@ -25,6 +25,7 @@
 
 #include "exception.hpp"
 #include "food.hpp"
+#include "deadbug.hpp"
 #include "alivebug.hpp"
 
 namespace SimpleWorld
@@ -45,25 +46,13 @@ AliveBug::AliveBug(DB* db, ElementType type)
 
 ID AliveBug::die(Time dead)
 {
-  // Convert the alive bug to a dead bug
-  this->type = ElementNothing;
   this->energy = 0;
+  this->update_db(true);
 
-  sqlite3x::sqlite3_command sql(*this->db_);
-  try {
-    sql.prepare("\
-UPDATE Bug\n\
-SET energy = ?, dead = ?\n\
-WHERE id = ?;");
-    sql.bind(1, static_cast<int>(this->energy));
-    sql.bind(2, static_cast<int>(dead));
-    sql.bind(3, this->id_);
-
-    sql.executenonquery();
-  } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(DBException, e.what());
-  }
-
+  // Convert the alive bug to a dead bug
+  DeadBug deadbug(this->db_, this->id_);
+  deadbug.dead = dead;
+  deadbug.update_db(true);
 
   // Create the food in the position of the dead bug
   Food food(this->db_);
@@ -76,26 +65,14 @@ WHERE id = ?;");
 
 ID AliveBug::die(Time dead, ID killer_id)
 {
-  // Convert the alive bug to a dead bug
-  this->type = ElementNothing;
   this->energy = 0;
+  this->update_db(true);
 
-  sqlite3x::sqlite3_command sql(*this->db_);
-  try {
-    sql.prepare("\
-UPDATE Bug\n\
-SET energy = ?, dead = ?, killer_id = ?\n\
-WHERE id = ?;");
-    sql.bind(1, static_cast<int>(this->energy));
-    sql.bind(2, static_cast<int>(dead));
-    sql.bind(3, static_cast<sqlite3x::int64_t>(killer_id));
-    sql.bind(4, this->id_);
-
-    sql.executenonquery();
-  } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(DBException, e.what());
-  }
-
+  // Convert the alive bug to a dead bug
+  DeadBug deadbug(this->db_, this->id_);
+  deadbug.dead = dead;
+  deadbug.killer_id = killer_id;
+  deadbug.update_db(true);
 
   // Create the food in the position of the dead bug
   Food food(this->db_);

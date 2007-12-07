@@ -104,9 +104,9 @@ public:
   } type;
 
   // If type is addition, then the value of original is garbage.
-  CPU::Word original;
+  ::SimpleWorld::CPU::Word original;
   // If type is deletion, then the value of mutated is garbage.
-  CPU::Word mutated;
+  ::SimpleWorld::CPU::Word mutated;
 
   ID bug_id;
 };

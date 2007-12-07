@@ -26,8 +26,8 @@
 #include <sqlite3x.hpp>
 
 #include "exception.hpp"
-#include "egg.hpp"
 #include "cpu.hpp"
+#include "egg.hpp"
 
 namespace SimpleWorld
 {
@@ -49,7 +49,7 @@ Egg::Egg(DB* db)
 
 ID Egg::be_born()
 {
-  this->type = ElementBug;
+  // Convert the egg to a bug
   CPU(this->db_).insert(this->id_);
 
   return this->id_;
