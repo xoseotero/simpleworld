@@ -35,16 +35,14 @@ namespace SimpleWorld
  * @param max maximun size of the position.
  * @exception Exception if the position is out of range.
  */
-inline void exception_outofrange(Position position, Position max)
-{
-  if (position.x >= max.x or position.y >= max.y)
+#define CHECK_OUTOFRANGE(position, max) \
+  if (position.x >= max.x or position.y >= max.y) \
     throw EXCEPTION(WorldError, boost::str(boost::format(\
-"Position (%1%, %2%) is outside of the World (%1%, %2%)")
-                                           % position.x
-                                           % position.y
-                                           % max.x
+"Position (%1%, %2%) is outside of the World (%3%, %4%)") \
+                                           % position.x \
+                                           % position.y \
+                                           % max.x \
                                            % max.y));
-}
 
 /**
  * Check if position is used.
@@ -52,15 +50,12 @@ inline void exception_outofrange(Position position, Position max)
  * @param position position to check.
  * @exception Exception if the position is used.
  */
-inline void exception_used(const boost::multi_array<Element*, 2>& terrain,
-                           Position position)
-{
-  if (terrain[position.x][position.y] != NULL)
+#define CHECK_USED(terrain, position) \
+  if (terrain[position.x][position.y] != NULL) \
     throw EXCEPTION(WorldError, boost::str(boost::format(\
-"Position (%1%, %2%) is already used")
-                                           % position.x
+"Position (%1%, %2%) is already used") \
+                                           % position.x \
                                            % position.y));
-}
 
 /**
  * Check if position is not used.
@@ -68,15 +63,12 @@ inline void exception_used(const boost::multi_array<Element*, 2>& terrain,
  * @param position position to check.
  * @exception Exception if the position is not used.
  */
-inline void exception_notused(const boost::multi_array<Element*, 2>& terrain,
-                              Position position)
-{
-  if (terrain[position.x][position.y] == NULL)
+#define CHECK_NOTUSED(terrain, position) \
+  if (terrain[position.x][position.y] == NULL) \
     throw EXCEPTION(WorldError, boost::str(boost::format(\
-"Position (%1%, %2%) is not used")
-                                           % position.x
+"Position (%1%, %2%) is not used") \
+                                           % position.x \
                                            % position.y));
-}
 
 
 World::World(Coord width, Coord height)
@@ -105,8 +97,8 @@ World::World(Position size)
 
 void World::add(Element* element, Position position)
 {
-  exception_outofrange(position, this->size_);
-  exception_used(this->terrain_, position);
+  CHECK_OUTOFRANGE(position, this->size_);
+  CHECK_USED(this->terrain_, position);
 
   if (element != NULL) {
     this->num_elements_++;
@@ -120,8 +112,8 @@ void World::add(Element* element, Position position)
 
 void World::remove(Position position)
 {
-  exception_outofrange(position, this->size_);
-  exception_notused(this->terrain_, position);
+  CHECK_OUTOFRANGE(position, this->size_);
+  CHECK_NOTUSED(this->terrain_, position);
 
   this->num_elements_--;
   this->terrain_[position.x][position.y] = NULL;
@@ -130,15 +122,15 @@ void World::remove(Position position)
 
 bool World::used(Position position) const
 {
-  exception_outofrange(position, this->size_);
+  CHECK_OUTOFRANGE(position, this->size_);
 
   return this->terrain_[position.x][position.y] != NULL;
 }
 
 Element* World::get(Position position) const
 {
-  exception_outofrange(position, this->size_);
-  exception_notused(this->terrain_, position);
+  CHECK_OUTOFRANGE(position, this->size_);
+  CHECK_NOTUSED(this->terrain_, position);
 
   return this->terrain_[position.x][position.y];
 }
@@ -146,10 +138,10 @@ Element* World::get(Position position) const
 
 void World::move(Position oldposition, Position newposition)
 {
-  exception_outofrange(oldposition);
-  exception_notused(this->terrain_, oldposition);
-  exception_outofrange(newposition);
-  exception_used(this->terrain_, newposition);
+  CHECK_OUTOFRANGE(oldposition, this->size_);
+  CHECK_NOTUSED(this->terrain_, oldposition);
+  CHECK_OUTOFRANGE(newposition, this->size_);
+  CHECK_USED(this->terrain_, newposition);
 
   Element* element = this->get(oldposition);
   if (not element->movable())
