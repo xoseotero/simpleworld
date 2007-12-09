@@ -273,16 +273,30 @@ Instruction CPU::fetch_instruction_() const
 }
 
 
+bool CPU::interrupt_enabled(Uint8 code) const
+{
+  Word itp;
+  return (itp = this->registers_->get_word(REGISTER_ITP)) != 0 and
+    this->memory_->get_word(itp + code * sizeof(Word)) != 0;
+}
+
+
 void CPU::interrupt_handler_()
 {
   if (not this->interrupt_request_)
     return;
 
-  Word itp;
-  Word handler;
-  if ((itp = this->registers_->get_word(REGISTER_ITP)) != 0 and
-      (handler = this->memory_->get_word(itp + this->interrupt_.code *
-                                         sizeof(Word))) != 0) {
+  if (this->interrupt_enabled(this->interrupt_.code)) {
+    Word itp = this->registers_->get_word(REGISTER_ITP);
+    Word handler = this->memory_->get_word(itp + this->interrupt_.code *
+                                           sizeof(Word));
+#ifdef DEBUG
+    std::cout << boost::str(boost::format("\
+Interrupt 0x%02x handled")
+                            % static_cast<int>(this->interrupt_.code))
+              << std::endl;
+#endif
+
     // Save all the registers in the stack
     Sint8 i;
     for (i = 0; i < 16; i++) {

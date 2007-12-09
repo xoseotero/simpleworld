@@ -125,6 +125,15 @@ protected:
    */
   Instruction fetch_instruction_() const;
 
+
+  /**
+   * Check if the interrupt is enabled.
+   * @param code Interrupt to check.
+   * @return true if the interrupt is enabled, not if not.
+   * @exception CPUexception if the interrupt is not found.
+   */
+  bool interrupt_enabled(Uint8 code) const;
+
 private:
   /**
    * Handle the interrupt.
