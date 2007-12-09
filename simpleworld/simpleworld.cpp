@@ -31,6 +31,7 @@
 #endif // DEBUG
 
 #include <vector>
+#include <cassert>
 
 #include <boost/format.hpp>
 
@@ -244,12 +245,18 @@ CPU::Word SimpleWorld::information(Bug* bug, Info info, CPU::Word* ypos)
   bug->changed = true;
 
   Position front = this->front(bug);
-  Element* target = this->world_->get(front);
-  if (target == NULL or target->type == ElementNothing)
+  Element* target;
+  try {
+    target = this->world_->get(front);
+  } catch (const WorldError& e) {
     throw EXCEPTION(ActionError, boost::str(boost::format("\
 There is nothing in (%1%, %2%")
                                             % front.x
                                             % front.y));
+  }
+  // ElementNothing is not a valid type, it's only send to bugs to inform
+  // them that there is nothing in the World
+  assert(target->type != ElementNothing);
 
   if (target->type == ElementFood and (info == InfoID or
                                        info == InfoEnergy or
