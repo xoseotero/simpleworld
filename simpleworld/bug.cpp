@@ -23,8 +23,17 @@
 
 #include <cassert>
 
+#include "config.hpp"
+
+#ifdef DEBUG
+#include <iostream>
+
+#include <boost/format.hpp>
+#endif // DEBUG
+
 #include "simpleworld.hpp"
 #include "operations.hpp"
+#include "types.hpp"
 #include "bug.hpp"
 
 namespace SimpleWorld
@@ -51,7 +60,19 @@ Bug::~Bug()
 
 void Bug::attacked()
 {
-  // do something
+#ifdef DEBUG
+  std::cout << boost::str(boost::format("\
+Bug[%1%] attacked")
+                         % this->id_)
+    << std::endl;
+#endif // DEBUG
+
+  this->interrupt_request_ = true;
+
+  ::SimpleWorld::CPU::Word code =
+      static_cast< ::SimpleWorld::CPU::Word >(this->isa_.interrupt_code("WorldEvent"));
+  this->interrupt_.code = this->interrupt_.r0 = code;
+  this->interrupt_.r1 = static_cast< ::SimpleWorld::CPU::Word >(EventAttack);
 }
 
 
