@@ -147,7 +147,9 @@ Element* World::get(Position position) const
 
 void World::move(Position oldposition, Position newposition)
 {
+  exception_outofrange(oldposition);
   exception_notused(this->terrain_, oldposition);
+  exception_outofrange(newposition);
   exception_used(this->terrain_, newposition);
 
   Element* element = this->operator[](oldposition);
