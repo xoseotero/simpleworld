@@ -77,6 +77,13 @@ struct InstructionInfo {
 };
 
 
+struct InterruptInfo {
+  Uint8 code;                   /**< Code of the interrupt */
+  std::string name;             /**< Interrupt name */
+  bool thrown_by_inst;          /**< If it's thrown by a instruction */
+};
+
+
 /**
  * Instruction set architecture.
  *
@@ -145,12 +152,12 @@ public:
   Uint8 register_code(std::string name) const;
 
   /**
-   * Name of the interrupt.
+   * Info about the interrupt.
    * @param code code of the interrupt.
-   * @return the name of the interrupt.
+   * @return the info about the interrupt.
    * @exception CodeError if the interrupt is not found.
    */
-  std::string interrupt_name(Uint8 code) const;
+  InterruptInfo interrupt_info(Uint8 code) const;
 
   /**
    * Code of the interrupt.
@@ -204,11 +211,19 @@ public:
 
   /**
    * Add a new interrupt.
-   * @param code code of the interrupt.
-   * @param name name of the interrupt.
+   * @param interrupt interrupt to add.
    * @exception CodeError if the interrupt already exist.
    */
-  void add_interrupt(Uint8 code, std::string name);
+  void add_interrupt(InterruptInfo interrupt);
+
+  /**
+   * Add a new interrupt.
+   * @param code code of the interrupt.
+   * @param name name of the interrupt.
+   * @param thrown_by_inst if it's thrown by a instruction.
+   * @exception CodeError if the interrupt already exist.
+   */
+  void add_interrupt(Uint8 code, std::string name, bool thrown_by_inst);
 
   /**
    * Remove a interrupt.
@@ -224,7 +239,7 @@ private:
   std::map<Uint8, std::string> registers_;
   std::map<std::string, Uint8> register_codes_;
 
-  std::map<Uint8, std::string> interrupts_;
+  std::map<Uint8, InterruptInfo> interrupts_;
   std::map<std::string, Uint8> interrupt_codes_;
 };
 

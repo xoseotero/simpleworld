@@ -64,11 +64,11 @@ CPU::CPU(Memory* registers, Memory* memory)
   this->isa_.add_register(0xf, "itp");
 
   // Interrupts
-  this->isa_.add_interrupt(0x0, "TimerInterrupt");
-  this->isa_.add_interrupt(0x1, "SoftwareInterrupt");
-  this->isa_.add_interrupt(0x2, "InvalidInstruction");
-  this->isa_.add_interrupt(0x3, "InvalidMemoryLocation");
-  this->isa_.add_interrupt(0x4, "DivisionByZero");
+  this->isa_.add_interrupt(0x0, "TimerInterrupt", false);
+  this->isa_.add_interrupt(0x1, "SoftwareInterrupt", true);
+  this->isa_.add_interrupt(0x2, "InvalidInstruction", true);
+  this->isa_.add_interrupt(0x3, "InvalidMemoryLocation", true);
+  this->isa_.add_interrupt(0x4, "DivisionByZero", true);
 
   // Instructions
   // Management operations
@@ -187,7 +187,7 @@ void CPU::next()
     std::cout << boost::str(boost::format("\
 Interrupt info:\tcode: 0x%02x, name: %s")
                             % static_cast<int>(this->interrupt_.code)
-                            % this->isa_.interrupt_name(this->interrupt_.code))
+                            % this->isa_.interrupt_info(this->interrupt_.code).name)
                             << std::endl;
 #endif
     this->interrupt_handler_();
@@ -316,10 +316,12 @@ Interrupt 0x%02x handled")
 
     // Update the PC with the interrupt handler location
     this->registers_->set_word(REGISTER_PC, handler);
-  } else {
-    // Update PC to avoid a loop when a interrupt not handler is found.
+  } else if (this->isa_.interrupt_info(this->interrupt_.code).thrown_by_inst) {
+    // Update PC to avoid a loop when a interrupt not handled is found.
     // The interrupt is not handler, so a call to reti isn't executed
     // and the pc isn't updated.
+    // This is only needed if the interrupt is raised by a instruction
+    // in the code.
     this->registers_->set_word(REGISTER_PC,
                                this->registers_->get_word(REGISTER_PC) + 4);
   }
