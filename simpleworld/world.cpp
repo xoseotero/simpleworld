@@ -123,8 +123,7 @@ void World::remove(Position position)
   exception_outofrange(position, this->size_);
   exception_notused(this->terrain_, position);
 
-  if (this->terrain_[position.x][position.y] != NULL)
-    this->num_elements_--;
+  this->num_elements_--;
   this->terrain_[position.x][position.y] = NULL;
 }
 
