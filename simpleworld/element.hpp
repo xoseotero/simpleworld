@@ -3,7 +3,7 @@
  * A element on the World.
  *
  * begin:     Mon, 05 Mar 2007 09:11:19 +0100
- * last:      $Date$ by $Author$
+ * last:      $Date$
  *
  *  Copyright (C) 2007  Xosé Otero <xoseotero@users.sourceforge.net>
  *
