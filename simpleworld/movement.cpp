@@ -94,9 +94,9 @@ Wrong movement value (%04x)")
     movement = opposite(movement);
   case OrientationNorth:
     if (movement == MoveForward)
-      position.y = (position.y + 1 + max.y) % max.y;
+      position.x = (position.x - 1 + max.x) % max.x;
     else
-      position.y = (position.y - 1 + max.y) % max.y;
+      position.x = (position.x + 1 + max.x) % max.x;
 
     return position;
 
@@ -104,9 +104,9 @@ Wrong movement value (%04x)")
     movement = opposite(movement);
   case OrientationEast:
     if (movement == MoveForward)
-      position.x = (position.x + 1 + max.x) % max.x;
+      position.y = (position.y + 1 + max.y) % max.y;
     else
-      position.x = (position.x - 1 + max.x) % max.x;
+      position.y = (position.y - 1 + max.y) % max.y;
 
     return position;
   }
