@@ -5,6 +5,7 @@ Simple World 1.0a2:
 	* Send TimerInterrupt to the alive bugs each 64 cycles.
 	* Bugs die if they do a action but they don't have energy enough.
 	* Implementation of action "eat".
+	* Implementation of action "attack".
 
 Simple World 1.0a1 (2007/11/12):
         * First alpha of Simple World

@@ -31,6 +31,7 @@
 #endif // DEBUG
 
 #include <vector>
+#include <algorithm>
 #include <cassert>
 
 #include <boost/format.hpp>
@@ -263,14 +264,6 @@ There is nothing in (%1%, %2%)")
   // them that there is nothing in the World
   assert(target->type != ElementNothing);
 
-  if (target->type == ElementFood and (info == InfoID or
-                                       info == InfoEnergy or
-                                       info == InfoOrientation))
-    throw EXCEPTION(ActionError, boost::str(boost::format("\
-The element in (%1%, %2%) is food")
-                                            % front.x
-                                            % front.y));
-
   switch (info) {
   case InfoID:  // Only eggs and bugs
     return static_cast<CPU::Word>(static_cast< ::SimpleWorld::DB::BugElement* >(target)->id());
@@ -350,7 +343,51 @@ void SimpleWorld::attack(Bug* bug, Energy energy)
   this->substract_energy(bug, this->env_->energy_attack);
   bug->changed = true;
 
-  // TODO: Do something :)
+  // search the target of the attack
+  Position front = this->front(bug);
+  Element* target;
+  try {
+    target = this->world_->get(front);
+  } catch (const WorldError& e) {
+    throw EXCEPTION(ActionError, boost::str(boost::format("\
+There is nothing in (%1%, %2%)")
+                                            % front.x
+                                            % front.y));
+  }
+  // ElementNothing is not a valid type, it's only send to bugs to inform
+  // them that there is nothing in the World
+  assert(target->type != ElementNothing);
+
+  if ((target->type != ElementBug and target->type != ElementEgg))
+    throw EXCEPTION(ActionError, boost::str(boost::format("\
+There is not a egg/bug in (%1%, %2%)")
+                                            % front.x
+                                            % front.y));
+
+  // attack the target
+  if (target->type == ElementBug) {
+    Bug* bug_target = dynamic_cast<Bug*>(target);
+    try {
+      this->substract_energy(bug_target, energy);
+      bug_target->attacked();
+      bug_target->changed = true;
+    } catch (const BugDeath& e) {
+      // the bug is death
+      this->kill(bug_target);
+    }
+  } else {
+    Egg* egg_target = dynamic_cast<Egg*>(target);
+    try {
+      this->substract_energy(egg_target, energy);
+      egg_target->changed = true;
+    } catch (const BugDeath& e) {
+      // the egg is death
+      this->kill(egg_target);
+    }
+  }
+
+  // substract the energy of the attack to the bug
+  this->substract_energy(bug, energy);
 }
 
 /**
@@ -496,9 +533,11 @@ void SimpleWorld::eggs_birth()
       // convert the egg to a bug
       Bug* bug = new Bug(this, (*egg)->be_born());
 
+      this->world_->remove((*egg)->position);
+      this->world_->add(bug, bug->position);
       this->bugs_.push_back(bug);
-      delete (*egg);
       this->eggs_.remove(*egg);
+      delete (*egg);
     }
   }
 }
@@ -514,6 +553,16 @@ void SimpleWorld::bugs_timer()
     (*current)->timer_interrupt();
 }
 
+void SimpleWorld::substract_energy(Egg* egg, Energy energy)
+{
+  if (egg->energy <= energy)
+    throw EXCEPTION(BugDeath, boost::str(boost::format("\
+Egg %1% is death")
+                                         % egg->id()));
+
+  egg->energy -= energy;
+}
+
 void SimpleWorld::substract_energy(Bug* bug, Energy energy)
 {
   if (bug->energy <= energy)
@@ -524,39 +573,81 @@ Bug %1% is death")
   bug->energy -= energy;
 }
 
+void SimpleWorld::kill(Egg* egg)
+{
+  // Convert the bug in food
+  Food* food = new Food(this, egg->die(this->env_->time));
+  this->foods_.push_back(food);
+  this->world_->remove(egg->position);
+  this->world_->add(food, food->position);
+#ifdef DEBUG
+  std::cout << boost::format("\
+Food[%1%] added at (%2%, %3%) with a size of %4%")
+    % food->id()
+    % food->position.x
+    % food->position.y
+    % food->size
+            << std::endl;
+#endif // DEBUG
+
+  // Remove the dead bug
+  this->eggs_.remove(egg);
+  delete egg;
+
+#ifdef DEBUG
+  std::cout << boost::str(boost::format("\
+Egg[%1%] died")
+                          % egg->id())
+            << std::endl;
+#endif // DEBUG
+}
+
+void SimpleWorld::kill(Bug* bug)
+{
+  // Convert the bug in food
+  Food* food = new Food(this, bug->die(this->env_->time));
+  this->foods_.push_back(food);
+  this->world_->remove(bug->position);
+  this->world_->add(food, food->position);
+#ifdef DEBUG
+  std::cout << boost::format("\
+Food[%1%] added at (%2%, %3%) with a size of %4%")
+    % food->id()
+    % food->position.x
+    % food->position.y
+    % food->size
+            << std::endl;
+#endif // DEBUG
+
+  // Remove the dead bug
+  this->bugs_.remove(bug);
+  delete bug;
+
+#ifdef DEBUG
+  std::cout << boost::str(boost::format("\
+Bug[%1%] died")
+                          % bug->id())
+            << std::endl;
+#endif // DEBUG
+}
+
 void SimpleWorld::bugs_run()
 {
   // execute a instruction in each bug
   std::list<Bug*> bugs = this->bugs_;
   std::list<Bug*>::iterator bug;
   for (bug = bugs.begin(); bug != bugs.end(); ++bug) {
+    // check if the bug is alive, a bug could have killed it
+    if (std::find(this->bugs_.begin(), this->bugs_.end(), *bug) ==
+        this->bugs_.end())
+      continue;
+
     try {
       // execute a instruction
       (*bug)->next();
     } catch (const BugDeath& e) {
       // the bug is death
-#ifdef DEBUG
-      std::cout << boost::format("Bug %1% died")
-        % (*bug)->id()
-                << std::endl;
-#endif // DEBUG
-
-      // Convert the bug in food
-      Food* food = new Food(this, (*bug)->die(this->env_->time));
-      this->foods_.push_back(food);
-#ifdef DEBUG
-      std::cout << boost::format("\
-Food[%1%] added at (%2%, %3%) with a size of %4%")
-        % food->id()
-        % food->position.x
-        % food->position.y
-        % food->size
-                << std::endl;
-#endif // DEBUG
-
-      // Remove the dead bug
-      this->bugs_.remove(*bug);
-      delete(*bug);
+      this->kill(*bug);
     }
   }
 }

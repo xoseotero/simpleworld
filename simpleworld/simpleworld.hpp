@@ -203,6 +203,15 @@ protected:
   void bugs_timer();
 
   /**
+   * Substract some energy to the egg.
+   * If the egg has not enough energy, it's converted in food.
+   * @param egg The egg.
+   * @param energy The energy.
+   * @exception BugDeath If the bug die.
+   */
+  void substract_energy(Egg* egg, Energy energy);
+
+  /**
    * Substract some energy to the bug.
    * If the bug has not enough energy, it's converted in food.
    * @param bug The bug.
@@ -210,6 +219,18 @@ protected:
    * @exception BugDeath If the bug die.
    */
   void substract_energy(Bug* bug, Energy energy);
+
+  /**
+   * Kill the egg and convert it into food.
+   * @param egg The egg.
+   */
+  void kill(Egg* egg);
+
+  /**
+   * Kill the bug and convert it into food.
+   * @param bug The bug.
+   */
+  void kill(Bug* bug);
 
   /**
    * Execute a cycle in all the alive bugs.
