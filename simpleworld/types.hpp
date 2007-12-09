@@ -100,7 +100,7 @@ enum ActionStatus {
  * Types of events.
  */
 enum EventType {
-  Attack = 0
+  EventAttack = 0
 };
 
 
