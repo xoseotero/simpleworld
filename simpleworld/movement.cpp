@@ -66,7 +66,10 @@ Wrong turn value (%04x)")
  */
 static Movement opposite(Movement movement)
 {
-  return static_cast<Movement>((static_cast<unsigned>(movement) + 1) % 2);
+  if (movement == MoveForward)
+    return MoveBackward;
+  else
+    return MoveForward;
 }
 
 Position move(Position position, Orientation orientation, Movement movement,
