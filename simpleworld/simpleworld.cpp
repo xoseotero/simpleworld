@@ -250,7 +250,7 @@ CPU::Word SimpleWorld::information(Bug* bug, Info info, CPU::Word* ypos)
     target = this->world_->get(front);
   } catch (const WorldError& e) {
     throw EXCEPTION(ActionError, boost::str(boost::format("\
-There is nothing in (%1%, %2%")
+There is nothing in (%1%, %2%)")
                                             % front.x
                                             % front.y));
   }
