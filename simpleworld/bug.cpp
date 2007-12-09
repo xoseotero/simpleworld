@@ -23,8 +23,8 @@
 
 #include <cassert>
 
-#include <simpleworld/simpleworld.hpp>
-#include <simpleworld/operations.hpp>
+#include "simpleworld.hpp"
+#include "operations.hpp"
 #include "bug.hpp"
 
 namespace SimpleWorld
