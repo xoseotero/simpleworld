@@ -152,7 +152,7 @@ void World::move(Position oldposition, Position newposition)
   exception_outofrange(newposition);
   exception_used(this->terrain_, newposition);
 
-  Element* element = this->operator[](oldposition);
+  Element* element = this->get(oldposition);
   if (not element->movable())
     throw EXCEPTION(WorldError, boost::str(boost::format(\
 "Element in position (%1%, %2%) is not movable")
