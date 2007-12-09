@@ -230,7 +230,12 @@ ElementType SimpleWorld::detect(Bug* bug)
   this->substract_energy(bug, this->env_->energy_detect);
   bug->changed = true;
 
-  return bug->type;
+  Position front = this->front(bug);
+  try {
+    return this->world_->get(front)->type;
+  } catch (const WorldError& e) {
+    return ElementNothing;
+  }
 }
 
 CPU::Word SimpleWorld::information(Bug* bug, Info info, CPU::Word* ypos)
