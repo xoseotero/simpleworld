@@ -369,9 +369,37 @@ Energy SimpleWorld::eat(Bug* bug)
   this->substract_energy(bug, this->env_->energy_eat);
   bug->changed = true;
 
-  // TODO: Do something :)
+  Position front = this->front(bug);
+  Element* target;
+  try {
+    target = this->world_->get(front);
+  } catch (const WorldError& e) {
+    throw EXCEPTION(ActionError, boost::str(boost::format("\
+There is nothing in (%1%, %2%)")
+                                            % front.x
+                                            % front.y));
+  }
+  // ElementNothing is not a valid type, it's only send to bugs to inform
+  // them that there is nothing in the World
+  assert(target->type != ElementNothing);
 
-  return 0;
+  if (target->type != ElementFood)
+    throw EXCEPTION(ActionError, boost::str(boost::format("\
+There is nothing to eat in (%1%, %2%")
+                                            % front.x
+                                            % front.y));
+
+  Food* food_target = dynamic_cast<Food*>(target);
+  energy = food_target->size;
+  bug->energy += energy;
+  bug->changed = true;
+
+  food_target->remove();
+  this->world_->remove(food_target->position);
+  this->foods_.remove(food_target);
+  delete food_target;
+
+  return energy;
 }
 
 /**
