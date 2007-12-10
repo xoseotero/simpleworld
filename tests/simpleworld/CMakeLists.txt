@@ -10,5 +10,14 @@ IF(RUN_TESTS)
     ${SQLite3x_LIB} ${SQLite3_LIB}
     ${XySSL_LIB} ${OpenSSL_LIB})
 
+  ADD_EXECUTABLE(movement_test movement_test.cpp)
+  TARGET_LINK_LIBRARIES(movement_test simpleworld_cpu simpleworld_db
+    simpleworld
+    ${Boost_program_options_LIBRARY} ${Boost_filesystem_LIBRARY}
+    ${Boost_regex_LIBRARY} ${Boost_unit_test_framework_LIBRARY}
+    ${SQLite3x_LIB} ${SQLite3_LIB}
+    ${XySSL_LIB} ${OpenSSL_LIB})
+
   ADD_TEST("World" world_test)
+  ADD_TEST("movement.hpp" movement_test)
 ENDIF(RUN_TESTS)
