@@ -43,7 +43,7 @@ namespace cpu = SimpleWorld::CPU;
 
 const char* program_short_name = "swld";
 const char* program_name = "Simple World Language decompiler";
-const char* program_version = "1.0a1";
+const char* program_version = "1.0a2";
 const char* program_years = "2006, 2007";
 const char* program_author = "Xosé Otero";
 const char* program_author_email = "xoseotero@users.sourceforge.net";
