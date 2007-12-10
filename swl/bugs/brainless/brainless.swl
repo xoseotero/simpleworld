@@ -112,6 +112,7 @@
 	loadi r2 ACTION_OK
 
 	.label do_attack_loop		# do
+	loadi r0 0x8
 	world ACTION_ATTACK
 	beq r0 r2 do_attack_loop	# while ATTACK == ACTION_OK
 
