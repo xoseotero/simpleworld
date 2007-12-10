@@ -9,4 +9,9 @@ Simple World 1.0a2:
 	* Implementation of event "attack".
 
 Simple World 1.0a1 (2007/11/12):
-        * First alpha of Simple World
+	* Implementation of action "nothing".
+	* Implementation of action "myself".
+	* Implementation of action "detect".
+	* Implementation of action "information".
+	* Implementation of action "move".
+	* Implementation of action "turn".
