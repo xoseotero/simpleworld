@@ -1,2 +1,3 @@
 SUBDIRS(
-  cpu)
+  cpu
+  simpleworld)
