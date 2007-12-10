@@ -53,7 +53,7 @@
 	.label main_move	# else (random_value == 0)
 	call random_move
 
-	loadi r1 ACTION_ERROR
+	loadi r1 0x1
 	beq r0 r1 main_detect
 	b main_loop
 
@@ -74,7 +74,8 @@
 
 
 # Move forward or backwoard randomly
-# OUT:	r0 ACTION_SUCCESS
+# OUT:	r0 0x0 if there is nothing in front of the bug
+#          0x1 if there is something in front of the bug
 .label random_move
 	# r0 = random_value % 2
 	call random_value
@@ -84,6 +85,7 @@
 	beq r0 r1 random_move_forward
 	.label random_move_backward	# if random_value != 0
 	world ACTION_MOVE_BACKWARD
+	loadi r0 0x0
 	ret
 	.label random_move_forward	# else (random_value == 0)
 	world ACTION_MOVE_FORWARD
@@ -163,7 +165,7 @@
 	call do_attack
 	ret
 
-	.label do_detect_eat		# else (DETECT == FOOD)
+	.label do_detect_eat		# else (ELEMENT == FOOD)
 	call do_eat
 	ret
 
