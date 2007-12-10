@@ -427,7 +427,7 @@ There is nothing to eat in (%1%, %2%")
                                             % front.y));
 
   Food* food_target = dynamic_cast<Food*>(target);
-  energy = food_target->size;
+  Energy energy = food_target->size;
   bug->energy += energy;
   bug->changed = true;
 
