@@ -64,11 +64,14 @@ BOOST_AUTO_TEST_CASE(instruction_add_interrupt)
 
   sw::Uint32 code = 0xfd;
   std::string name = "test";
+  bool thrown_by_inst = true;
 
-  isa.add_interrupt(code, name);
+  isa.add_interrupt(code, name, thrown_by_inst);
 
   BOOST_CHECK_EQUAL(isa.interrupt_code(name), code);
-  BOOST_CHECK_EQUAL(isa.interrupt_name(code), name);
+  BOOST_CHECK_EQUAL(isa.interrupt_info(code).code, code);
+  BOOST_CHECK_EQUAL(isa.interrupt_info(code).name, name);
+  BOOST_CHECK_EQUAL(isa.interrupt_info(code).thrown_by_inst, thrown_by_inst);
   std::vector<sw::Uint8> interrupts = isa.interrupt_codes();
   BOOST_CHECK(find(interrupts.begin(), interrupts.end(), code) !=
               interrupts.end());
