@@ -153,7 +153,7 @@
 	.label do_detect_nothing	# if ELEMENT == NOTHING
 	ret
 
-	.label do_detech_something	# else (ELEMENT != NOTHING)
+	.label do_detect_something	# else (ELEMENT != NOTHING)
 
 	loadi r0 ELEMENT_EGG
 	beq r1 r0 do_detect_eat
