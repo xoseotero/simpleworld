@@ -168,6 +168,7 @@ SET(BOOST_SUFFIX_COMPILER
   gcc
   il
   gcc41
+  gcc42
   mgw34
   vc80
 )
