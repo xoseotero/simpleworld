@@ -97,6 +97,9 @@ CREATE TABLE Bug
   position_y INTEGER NOT NULL,
   orientation INTEGER NOT NULL,
 
+  action_time INTEGER,                  -- NULL if the bug is not doing a
+                                        -- action\n\
+
   birth INTEGER NOT NULL,
   dead INTEGER,                         -- NULL if alive
 
@@ -110,7 +113,8 @@ CREATE TABLE Bug
   CHECK(orientation >= 0 AND orientation <= 3), -- 4 possible orientations
   CHECK(birth >= 0),
   CHECK(dead IS NULL OR (birth <= dead)), -- If dead IS NOT NULL
-  CHECK(killer_id IS NULL OR (killer_id IS NOT NULL AND dead IS NOT NULL))
+  CHECK(killer_id IS NULL OR (killer_id IS NOT NULL AND dead IS NOT NULL)),
+  CHECK(action_time IS NULL OR action_time > 0)
 );
 
 CREATE INDEX Bug_index ON Bug(id);
@@ -234,6 +238,29 @@ BEGIN
          FROM Bug
          WHERE dead IS NULL AND position_x=NEW.position_x AND position_y=NEW.position_y)
         IS NOT NULL;
+END;
+
+/* Check that the action_time isn't in the past */
+CREATE TRIGGER Bug_insert_action_time_trigger
+BEFORE INSERT
+ON Bug
+FOR EACH ROW BEGIN
+  SELECT RAISE(ROLLBACK, 'The action_time is in the past')
+  WHERE (SELECT max(time)
+         FROM Environment)
+        > NEW.action_time;
+END;
+
+CREATE TRIGGER Bug_update_action_time_trigger
+BEFORE UPDATE
+ON Bug
+FOR EACH ROW
+WHEN OLD.action_time != NEW.action_time
+BEGIN
+  SELECT RAISE(ROLLBACK, 'The action_time is in the past')
+  WHERE (SELECT max(time)
+         FROM Environment)
+	> NEW.action_time;
 END;
 
 /* Propagate the dead */

@@ -47,15 +47,12 @@ Wrong orientation value (%04x)")
 Wrong turn value (%04x)")
                                            % side));
 
-  switch (side) {
-  case TurnLeft:
+  if (side == TurnLeft)
     return static_cast<Orientation>(std::abs((static_cast<int>(orientation) +
                                               3)) % 4);
-
-  case TurnRight:
-    return static_cast<Orientation>(std::abs((static_cast<int>(orientation)
-                                              + 5)) % 4);
-  }
+  else
+    return static_cast<Orientation>(std::abs((static_cast<int>(orientation) +
+                                              5)) % 4);
 }
 
 
@@ -98,7 +95,7 @@ Wrong movement value (%04x)")
     else
       position.x = (position.x + 1 + max.x) % max.x;
 
-    return position;
+    break;
 
   case OrientationWest:
     movement = opposite(movement);
@@ -108,8 +105,10 @@ Wrong movement value (%04x)")
     else
       position.y = (position.y - 1 + max.y) % max.y;
 
-    return position;
+    break;
   }
+
+  return position;
 }
 
 }

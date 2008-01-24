@@ -56,6 +56,11 @@ public:
    */
   CPU(Memory* registers, Memory* memory);
 
+  /**
+   * Destructor.
+   */
+  virtual ~CPU() {}
+
 
   /**
    * Instruction set architecture of the CPU.

@@ -97,6 +97,8 @@ public:
 
 
   // Data
+  Time action_time;
+
   CPU cpu;
 };
 

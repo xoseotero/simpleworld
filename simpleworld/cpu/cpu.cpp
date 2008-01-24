@@ -221,6 +221,8 @@ Instruction info:\tcode: 0x%02x, name: %s, nregs: %d, has_i: %d")
     case UpdateStop:
       this->running_ = false;
       break;
+    case UpdateNone:
+      break;
     }
   } catch (const CodeError& exc) {
     // Prepare the interrupt

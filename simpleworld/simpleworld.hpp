@@ -66,7 +66,7 @@ public:
   /**
    * Destructor.
    */
-  ~SimpleWorld();
+  virtual ~SimpleWorld();
 
 
   const World& world() const { return *this->world_; }
