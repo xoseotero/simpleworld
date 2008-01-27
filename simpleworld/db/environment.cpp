@@ -5,7 +5,7 @@
  * begin:     Fri, 26 Jan 2007 06:29:35 +0100
  * last:      $Date$
  *
- *  Copyright (C) 2007  Xosé Otero <xoseotero@users.sourceforge.net>
+ *  Copyright (C) 2007-2008  Xosé Otero <xoseotero@users.sourceforge.net>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -106,7 +106,7 @@ WHERE time = ?;");
       sql.bind(2, static_cast<ID>(this->size.x));
       sql.bind(3, static_cast<ID>(this->size.y));
       sql.bind(4, static_cast<ID>(this->energy_developed));
-      sql.bind(5, static_cast<int>(this->mutations_probability));
+      sql.bind(5, this->mutations_probability);
       sql.bind(6, static_cast<int>(this->time_birth));
       sql.bind(7, static_cast<int>(this->energy_nothing));
       sql.bind(8, static_cast<int>(this->energy_myself));
@@ -147,7 +147,7 @@ VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
     sql.bind(2, static_cast<ID>(this->size.x));
     sql.bind(3, static_cast<ID>(this->size.y));
     sql.bind(4, static_cast<ID>(this->energy_developed));
-    sql.bind(5, static_cast<int>(this->mutations_probability));
+    sql.bind(5, this->mutations_probability);
     sql.bind(6, static_cast<int>(this->time_birth));
     sql.bind(7, static_cast<int>(this->energy_nothing));
     sql.bind(8, static_cast<int>(this->energy_myself));
