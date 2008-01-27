@@ -172,7 +172,7 @@ ON Bug
 FOR EACH ROW
 WHEN NEW.father_id IS NOT NULL
 BEGIN
-  SELECT RAISE(ROLLBACK, 'Father not found')
+  SELECT RAISE(ROLLBACK, 'Father not found or dead')
   WHERE (SELECT id
          FROM Bug
          WHERE id=NEW.father_id AND dead IS NULL) IS NULL;
