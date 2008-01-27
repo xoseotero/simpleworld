@@ -117,27 +117,28 @@ void Mutation::insert(ID bug_id)
 
   try {
     sql.prepare("\
-INSERT INTO Mutation(bug_id, position, original, mutated, bug_id)\n\
-VALUES(?, ?, ?, ?, ?);");
-    sql.bind(1, bug_id);
-    sql.bind(2, static_cast<int>(this->position));
+INSERT INTO Mutation(position, original, mutated, bug_id)\n\
+VALUES(?, ?, ?, ?);");
+    sql.bind(1, static_cast<int>(this->position));
     if (this->type == Mutation::addition)
+      sql.bind(2);
+    else
+      sql.bind(2, static_cast<int>(this->original));
+    if (this->type == Mutation::deletion)
       sql.bind(3);
     else
-      sql.bind(3, static_cast<int>(this->original));
-    if (this->type == Mutation::deletion)
-      sql.bind(4);
-    else
-      sql.bind(4, static_cast<int>(this->mutated));
-    sql.bind(5, static_cast<int>(this->bug_id));
+      sql.bind(3, static_cast<int>(this->mutated));
+    sql.bind(4, bug_id);
 
     sql.executenonquery();
+    this->id_ = this->db_->insertid();
+    this->bug_id = bug_id;
   } catch (const sqlite3x::database_error& e) {
     throw EXCEPTION(DBException, e.what());
   }
 
 
-  Table::insert(bug_id);
+  Table::insert();
 }
 
 void Mutation::remove()
