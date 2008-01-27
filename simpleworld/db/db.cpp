@@ -379,7 +379,7 @@ ON Bug\n\
 FOR EACH ROW\n\
 WHEN NEW.father_id IS NOT NULL\n\
 BEGIN\n\
-  SELECT RAISE(ROLLBACK, 'Father not found dead')\n\
+  SELECT RAISE(ROLLBACK, 'Father not found or dead')\n\
   WHERE (SELECT id\n\
          FROM Bug\n\
          WHERE id=NEW.father_id AND dead IS NULL) IS NULL;\n\
