@@ -111,10 +111,10 @@ CREATE TABLE Bug
   FOREIGN KEY(father_id) REFERENCES Bug(id),
   CHECK(position_x >= 0 AND position_y >= 0),
   CHECK(orientation >= 0 AND orientation <= 3), -- 4 possible orientations
+  CHECK(action_time IS NULL OR action_time > 0),
   CHECK(birth >= 0),
   CHECK(dead IS NULL OR (birth <= dead)), -- If dead IS NOT NULL
-  CHECK(killer_id IS NULL OR (killer_id IS NOT NULL AND dead IS NOT NULL)),
-  CHECK(action_time IS NULL OR action_time > 0)
+  CHECK(killer_id IS NULL OR (killer_id IS NOT NULL AND dead IS NOT NULL))
 );
 
 CREATE INDEX Bug_index ON Bug(id);

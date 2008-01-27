@@ -309,10 +309,10 @@ CREATE TABLE Bug\n\
   FOREIGN KEY(father_id) REFERENCES Bug(id),\n\
   CHECK(position_x >= 0 AND position_y >= 0),\n\
   CHECK(orientation >= 0 AND orientation <= 3), -- 4 possible orientations\n\
+  CHECK(action_time IS NULL OR action_time > 0),\n\
   CHECK(birth >= 0),\n\
   CHECK(dead IS NULL OR (birth <= dead)), -- If dead IS NOT NULL\n\
-  CHECK(killer_id IS NULL OR (killer_id IS NOT NULL AND dead IS NOT NULL)),\n\
-  CHECK(action_time IS NULL OR action_time > 0)\n\
+  CHECK(killer_id IS NULL OR (killer_id IS NOT NULL AND dead IS NOT NULL))\n\
 );",
 
     "\
