@@ -126,6 +126,11 @@
 # Create a egg in front of the bug
 .label do_egg
 	world ACTION_EGG
+
+	# let the egg alone
+	call random_turn
+	call random_move
+
 	ret
 
 
