@@ -288,6 +288,14 @@ static int sqlite3InitOne(sqlite3 *db, int iDb, char **pzErrMsg){
     return SQLITE_ERROR;
   }
 
+  /* Ticket #2804:  When we open a database in the newer file format,
+  ** clear the legacy_file_format pragma flag so that a VACUUM will
+  ** not downgrade the database and thus invalidate any descending
+  ** indices that the user might have created.
+  */
+  if( iDb==0 && meta[1]>=4 ){
+    db->flags &= ~SQLITE_LegacyFileFmt;
+  }
 
   /* Read the schema information out of the schema tables
   */
@@ -301,7 +309,17 @@ static int sqlite3InitOne(sqlite3 *db, int iDb, char **pzErrMsg){
         "SELECT name, rootpage, sql FROM '%q'.%s",
         db->aDb[iDb].zName, zMasterName);
     sqlite3SafetyOff(db);
-    rc = sqlite3_exec(db, zSql, sqlite3InitCallback, &initData, 0);
+#ifndef SQLITE_OMIT_AUTHORIZATION
+    {
+      int (*xAuth)(void*,int,const char*,const char*,const char*,const char*);
+      xAuth = db->xAuth;
+      db->xAuth = 0;
+#endif
+      rc = sqlite3_exec(db, zSql, sqlite3InitCallback, &initData, 0);
+#ifndef SQLITE_OMIT_AUTHORIZATION
+      db->xAuth = xAuth;
+    }
+#endif
     if( rc==SQLITE_ABORT ) rc = initData.rc;
     sqlite3SafetyOn(db);
     sqlite3_free(zSql);
@@ -324,7 +342,7 @@ static int sqlite3InitOne(sqlite3 *db, int iDb, char **pzErrMsg){
     ** will attempt to compile the supplied statement against whatever subset
     ** of the schema was loaded before the error occured. The primary
     ** purpose of this is to allow access to the sqlite_master table
-    ** even when it's contents have been corrupted.
+    ** even when its contents have been corrupted.
     */
     DbSetProperty(db, iDb, DB_SchemaLoaded);
     rc = SQLITE_OK;
@@ -619,7 +637,7 @@ int sqlite3Reprepare(Vdbe *p){
   sqlite3 *db;
 
   assert( sqlite3_mutex_held(sqlite3VdbeDb(p)->mutex) );
-  zSql = sqlite3VdbeGetSql(p);
+  zSql = sqlite3_sql((sqlite3_stmt *)p);
   if( zSql==0 ){
     return 0;
   }
@@ -627,6 +645,9 @@ int sqlite3Reprepare(Vdbe *p){
   assert( sqlite3_mutex_held(db->mutex) );
   rc = sqlite3LockAndPrepare(db, zSql, -1, 0, &pNew, 0);
   if( rc ){
+    if( rc==SQLITE_NOMEM ){
+      db->mallocFailed = 1;
+    }
     assert( pNew==0 );
     return 0;
   }else{

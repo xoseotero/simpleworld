@@ -69,7 +69,7 @@ static void renameTableFunc(
       tname.n = len;
 
       /* Advance zCsr to the next token. Store that token type in 'token',
-      ** and it's length in 'len' (to be used next iteration of this loop).
+      ** and its length in 'len' (to be used next iteration of this loop).
       */
       do {
         zCsr += len;
@@ -127,7 +127,7 @@ static void renameTriggerFunc(
       tname.n = len;
 
       /* Advance zCsr to the next token. Store that token type in 'token',
-      ** and it's length in 'len' (to be used next iteration of this loop).
+      ** and its length in 'len' (to be used next iteration of this loop).
       */
       do {
         zCsr += len;
@@ -320,6 +320,13 @@ void sqlite3AlterRenameTable(
     goto exit_rename_table;
   }
 
+#ifndef SQLITE_OMIT_VIEW
+  if( pTab->pSelect ){
+    sqlite3ErrorMsg(pParse, "view %s may not be altered", pTab->zName);
+    goto exit_rename_table;
+  }
+#endif
+
 #ifndef SQLITE_OMIT_AUTHORIZATION
   /* Invoke the authorization callback. */
   if( sqlite3AuthCheck(pParse, SQLITE_ALTER_TABLE, zDb, pTab->zName, 0) ){
@@ -378,7 +385,7 @@ void sqlite3AlterRenameTable(
           "name = CASE "
             "WHEN type='table' THEN %Q "
             "WHEN name LIKE 'sqlite_autoindex%%' AND type='index' THEN "
-             "'sqlite_autoindex_' || %Q || substr(name,%d+18,10) "
+             "'sqlite_autoindex_' || %Q || substr(name,%d+18) "
             "ELSE name END "
       "WHERE tbl_name=%Q AND "
           "(type='table' OR type='index' OR type='trigger');", 
@@ -515,7 +522,7 @@ void sqlite3AlterFinishAddColumn(Parse *pParse, Token *pColDef){
     }
     sqlite3NestedParse(pParse, 
         "UPDATE %Q.%s SET "
-          "sql = substr(sql,1,%d) || ', ' || %Q || substr(sql,%d,length(sql)) "
+          "sql = substr(sql,1,%d) || ', ' || %Q || substr(sql,%d) "
         "WHERE type = 'table' AND name = %Q", 
       zDb, SCHEMA_TABLE(iDb), pNew->addColOffset, zCol, pNew->addColOffset+1,
       zTab

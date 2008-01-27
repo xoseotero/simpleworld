@@ -89,61 +89,59 @@
 #define OP_MakeRecord                          92
 #define OP_ToBlob                             139   /* same as TK_TO_BLOB  */
 #define OP_Delete                              93
-#define OP_AggFinal                            94
+#define OP_StackDepth                          94
+#define OP_AggFinal                            95
 #define OP_ShiftLeft                           76   /* same as TK_LSHIFT   */
-#define OP_Dup                                 95
-#define OP_Goto                                96
-#define OP_TableLock                           97
-#define OP_FifoRead                            98
-#define OP_Clear                               99
-#define OP_IdxGT                              100
-#define OP_MoveLt                             101
+#define OP_Dup                                 96
+#define OP_Goto                                97
+#define OP_TableLock                           98
+#define OP_FifoRead                            99
+#define OP_Clear                              100
+#define OP_IdxGT                              101
+#define OP_MoveLt                             102
 #define OP_Le                                  70   /* same as TK_LE       */
-#define OP_VerifyCookie                       102
-#define OP_AggStep                            103
-#define OP_Pull                               104
+#define OP_VerifyCookie                       103
+#define OP_AggStep                            104
+#define OP_Pull                               105
 #define OP_ToText                             138   /* same as TK_TO_TEXT  */
 #define OP_Not                                 16   /* same as TK_NOT      */
 #define OP_ToReal                             142   /* same as TK_TO_REAL  */
-#define OP_SetNumColumns                      105
-#define OP_AbsValue                           106
-#define OP_Transaction                        107
-#define OP_VFilter                            108
+#define OP_SetNumColumns                      106
+#define OP_AbsValue                           107
+#define OP_Transaction                        108
+#define OP_VFilter                            109
 #define OP_Negative                            85   /* same as TK_UMINUS   */
 #define OP_Ne                                  67   /* same as TK_NE       */
-#define OP_VDestroy                           109
-#define OP_ContextPop                         110
+#define OP_VDestroy                           110
+#define OP_ContextPop                         111
 #define OP_BitOr                               75   /* same as TK_BITOR    */
-#define OP_Next                               111
-#define OP_IdxInsert                          112
-#define OP_Distinct                           113
+#define OP_Next                               112
+#define OP_IdxInsert                          113
+#define OP_Distinct                           114
 #define OP_Lt                                  71   /* same as TK_LT       */
-#define OP_Insert                             114
-#define OP_Destroy                            115
-#define OP_ReadCookie                         116
-#define OP_ForceInt                           117
-#define OP_LoadAnalysis                       118
-#define OP_Explain                            119
-#define OP_IfMemZero                          120
-#define OP_OpenPseudo                         121
-#define OP_OpenEphemeral                      122
-#define OP_Null                               123
-#define OP_Blob                               124
+#define OP_Insert                             115
+#define OP_Destroy                            116
+#define OP_ReadCookie                         117
+#define OP_ForceInt                           118
+#define OP_LoadAnalysis                       119
+#define OP_Explain                            120
+#define OP_IfMemZero                          121
+#define OP_OpenPseudo                         122
+#define OP_OpenEphemeral                      123
+#define OP_Null                               124
+#define OP_Blob                               127
 #define OP_Add                                 78   /* same as TK_PLUS     */
-#define OP_MemStore                           127
-#define OP_Rewind                             128
-#define OP_MoveGe                             129
-#define OP_VBegin                             130
-#define OP_VUpdate                            131
+#define OP_MemStore                           128
+#define OP_Rewind                             129
+#define OP_MoveGe                             130
+#define OP_VBegin                             131
+#define OP_VUpdate                            132
 #define OP_BitNot                              87   /* same as TK_BITNOT   */
-#define OP_VCreate                            132
-#define OP_MemMove                            133
-#define OP_MemNull                            134
-#define OP_Found                              135
-#define OP_NullRow                            136
-
-/* The following opcode values are never used */
-#define OP_NotUsed_137                        137
+#define OP_VCreate                            133
+#define OP_MemMove                            134
+#define OP_MemNull                            135
+#define OP_Found                              136
+#define OP_NullRow                            137
 
 /* Opcodes that are guaranteed to never push a value onto the stack
 ** contain a 1 their corresponding position of the following mask
@@ -153,8 +151,8 @@
 #define NOPUSH_MASK_2 0xfbb6
 #define NOPUSH_MASK_3 0xfe64
 #define NOPUSH_MASK_4 0xffff
-#define NOPUSH_MASK_5 0x6ef7
-#define NOPUSH_MASK_6 0xfbfb
-#define NOPUSH_MASK_7 0x8767
-#define NOPUSH_MASK_8 0x7d9f
+#define NOPUSH_MASK_5 0xeef7
+#define NOPUSH_MASK_6 0xf7f6
+#define NOPUSH_MASK_7 0x0ecf
+#define NOPUSH_MASK_8 0x7f3f
 #define NOPUSH_MASK_9 0x0000

@@ -309,10 +309,12 @@ void sqlite3Analyze(Parse *pParse, Token *pName1, Token *pName2){
       analyzeDatabase(pParse, iDb);
     }else{
       z = sqlite3NameFromToken(db, pName1);
-      pTab = sqlite3LocateTable(pParse, z, 0);
-      sqlite3_free(z);
-      if( pTab ){
-        analyzeTable(pParse, pTab);
+      if( z ){
+        pTab = sqlite3LocateTable(pParse, z, 0);
+        sqlite3_free(z);
+        if( pTab ){
+          analyzeTable(pParse, pTab);
+        }
       }
     }
   }else{

@@ -234,6 +234,7 @@ static int whereClauseInsert(WhereClause *pWC, Expr *p, int flags){
       if( flags & TERM_DYNAMIC ){
         sqlite3ExprDelete(p);
       }
+      pWC->a = pOld;
       return 0;
     }
     memcpy(pWC->a, pOld, sizeof(pWC->a[0])*pWC->nTerm);
@@ -552,7 +553,10 @@ static int isLikeOrGlob(
   }
   sqlite3DequoteExpr(db, pRight);
   z = (char *)pRight->token.z;
-  for(cnt=0; (c=z[cnt])!=0 && c!=wc[0] && c!=wc[1] && c!=wc[2]; cnt++){}
+  cnt = 0;
+  if( z ){
+    while( (c=z[cnt])!=0 && c!=wc[0] && c!=wc[1] && c!=wc[2] ){ cnt++; }
+  }
   if( cnt==0 || 255==(u8)z[cnt] ){
     return 0;
   }
@@ -707,9 +711,9 @@ static void exprAnalyze(
   WhereClause *pWC,         /* the WHERE clause */
   int idxTerm               /* Index of the term to be analyzed */
 ){
-  WhereTerm *pTerm = &pWC->a[idxTerm];
-  ExprMaskSet *pMaskSet = pWC->pMaskSet;
-  Expr *pExpr = pTerm->pExpr;
+  WhereTerm *pTerm;
+  ExprMaskSet *pMaskSet;
+  Expr *pExpr;
   Bitmask prereqLeft;
   Bitmask prereqAll;
   int nPattern;
@@ -718,7 +722,12 @@ static void exprAnalyze(
   Parse *pParse = pWC->pParse;
   sqlite3 *db = pParse->db;
 
-  if( db->mallocFailed ) return;
+  if( db->mallocFailed ){
+    return;
+  }
+  pTerm = &pWC->a[idxTerm];
+  pMaskSet = pWC->pMaskSet;
+  pExpr = pTerm->pExpr;
   prereqLeft = exprTableUsage(pMaskSet, pExpr->pLeft);
   op = pExpr->op;
   if( op==TK_IN ){
@@ -895,7 +904,7 @@ or_not_possible:
       pStr1->flags = EP_Dequoted;
     }
     pStr2 = sqlite3ExprDup(db, pStr1);
-    if( pStr2 ){
+    if( !db->mallocFailed ){
       assert( pStr2->token.dyn );
       ++*(u8*)&pStr2->token.z[nPattern-1];
     }
@@ -1239,6 +1248,7 @@ static double bestVirtualIndex(
     for(i=nTerm=0, pTerm=pWC->a; i<pWC->nTerm; i++, pTerm++){
       if( pTerm->leftCursor != pSrc->iCursor ) continue;
       if( pTerm->eOperator==WO_IN ) continue;
+      if( pTerm->eOperator==WO_ISNULL ) continue;
       nTerm++;
     }
 
@@ -1286,6 +1296,7 @@ static double bestVirtualIndex(
     for(i=j=0, pTerm=pWC->a; i<pWC->nTerm; i++, pTerm++){
       if( pTerm->leftCursor != pSrc->iCursor ) continue;
       if( pTerm->eOperator==WO_IN ) continue;
+      if( pTerm->eOperator==WO_ISNULL ) continue;
       pIdxCons[j].iColumn = pTerm->leftColumn;
       pIdxCons[j].iTermOffset = i;
       pIdxCons[j].op = pTerm->eOperator;
@@ -1725,11 +1736,12 @@ static void codeEqualityTerm(
     sqlite3VdbeAddOp(v, OP_Null, 0, 0);
 #ifndef SQLITE_OMIT_SUBQUERY
   }else{
+    int eType;
     int iTab;
     struct InLoop *pIn;
 
     assert( pX->op==TK_IN );
-    sqlite3CodeSubselect(pParse, pX);
+    eType = sqlite3FindInIndex(pParse, pX, 1);
     iTab = pX->iTable;
     sqlite3VdbeAddOp(v, OP_Rewind, iTab, 0);
     VdbeComment((v, "# %.*s", pX->span.n, pX->span.z));
@@ -1741,9 +1753,10 @@ static void codeEqualityTerm(
                                     sizeof(pLevel->aInLoop[0])*pLevel->nIn);
     pIn = pLevel->aInLoop;
     if( pIn ){
+      int op = ((eType==IN_INDEX_ROWID)?OP_Rowid:OP_Column);
       pIn += pLevel->nIn - 1;
       pIn->iCur = iTab;
-      pIn->topAddr = sqlite3VdbeAddOp(v, OP_Column, iTab, 0);
+      pIn->topAddr = sqlite3VdbeAddOp(v, op, iTab, 0);
       sqlite3VdbeAddOp(v, OP_IsNull, -1, 0);
     }else{
       pLevel->nIn = 0;
@@ -2202,10 +2215,6 @@ WhereInfo *sqlite3WhereBegin(
       VdbeComment((v, "# %s", pIx->zName));
       sqlite3VdbeOp3(v, OP_OpenRead, iIdxCur, pIx->tnum,
                      (char*)pKey, P3_KEYINFO_HANDOFF);
-    }
-    if( (pLevel->flags & (WHERE_IDX_ONLY|WHERE_COLUMN_RANGE))!=0 ){
-      /* Only call OP_SetNumColumns on the index if we might later use
-      ** OP_Column on the index. */
       sqlite3VdbeAddOp(v, OP_SetNumColumns, iIdxCur, pIx->nColumn+1);
     }
     sqlite3CodeVerifySchema(pParse, iDb);
@@ -2573,6 +2582,7 @@ WhereInfo *sqlite3WhereBegin(
       pLevel->p2 = 1 + sqlite3VdbeAddOp(v, OP_Rewind, iCur, brk);
     }
     notReady &= ~getMask(&maskSet, iCur);
+    sqlite3VdbeAddOp(v, OP_StackDepth, -1, 0);
 
     /* Insert code to test every subexpression that can be completely
     ** computed using the current set of tables.
@@ -2729,8 +2739,12 @@ void sqlite3WhereEnd(WhereInfo *pWInfo){
       sqlite3VdbeAddOp(v, OP_Close, pLevel->iIdxCur, 0);
     }
 
-    /* Make cursor substitutions for cases where we want to use
-    ** just the index and never reference the table.
+    /* If this scan uses an index, make code substitutions to read data
+    ** from the index in preference to the table. Sometimes, this means
+    ** the table need never be read from. This is a performance boost,
+    ** as the vdbe level waits until the table is read before actually
+    ** seeking the table cursor to the record corresponding to the current
+    ** position in the index.
     ** 
     ** Calls to the code generator in between sqlite3WhereBegin and
     ** sqlite3WhereEnd will have created code that references the table
@@ -2738,10 +2752,11 @@ void sqlite3WhereEnd(WhereInfo *pWInfo){
     ** that reference the table and converts them into opcodes that
     ** reference the index.
     */
-    if( pLevel->flags & WHERE_IDX_ONLY ){
+    if( pLevel->pIdx ){
       int k, j, last;
       VdbeOp *pOp;
       Index *pIdx = pLevel->pIdx;
+      int useIndexOnly = pLevel->flags & WHERE_IDX_ONLY;
 
       assert( pIdx!=0 );
       pOp = sqlite3VdbeGetOp(v, pWInfo->iTop);
@@ -2749,17 +2764,18 @@ void sqlite3WhereEnd(WhereInfo *pWInfo){
       for(k=pWInfo->iTop; k<last; k++, pOp++){
         if( pOp->p1!=pLevel->iTabCur ) continue;
         if( pOp->opcode==OP_Column ){
-          pOp->p1 = pLevel->iIdxCur;
           for(j=0; j<pIdx->nColumn; j++){
             if( pOp->p2==pIdx->aiColumn[j] ){
               pOp->p2 = j;
+              pOp->p1 = pLevel->iIdxCur;
               break;
             }
           }
+          assert(!useIndexOnly || j<pIdx->nColumn);
         }else if( pOp->opcode==OP_Rowid ){
           pOp->p1 = pLevel->iIdxCur;
           pOp->opcode = OP_IdxRowid;
-        }else if( pOp->opcode==OP_NullRow ){
+        }else if( pOp->opcode==OP_NullRow && useIndexOnly ){
           pOp->opcode = OP_Noop;
         }
       }

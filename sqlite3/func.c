@@ -169,7 +169,7 @@ static void substrFunc(
   int p0type;
   i64 p1, p2;
 
-  assert( argc==3 );
+  assert( argc==3 || argc==2 );
   p0type = sqlite3_value_type(argv[0]);
   if( p0type==SQLITE_BLOB ){
     len = sqlite3_value_bytes(argv[0]);
@@ -185,7 +185,11 @@ static void substrFunc(
     }
   }
   p1 = sqlite3_value_int(argv[1]);
-  p2 = sqlite3_value_int(argv[2]);
+  if( argc==3 ){
+    p2 = sqlite3_value_int(argv[2]);
+  }else{
+    p2 = SQLITE_MAX_LENGTH;
+  }
   if( p1<0 ){
     p1 += len;
     if( p1<0 ){
@@ -401,6 +405,19 @@ struct compareInfo {
   u8 noCase;
 };
 
+/*
+** For LIKE and GLOB matching on EBCDIC machines, assume that every
+** character is exactly one byte in size.  Also, all characters are
+** able to participate in upper-case-to-lower-case mappings in EBCDIC
+** whereas only characters less than 0x80 do in ASCII.
+*/
+#if defined(SQLITE_EBCDIC)
+# define sqlite3Utf8Read(A,B,C)  (*(A++))
+# define GlogUpperToLower(A)     A = sqlite3UpperToLower[A]
+#else
+# define GlogUpperToLower(A)     if( A<0x80 ){ A = sqlite3UpperToLower[A]; }
+#endif
+
 static const struct compareInfo globInfo = { '*', '?', '[', 0 };
 /* The correct SQL-92 behavior is for the LIKE operator to ignore
 ** case.  Thus  'a' LIKE 'A' would be true. */
@@ -477,11 +494,11 @@ static int patternCompare(
       }
       while( (c2 = sqlite3Utf8Read(zString,0,&zString))!=0 ){
         if( noCase ){
-          c2 = c2<0x80 ? sqlite3UpperToLower[c2] : c2;
-          c = c<0x80 ? sqlite3UpperToLower[c] : c;
+          GlogUpperToLower(c2);
+          GlogUpperToLower(c);
           while( c2 != 0 && c2 != c ){
             c2 = sqlite3Utf8Read(zString, 0, &zString);
-            if( c2<0x80 ) c2 = sqlite3UpperToLower[c2];
+            GlogUpperToLower(c2);
           }
         }else{
           while( c2 != 0 && c2 != c ){
@@ -533,8 +550,8 @@ static int patternCompare(
     }else{
       c2 = sqlite3Utf8Read(zString, 0, &zString);
       if( noCase ){
-        c = c<0x80 ? sqlite3UpperToLower[c] : c;
-        c2 = c2<0x80 ? sqlite3UpperToLower[c2] : c2;
+        GlogUpperToLower(c);
+        GlogUpperToLower(c2);
       }
       if( c!=c2 ){
         return 0;
@@ -861,7 +878,7 @@ static void trimFunc(
   int flags;                        /* 1: trimleft  2: trimright  3: trim */
   int i;                            /* Loop counter */
   unsigned char *aLen;              /* Length of each character in zCharSet */
-  const unsigned char **azChar;     /* Individual characters in zCharSet */
+  unsigned char **azChar;           /* Individual characters in zCharSet */
   int nChar;                        /* Number of characters in zCharSet */
 
   if( sqlite3_value_type(argv[0])==SQLITE_NULL ){
@@ -876,7 +893,7 @@ static void trimFunc(
     static const unsigned char *azOne[] = { (u8*)" " };
     nChar = 1;
     aLen = (u8*)lenOne;
-    azChar = azOne;
+    azChar = (unsigned char **)azOne;
     zCharSet = 0;
   }else if( (zCharSet = sqlite3_value_text(argv[1]))==0 ){
     return;
@@ -892,7 +909,7 @@ static void trimFunc(
       }
       aLen = (unsigned char*)&azChar[nChar];
       for(z=zCharSet, nChar=0; *z; nChar++){
-        azChar[nChar] = z;
+        azChar[nChar] = (unsigned char *)z;
         SQLITE_SKIP_UTF8(z);
         aLen[nChar] = z - azChar[nChar];
       }
@@ -1155,7 +1172,7 @@ static void test_auxdata(
 #ifdef SQLITE_TEST
 /*
 ** A function to test error reporting from user functions. This function
-** returns a copy of it's first argument as an error.
+** returns a copy of its first argument as an error.
 */
 static void test_error(
   sqlite3_context *pCtx, 
@@ -1308,6 +1325,52 @@ static void minMaxFinalize(sqlite3_context *context){
   }
 }
 
+/*
+** group_concat(EXPR, ?SEPARATOR?)
+*/
+static void groupConcatStep(
+  sqlite3_context *context,
+  int argc,
+  sqlite3_value **argv
+){
+  const char *zVal;
+  StrAccum *pAccum;
+  const char *zSep;
+  int nVal, nSep;
+  if( sqlite3_value_type(argv[0])==SQLITE_NULL ) return;
+  pAccum = (StrAccum*)sqlite3_aggregate_context(context, sizeof(*pAccum));
+
+  if( pAccum ){
+    pAccum->useMalloc = 1;
+    if( pAccum->nChar ){
+      if( argc==2 ){
+        zSep = (char*)sqlite3_value_text(argv[1]);
+        nSep = sqlite3_value_bytes(argv[1]);
+      }else{
+        zSep = ",";
+        nSep = 1;
+      }
+      sqlite3StrAccumAppend(pAccum, zSep, nSep);
+    }
+    zVal = (char*)sqlite3_value_text(argv[0]);
+    nVal = sqlite3_value_bytes(argv[0]);
+    sqlite3StrAccumAppend(pAccum, zVal, nVal);
+  }
+}
+static void groupConcatFinalize(sqlite3_context *context){
+  StrAccum *pAccum;
+  pAccum = sqlite3_aggregate_context(context, 0);
+  if( pAccum ){
+    if( pAccum->tooBig ){
+      sqlite3_result_error_toobig(context);
+    }else if( pAccum->mallocFailed ){
+      sqlite3_result_error_nomem(context);
+    }else{    
+      sqlite3_result_text(context, sqlite3StrAccumFinish(pAccum), -1, 
+                          sqlite3_free);
+    }
+  }
+}
 
 /*
 ** This function registered all of the above C functions as SQL
@@ -1329,6 +1392,7 @@ void sqlite3RegisterBuiltinFunctions(sqlite3 *db){
     { "max",                0, 1, SQLITE_UTF8,    1, 0          },
     { "typeof",             1, 0, SQLITE_UTF8,    0, typeofFunc },
     { "length",             1, 0, SQLITE_UTF8,    0, lengthFunc },
+    { "substr",             2, 0, SQLITE_UTF8,    0, substrFunc },
     { "substr",             3, 0, SQLITE_UTF8,    0, substrFunc },
     { "abs",                1, 0, SQLITE_UTF8,    0, absFunc    },
     { "round",              1, 0, SQLITE_UTF8,    0, roundFunc  },
@@ -1386,6 +1450,8 @@ void sqlite3RegisterBuiltinFunctions(sqlite3 *db){
     { "avg",    1, 0, 0, sumStep,      avgFinalize    },
     { "count",  0, 0, 0, countStep,    countFinalize  },
     { "count",  1, 0, 0, countStep,    countFinalize  },
+    { "group_concat", 1, 0, 0, groupConcatStep, groupConcatFinalize },
+    { "group_concat", 2, 0, 0, groupConcatStep, groupConcatFinalize },
   };
   int i;
 

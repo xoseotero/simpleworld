@@ -15,6 +15,50 @@
 */
 #ifndef _SQLITEINT_H_
 #define _SQLITEINT_H_
+
+/*
+** The macro unlikely() is a hint that surrounds a boolean
+** expression that is usually false.  Macro likely() surrounds
+** a boolean expression that is usually true.  GCC is able to
+** use these hints to generate better code, sometimes.
+*/
+#if defined(__GNUC__)
+# define likely(X)    __builtin_expect((X),1)
+# define unlikely(X)  __builtin_expect((X),0)
+#else
+# define likely(X)    !!(X)
+# define unlikely(X)  !!(X)
+#endif
+
+
+/*
+** These #defines should enable >2GB file support on Posix if the
+** underlying operating system supports it.  If the OS lacks
+** large file support, or if the OS is windows, these should be no-ops.
+**
+** Ticket #2739:  The _LARGEFILE_SOURCE macro must appear before any
+** system #includes.  Hence, this block of code must be the very first
+** code in all source files.
+**
+** Large file support can be disabled using the -DSQLITE_DISABLE_LFS switch
+** on the compiler command line.  This is necessary if you are compiling
+** on a recent machine (ex: RedHat 7.2) but you want your code to work
+** on an older machine (ex: RedHat 6.0).  If you compile on RedHat 7.2
+** without this option, LFS is enable.  But LFS does not exist in the kernel
+** in RedHat 6.0, so the code won't work.  Hence, for maximum binary
+** portability you should omit LFS.
+**
+** Similar is true for MacOS.  LFS is only supported on MacOS 9 and later.
+*/
+#ifndef SQLITE_DISABLE_LFS
+# define _LARGE_FILE       1
+# ifndef _FILE_OFFSET_BITS
+#   define _FILE_OFFSET_BITS 64
+# endif
+# define _LARGEFILE_SOURCE 1
+#endif
+
+
 #include "sqliteLimit.h"
 
 /*
@@ -83,8 +127,10 @@
 ** implemented on some systems.  So we avoid defining it at all
 ** if it is already defined or if it is unneeded because we are
 ** not doing a threadsafe build.  Ticket #2681.
+**
+** See also ticket #2741.
 */
-#if !defined(_XOPEN_SOURCE) && !defined(__MACOS__) && SQLITE_THREADSAFE
+#if !defined(_XOPEN_SOURCE) && !defined(__DARWIN__) && SQLITE_THREADSAFE
 #  define _XOPEN_SOURCE 500  /* Needed to enable pthread recursive mutexes */
 #endif
 
@@ -101,29 +147,6 @@
 */
 #if !defined(NDEBUG) && !defined(SQLITE_DEBUG) 
 # define NDEBUG 1
-#endif
-
-/*
-** These #defines should enable >2GB file support on Posix if the
-** underlying operating system supports it.  If the OS lacks
-** large file support, or if the OS is windows, these should be no-ops.
-**
-** Large file support can be disabled using the -DSQLITE_DISABLE_LFS switch
-** on the compiler command line.  This is necessary if you are compiling
-** on a recent machine (ex: RedHat 7.2) but you want your code to work
-** on an older machine (ex: RedHat 6.0).  If you compile on RedHat 7.2
-** without this option, LFS is enable.  But LFS does not exist in the kernel
-** in RedHat 6.0, so the code won't work.  Hence, for maximum binary
-** portability you should omit LFS.
-**
-** Similar is true for MacOS.  LFS is only supported on MacOS 9 and later.
-*/
-#ifndef SQLITE_DISABLE_LFS
-# define _LARGE_FILE       1
-# ifndef _FILE_OFFSET_BITS
-#   define _FILE_OFFSET_BITS 64
-# endif
-# define _LARGEFILE_SOURCE 1
 #endif
 
 #include "sqlite3.h"
@@ -340,6 +363,7 @@ typedef struct NameContext NameContext;
 typedef struct Parse Parse;
 typedef struct Select Select;
 typedef struct SrcList SrcList;
+typedef struct StrAccum StrAccum;
 typedef struct Table Table;
 typedef struct TableLock TableLock;
 typedef struct Token Token;
@@ -457,6 +481,7 @@ struct sqlite3 {
   u8 autoCommit;                /* The auto-commit flag. */
   u8 temp_store;                /* 1: file 2: memory 0: default */
   u8 mallocFailed;              /* True if we have seen a malloc failure */
+  char nextAutovac;             /* Autovac setting after VACUUM if >=0 */
   int nTable;                   /* Number of tables in the database */
   CollSeq *pDfltColl;           /* The default collating sequence (BINARY) */
   i64 lastRowid;                /* ROWID of most recent insert (see above) */
@@ -860,6 +885,7 @@ struct KeyInfo {
   sqlite3 *db;        /* The database connection */
   u8 enc;             /* Text encoding - one of the TEXT_Utf* values */
   u8 incrKey;         /* Increase 2nd key by epsilon before comparison */
+  u8 prefixIsEqual;   /* Treat a prefix as equal */
   int nField;         /* Number of entries in aColl[] */
   u8 *aSortOrder;     /* If defined an aSortOrder[i] is true, sort DESC */
   CollSeq *aColl[1];  /* Collating sequence for each term of the key */
@@ -1291,6 +1317,7 @@ struct Select {
   Expr *pHaving;         /* The HAVING clause */
   ExprList *pOrderBy;    /* The ORDER BY clause */
   Select *pPrior;        /* Prior select in a compound select statement */
+  Select *pNext;         /* Next select to the left in a compound */
   Select *pRightmost;    /* Right-most select in a compound select statement */
   Expr *pLimit;          /* LIMIT expression. NULL means not used. */
   Expr *pOffset;         /* OFFSET expression. NULL means not used. */
@@ -1551,6 +1578,20 @@ struct DbFixer {
 };
 
 /*
+** An objected used to accumulate the text of a string where we
+** do not necessarily know how big the string will be in the end.
+*/
+struct StrAccum {
+  char *zBase;     /* A base allocation.  Not from malloc. */
+  char *zText;     /* The string collected so far */
+  int  nChar;      /* Length of the string so far */
+  int  nAlloc;     /* Amount of space allocated in zText */
+  u8   mallocFailed;   /* Becomes true if any memory allocation fails */
+  u8   useMalloc;      /* True if zText is enlargable using realloc */
+  u8   tooBig;         /* Becomes true if string size exceeds limits */
+};
+
+/*
 ** A pointer to this structure is used to communicate information
 ** from sqlite3Init and OP_ParseSchema into the sqlite3InitCallback.
 */
@@ -1580,8 +1621,10 @@ typedef struct {
 #ifdef SQLITE_DEBUG
   int sqlite3Corrupt(void);
 # define SQLITE_CORRUPT_BKPT sqlite3Corrupt()
+# define DEBUGONLY(X)        X
 #else
 # define SQLITE_CORRUPT_BKPT SQLITE_CORRUPT
+# define DEBUGONLY(X)
 #endif
 
 /*
@@ -1605,6 +1648,8 @@ char *sqlite3MPrintf(sqlite3*,const char*, ...);
 char *sqlite3VMPrintf(sqlite3*,const char*, va_list);
 #if defined(SQLITE_TEST) || defined(SQLITE_DEBUG)
   void sqlite3DebugPrintf(const char*, ...);
+#endif
+#if defined(SQLITE_TEST)
   void *sqlite3TextToPtr(const char*);
 #endif
 void sqlite3SetString(char **, ...);
@@ -1640,7 +1685,7 @@ void sqlite3AddPrimaryKey(Parse*, ExprList*, int, int, int);
 void sqlite3AddCheckConstraint(Parse*, Expr*);
 void sqlite3AddColumnType(Parse*,Token*);
 void sqlite3AddDefaultValue(Parse*,Expr*);
-void sqlite3AddCollateType(Parse*, const char*, int);
+void sqlite3AddCollateType(Parse*, Token*);
 void sqlite3EndTable(Parse*,Token*,Token*,Select*);
 
 void sqlite3CreateView(Parse*,Token*,Token*,Token*,Select*,int,int);
@@ -1765,7 +1810,7 @@ void sqlite3DeferForeignKey(Parse*, int);
   void sqlite3AuthContextPush(Parse*, AuthContext*, const char*);
   void sqlite3AuthContextPop(AuthContext*);
 #else
-# define sqlite3AuthRead(a,b,c)
+# define sqlite3AuthRead(a,b,c,d)
 # define sqlite3AuthCheck(a,b,c,d,e)    SQLITE_OK
 # define sqlite3AuthContextPush(a,b,c)
 # define sqlite3AuthContextPop(a)  ((void)(a))
@@ -1783,7 +1828,7 @@ int sqlite3FixTriggerStep(DbFixer*, TriggerStep*);
 int sqlite3AtoF(const char *z, double*);
 char *sqlite3_snprintf(int,char*,const char*,...);
 int sqlite3GetInt32(const char *, int*);
-int sqlite3FitsIn64Bits(const char *);
+int sqlite3FitsIn64Bits(const char *, int);
 int sqlite3Utf16ByteLen(const void *pData, int nChar);
 int sqlite3Utf8CharLen(const char *pData, int nByte);
 int sqlite3Utf8Read(const u8*, const u8*, const u8**);
@@ -1853,8 +1898,11 @@ int sqlite3CreateFunc(sqlite3 *, const char *, int, int, void *,
   void (*)(sqlite3_context*,int,sqlite3_value **),
   void (*)(sqlite3_context*,int,sqlite3_value **), void (*)(sqlite3_context*));
 int sqlite3ApiExit(sqlite3 *db, int);
-void sqlite3AbortOtherActiveVdbes(sqlite3 *, Vdbe *);
 int sqlite3OpenTempDatabase(Parse *);
+
+void sqlite3StrAccumAppend(StrAccum*,const char*,int);
+char *sqlite3StrAccumFinish(StrAccum*);
+void sqlite3StrAccumReset(StrAccum*);
 
 
 /*
@@ -1928,6 +1976,11 @@ void sqlite3InvalidFunction(sqlite3_context*,int,sqlite3_value**);
 int sqlite3Reprepare(Vdbe*);
 void sqlite3ExprListCheckLength(Parse*, ExprList*, int, const char*);
 CollSeq *sqlite3BinaryCompareCollSeq(Parse *, Expr *, Expr *);
+
+#define IN_INDEX_ROWID           1
+#define IN_INDEX_EPH             2
+#define IN_INDEX_INDEX           3
+int sqlite3FindInIndex(Parse *, Expr *, int);
 
 #ifdef SQLITE_ENABLE_ATOMIC_WRITE
   int sqlite3JournalOpen(sqlite3_vfs *, const char *, sqlite3_file *, int, int);

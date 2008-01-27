@@ -24,6 +24,8 @@ IF(SQLite3_USE_INTERNAL)
     malloc.c
     mem1.c
     mem2.c
+    mem3.c
+    mem4.c
     mutex.c
     mutex.h
     mutex_os2.c
@@ -57,5 +59,11 @@ IF(SQLite3_USE_INTERNAL)
     vtab.c
     where.c)
   ADD_LIBRARY(sqlite3 STATIC ${SQLite3_SRCS})
+
+  # Simple World doesn't use extensions
   ADD_DEFINITIONS(-DSQLITE_OMIT_LOAD_EXTENSION)
+
+  # Simple World doesn't use threads
+  # If threads are needed, there should be added pthread support for UNIXes.
+  ADD_DEFINITIONS(-DSQLITE_THREADSAFE=0)
 ENDIF(SQLite3_USE_INTERNAL)

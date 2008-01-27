@@ -1183,16 +1183,20 @@ void sqlite3AddCheckConstraint(
 ** Set the collation function of the most recently parsed table column
 ** to the CollSeq given.
 */
-void sqlite3AddCollateType(Parse *pParse, const char *zType, int nType){
+void sqlite3AddCollateType(Parse *pParse, Token *pToken){
   Table *p;
   int i;
+  char *zColl;              /* Dequoted name of collation sequence */
 
   if( (p = pParse->pNewTable)==0 ) return;
   i = p->nCol-1;
 
-  if( sqlite3LocateCollSeq(pParse, zType, nType) ){
+  zColl = sqlite3NameFromToken(pParse->db, pToken);
+  if( !zColl ) return;
+
+  if( sqlite3LocateCollSeq(pParse, zColl, -1) ){
     Index *pIdx;
-    p->aCol[i].zColl = sqlite3DbStrNDup(pParse->db, zType, nType);
+    p->aCol[i].zColl = zColl;
   
     /* If the column is declared as "<name> PRIMARY KEY COLLATE <type>",
     ** then an index may have been created on this column before the
@@ -1204,6 +1208,8 @@ void sqlite3AddCollateType(Parse *pParse, const char *zType, int nType){
         pIdx->azColl[0] = p->aCol[i].zColl;
       }
     }
+  }else{
+    sqlite3_free(zColl);
   }
 }
 
@@ -1679,6 +1685,7 @@ int sqlite3ViewGetColumnNames(Parse *pParse, Table *pTable){
   int nErr = 0;     /* Number of errors encountered */
   int n;            /* Temporarily holds the number of cursors assigned */
   sqlite3 *db = pParse->db;  /* Database connection for malloc errors */
+  int (*xAuth)(void*,int,const char*,const char*,const char*,const char*);
 
   assert( pTable );
 
@@ -1724,7 +1731,14 @@ int sqlite3ViewGetColumnNames(Parse *pParse, Table *pTable){
     n = pParse->nTab;
     sqlite3SrcListAssignCursors(pParse, pSel->pSrc);
     pTable->nCol = -1;
+#ifndef SQLITE_OMIT_AUTHORIZATION
+    xAuth = db->xAuth;
+    db->xAuth = 0;
     pSelTab = sqlite3ResultSetOfSelect(pParse, 0, pSel);
+    db->xAuth = xAuth;
+#else
+    pSelTab = sqlite3ResultSetOfSelect(pParse, 0, pSel);
+#endif
     pParse->nTab = n;
     if( pSelTab ){
       assert( pTable->aCol==0 );
@@ -1912,6 +1926,13 @@ void sqlite3DropTable(Parse *pParse, SrcList *pName, int isView, int noErr){
   }
   iDb = sqlite3SchemaToIndex(db, pTab->pSchema);
   assert( iDb>=0 && iDb<db->nDb );
+
+  /* If pTab is a virtual table, call ViewGetColumnNames() to ensure
+  ** it is initialized.
+  */
+  if( IsVirtual(pTab) && sqlite3ViewGetColumnNames(pParse, pTab) ){
+    goto exit_drop_table;
+  }
 #ifndef SQLITE_OMIT_AUTHORIZATION
   {
     int code;
@@ -1929,9 +1950,6 @@ void sqlite3DropTable(Parse *pParse, SrcList *pName, int isView, int noErr){
       }
 #ifndef SQLITE_OMIT_VIRTUALTABLE
     }else if( IsVirtual(pTab) ){
-      if( sqlite3ViewGetColumnNames(pParse, pTab) ){
-        goto exit_drop_table;
-      }
       code = SQLITE_DROP_VTABLE;
       zArg2 = pTab->pMod->zName;
 #endif
@@ -1976,7 +1994,7 @@ void sqlite3DropTable(Parse *pParse, SrcList *pName, int isView, int noErr){
   if( v ){
     Trigger *pTrigger;
     Db *pDb = &db->aDb[iDb];
-    sqlite3BeginWriteOperation(pParse, 0, iDb);
+    sqlite3BeginWriteOperation(pParse, 1, iDb);
 
 #ifndef SQLITE_OMIT_VIRTUALTABLE
     if( IsVirtual(pTab) ){
@@ -2302,11 +2320,14 @@ void sqlite3CreateIndex(
 
 #ifndef SQLITE_OMIT_TEMPDB
     /* If the index name was unqualified, check if the the table
-    ** is a temp table. If so, set the database to 1.
+    ** is a temp table. If so, set the database to 1. Do not do this
+    ** if initialising a database schema.
     */
-    pTab = sqlite3SrcListLookup(pParse, pTblName);
-    if( pName2 && pName2->n==0 && pTab && pTab->pSchema==db->aDb[1].pSchema ){
-      iDb = 1;
+    if( !db->init.busy ){
+      pTab = sqlite3SrcListLookup(pParse, pTblName);
+      if( pName2 && pName2->n==0 && pTab && pTab->pSchema==db->aDb[1].pSchema ){
+        iDb = 1;
+      }
     }
 #endif
 
@@ -2787,6 +2808,7 @@ void sqlite3DropIndex(Parse *pParse, SrcList *pName, int ifExists){
   /* Generate code to remove the index and from the master table */
   v = sqlite3GetVdbe(pParse);
   if( v ){
+    sqlite3BeginWriteOperation(pParse, 1, iDb);
     sqlite3NestedParse(pParse,
        "DELETE FROM %Q.%s WHERE name=%Q",
        db->aDb[iDb].zName, SCHEMA_TABLE(iDb),
@@ -3339,16 +3361,19 @@ void sqlite3Reindex(Parse *pParse, Token *pName1, Token *pName2){
     reindexDatabases(pParse, 0);
     return;
   }else if( pName2==0 || pName2->z==0 ){
+    char *zColl;
     assert( pName1->z );
-    pColl = sqlite3FindCollSeq(db, ENC(db), (char*)pName1->z, pName1->n, 0);
+    zColl = sqlite3NameFromToken(pParse->db, pName1);
+    if( !zColl ) return;
+    pColl = sqlite3FindCollSeq(db, ENC(db), zColl, -1, 0);
     if( pColl ){
-      char *zColl = sqlite3DbStrNDup(db, (const char *)pName1->z, pName1->n);
       if( zColl ){
         reindexDatabases(pParse, zColl);
         sqlite3_free(zColl);
       }
       return;
     }
+    sqlite3_free(zColl);
   }
   iDb = sqlite3TwoPartName(pParse, pName1, pName2, &pObjName);
   if( iDb<0 ) return;

@@ -60,8 +60,8 @@ void sqlite3VdbeSetSql(Vdbe *p, const char *z, int n){
 /*
 ** Return the SQL associated with a prepared statement
 */
-const char *sqlite3VdbeGetSql(Vdbe *p){
-  return p->zSql;
+const char *sqlite3_sql(sqlite3_stmt *pStmt){
+  return ((Vdbe *)pStmt)->zSql;
 }
 
 /*
@@ -99,10 +99,7 @@ void sqlite3VdbeTrace(Vdbe *p, FILE *trace){
 
 /*
 ** Resize the Vdbe.aOp array so that it contains at least N
-** elements. If the Vdbe is in VDBE_MAGIC_RUN state, then
-** the Vdbe.aOp array will be sized to contain exactly N
-** elements. Vdbe.nOpAlloc is set to reflect the new size of
-** the array.
+** elements.
 **
 ** If an out-of-memory error occurs while resizing the array,
 ** Vdbe.aOp and Vdbe.nOpAlloc remain unchanged (this is so that
@@ -110,18 +107,14 @@ void sqlite3VdbeTrace(Vdbe *p, FILE *trace){
 ** along with the rest of the Vdbe).
 */
 static void resizeOpArray(Vdbe *p, int N){
-  int runMode = p->magic==VDBE_MAGIC_RUN;
-  if( runMode || p->nOpAlloc<N ){
-    VdbeOp *pNew;
-    int nNew = N + 100*(!runMode);
-    int oldSize = p->nOpAlloc;
-    pNew = sqlite3DbRealloc(p->db, p->aOp, nNew*sizeof(Op));
-    if( pNew ){
-      p->nOpAlloc = nNew;
-      p->aOp = pNew;
-      if( nNew>oldSize ){
-        memset(&p->aOp[oldSize], 0, (nNew-oldSize)*sizeof(Op));
-      }
+  VdbeOp *pNew;
+  int oldSize = p->nOpAlloc;
+  pNew = sqlite3DbRealloc(p->db, p->aOp, N*sizeof(Op));
+  if( pNew ){
+    p->nOpAlloc = N;
+    p->aOp = pNew;
+    if( N>oldSize ){
+      memset(&p->aOp[oldSize], 0, (N-oldSize)*sizeof(Op));
     }
   }
 }
@@ -149,7 +142,7 @@ int sqlite3VdbeAddOp(Vdbe *p, int op, int p1, int p2){
   i = p->nOp;
   assert( p->magic==VDBE_MAGIC_INIT );
   if( p->nOpAlloc<=i ){
-    resizeOpArray(p, i+1);
+    resizeOpArray(p, p->nOpAlloc*2 + 100);
     if( p->db->mallocFailed ){
       return 0;
     }
@@ -277,10 +270,17 @@ int sqlite3VdbeOpcodeNoPush(u8 op){
 ** entries that static analysis reveals this program might need.
 **
 ** This routine also does the following optimization:  It scans for
-** Halt instructions where P1==SQLITE_CONSTRAINT or P2==OE_Abort or for
-** IdxInsert instructions where P2!=0.  If no such instruction is
-** found, then every Statement instruction is changed to a Noop.  In
-** this way, we avoid creating the statement journal file unnecessarily.
+** instructions that might cause a statement rollback.  Such instructions
+** are:
+**
+**   *  OP_Halt with P1=SQLITE_CONSTRAINT and P2=OE_Abort.
+**   *  OP_Destroy
+**   *  OP_VUpdate
+**   *  OP_VRename
+**
+** If no such instruction is found, then every Statement instruction 
+** is changed to a Noop.  In this way, we avoid creating the statement 
+** journal file unnecessarily.
 */
 static void resolveP2Values(Vdbe *p, int *pMaxFuncArgs, int *pMaxStack){
   int i;
@@ -306,6 +306,8 @@ static void resolveP2Values(Vdbe *p, int *pMaxFuncArgs, int *pMaxStack){
       }
     }else if( opcode==OP_Statement ){
       hasStatementBegin = 1;
+    }else if( opcode==OP_Destroy ){
+      doesStatementRollback = 1;
 #ifndef SQLITE_OMIT_VIRTUALTABLE
     }else if( opcode==OP_VUpdate || opcode==OP_VRename ){
       doesStatementRollback = 1;
@@ -360,7 +362,9 @@ int sqlite3VdbeCurrentAddr(Vdbe *p){
 int sqlite3VdbeAddOpList(Vdbe *p, int nOp, VdbeOpList const *aOp){
   int addr;
   assert( p->magic==VDBE_MAGIC_INIT );
-  resizeOpArray(p, p->nOp + nOp);
+  if( p->nOp + nOp > p->nOpAlloc ){
+    resizeOpArray(p, p->nOp*2 + nOp);
+  }
   if( p->db->mallocFailed ){
     return 0;
   }
@@ -437,13 +441,12 @@ static void freeEphemeralFunction(FuncDef *pDef){
 static void freeP3(int p3type, void *p3){
   if( p3 ){
     switch( p3type ){
+      case P3_REAL:
+      case P3_INT64:
+      case P3_MPRINTF:
       case P3_DYNAMIC:
       case P3_KEYINFO:
       case P3_KEYINFO_HANDOFF: {
-        sqlite3_free(p3);
-        break;
-      }
-      case P3_MPRINTF: {
         sqlite3_free(p3);
         break;
       }
@@ -633,6 +636,16 @@ static char *displayP3(Op *pOp, char *zTemp, int nTemp){
     case P3_FUNCDEF: {
       FuncDef *pDef = (FuncDef*)pOp->p3;
       sqlite3_snprintf(nTemp, zTemp, "%s(%d)", pDef->zName, pDef->nArg);
+      zP3 = zTemp;
+      break;
+    }
+    case P3_INT64: {
+      sqlite3_snprintf(nTemp, zTemp, "%lld", *(sqlite3_int64*)pOp->p3);
+      zP3 = zTemp;
+      break;
+    }
+    case P3_REAL: {
+      sqlite3_snprintf(nTemp, zTemp, "%.16g", *(double*)pOp->p3);
       zP3 = zTemp;
       break;
     }
@@ -1319,7 +1332,7 @@ static void checkActiveVdbeCnt(sqlite3 *db){
 ** the state of the cursor.  We have to invalidate the cursor
 ** so that it is never used again.
 */
-void invalidateCursorsOnModifiedBtrees(sqlite3 *db){
+static void invalidateCursorsOnModifiedBtrees(sqlite3 *db){
   int i;
   for(i=0; i<db->nDb; i++){
     Btree *p = db->aDb[i].pBt;
@@ -1383,7 +1396,7 @@ int sqlite3VdbeHalt(Vdbe *p){
     /* Check for one of the special errors */
     mrc = p->rc & 0xff;
     isSpecialError = mrc==SQLITE_NOMEM || mrc==SQLITE_IOERR
-                     || mrc==SQLITE_INTERRUPT || mrc==SQLITE_FULL ;
+                     || mrc==SQLITE_INTERRUPT || mrc==SQLITE_FULL;
     if( isSpecialError ){
       /* This loop does static analysis of the query to see which of the
       ** following three categories it falls into:
@@ -1582,6 +1595,8 @@ int sqlite3VdbeReset(Vdbe *p){
     ** called), set the database error in this case as well.
     */
     sqlite3Error(db, p->rc, 0);
+    sqlite3ValueSetStr(db->pErr, -1, p->zErrMsg, SQLITE_UTF8, sqlite3_free);
+    p->zErrMsg = 0;
   }
 
   /* Reclaim all memory used by the VDBE
@@ -2105,10 +2120,12 @@ int sqlite3VdbeRecordCompare(
   if( rc==0 ){
     if( pKeyInfo->incrKey ){
       rc = -1;
-    }else if( d1<nKey1 ){
-      rc = 1;
-    }else if( d2<nKey2 ){
-      rc = -1;
+    }else if( !pKeyInfo->prefixIsEqual ){
+      if( d1<nKey1 ){
+        rc = 1;
+      }else if( d2<nKey2 ){
+        rc = -1;
+      }
     }
   }else if( pKeyInfo->aSortOrder && i<pKeyInfo->nField
                && pKeyInfo->aSortOrder[i] ){

@@ -431,12 +431,6 @@ static void winceDestroyLock(winFile *pFile){
     UnmapViewOfFile(pFile->shared);
     CloseHandle(pFile->hShared);
 
-    if( pFile->zDeleteOnClose ){
-      DeleteFileW(pFile->zDeleteOnClose);
-      free(pFile->zDeleteOnClose);
-      pFile->zDeleteOnClose = 0;
-    }
-
     /* Done with the mutex */
     winceMutexRelease(pFile->hMutex);    
     CloseHandle(pFile->hMutex);
@@ -613,6 +607,10 @@ static int winClose(sqlite3_file *id){
   }while( rc==0 && cnt++ < MX_CLOSE_ATTEMPT && (Sleep(100), 1) );
 #if OS_WINCE
   winceDestroyLock(pFile);
+  if( pFile->zDeleteOnClose ){
+    DeleteFileW(pFile->zDeleteOnClose);
+    free(pFile->zDeleteOnClose);
+  }
 #endif
   OpenCounter(-1);
   return rc ? SQLITE_OK : SQLITE_IOERR;
@@ -1011,7 +1009,7 @@ static int winFileControl(sqlite3_file *id, int op, void *pArg){
 **
 ** SQLite code assumes this function cannot fail. It also assumes that
 ** if two files are created in the same file-system directory (i.e.
-** a database and it's journal file) that the sector size will be the
+** a database and its journal file) that the sector size will be the
 ** same for both.
 */
 static int winSectorSize(sqlite3_file *id){
@@ -1083,6 +1081,7 @@ static int winOpen(
   DWORD dwShareMode;
   DWORD dwCreationDisposition;
   DWORD dwFlagsAndAttributes = 0;
+  int isTemp;
   winFile *pFile = (winFile*)id;
   void *zConverted = convertUtf8Filename(zName);
   if( zConverted==0 ){
@@ -1104,19 +1103,22 @@ static int winOpen(
   }else{
     dwShareMode = 0;
   }
-  if( flags & (SQLITE_OPEN_TEMP_DB | SQLITE_OPEN_TEMP_JOURNAL
-                    | SQLITE_OPEN_SUBJOURNAL) ){
+  if( flags & SQLITE_OPEN_DELETEONCLOSE ){
+#if OS_WINCE
+    dwFlagsAndAttributes = FILE_ATTRIBUTE_HIDDEN;
+#else
     dwFlagsAndAttributes = FILE_ATTRIBUTE_TEMPORARY
                                | FILE_ATTRIBUTE_HIDDEN
                                | FILE_FLAG_DELETE_ON_CLOSE;
+#endif
+    isTemp = 1;
   }else{
     dwFlagsAndAttributes = FILE_ATTRIBUTE_NORMAL;
+    isTemp = 0;
   }
-  if( flags & (SQLITE_OPEN_MAIN_DB | SQLITE_OPEN_TEMP_DB) ){
-    dwFlagsAndAttributes |= FILE_FLAG_RANDOM_ACCESS;
-  }else{
-    dwFlagsAndAttributes |= FILE_FLAG_SEQUENTIAL_SCAN;
-  }
+  /* Reports from the internet are that performance is always
+  ** better if FILE_FLAG_RANDOM_ACCESS is used.  Ticket #2699. */
+  dwFlagsAndAttributes |= FILE_FLAG_RANDOM_ACCESS;
   if( isNT() ){
     h = CreateFileW((WCHAR*)zConverted,
        dwDesiredAccess,
@@ -1162,13 +1164,13 @@ static int winOpen(
 #if OS_WINCE
   if( (flags & (SQLITE_OPEN_READWRITE|SQLITE_OPEN_MAIN_DB)) ==
                (SQLITE_OPEN_READWRITE|SQLITE_OPEN_MAIN_DB)
-       && !winceCreateLock(zFilename, pFile)
+       && !winceCreateLock(zName, pFile)
   ){
     CloseHandle(h);
     free(zConverted);
     return SQLITE_CANTOPEN;
   }
-  if( dwFlagsAndAttributes & FILE_FLAG_DELETE_ON_CLOSE ){
+  if( isTemp ){
     pFile->zDeleteOnClose = zConverted;
   }else
 #endif
@@ -1185,13 +1187,13 @@ static int winOpen(
 ** Note that windows does not allow a file to be deleted if some other
 ** process has it open.  Sometimes a virus scanner or indexing program
 ** will open a journal file shortly after it is created in order to do
-** whatever it is it does.  While this other process is holding the
+** whatever does.  While this other process is holding the
 ** file open, we will be unable to delete it.  To work around this
 ** problem, we delay 100 milliseconds and try to delete again.  Up
 ** to MX_DELETION_ATTEMPTs deletion attempts are run before giving
 ** up and returning an error.
 */
-#define MX_DELETION_ATTEMPTS 3
+#define MX_DELETION_ATTEMPTS 5
 static int winDelete(
   sqlite3_vfs *pVfs,          /* Not used on win32 */
   const char *zFilename,      /* Name of file to delete */
@@ -1206,22 +1208,22 @@ static int winDelete(
   SimulateIOError(return SQLITE_IOERR_DELETE);
   if( isNT() ){
     do{
-      rc = DeleteFileW(zConverted);
-    }while( rc==0 && GetFileAttributesW(zConverted)!=0xffffffff 
+      DeleteFileW(zConverted);
+    }while( (rc = GetFileAttributesW(zConverted))!=0xffffffff 
             && cnt++ < MX_DELETION_ATTEMPTS && (Sleep(100), 1) );
   }else{
 #if OS_WINCE
     return SQLITE_NOMEM;
 #else
     do{
-      rc = DeleteFileA(zConverted);
-    }while( rc==0 && GetFileAttributesA(zConverted)!=0xffffffff
+      DeleteFileA(zConverted);
+    }while( (rc = GetFileAttributesA(zConverted))!=0xffffffff
             && cnt++ < MX_DELETION_ATTEMPTS && (Sleep(100), 1) );
 #endif
   }
   free(zConverted);
   OSTRACE2("DELETE \"%s\"\n", zFilename);
-  return rc!=0 ? SQLITE_OK : SQLITE_IOERR;
+  return rc==0xffffffff ? SQLITE_OK : SQLITE_IOERR_DELETE;
 }
 
 /*
@@ -1301,7 +1303,7 @@ static int winGetTempname(sqlite3_vfs *pVfs, int nBuf, char *zBuf){
   }
   for(i=strlen(zTempPath); i>0 && zTempPath[i-1]=='\\'; i--){}
   zTempPath[i] = 0;
-  sqlite3_snprintf(pVfs->mxPathname-30, zBuf,
+  sqlite3_snprintf(nBuf-30, zBuf,
                    "%s\\"SQLITE_TEMP_FILE_PREFIX, zTempPath);
   j = strlen(zBuf);
   sqlite3Randomness(20, &zBuf[j]);
@@ -1333,6 +1335,7 @@ static int winFullPathname(
 #if OS_WINCE
   /* WinCE has no concept of a relative pathname, or so I am told. */
   sqlite3_snprintf(pVfs->mxPathname, zFull, "%s", zRelative);
+  return SQLITE_OK;
 #endif
 
 #if !OS_WINCE && !defined(__CYGWIN__)
@@ -1403,7 +1406,15 @@ static void *winDlOpen(sqlite3_vfs *pVfs, const char *zFilename){
   return (void*)h;
 }
 static void winDlError(sqlite3_vfs *pVfs, int nBuf, char *zBufOut){
-  FormatMessage(
+#if OS_WINCE
+  int error = GetLastError();
+  if( error>0x7FFFFFF ){
+    sqlite3_snprintf(nBuf, zBufOut, "OsError 0x%x", error);
+  }else{
+    sqlite3_snprintf(nBuf, zBufOut, "OsError %d", error);
+  }
+#else
+  FormatMessageA(
     FORMAT_MESSAGE_FROM_SYSTEM,
     NULL,
     GetLastError(),
@@ -1412,6 +1423,7 @@ static void winDlError(sqlite3_vfs *pVfs, int nBuf, char *zBufOut){
     nBuf-1,
     0
   );
+#endif
 }
 void *winDlSym(sqlite3_vfs *pVfs, void *pHandle, const char *zSymbol){
 #if OS_WINCE

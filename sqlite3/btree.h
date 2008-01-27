@@ -82,7 +82,6 @@ int sqlite3BtreeOpen(
 #define BTREE_PRIVATE      64  /* Never share with other connections */
 
 int sqlite3BtreeClose(Btree*);
-int sqlite3BtreeSetBusyHandler(Btree*,BusyHandler*);
 int sqlite3BtreeSetCacheSize(Btree*,int);
 int sqlite3BtreeSetSafetyLevel(Btree*,int,int);
 int sqlite3BtreeSyncDisabled(Btree*);

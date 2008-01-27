@@ -237,4 +237,3 @@ int sqlite3ApiExit(sqlite3* db, int rc){
   }
   return rc & (db ? db->errMask : 0xff);
 }
- 

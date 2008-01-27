@@ -255,13 +255,15 @@ static int sqlite3Step(Vdbe *p){
   sqlite3 *db;
   int rc;
 
+  assert(p);
+  if( p->magic!=VDBE_MAGIC_RUN ){
+    return SQLITE_MISUSE;
+  }
+
   /* Assert that malloc() has not failed */
   db = p->db;
   assert( !db->mallocFailed );
 
-  if( p==0 || p->magic!=VDBE_MAGIC_RUN ){
-    return SQLITE_MISUSE;
-  }
   if( p->aborted ){
     return SQLITE_ABORT;
   }
@@ -372,27 +374,51 @@ end_of_step:
 */
 #ifdef SQLITE_OMIT_PARSER
 int sqlite3_step(sqlite3_stmt *pStmt){
-  int rc;
-  Vdbe *v;
-  v = (Vdbe*)pStmt;
-  sqlite3_mutex_enter(v->db->mutex);
-  rc = sqlite3Step(v);
-  sqlite3_mutex_leave(v->db->mutex);
+  int rc = SQLITE_MISUSE;
+  if( pStmt ){
+    Vdbe *v;
+    v = (Vdbe*)pStmt;
+    sqlite3_mutex_enter(v->db->mutex);
+    rc = sqlite3Step(v);
+    sqlite3_mutex_leave(v->db->mutex);
+  }
   return rc;
 }
 #else
 int sqlite3_step(sqlite3_stmt *pStmt){
-  int cnt = 0;
-  int rc;
-  Vdbe *v = (Vdbe*)pStmt;
-  sqlite3_mutex_enter(v->db->mutex);
-  while( (rc = sqlite3Step(v))==SQLITE_SCHEMA
-         && cnt++ < 5
-         && sqlite3Reprepare(v) ){
-    sqlite3_reset(pStmt);
-    v->expired = 0;
+  int rc = SQLITE_MISUSE;
+  if( pStmt ){
+    int cnt = 0;
+    Vdbe *v = (Vdbe*)pStmt;
+    sqlite3 *db = v->db;
+    sqlite3_mutex_enter(db->mutex);
+    while( (rc = sqlite3Step(v))==SQLITE_SCHEMA
+           && cnt++ < 5
+           && sqlite3Reprepare(v) ){
+      sqlite3_reset(pStmt);
+      v->expired = 0;
+    }
+    if( rc==SQLITE_SCHEMA && v->zSql && db->pErr ){
+      /* This case occurs after failing to recompile an sql statement. 
+      ** The error message from the SQL compiler has already been loaded 
+      ** into the database handle. This block copies the error message 
+      ** from the database handle into the statement and sets the statement
+      ** program counter to 0 to ensure that when the statement is 
+      ** finalized or reset the parser error message is available via
+      ** sqlite3_errmsg() and sqlite3_errcode().
+      */
+      const char *zErr = (const char *)sqlite3_value_text(db->pErr); 
+      sqlite3_free(v->zErrMsg);
+      if( !db->mallocFailed ){
+        v->zErrMsg = sqlite3DbStrDup(db, zErr);
+      } else {
+        v->zErrMsg = 0;
+        v->rc = SQLITE_NOMEM;
+      }
+    }
+    rc = sqlite3ApiExit(db, rc);
+    sqlite3_mutex_leave(db->mutex);
   }
-  sqlite3_mutex_leave(v->db->mutex);
   return rc;
 }
 #endif
@@ -445,12 +471,7 @@ void *sqlite3_aggregate_context(sqlite3_context *p, int nByte){
       pMem->flags = MEM_Agg;
       pMem->xDel = sqlite3_free;
       pMem->u.pDef = p->pFunc;
-      if( nByte<=NBFS ){
-        pMem->z = pMem->zShort;
-        memset(pMem->z, 0, nByte);
-      }else{
-        pMem->z = sqlite3DbMallocZero(p->s.db, nByte);
-      }
+      pMem->z = sqlite3DbMallocZero(p->s.db, nByte);
     }
   }
   return (void*)pMem->z;

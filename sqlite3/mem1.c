@@ -20,7 +20,8 @@
 ** used when no other memory allocator is specified using compile-time
 ** macros.
 */
-#if !defined(SQLITE_MEMDEBUG) && !defined(SQLITE_OMIT_MEMORY_ALLOCATION)
+#if !defined(SQLITE_MEMDEBUG) && !defined(SQLITE_MEMORY_SIZE) \
+     && !defined(SQLITE_MMAP_HEAP_SIZE)
 
 /*
 ** We will eventually construct multiple memory allocation subsystems
@@ -212,6 +213,8 @@ void *sqlite3_realloc(void *pPrior, int nBytes){
   p = realloc(p, nBytes+8);
   if( p==0 ){
     sqlite3MemsysAlarm(nBytes);
+    p = pPrior;
+    p--;
     p = realloc(p, nBytes+8);
   }
   if( p ){

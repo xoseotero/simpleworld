@@ -105,6 +105,7 @@ void sqlite3Update(
   NameContext sNC;       /* The name-context to resolve expressions in */
   int iDb;               /* Database containing the table being updated */
   int memCnt = 0;        /* Memory cell used for counting rows changed */
+  int mem1;      /* Memory address storing the rowid for next row to update */
 
 #ifndef SQLITE_OMIT_TRIGGER
   int isView;                  /* Trying to update a view */
@@ -261,6 +262,7 @@ void sqlite3Update(
   if( v==0 ) goto update_cleanup;
   if( pParse->nested==0 ) sqlite3VdbeCountChanges(v);
   sqlite3BeginWriteOperation(pParse, 1, iDb);
+  mem1 = pParse->nMem++;
 
 #ifndef SQLITE_OMIT_VIRTUALTABLE
   /* Virtual tables must be handled separately */
@@ -318,6 +320,7 @@ void sqlite3Update(
   }
 
   if( triggers_exist ){
+    
     /* Create pseudo-tables for NEW and OLD
     */
     sqlite3VdbeAddOp(v, OP_OpenPseudo, oldIdx, 0);
@@ -328,16 +331,16 @@ void sqlite3Update(
     /* The top of the update loop for when there are triggers.
     */
     addr = sqlite3VdbeAddOp(v, OP_FifoRead, 0, 0);
-
+    sqlite3VdbeAddOp(v, OP_StackDepth, -1, 0);
+    sqlite3VdbeAddOp(v, OP_MemStore, mem1, 0);
+    
     if( !isView ){
-      sqlite3VdbeAddOp(v, OP_Dup, 0, 0);
-      sqlite3VdbeAddOp(v, OP_Dup, 0, 0);
       /* Open a cursor and make it point to the record that is
       ** being updated.
       */
       sqlite3OpenTable(pParse, iCur, iDb, pTab, OP_OpenRead);
     }
-    sqlite3VdbeAddOp(v, OP_MoveGe, iCur, 0);
+    sqlite3VdbeAddOp(v, OP_NotExists, iCur, addr);
 
     /* Generate the OLD table
     */
@@ -381,6 +384,10 @@ void sqlite3Update(
           newIdx, oldIdx, onError, addr) ){
       goto update_cleanup;
     }
+    
+    if( !isView ){
+      sqlite3VdbeAddOp(v, OP_MemLoad, mem1, 0);
+    }
   }
 
   if( !isView && !IsVirtual(pTab) ){
@@ -420,9 +427,11 @@ void sqlite3Update(
     */
     if( !triggers_exist ){
       addr = sqlite3VdbeAddOp(v, OP_FifoRead, 0, 0);
-      sqlite3VdbeAddOp(v, OP_Dup, 0, 0);
+      sqlite3VdbeAddOp(v, OP_StackDepth, -1, 0);
+      sqlite3VdbeAddOp(v, OP_MemStore, mem1, 0);
     }
     sqlite3VdbeAddOp(v, OP_NotExists, iCur, addr);
+    sqlite3VdbeAddOp(v, OP_MemLoad, mem1, 0);
 
     /* If the record number will change, push the record number as it
     ** will be after the update. (The old record number is currently

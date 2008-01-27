@@ -125,7 +125,8 @@ int sqlite3RunVacuum(char **pzErrMsg, sqlite3 *db){
   }
 
 #ifndef SQLITE_OMIT_AUTOVACUUM
-  sqlite3BtreeSetAutoVacuum(pTemp, sqlite3BtreeGetAutoVacuum(pMain));
+  sqlite3BtreeSetAutoVacuum(pTemp, db->nextAutovac>=0 ? db->nextAutovac :
+                                           sqlite3BtreeGetAutoVacuum(pMain));
 #endif
 
   /* Begin a transaction */
@@ -136,17 +137,17 @@ int sqlite3RunVacuum(char **pzErrMsg, sqlite3 *db){
   ** in the temporary database.
   */
   rc = execExecSql(db, 
-      "SELECT 'CREATE TABLE vacuum_db.' || substr(sql,14,100000000) "
+      "SELECT 'CREATE TABLE vacuum_db.' || substr(sql,14) "
       "  FROM sqlite_master WHERE type='table' AND name!='sqlite_sequence'"
       "   AND rootpage>0"
   );
   if( rc!=SQLITE_OK ) goto end_of_vacuum;
   rc = execExecSql(db, 
-      "SELECT 'CREATE INDEX vacuum_db.' || substr(sql,14,100000000)"
+      "SELECT 'CREATE INDEX vacuum_db.' || substr(sql,14)"
       "  FROM sqlite_master WHERE sql LIKE 'CREATE INDEX %' ");
   if( rc!=SQLITE_OK ) goto end_of_vacuum;
   rc = execExecSql(db, 
-      "SELECT 'CREATE UNIQUE INDEX vacuum_db.' || substr(sql,21,100000000) "
+      "SELECT 'CREATE UNIQUE INDEX vacuum_db.' || substr(sql,21) "
       "  FROM sqlite_master WHERE sql LIKE 'CREATE UNIQUE INDEX %'");
   if( rc!=SQLITE_OK ) goto end_of_vacuum;
 

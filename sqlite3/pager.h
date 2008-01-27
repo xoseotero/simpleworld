@@ -94,6 +94,7 @@ int sqlite3PagerMovepage(Pager*,DbPage*,Pgno);
 void *sqlite3PagerGetData(DbPage *); 
 void *sqlite3PagerGetExtra(DbPage *); 
 int sqlite3PagerLockingMode(Pager *, int);
+void *sqlite3PagerTempSpace(Pager*);
 
 #if defined(SQLITE_ENABLE_MEMORY_MANAGEMENT) && !defined(SQLITE_OMIT_DISKIO)
   int sqlite3PagerReleaseMemory(int);
