@@ -31,25 +31,24 @@
 #endif // DEBUG
 
 #include <vector>
-#include <algorithm>
+#include <list>
 #include <cassert>
 
 #include <boost/format.hpp>
 
 #include <sqlite3x.hpp>
 
+#include <simpleworld/cpu/types.hpp>
 #include <simpleworld/db/types.hpp>
 #include <simpleworld/db/food.hpp>
 #include <simpleworld/db/egg.hpp>
 #include <simpleworld/db/bug.hpp>
-#include <simpleworld/db/cpu.hpp>
-#include <simpleworld/db/code.hpp>
 
+#include "simpleworld.hpp"
 #include "exception.hpp"
 #include "actionerror.hpp"
 #include "bugdeath.hpp"
 #include "movement.hpp"
-#include "simpleworld.hpp"
 
 // Default values for the environment
 #define DEFAULT_SIZE (Position) {16, 16}
