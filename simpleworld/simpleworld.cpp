@@ -326,11 +326,6 @@ void SimpleWorld::turn(Bug* bug, Turn turn)
   }
 }
 
-/**
- * Attack the bug that is in front of the bug.
- * @param bug Bug that executes the action.
- * @param energy Energy used in the attack.
- */
 void SimpleWorld::attack(Bug* bug, Energy energy)
 {
 #ifdef DEBUG
@@ -389,11 +384,6 @@ There is not a egg/bug in (%1%, %2%)")
   this->substract_energy(bug, energy);
 }
 
-/**
- * Eat what is in front of the bug.
- * @param bug Bug that executes the action.
- * @return The energy eaten.
- */
 Energy SimpleWorld::eat(Bug* bug)
 {
 #ifdef DEBUG
@@ -438,11 +428,6 @@ There is nothing to eat in (%1%, %2%")
   return energy;
 }
 
-/**
- * Create a egg in front of the bug.
- * @param bug Bug that executes the action.
- * @param energy Energy transfered to the egg.
- */
 void SimpleWorld::egg(Bug* bug, Energy energy)
 {
 #ifdef DEBUG
