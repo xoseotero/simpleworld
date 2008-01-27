@@ -34,3 +34,16 @@ or pulled from CVS as described here:
 	http://sourceforge.net/cvs/?group_id=104450
 
 from the "sqlite3x" repository.
+
+
+========================================================================
+Contributors to this code include:
+
+- Nelis Willers (nwillers at csir.co.za) contributed MSVC patches
+for the sqlite3x API.
+
+- Artem Gr (artem at bizlink.ru) contributed some wide-char fixes
+for the sqlite3x API.
+
+- Xosé Antón Otero Ferreira (xoseotero at gmail com) contributed several
+minor features to the sq3 API.

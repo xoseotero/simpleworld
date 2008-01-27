@@ -31,7 +31,7 @@ http://dev.int64.org/sqlite.html
 
 This hacked copy's home is:
 
-http://s11n.net/sqlite/
+http://wanderinghorse.net/computing/sqlite/
 
 Contributors to the hacked version include:
 

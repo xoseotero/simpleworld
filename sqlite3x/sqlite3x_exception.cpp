@@ -29,6 +29,7 @@
 #include <limits> // std::max()
 #include <cstring> // strlen()
 #include <cstdio> // vsnprintf()
+#include <vector>
 namespace sqlite3x {
 
 	database_error::~database_error() throw() {}
@@ -45,11 +46,11 @@ namespace sqlite3x {
 
 	database_error::database_error(const char *format,...)
 	{
-		const int buffsz = std::max( (size_t) 2048, strlen(format) * 2 );
-		char buffer[buffsz];
+		const int buffsz = static_cast<int>( std::max( (size_t) 2048, strlen(format) * 2 ) );
+		std::vector<char> buffer( buffsz, '\0' );
 		va_list vargs;
 		va_start ( vargs, format );
-		int size = std::vsnprintf(buffer, buffsz, format, vargs);
+		int size = vsnprintf(&buffer[0], buffsz, format, vargs);
 		va_end( vargs );
 		if (size > (buffsz-1))
 		{
@@ -61,6 +62,6 @@ namespace sqlite3x {
 			}
 		}
 		buffer[size] = '\0';
-		this->m_what = buffer;
+		this->m_what = std::string( &buffer[0], &buffer[0]+size );
 	}
 }

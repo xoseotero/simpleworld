@@ -1,0 +1,17 @@
+This is the informal changelog for the sq3/sqlite3x APIs. Newest items
+are at the top.
+
+========================================================================
+
+2007 Oct 18:
+
+- Started ChangeLog.
+
+- sq3: added second argument to sq3::database::open(string,long), a
+suggestion from Joaquim Campos Salles.
+
+
+2007 Oct 15:
+
+- sqlite3x: added several minor fixes for warnings emitted by MSVC,
+contributed by Nelis Willers.

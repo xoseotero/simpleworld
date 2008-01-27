@@ -334,9 +334,10 @@ namespace sqlite3x {
 	/**
 	   An internal implementation detail of table_generator.
 	*/
-	struct table_generator::table_generator_impl
+	class table_generator::table_generator_impl
 	{
 
+	public:
 		sqlite3_connection * db;
 		std::string name;
 		std::vector<std::string> list;
