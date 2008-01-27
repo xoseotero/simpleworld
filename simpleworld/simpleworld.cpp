@@ -559,7 +559,7 @@ Bug %1% is death")
 
 void SimpleWorld::kill(Egg* egg)
 {
-  // Convert the bug in food
+  // Convert the egg in food
   Food* food = new Food(this, egg->die(this->env_->time));
   this->foods_.push_back(food);
   this->world_->remove(egg->position);
