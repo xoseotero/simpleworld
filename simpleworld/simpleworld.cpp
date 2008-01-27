@@ -50,6 +50,7 @@
 #include "actionerror.hpp"
 #include "bugdeath.hpp"
 #include "movement.hpp"
+#include "reproduction.hpp"
 
 // Default values for the environment
 #define DEFAULT_SIZE (Position) {16, 16}
@@ -440,7 +441,29 @@ void SimpleWorld::egg(Bug* bug, Energy energy)
   this->substract_energy(bug, this->env_->energy_egg);
   bug->changed = true;
 
-  // TODO: Do something :)
+  Position front = this->front(bug);
+  if (this->world_->used(front))
+    throw EXCEPTION(ActionError, boost::str(boost::format("\
+Position used (%1%, %2%)")
+                                            % front.x
+                                            % front.y));
+
+
+  ::SimpleWorld::DB::Egg egg(this);
+  egg.position = front;
+  // the egg is looking to the father
+  egg.orientation = ::SimpleWorld::turn(::SimpleWorld::turn(bug->orientation,
+                                                            TurnLeft),
+                                        TurnLeft);
+  egg.birth = this->env_->time + this->env_->time_birth;
+  egg.father_id = bug->id();
+  egg.energy = energy;
+  egg.code = copy_code(bug->code, this->env_->mutations_probability);
+  egg.insert();
+
+  Egg* ptr = new Egg(this, egg.id());
+  this->eggs_.push_back(ptr);
+  this->world_->add(ptr, ptr->position);
 }
 
 

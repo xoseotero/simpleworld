@@ -10,6 +10,7 @@ SET(SIMPLEWORLD_SRCS
   bug.cpp
   egg.cpp
   food.cpp
+  reproduction.cpp
   simpleworld.cpp)
 
 ADD_LIBRARY(simpleworld STATIC ${SIMPLEWORLD_SRCS})
