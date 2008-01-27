@@ -53,7 +53,7 @@
 // Default values for the environment
 #define DEFAULT_SIZE (Position) {16, 16}
 #define DEFAULT_ENERGY_DEVELOPED 64
-#define DEFAULT_MUTATIONS_PERCENT 0.001
+#define DEFAULT_MUTATIONS_PROBABILITY 0.001
 #define DEFAULT_TIME_BIRTH 32
 #define DEFAULT_ENERGY_NOTHING 0
 #define DEFAULT_ENERGY_MYSELF 1
@@ -468,7 +468,7 @@ void SimpleWorld::on_open()
     this->env_->time = 0;
     this->env_->size = DEFAULT_SIZE;
     this->env_->energy_developed = DEFAULT_ENERGY_DEVELOPED;
-    this->env_->mutations_probability = DEFAULT_MUTATIONS_PERCENT;
+    this->env_->mutations_probability = DEFAULT_MUTATIONS_PROBABILITY;
     this->env_->time_birth = DEFAULT_TIME_BIRTH;
     this->env_->energy_nothing = DEFAULT_ENERGY_NOTHING;
     this->env_->energy_myself = DEFAULT_ENERGY_MYSELF;
