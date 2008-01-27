@@ -5,7 +5,7 @@
  * begin:     Wed, 15 Aug 2007 13:50:35 +0200
  * last:      $Date$
  *
- *  Copyright (C) 2007  Xosé Otero <xoseotero@users.sourceforge.net>
+ *  Copyright (C) 2007-2008  Xosé Otero <xoseotero@users.sourceforge.net>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -72,7 +72,6 @@ id %1% not found in table Bug")
       this->add_null("father_id");
     if (cursor.isnull(6))
       this->add_null("killer_id");
-
   } catch (const sqlite3x::database_error& e) {
     throw EXCEPTION(DBException, e.what());
   }
@@ -90,7 +89,7 @@ void DeadBug::update_db(bool force)
       sql.prepare("\
 UPDATE Bug\n\
 SET position_x = ?, position_y = ?, orientation = ?,\n\
-    birth = ? , dead = ?, father_id = ?, killer_id = ?\n\
+    birth = ?, dead = ?, father_id = ?, killer_id = ?\n\
 WHERE id = ?;");
       sql.bind(1, static_cast<int>(this->position.x));
       sql.bind(2, static_cast<int>(this->position.y));
