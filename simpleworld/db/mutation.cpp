@@ -5,7 +5,7 @@
  * begin:     Thu, 01 Mar 2007 16:59:31 +0100
  * last:      $Date$
  *
- *  Copyright (C) 2007  Xosé Otero <xoseotero@users.sourceforge.net>
+ *  Copyright (C) 2007-2008  Xosé Otero <xoseotero@users.sourceforge.net>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -87,7 +87,7 @@ void Mutation::update_db(bool force)
     try {
       sql.prepare("\
 UPDATE Mutation\n\
-SET position = ?, original = ?, mutated = ?, bug_id\n\
+SET position = ?, original = ?, mutated = ?, bug_id = ?\n\
 WHERE id = ?;");
       sql.bind(1, static_cast<int>(this->position));
       if (this->type == Mutation::addition)
@@ -98,7 +98,8 @@ WHERE id = ?;");
         sql.bind(3);
       else
         sql.bind(3, static_cast<int>(this->mutated));
-      sql.bind(4, this->id_);
+      sql.bind(4, static_cast<int>(this->bug_id));
+      sql.bind(5, this->id_);
 
       sql.executenonquery();
     } catch (const sqlite3x::database_error& e) {
