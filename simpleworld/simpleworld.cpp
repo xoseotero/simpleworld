@@ -10,7 +10,7 @@
  * begin:     Wed, 22 Aug 2007 14:59:02 +0200
  * last:      $Date$
  *
- *  Copyright (C) 2007  Xosé Antón Otero Ferreira <xoseotero@gmail.com>
+ *  Copyright (C) 2007-2008  Xosé Antón Otero Ferreira <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -39,6 +39,7 @@
 #include <sqlite3x.hpp>
 
 #include <simpleworld/cpu/types.hpp>
+#include <simpleworld/cpu/exception.hpp>
 #include <simpleworld/db/types.hpp>
 #include <simpleworld/db/food.hpp>
 #include <simpleworld/db/egg.hpp>
@@ -629,6 +630,9 @@ void SimpleWorld::bugs_run()
     try {
       // execute a instruction
       (*bug)->next();
+    } catch (const ::SimpleWorld::CPU::CPUException& e) {
+      // some uncaught error in the CPU (CPU stopped)
+      this->kill(*bug);
     } catch (const BugDeath& e) {
       // the bug is death
       this->kill(*bug);
