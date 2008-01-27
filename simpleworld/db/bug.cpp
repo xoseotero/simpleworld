@@ -108,7 +108,7 @@ void Bug::update_db(bool force)
       sql.prepare("\
 UPDATE Bug\n\
 SET energy = ?, position_x = ?, position_y = ?, orientation = ?,\n\
-    action_time = ?, birth = ? , father_id = ?\n\
+    action_time = ?, birth = ?, father_id = ?\n\
 WHERE id = ?;");
       sql.bind(1, static_cast<int>(this->energy));
       sql.bind(2, static_cast<int>(this->position.x));
