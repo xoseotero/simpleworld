@@ -182,12 +182,9 @@ CREATE TRIGGER Bug_update_father_trigger
 BEFORE UPDATE
 ON Bug
 FOR EACH ROW
-WHEN NEW.father_id IS NOT NULL
+WHEN OLD.father_id != NEW.father_id
 BEGIN
-  SELECT RAISE(ROLLBACK, 'Father not found')
-  WHERE (SELECT id
-         FROM Bug
-         WHERE id=NEW.father_id AND dead IS NULL) IS NULL;
+  SELECT RAISE(ROLLBACK, "Father can't change");
 END;
 
 /* Check if killer_id is a valid id */
