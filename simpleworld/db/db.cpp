@@ -448,6 +448,7 @@ BEGIN\n\
          WHERE dead IS NULL AND position_x=NEW.position_x AND position_y=NEW.position_y)\n\
         IS NOT NULL;\n\
 END;",
+
     /* Check that the action_time isn't in the past */
     "\
 CREATE TRIGGER Bug_insert_action_time_trigger\n\
