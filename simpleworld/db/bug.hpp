@@ -5,7 +5,7 @@
  * begin:     Mon, 01 Jan 2007 08:41:25 +0100
  * last:      $Date$
  *
- *  Copyright (C) 2007  Xosé Otero <xoseotero@users.sourceforge.net>
+ *  Copyright (C) 2007-2008  Xosé Otero <xoseotero@users.sourceforge.net>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -50,14 +50,14 @@ public:
   Bug(DB* db, ID id);
 
 
-  /*
+  /**
    * Convert the alive bug in a dead bug.
    * @param dead When the bug dead.
    * @return The id of the new food.
    */
   ID die(Time dead);
 
-  /*
+  /**
    * Convert the alive bug in a dead bug.
    * @param dead When the bug dead.
    * @param killer_id Who killed it.
