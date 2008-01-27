@@ -368,7 +368,7 @@ There is not a egg/bug in (%1%, %2%)")
       bug_target->changed = true;
     } catch (const BugDeath& e) {
       // the bug is death
-      this->kill(bug_target);
+      this->kill(bug_target, bug->id());
     }
   } else {
     Egg* egg_target = dynamic_cast<Egg*>(target);
@@ -377,7 +377,7 @@ There is not a egg/bug in (%1%, %2%)")
       egg_target->changed = true;
     } catch (const BugDeath& e) {
       // the egg is death
-      this->kill(egg_target);
+      this->kill(egg_target, bug->id());
     }
   }
 
@@ -587,6 +587,35 @@ Egg[%1%] died")
 #endif // DEBUG
 }
 
+void SimpleWorld::kill(Egg* egg, ::SimpleWorld::DB::ID killer_id)
+{
+  // Convert the egg in food
+  Food* food = new Food(this, egg->die(this->env_->time, killer_id));
+  this->foods_.push_back(food);
+  this->world_->remove(egg->position);
+  this->world_->add(food, food->position);
+#ifdef DEBUG
+  std::cout << boost::format("\
+Food[%1%] added at (%2%, %3%) with a size of %4%")
+    % food->id()
+    % food->position.x
+    % food->position.y
+    % food->size
+    << std::endl;
+#endif // DEBUG
+
+  // Remove the dead bug
+  this->eggs_.remove(egg);
+  delete egg;
+
+#ifdef DEBUG
+  std::cout << boost::str(boost::format("\
+Egg[%1%] died")
+                          % egg->id())
+    << std::endl;
+#endif // DEBUG
+}
+
 void SimpleWorld::kill(Bug* bug)
 {
   // Convert the bug in food
@@ -613,6 +642,35 @@ Food[%1%] added at (%2%, %3%) with a size of %4%")
 Bug[%1%] died")
                           % bug->id())
             << std::endl;
+#endif // DEBUG
+}
+
+void SimpleWorld::kill(Bug* bug, ::SimpleWorld::DB::ID killer_id)
+{
+  // Convert the bug in food
+  Food* food = new Food(this, bug->die(this->env_->time, killer_id));
+  this->foods_.push_back(food);
+  this->world_->remove(bug->position);
+  this->world_->add(food, food->position);
+#ifdef DEBUG
+  std::cout << boost::format("\
+Food[%1%] added at (%2%, %3%) with a size of %4%")
+    % food->id()
+    % food->position.x
+    % food->position.y
+    % food->size
+    << std::endl;
+#endif // DEBUG
+
+  // Remove the dead bug
+  this->bugs_.remove(bug);
+  delete bug;
+
+#ifdef DEBUG
+  std::cout << boost::str(boost::format("\
+Bug[%1%] died")
+                          % bug->id())
+    << std::endl;
 #endif // DEBUG
 }
 

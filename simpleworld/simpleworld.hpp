@@ -10,7 +10,7 @@
  * begin:     Sat, 21 Jul 2007 12:08:38 +0200
  * last:      $Date$
  *
- *  Copyright (C) 2007  Xosé Antón Otero Ferreira <xoseotero@gmail.com>
+ *  Copyright (C) 2007-2008  Xosé Antón Otero Ferreira <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -227,10 +227,24 @@ protected:
   void kill(Egg* egg);
 
   /**
+   * Kill the egg and convert it into food.
+   * @param egg The egg.
+   * @param killer_id Who killed it.
+   */
+  void kill(Egg* egg, ::SimpleWorld::DB::ID killer_id);
+
+  /**
    * Kill the bug and convert it into food.
    * @param bug The bug.
    */
   void kill(Bug* bug);
+
+  /**
+   * Kill the bug and convert it into food.
+   * @param bug The bug.
+   * @param killer_id Who killed it.
+   */
+  void kill(Bug* bug, ::SimpleWorld::DB::ID killer_id);
 
   /**
    * Execute a cycle in all the alive bugs.
