@@ -5,7 +5,7 @@
  * begin:     Wed, 15 Aug 2007 13:56:46 +0200
  * last:      $Date$
  *
- *  Copyright (C) 2007  Xosé Otero <xoseotero@users.sourceforge.net>
+ *  Copyright (C) 2007-2008  Xosé Otero <xoseotero@users.sourceforge.net>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -71,6 +71,7 @@ ID AliveBug::die(Time dead, ID killer_id)
   // Convert the alive bug to a dead bug
   DeadBug deadbug(this->db_, this->id_);
   deadbug.dead = dead;
+  deadbug.remove_null("killer_id");
   deadbug.killer_id = killer_id;
   deadbug.update_db(true);
 
