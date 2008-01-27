@@ -454,8 +454,7 @@ CREATE TABLE Mutation
   PRIMARY KEY(id),
   FOREIGN KEY(bug_id) REFERENCES Bug(id),
   CHECK(position >= 0),
-  CHECK(original >= 0),                 -- If original IS NOT NULL
-  CHECK(mutated >= 0)                   -- If mutated IS NOT NULL 
+  CHECK((original IS NOT NULL) or (mutated IS NOT NULL))
 );
 
 CREATE INDEX Mutation_index ON Mutation(bug_id);

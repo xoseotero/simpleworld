@@ -686,8 +686,7 @@ CREATE TABLE Mutation\n\
   PRIMARY KEY(id),\n\
   FOREIGN KEY(bug_id) REFERENCES Bug(id),\n\
   CHECK(position >= 0),\n\
-  CHECK(original >= 0),                 -- If original IS NOT NULL\n\
-  CHECK(mutated >= 0)                   -- If mutated IS NOT NULL \n\
+  CHECK((original IS NOT NULL) or (mutated IS NOT NULL))\n\
 );",
 
     "\
