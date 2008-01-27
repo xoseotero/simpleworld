@@ -135,14 +135,15 @@ public:
    * @param pos Position of the line.
    * @exception CPUException if pos > lines
    */
-  std::string& operator [](size_type pos);
+  std::string& operator [](size_type pos) { return this->get_line(pos); }
 
   /**
    * Get a line.
    * @param pos Position of the line.
    * @exception CPUException if pos > lines
    */
-  const std::string& operator [](size_type pos) const;
+  const std::string& operator [](size_type pos) const
+  { return this->get_line(pos); }
 
 
   /**

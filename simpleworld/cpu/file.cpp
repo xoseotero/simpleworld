@@ -196,26 +196,6 @@ File %1% is not writable")
   }
 }
 
-/**
- * Get a line.
- * @param pos Position of the line.
- * @exception CPUException if pos > lines
- */
-std::string& File::operator [](File::size_type pos)
-{
-  return this->get_line(pos);
-}
-
-/**
- * Get a line.
- * @param pos Position of the line.
- * @exception CPUException if pos > lines
- */
-const std::string& File::operator [](File::size_type pos) const
-{
-  return this->get_line(pos);
-}
-
 
 /**
  * Load lines.
