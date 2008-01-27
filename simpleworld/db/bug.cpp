@@ -5,7 +5,7 @@
  * begin:     Sat, 24 Feb 2007 13:32:56 +0100
  * last:      $Date$
  *
- *  Copyright (C) 2007  Xosé Otero <xoseotero@users.sourceforge.net>
+ *  Copyright (C) 2007-2008  Xosé Otero <xoseotero@users.sourceforge.net>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -66,7 +66,7 @@ void Bug::update()
   try{
     sql.prepare("\
 SELECT energy, position_x, position_y, orientation,\n\
-       action_time, birth, dead, father_id, killer_id\n\
+       action_time, birth, father_id\n\
 FROM Bug\n\
 WHERE id = ?;");
     sql.bind(1, this->id_);
