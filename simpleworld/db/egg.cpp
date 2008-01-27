@@ -34,6 +34,13 @@ namespace SimpleWorld
 namespace DB
 {
 
+/**
+ * Constructor.
+ * @param db database.
+ * @param id id of the egg.
+ * @exception DBException if there is a error in the database.
+ * @exception DBException if the ID is not found in the table.
+ */
 Egg::Egg(DB* db, ID id)
   // The position at this moment is unknown
   : AliveBug(db, id, ElementEgg, this->position)
@@ -41,12 +48,21 @@ Egg::Egg(DB* db, ID id)
   this->update();
 }
 
+/**
+ * Constructor to insert data.
+ * @param db database.
+ * @exception DBException if there is a error in the database.
+ */
 Egg::Egg(DB* db)
   : AliveBug(db, ElementEgg)
 {
 }
 
 
+/**
+ * Convert the egg in a bug.
+ * @return The ID of the new bug.
+ */
 ID Egg::be_born()
 {
   // Convert the egg to a bug
@@ -56,6 +72,12 @@ ID Egg::be_born()
 }
 
 
+/**
+ * Update the data of the class with the database.
+ * changed is set to false.
+ * @exception DBException if there is an error in the database.
+ * @exception DBException if the ID is not found in the table.
+ */
 void Egg::update()
 {
   sqlite3x::sqlite3_command sql(*this->db_);
@@ -91,6 +113,13 @@ id %1% not found in table Bug")
   AliveBug::update();
 }
 
+/**
+ * Update the database with the data of the class in changed or force are
+ * true.
+ * changed is set to false.
+ * @param force force the update of the database.
+ * @exception DBException if there is an error in the database.
+ */
 void Egg::update_db(bool force)
 {
   if (this->changed or force) {
@@ -123,6 +152,12 @@ WHERE id = ?;");
   AliveBug::update_db(force);
 }
 
+/**
+ * Insert the data in the database.
+ * The ID is updated.
+ * changed is set to false.
+ * @exception DBException if there is an error in the database.
+ */
 void Egg::insert()
 {
   sqlite3x::sqlite3_command sql(*this->db_);
@@ -152,6 +187,11 @@ VALUES(?, ?, ?, ?, ?, ?);");
   AliveBug::insert();
 }
 
+/**
+ * Remove the data from the database.
+ * changed is set to false.
+ * @exception DBException if there is an error in the database.
+ */
 void Egg::remove()
 {
   sqlite3x::sqlite3_command sql(*this->db_);

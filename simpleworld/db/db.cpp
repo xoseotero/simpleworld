@@ -34,6 +34,13 @@ namespace SimpleWorld
 namespace DB
 {
 
+/**
+ * Constructor.
+ * @param filename File name of the database.
+ * @exception DBException if the database can't be opened.
+ * @exception DBException if there is a error in the database.
+ * @exception WrongVersion if the database version is not supported.
+ */
 DB::DB(std::string filename)
   : sqlite3x::sqlite3_connection()
 {
@@ -45,6 +52,11 @@ DB::DB(std::string filename)
 }
 
 
+/**
+ * List of all the environments (changes), ordered by it's time.
+ * @return the list of environments.
+ * @exception DBException if there is a error in the database.
+ */
 std::vector<Time> DB::environments()
 {
   std::vector<Time> ids;
@@ -65,6 +77,12 @@ ORDER BY time;");
   return ids;
 }
 
+/**
+ * Get the last environment (change).
+ * @return the environment.
+ * @exception DBException if there is a error in the database.
+ * @exception DBException if there isn't any environments.
+ */
 Time DB::last_environment()
 {
   sqlite3x::sqlite3_command sql(*this);
@@ -84,6 +102,11 @@ FROM Environment;");
 }
 
 
+/**
+ * List of all the bugs, ordered by its birth.
+ * @return the list of bugs.
+ * @exception DBException if there is a error in the database.
+ */
 std::vector<ID> DB::bugs()
 {
   std::vector<ID> ids;
@@ -104,6 +127,11 @@ ORDER BY birth, id;");
   return ids;
 }
 
+/**
+ * List of the alive bugs, ordered by its birth.
+ * @return the list of bugs.
+ * @exception DBException if there is a error in the database.
+ */
 std::vector<ID> DB::alive_bugs()
 {
   std::vector<ID> ids;
@@ -124,6 +152,11 @@ ORDER BY birth, id;");
   return ids;
 }
 
+/**
+ * List of eggs, ordered by its birth.
+ * @return the list of eggs.
+ * @exception DBException if there is a error in the database.
+ */
 std::vector<ID> DB::eggs()
 {
   std::vector<ID> ids;
@@ -145,6 +178,11 @@ ORDER BY birth, id;");
 }
 
 
+/**
+ * List of the food.
+ * @return the list of food.
+ * @exception DBException if there is a error in the database.
+ */
 std::vector<ID> DB::food()
 {
   std::vector<ID> ids;
@@ -166,6 +204,12 @@ ORDER BY id;");
 }
 
 
+/**
+ * This function is called when open() succeeds. Subclasses
+ * which wish to do custom db initialization or sanity checks
+ * may do them here.
+ * @exception WrongVersion if the database version is not supported.
+ */
 void DB::on_open()
 {
   sqlite3x::sqlite3_connection::on_open();
@@ -188,6 +232,10 @@ Database version %1% not supported")
                                              % this->version_));
 }
 
+/**
+ * Create the tables.
+ * @exception DBException The tables can't be created.
+ */
 void DB::create_tables()
 {
   const char* sql_commands[] = {

@@ -37,6 +37,12 @@ namespace SimpleWorld
 namespace CPU
 {
 
+/**
+ * Constructor.
+ * The registers size can change to allow at least 16 registers.
+ * @param registers registers of the CPU.
+ * @param memory memory of the CPU.
+ */
 CPU::CPU(Memory* registers, Memory* memory)
   : registers_(registers), memory_(memory),
     interrupt_request_(false), running_(true)
@@ -160,12 +166,20 @@ CPU::CPU(Memory* registers, Memory* memory)
 }
 
 
+/**
+ * Execute all the code until a stop instruction is found.
+ */
 void CPU::execute()
 {
   while (this->running())
     this->next();
 }
 
+/**
+ * Execute some cycles (or until a stop instruction is found).
+ * @param cycles number of cycles to execute.
+ * @return cycles remaining (> 0 if the CPU was stopped.
+ */
 Uint8 CPU::execute(Uint8 cycles)
 {
   while (this->running() and (cycles > 0)) {
@@ -177,6 +191,10 @@ Uint8 CPU::execute(Uint8 cycles)
   return cycles;
 }
 
+/**
+ * Execute the next instruction.
+ * @exception CPUException A stop instruction was found
+ */
 void CPU::next()
 {
   if (not this->running_)
@@ -254,6 +272,9 @@ Instruction info:\tcode: 0x%02x, name: %s, nregs: %d, has_i: %d")
 }
 
 
+/**
+ * Throw the Timer Interrupt.
+ */
 void CPU::timer_interrupt()
 {
   this->interrupt_request_ = true;
@@ -263,6 +284,11 @@ void CPU::timer_interrupt()
 }
 
 
+/**
+ * Decode the current instruction.
+ * @return the current instruction decoded.
+ * @exception MemoryError if pc is out of range.
+ */
 Instruction CPU::fetch_instruction_() const
 {
 #ifdef DEBUG
@@ -275,6 +301,12 @@ Instruction CPU::fetch_instruction_() const
 }
 
 
+/**
+ * Check if the interrupt is enabled.
+ * @param code Interrupt to check.
+ * @return true if the interrupt is enabled, not if not.
+ * @exception CPUexception if the interrupt is not found.
+ */
 bool CPU::interrupt_enabled(Uint8 code) const
 {
   Word itp;
@@ -283,6 +315,9 @@ bool CPU::interrupt_enabled(Uint8 code) const
 }
 
 
+/**
+ * Handle the interrupt.
+ */
 void CPU::interrupt_handler_()
 {
   if (not this->interrupt_request_)

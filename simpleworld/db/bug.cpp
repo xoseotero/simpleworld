@@ -36,6 +36,13 @@ namespace SimpleWorld
 namespace DB
 {
 
+/**
+ * Constructor.
+ * @param db database.
+ * @param id id of the bug.
+ * @exception DBException if there is a error in the database.
+ * @exception DBException if the ID is not found in the table.
+ */
 Bug::Bug(DB* db, ID id)
   // The position at this moment is unknown
   : AliveBug(db, id, ElementBug, this->position), cpu(db, id)
@@ -44,6 +51,11 @@ Bug::Bug(DB* db, ID id)
 }
 
 
+/**
+ * Convert the alive bug in a dead bug.
+ * @param dead When the bug dead.
+ * @return The id of the new food.
+ */
 ID Bug::die(Time dead)
 {
   this->cpu.remove();
@@ -51,6 +63,12 @@ ID Bug::die(Time dead)
   return AliveBug::die(dead);
 }
 
+/**
+ * Convert the alive bug in a dead bug.
+ * @param dead When the bug dead.
+ * @param killer_id Who killed it.
+ * @return The id of the new food.
+ */
 ID Bug::die(Time dead, ID killer_id)
 {
   this->cpu.remove();
@@ -59,6 +77,13 @@ ID Bug::die(Time dead, ID killer_id)
 }
 
 
+/**
+ * Update the data of the class with the database.
+ * changed is set to false.
+ * The update() is propagated to the cpu.
+ * @exception DBException if there is an error in the database.
+ * @exception DBException if the ID is not found in the table.
+ */
 void Bug::update()
 {
   sqlite3x::sqlite3_command sql(*this->db_);
@@ -99,6 +124,16 @@ id %1% not found in table Bug")
   AliveBug::update();
 }
 
+/**
+ * Update the database with the data of the class in changed or force are
+ * true.
+ * changed is set to false.
+ * The update_db() is propagated to the cpu but without force. If the
+ * update_db() in the cpu must be forced, a explicit call to
+ * cpu::update_db(true) must be made.
+ * @param force force the update of the database.
+ * @exception DBException if there is an error in the database.
+ */
 void Bug::update_db(bool force)
 {
   if (this->changed or force) {
@@ -136,6 +171,12 @@ WHERE id = ?;");
   AliveBug::update_db(force);
 }
 
+/**
+ * Remove the data from the database.
+ * changed is set to false.
+ * The remove() is propagated to the code.
+ * @exception DBException if there is an error in the database.
+ */
 void Bug::remove()
 {
   sqlite3x::sqlite3_command sql(*this->db_);

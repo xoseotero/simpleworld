@@ -47,12 +47,24 @@ namespace SimpleWorld
 namespace DB
 {
 
+/**
+ * Constructor.
+ * @param db database.
+ * @param bug_id id of the bug.
+ * @exception DBException if there is a error in the database.
+ * @exception DBException if the ID is not found in the table.
+ */
 Code::Code(DB* db, ID bug_id)
   : Table(db, bug_id), code(&this->changed)
 {
   this->update();
 }
 
+/**
+ * Constructor to insert data.
+ * @param db database.
+ * @exception DBException if there is a error in the database.
+ */
 Code::Code(DB* db)
   : Table(db), code(&this->changed)
 {
@@ -142,6 +154,13 @@ static void insert_mutations(std::vector<Mutation>* mutations, ID bug_id)
 //}
 
 
+/**
+ * Update the data of the class with the database.
+ * changed is set to false.
+ * The update() is propagated to the mutations.
+ * @exception DBException if there is a error in the database.
+ * @exception DBException if the ID is not found in the table.
+ */
 void Code::update()
 {
   sqlite3x::sqlite3_command sql(*this->db_);
@@ -183,6 +202,16 @@ WHERE bug_id = ?;");
   Table::update();
 }
 
+/**
+ * Update the database with the data of the class in changed or force are
+ * true.
+ * changed is set to false.
+ * The update_db() is propagated to the mutations but without force. If
+ * the update_db() in the mutations must be forced, a explicit call to the
+ * mutations::update_db(true) must be made.
+ * @param force force the update of the database.
+ * @exception DBException if there is a error in the database.
+ */
 void Code::update_db(bool force)
 {
   if (this->changed or force) {
@@ -212,6 +241,14 @@ WHERE bug_id = ?;");
   Table::update_db(force);
 }
 
+/**
+ * Insert the data in the database with a specific id.
+ * The ID is updated.
+ * changed is set to false.
+ * The insert() is propagated to the mutations.
+ * @param bug_id id of the bug.
+ * @exception DBException if there is an error in the database.
+ */
 void Code::insert(ID bug_id)
 {
   sqlite3x::sqlite3_command sql(*this->db_);
@@ -236,6 +273,12 @@ VALUES(?, ?, ?, ?);");
   Table::insert(bug_id);
 }
 
+/**
+ * Remove the data from the database.
+ * changed is set to false.
+ * The remove() is propagated to the mutations.
+ * @exception DBException if there is an error in the database.
+ */
 void Code::remove()
 {
   sqlite3x::sqlite3_command sql(*this->db_);
@@ -312,6 +355,10 @@ static std::string md5_hex(unsigned char digest[16])
   return md5;
 }
 
+/**
+ * Update the MD5 check sum of the code if changed or force are is true.
+ * changed is set to true.
+ */
 void Code::update_md5(bool force)
 {
   if (not this->changed and not force)

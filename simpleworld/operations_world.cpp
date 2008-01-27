@@ -59,6 +59,15 @@
 namespace SimpleWorld
 {
 
+/**
+ * Make a action in the world.
+ * @param isa the instruction set architecture.
+ * @param regs the registers.
+ * @param mem the memory.
+ * @param interrupt interrupt.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
+ */
 CPU::Update world(CPU::ISA& isa, CPU::Memory& regs, CPU::Memory& mem,
                   CPU::Interrupt& interrupt, CPU::Instruction inst)
 {

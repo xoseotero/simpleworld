@@ -31,18 +31,36 @@ namespace SimpleWorld
 namespace DB
 {
 
+/**
+ * Constructor.
+ * @param db database.
+ * @param time time of the environment (the real time can be >= than this).
+ * @exception DBException if there is a error in the database.
+ * @exception DBException if the time is not found in the table.
+ */
 Environment::Environment(DB* db, Time time)
   : Table(db, time), time(time)
 {
   this->update();
 }
 
+/**
+ * Constructor to insert data.
+ * @param db database.
+ * @exception DBException if there is a error in the database.
+ */
 Environment::Environment(DB* db)
   : Table(db)
 {
 }
 
 
+/**
+ * Update the data of the class with the database.
+ * changed is set to false.
+ * @exception DBException if there is a error in the database.
+ * @exception DBException if the ID is not found in the table.
+ */
 void Environment::update()
 {
   sqlite3x::sqlite3_command sql(*this->db_);
@@ -88,6 +106,13 @@ time %1% not found in table Environment")
   Table::update();
 }
 
+/**
+ * Update the database with the data of the class in changed or force are
+ * true.
+ * changed is set to false.
+ * @param force force the update of the database.
+ * @exception DBException if there is a error in the database.
+ */
 void Environment::update_db(bool force)
 {
   if (this->changed or force) {
@@ -131,6 +156,12 @@ WHERE time = ?;");
   Table::update_db(force);
 }
 
+/**
+ * Insert the data in the database.
+ * The ID is updated.
+ * changed is set to false.
+ * @exception DBException if there is an error in the database.
+ */
 void Environment::insert()
 {
   sqlite3x::sqlite3_command sql(*this->db_);
@@ -169,6 +200,11 @@ VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
   Table::insert();
 }
 
+/**
+ * Remove the data from the database.
+ * changed is set to false.
+ * @exception DBException if there is an error in the database.
+ */
 void Environment::remove()
 {
   sqlite3x::sqlite3_command sql(*this->db_);

@@ -70,12 +70,20 @@
 namespace SimpleWorld
 {
 
+/**
+ * Constructor.
+ * @param filename File name of the database.
+ * @exception DBException if there is a error in the database.
+ */
 SimpleWorld::SimpleWorld(std::string filename)
   : DB(filename)
 {
   this->on_open();
 }
 
+/**
+ * Destructor.
+ */
 SimpleWorld::~SimpleWorld()
 {
   // Free the food
@@ -107,6 +115,15 @@ SimpleWorld::~SimpleWorld()
 }
 
 
+/**
+ * Add a egg to the World.
+ * @param energy Energy of the egg.
+ * @param position Position of the egg.
+ * @param orientation Orientation of the egg.
+ * @param code Code of the egg.
+ * @exception Exception if the position is out of the limits.
+ * @exception Exception if the position is used.
+ */
 void SimpleWorld::add_egg(Energy energy,
                           Position position, Orientation orientation,
                           const CPU::Memory& code)
@@ -132,6 +149,13 @@ void SimpleWorld::add_egg(Energy energy,
   transaction.commit();
 }
 
+/**
+ * Add food to the World.
+ * @param position Position of the food.
+ * @param size Size of the food.
+ * @exception Exception if the position is out of the limits.
+ * @exception Exception if the position is used.
+ */
 void SimpleWorld::add_food(Position position, Energy size)
 {
   // begin a transaction
@@ -150,6 +174,10 @@ void SimpleWorld::add_food(Position position, Energy size)
 }
 
 
+/**
+ * Execute some cycles of the World.
+ * @param cycles Cycles to be executed.
+ */
 void SimpleWorld::run(Time cycles)
 {
   for (; cycles > 0; cycles--) {
@@ -174,6 +202,11 @@ void SimpleWorld::run(Time cycles)
 }
 
 
+/**
+ * Do nothing.
+ * @param bug Bug that executes the action.
+ * @exception ActionError if something fails.
+ */
 void SimpleWorld::nothing(Bug* bug)
 {
 #ifdef DEBUG
@@ -186,6 +219,14 @@ void SimpleWorld::nothing(Bug* bug)
   bug->changed = true;
 }
 
+/**
+ * Get information about the bug itself.
+ * @param bug Bug that executes the action.
+ * @param info Type of information requested.
+ * @param ypos Where to save the Y coord when requested the position.
+ * @return The information.
+ * @exception ActionError if something fails.
+ */
 CPU::Word SimpleWorld::myself(Bug* bug, Info info, CPU::Word* ypos)
 {
 #ifdef DEBUG
@@ -221,6 +262,12 @@ CPU::Word SimpleWorld::myself(Bug* bug, Info info, CPU::Word* ypos)
   }
 }
 
+/**
+ * Get the type of element that is in front of the bug.
+ * @param bug Bug that executes the action.
+ * @return The type of element.
+ * @exception ActionError if something fails.
+ */
 ElementType SimpleWorld::detect(Bug* bug)
 {
 #ifdef DEBUG
@@ -240,6 +287,14 @@ ElementType SimpleWorld::detect(Bug* bug)
   }
 }
 
+/**
+ * Get information about the bug that is in front of the bug.
+ * @param bug Bug that executes the action.
+ * @param info Type of information requested.
+ * @param ypos Where to save the Y coord when requested the position.
+ * @return The information.
+ * @exception ActionError if something fails.
+ */
 CPU::Word SimpleWorld::information(Bug* bug, Info info, CPU::Word* ypos)
 {
 #ifdef DEBUG
@@ -292,6 +347,12 @@ There is nothing in (%1%, %2%)")
   }
 }
 
+/**
+ * Move a bug.
+ * @param bug Bug that executes the action.
+ * @param movement Type of movement.
+ * @exception ActionError if something fails.
+ */
 void SimpleWorld::move(Bug* bug, Movement movement)
 {
 #ifdef DEBUG
@@ -310,6 +371,12 @@ void SimpleWorld::move(Bug* bug, Movement movement)
   }
 }
 
+/**
+ * Turn a bug.
+ * @param bug Bug that executes the action.
+ * @param turn Type of turn.
+ * @exception ActionError if something fails.
+ */
 void SimpleWorld::turn(Bug* bug, Turn turn)
 {
 #ifdef DEBUG
@@ -328,6 +395,12 @@ void SimpleWorld::turn(Bug* bug, Turn turn)
   }
 }
 
+/**
+ * Attack.
+ * @param bug Bug that executes the action.
+ * @param energy Energy used in the attack.
+ * @exception ActionError if something fails.
+ */
 void SimpleWorld::attack(Bug* bug, Energy energy)
 {
 #ifdef DEBUG
@@ -386,6 +459,12 @@ There is not a egg/bug in (%1%, %2%)")
   this->substract_energy(bug, energy);
 }
 
+/**
+ * Eat what is in front of the bug.
+ * @param bug Bug that executes the action.
+ * @return The energy eaten.
+ * @exception ActionError if something fails.
+ */
 Energy SimpleWorld::eat(Bug* bug)
 {
 #ifdef DEBUG
@@ -430,6 +509,12 @@ There is nothing to eat in (%1%, %2%")
   return energy;
 }
 
+/**
+ * Create a egg in front of the bug.
+ * @param bug Bug that executes the action.
+ * @param energy Energy transfered to the egg.
+ * @exception ActionError if something fails.
+ */
 void SimpleWorld::egg(Bug* bug, Energy energy)
 {
 #ifdef DEBUG
@@ -467,6 +552,11 @@ Position used (%1%, %2%)")
 }
 
 
+/**
+ * This function is called when open() succeeds. Subclasses
+ * which wish to do custom db initialization or sanity checks
+ * may do them here.
+ */
 void SimpleWorld::on_open()
 {
   DB::on_open();
@@ -523,7 +613,11 @@ void SimpleWorld::on_open()
   }
 }
 
-
+/**
+ * Position in front of a given bug.
+ * @param bug The bug.
+ * @return Position in front of the bug.
+ */
 Position SimpleWorld::front(Bug* bug)
 {
   return ::SimpleWorld::move(bug->position, bug->orientation,
@@ -531,6 +625,9 @@ Position SimpleWorld::front(Bug* bug)
 }
 
 
+/**
+ * Convert in bugs all the eggs that are old enough.
+ */
 void SimpleWorld::eggs_birth()
 {
   // check for the birthday of each egg
@@ -550,6 +647,9 @@ void SimpleWorld::eggs_birth()
   }
 }
 
+/**
+ * Throw the Timer Interrupt in all the alive bugs.
+ */
 void SimpleWorld::bugs_timer()
 {
   // throw the Timer Interrupt in each bug
@@ -561,6 +661,13 @@ void SimpleWorld::bugs_timer()
     (*current)->timer_interrupt();
 }
 
+/**
+ * Substract some energy to the egg.
+ * If the egg has not enough energy, it's converted in food.
+ * @param egg The egg.
+ * @param energy The energy.
+ * @exception BugDeath If the bug die.
+ */
 void SimpleWorld::substract_energy(Egg* egg, Energy energy)
 {
   if (egg->energy <= energy)
@@ -571,6 +678,13 @@ Egg %1% is death")
   egg->energy -= energy;
 }
 
+/**
+ * Substract some energy to the bug.
+ * If the bug has not enough energy, it's converted in food.
+ * @param bug The bug.
+ * @param energy The energy.
+ * @exception BugDeath If the bug die.
+ */
 void SimpleWorld::substract_energy(Bug* bug, Energy energy)
 {
   if (bug->energy <= energy)
@@ -581,6 +695,10 @@ Bug %1% is death")
   bug->energy -= energy;
 }
 
+/**
+ * Kill the egg and convert it into food.
+ * @param egg The egg.
+ */
 void SimpleWorld::kill(Egg* egg)
 {
   // Convert the egg in food
@@ -610,6 +728,11 @@ Egg[%1%] died")
 #endif // DEBUG
 }
 
+/**
+ * Kill the egg and convert it into food.
+ * @param egg The egg.
+ * @param killer_id Who killed it.
+ */
 void SimpleWorld::kill(Egg* egg, ::SimpleWorld::DB::ID killer_id)
 {
   // Convert the egg in food
@@ -639,6 +762,10 @@ Egg[%1%] died")
 #endif // DEBUG
 }
 
+/**
+ * Kill the bug and convert it into food.
+ * @param bug The bug.
+ */
 void SimpleWorld::kill(Bug* bug)
 {
   // Convert the bug in food
@@ -668,6 +795,11 @@ Bug[%1%] died")
 #endif // DEBUG
 }
 
+/**
+ * Kill the bug and convert it into food.
+ * @param bug The bug.
+ * @param killer_id Who killed it.
+ */
 void SimpleWorld::kill(Bug* bug, ::SimpleWorld::DB::ID killer_id)
 {
   // Convert the bug in food
@@ -697,6 +829,9 @@ Bug[%1%] died")
 #endif // DEBUG
 }
 
+/**
+ * Execute a cycle in all the alive bugs.
+ */
 void SimpleWorld::bugs_run()
 {
   // execute a instruction in each bug
@@ -721,6 +856,9 @@ void SimpleWorld::bugs_run()
   }
 }
 
+/**
+ * Update the elements of the World in the database.
+ */
 void SimpleWorld::update_db()
 {
   // update the eggs

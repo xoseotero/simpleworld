@@ -28,12 +28,24 @@ namespace SimpleWorld
 namespace DB
 {
 
+/**
+ * Constructor.
+ * Memory outside the 16bits range can't be used.
+ * The memory is zeroed after being allocated.
+ * @param changed pointer to the variable used to advise about a change.
+ * @param size bytes of the memory
+ */
 Memory::Memory(bool* changed, CPU::Address size)
   : CPU::Memory(size), changed_(changed)
 {
   *this->changed_ = false;
 }
 
+/**
+ * Copy constructor.
+ * @param memory memory to copy.
+ * @param changed pointer to the variable used to advise about a change.
+ */
 Memory::Memory(const Memory& memory, bool* changed)
   : CPU::Memory(memory), changed_(changed)
 {
@@ -41,6 +53,10 @@ Memory::Memory(const Memory& memory, bool* changed)
 }
 
 
+/**
+ * Set the size of the memory.
+ * The new memory is zeroed.
+ */
 void Memory::resize(CPU::Address size)
 {
   CPU::Memory::resize(size);
@@ -49,6 +65,16 @@ void Memory::resize(CPU::Address size)
 }
 
 
+/**
+ * Set the value of a word.
+ * In big endian systems the system_endian parameter does nothing.
+ * In little endian systems the word is supposed to be in little endian if
+ * system_endian is true and in big endian if system_endian is false.
+ * @param address address of the word
+ * @param value value of the word
+ * @param system_endian if the word is in the systen endianness
+ * @exception SimpleWorld::Exception address > (size - 4)
+ */
 void Memory::set_word(CPU::Address address, CPU::Word value,
                       bool system_endian)
 {
@@ -58,6 +84,11 @@ void Memory::set_word(CPU::Address address, CPU::Word value,
 }
 
 
+/**
+ * Copy the content of other Memory class.
+ * @param memory memory to copy.
+ * @return a reference to this object.
+ */
 Memory& Memory::assign(const CPU::Memory& memory)
 {
   CPU::Memory::assign(memory);

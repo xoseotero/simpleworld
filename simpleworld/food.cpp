@@ -28,6 +28,12 @@
 namespace SimpleWorld
 {
 
+/**
+ * Constructor.
+ * @param sw world where the bug lives.
+ * @param id id of the food.
+ * @exception DBException if there is a error in the database.
+ */
 Food::Food(SimpleWorld* sw, DB::ID id)
   : DB::Food(sw, id)
 {

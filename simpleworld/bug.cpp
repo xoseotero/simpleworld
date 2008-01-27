@@ -39,6 +39,12 @@
 namespace SimpleWorld
 {
 
+/**
+ * Constructor.
+ * @param sw world where the bug lives.
+ * @param id id of the bug.
+ * @exception DBException if there is a error in the database.
+ */
 Bug::Bug(SimpleWorld* sw, DB::ID id)
   : DB::Bug(sw, id), CPU(&this->cpu.registers, &this->code.code), world(sw)
 {
@@ -50,6 +56,9 @@ Bug::Bug(SimpleWorld* sw, DB::ID id)
   this->isa_.add_instruction(0x38, "world", 0, true, ::SimpleWorld::world);
 }
 
+/**
+ * Destructor.
+ */
 Bug::~Bug()
 {
   assert(Bug::bugs.find(this->registers_) != Bug::bugs.end());
@@ -58,6 +67,9 @@ Bug::~Bug()
 }
 
 
+/**
+ * The bug has been attacked.
+ */
 void Bug::attacked()
 {
 #ifdef DEBUG
@@ -76,6 +88,11 @@ Bug[%1%] attacked")
 }
 
 
+/**
+ * Association of registers and bugs.
+ * This is needed for the world operation (operations_world.cpp). The
+ * operations of the Simple CPU don't receive as a parameter the bug
+ */
 std::map< ::SimpleWorld::CPU::Memory*, Bug*> Bug::bugs;
 
 }

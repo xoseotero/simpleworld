@@ -32,6 +32,12 @@ namespace SimpleWorld
 namespace DB
 {
 
+/**
+ * Get a block of memory from a sqlite3_cursor.
+ * @param cursor pointer to a cursor of SQLite3x.
+ * @param index row where the BLOB is stored.
+ * @return the block of memory.
+ */
 ::SimpleWorld::CPU::Memory get_memory(sqlite3x::sqlite3_cursor* cursor,
                                       int index)
 {
@@ -50,6 +56,12 @@ namespace DB
   return memory;
 }
 
+/**
+ * Bind a block of memory to a sqlite3_command.
+ * @param sql pointer to a command of SQLite3x.
+ * @param index row where the BLOB is stored.
+ * @param memory the block of memory.
+ */
 void bind_memory(sqlite3x::sqlite3_command* sql, int index,
                  const ::SimpleWorld::CPU::Memory& memory)
 {

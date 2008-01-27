@@ -33,10 +33,17 @@ namespace SimpleWorld
 namespace CPU
 {
 
+/**
+ * Constructor for a empty file.
+ */
 File::File()
 {
 }
 
+/**
+ * Copy constructor.
+ * @param file File to copy.
+ */
 File::File(const File& file)
 {
   std::vector<std::string>::const_iterator iter = file.lines_.begin();
@@ -46,16 +53,31 @@ File::File(const File& file)
   }
 }
 
+/**
+ * Constructor that opens a file.
+ * @param filename File to open.
+ * @exception IOError File can't be opened
+ */
 File::File(std::string filename)
 {
   this->load(filename);
 }
 
+
+/**
+ * Number of lines.
+ * @return the number of lines.
+ */
 File::size_type File::lines() const
 {
   return this->lines_.size();
 }
 
+/**
+ * Get a line.
+ * @param pos Position of the line.
+ * @exception CPUException if pos > lines
+ */
 std::string& File::get_line(File::size_type pos)
 {
   if ((pos + 1) > this->lines_.size())
@@ -66,6 +88,11 @@ Line %1% is out of range")
   return this->lines_[pos];
 }
 
+/**
+ * Get a line.
+ * @param pos Position of the line.
+ * @exception CPUException if pos > lines
+ */
 const std::string& File::get_line(File::size_type pos) const
 {
   if ((pos + 1) > this->lines_.size())
@@ -76,6 +103,12 @@ Line %1% is out of range")
   return this->lines_[pos];
 }
 
+/**
+ * Insert a new line in the file.
+ * @param pos Position of the new line.
+ * @param line Line to insert.
+ * @exception CPUException if pos > lines
+ */
 void File::insert(File::size_type pos, const std::string& line)
 {
   if (pos > this->lines_.size())
@@ -86,6 +119,12 @@ Line %1% is out of range")
   this->lines_.insert(this->lines_.begin() + pos, line);
 }
 
+/**
+ * Insert the lines of a File in the file.
+ * @param pos Position of the new line.
+ * @param file File to insert.
+ * @exception CPUException if pos > lines
+ */
 void File::insert(File::size_type pos, const File& file)
 {
   if (pos > this->lines_.size())
@@ -97,6 +136,12 @@ Line %1% is out of range")
                       file.lines_.begin(), file.lines_.end());
 }
 
+/**
+ * Remove n lines from the file.
+ * @param pos Position of the first line to remove.
+ * @param n Number of lines to remove.
+ * @exception CPUException if pos > lines or pos + n > lines
+ */
 void File::remove(File::size_type pos, File::size_type n)
 {
   if ((pos + 1) > this->lines_.size())
@@ -109,6 +154,13 @@ Line %1% is out of range")
 }
 
 
+/**
+ * Load from a file.
+ *
+ * Before the load, all the lines of the File are removed.
+ * @param filename File to open.
+ * @exception IOError File can't be opened
+ */
 void File::load(std::string filename)
 {
   this->lines_.clear();
@@ -124,6 +176,11 @@ File %1% is not readable")
     this->lines_.push_back(str);
 }
 
+/**
+ * Save to a file.
+ * @param filename File name where to save.
+ * @exception IOError File can't be saved
+ */
 void File::save(std::string filename) const
 {
   std::ofstream os(filename.c_str());
@@ -139,17 +196,35 @@ File %1% is not writable")
   }
 }
 
+/**
+ * Get a line.
+ * @param pos Position of the line.
+ * @exception CPUException if pos > lines
+ */
 std::string& File::operator [](File::size_type pos)
 {
   return this->get_line(pos);
 }
 
+/**
+ * Get a line.
+ * @param pos Position of the line.
+ * @exception CPUException if pos > lines
+ */
 const std::string& File::operator [](File::size_type pos) const
 {
   return this->get_line(pos);
 }
 
 
+/**
+ * Load lines.
+ *
+ * Before the load, all the lines of the File are removed.
+ * @param is From where to get the file
+ * @param file Where to load the lines
+ * @return Reference to where to get the file
+ */
 std::istream& operator >>(std::istream& is, File& file)
 {
   file.lines_.clear();
@@ -161,6 +236,12 @@ std::istream& operator >>(std::istream& is, File& file)
   return is;
 }
 
+/**
+ * Print the lines.
+ * @param os Where to print the file
+ * @param file File to print
+ * @return Reference to where to print
+ */
 std::ostream& operator <<(std::ostream& os, const File& file)
 {
   std::vector<std::string>::const_iterator iter = file.lines_.begin();

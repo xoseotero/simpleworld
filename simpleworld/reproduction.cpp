@@ -169,6 +169,12 @@ static void permutate_word(::SimpleWorld::DB::Code* copy,
   }
 }
 
+
+/**
+ * Get a copy of the code but with occasional mutations.
+ * @param code the original code.
+ * @return the copy of the code.
+ */
 ::SimpleWorld::DB::Code copy_code(const ::SimpleWorld::DB::Code& code,
                                   float mutations_probability)
 {

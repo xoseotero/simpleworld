@@ -31,6 +31,13 @@ namespace SimpleWorld
 namespace DB
 {
 
+/**
+ * Constructor.
+ * @param db database.
+ * @param id id of the food.
+ * @exception DBException if there is a error in the database.
+ * @exception DBException if the ID is not found in the table.
+ */
 Food::Food(DB* db, ID id)
   // The position at this moment is unknown
   : Table(db, id), Element(ElementFood, this->position)
@@ -38,6 +45,11 @@ Food::Food(DB* db, ID id)
   this->update();
 }
 
+/**
+ * Constructor to insert data.
+ * @param db database.
+ * @exception DBException if there is a error in the database.
+ */
 Food::Food(DB* db)
   // The position at this moment is unknown
   : Table(db), Element(ElementFood, this->position)
@@ -45,6 +57,12 @@ Food::Food(DB* db)
 }
 
 
+/**
+ * Update the data of the class with the database.
+ * changed is set to false.
+ * @exception DBException if there is an error in the database.
+ * @exception DBException if the ID is not found in the table.
+ */
 void Food::update()
 {
   sqlite3x::sqlite3_command sql(*this->db_);
@@ -73,6 +91,13 @@ id %1% not found in table Food")
   Table::update();
 }
 
+/**
+ * Update the database with the data of the class in changed or force are
+ * true.
+ * changed is set to false.
+ * @param force force the update of the database.
+ * @exception DBException if there is an error in the database.
+ */
 void Food::update_db(bool force)
 {
   if (this->changed or force) {
@@ -98,6 +123,12 @@ WHERE id = ?;");
   Table::update_db(force);
 }
 
+/**
+ * Insert the data in the database.
+ * The ID is updated.
+ * changed is set to false.
+ * @exception DBException if there is an error in the database.
+ */
 void Food::insert()
 {
   sqlite3x::sqlite3_command sql(*this->db_);
@@ -120,6 +151,11 @@ VALUES(?, ?, ?);");
   Table::insert();
 }
 
+/**
+ * Remove the data from the database.
+ * changed is set to false.
+ * @exception DBException if there is an error in the database.
+ */
 void Food::remove()
 {
   sqlite3x::sqlite3_command sql(*this->db_);

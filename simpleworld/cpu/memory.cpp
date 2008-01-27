@@ -35,12 +35,22 @@ namespace SimpleWorld
 namespace CPU
 {
 
+/**
+ * Constructor.
+ * Memory outside the 16bits range can't be used.
+ * The memory is zeroed after being allocated.
+ * @param size bytes of the memory
+ */
 Memory::Memory(Address size)
   : size_(0), memory_(NULL)
 {
   this->resize(size);
 }
 
+/**
+ * Copy constructor.
+ * @param memory memory to copy.
+ */
 Memory::Memory(const Memory& memory)
   : size_(0), memory_(NULL)
 {
@@ -51,6 +61,9 @@ Memory::Memory(const Memory& memory)
     this->memory_[i] = memory.memory_[i];
 }
 
+/**
+ * Destructor.
+ */
 Memory::~Memory()
 {
   if (this->memory_ != NULL)
@@ -58,6 +71,11 @@ Memory::~Memory()
 }
 
 
+/**
+ * Set the size of the memory.
+ * The new memory is zeroed.
+ * @param size new size of the memory.
+ */
 void Memory::resize(Address size)
 {
   Sint8* tmp = NULL;
@@ -81,6 +99,16 @@ void Memory::resize(Address size)
 }
 
 
+/**
+ * Get a word.
+ * In big endian systems the system_endian parameter does nothing.
+ * In little endian systems the word is returned in little endian if
+ * system_endian is true and in big endian if system_endian is false.
+ * @param address address of the word
+ * @param system_endian if the address must be in the system endianness
+ * @return the word
+ * @exception MemoryError if address > (size - 3)
+ */
 Word Memory::get_word(Address address, bool system_endian) const
 {
   if (address > (this->size_ - sizeof(Word)))
@@ -102,6 +130,16 @@ Address %08x is out of range")
 }
 
 
+/**
+ * Set the value of a word.
+ * In big endian systems the system_endian parameter does nothing.
+ * In little endian systems the word is supposed to be in little endian if
+ * system_endian is true and in big endian if system_endian is false.
+ * @param address address of the word
+ * @param value value of the word
+ * @param system_endian if the word is in the systen endianness
+ * @exception MemoryError if address > (size - 3)
+ */
 void Memory::set_word(Address address, Uint32 value, bool system_endian)
 {
   if (address > (this->size_ - sizeof(Word)))
@@ -126,6 +164,11 @@ Address %08x is out of range")
 }
 
 
+/**
+ * Copy the content of other Memory class.
+ * @param memory memory to copy.
+ * @return a reference to this object.
+ */
 Memory& Memory::assign(const Memory& memory)
 {
   this->resize(memory.size_);

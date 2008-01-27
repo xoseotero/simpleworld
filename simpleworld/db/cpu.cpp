@@ -32,18 +32,36 @@ namespace SimpleWorld
 namespace DB
 {
 
+/**
+ * Constructor.
+ * @param db database.
+ * @param bug_id id of the bug.
+ * @exception DBException if there is a error in the database.
+ * @exception DBException if the ID is not found in the table.
+ */
 CPU::CPU(DB* db, ID bug_id)
   : Table(db, bug_id), registers(&this->changed)
 {
   this->update();
 }
 
+/**
+ * Constructor to insert data.
+ * @param db database.
+ * @exception DBException if there is a error in the database.
+ */
 CPU::CPU(DB* db)
   : Table(db), registers(&this->changed)
 {
 }
 
 
+/**
+ * Update the data of the class with the database.
+ * changed is set to false.
+ * @exception DBException if there is a error in the database.
+ * @exception DBException if the ID is not found in the table.
+ */
 void CPU::update()
 {
   sqlite3x::sqlite3_command sql(*this->db_);
@@ -70,6 +88,13 @@ bug_id %1% not found in table CPU")
   Table::update();
 }
 
+/**
+ * Update the database with the data of the class in changed or force are
+ * true.
+ * changed is set to false.
+ * @param force force the update of the database.
+ * @exception DBException if there is a error in the database.
+ */
 void CPU::update_db(bool force)
 {
   if (this->changed or force) {
@@ -93,6 +118,13 @@ WHERE bug_id = ?;");
   Table::update_db(force);
 }
 
+/**
+ * Insert the data in the database with a specific id.
+ * The ID is updated.
+ * changed is set to false.
+ * @param bug_id id of the bug.
+ * @exception DBException if there is an error in the database.
+ */
 void CPU::insert(ID bug_id)
 {
   sqlite3x::sqlite3_command sql(*this->db_);
@@ -113,6 +145,11 @@ VALUES(?, ?);");
   Table::insert(bug_id);
 }
 
+/**
+ * Remove the data from the database.
+ * changed is set to false.
+ * @exception DBException if there is an error in the database.
+ */
 void CPU::remove()
 {
   sqlite3x::sqlite3_command sql(*this->db_);

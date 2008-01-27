@@ -33,6 +33,11 @@ namespace SimpleWorld
 namespace CPU
 {
 
+/**
+ * Encode the instruction to a Word (in big endian).
+ * @param instruction instruction to encode.
+ * @return the instruction encoded.
+ */
 Word Instruction::encode(const Instruction& instruction)
 {
   Word word;
@@ -52,6 +57,11 @@ Word Instruction::encode(const Instruction& instruction)
   return word;
 }
 
+/**
+ * Decode the instruction (in big endian).
+ * @param word word to decode (in big endian).
+ * @return the instruction decoded.
+ */
 Instruction Instruction::decode(Word word)
 {
   Instruction instruction;

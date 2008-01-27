@@ -31,18 +31,36 @@ namespace SimpleWorld
 namespace DB
 {
 
+/**
+ * Constructor.
+ * @param db database.
+ * @param id id of the mutation.
+ * @exception DBException if there is a error in the database.
+ * @exception DBException if the ID is not found in the table.
+ */
 Mutation::Mutation(DB* db, ID bug_id)
   : Table(db, bug_id)
 {
   this->update();
 }
 
+/**
+ * Constructor to insert data.
+ * @param db database.
+ * @exception DBException if there is a error in the database.
+ */
 Mutation::Mutation(DB* db)
   : Table(db, this->id_)
 {
 }
 
 
+/**
+ * Update the data of the class with the database.
+ * changed is set to false.
+ * @exception DBException if there is a error in the database.
+ * @exception DBException if the ID is not found in the table.
+ */
 void Mutation::update()
 {
   sqlite3x::sqlite3_command sql(*this->db_);
@@ -79,6 +97,13 @@ id %1% not found in table Mutation")
   Table::update();
 }
 
+/**
+ * Update the database with the data of the class in changed or force are
+ * true.
+ * changed is set to false.
+ * @param force force the update of the database.
+ * @exception DBException if there is a error in the database.
+ */
 void Mutation::update_db(bool force)
 {
   if (this->changed or force) {
@@ -111,6 +136,13 @@ WHERE id = ?;");
   Table::update_db(force);
 }
 
+/**
+ * Insert the data in the database with a specific id.
+ * The ID is updated.
+ * changed is set to false.
+ * @param bug_id id of the bug.
+ * @exception DBException if there is an error in the database.
+ */
 void Mutation::insert(ID bug_id)
 {
   sqlite3x::sqlite3_command sql(*this->db_);
@@ -141,6 +173,11 @@ VALUES(?, ?, ?, ?);");
   Table::insert();
 }
 
+/**
+ * Remove the data from the database.
+ * changed is set to false.
+ * @exception DBException if there is an error in the database.
+ */
 void Mutation::remove()
 {
   sqlite3x::sqlite3_command sql(*this->db_);

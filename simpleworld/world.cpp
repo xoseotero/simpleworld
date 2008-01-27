@@ -71,6 +71,11 @@ namespace SimpleWorld
                                            % position.y));
 
 
+/**
+ * Constructor.
+ * @param width width of the World.
+ * @param height height of the World.
+ */
 World::World(Coord width, Coord height)
   : num_elements_(0), terrain_(boost::extents[width][height])
 {
@@ -84,6 +89,10 @@ World::World(Coord width, Coord height)
       this->terrain_[i.x][i.y] = NULL;
 }
 
+/**
+ * Constructor.
+ * @param size size of the World.
+ */
 World::World(Position size)
   : size_(size), num_elements_(0), terrain_(boost::extents[size.x][size.y])
 {
@@ -95,6 +104,13 @@ World::World(Position size)
 }
 
 
+/**
+ * Add a element to the World.
+ * @param element element to add.
+ * @param position position of the element.
+ * @exception WorldError if the position is out of the limits.
+ * @exception WorldError if the position is used.
+ */
 void World::add(Element* element, Position position)
 {
   CHECK_OUTOFRANGE(position, this->size_);
@@ -110,6 +126,12 @@ void World::add(Element* element, Position position)
   this->terrain_[position.x][position.y] = element;
 }
 
+/**
+ * Remove a element from the World.
+ * @param position position of the element.
+ * @exception WorldError if the position is out of the limits.
+ * @exception WorldError if the position is not used.
+ */
 void World::remove(Position position)
 {
   CHECK_OUTOFRANGE(position, this->size_);
@@ -120,6 +142,12 @@ void World::remove(Position position)
 }
 
 
+/**
+ * Check if the position is used.
+ * @param position position to check.
+ * @return return true if the position is used, false if not.
+ * @exception WorldError if the position is out of the limits.
+ */
 bool World::used(Position position) const
 {
   CHECK_OUTOFRANGE(position, this->size_);
@@ -127,6 +155,13 @@ bool World::used(Position position) const
   return this->terrain_[position.x][position.y] != NULL;
 }
 
+/**
+ * Get a element from the World.
+ * @param position position of the element.
+ * @return the element.
+ * @exception WorldError if the position is out of the limits.
+ * @exception WorldError if the position is not used.
+ */
 Element* World::get(Position position) const
 {
   CHECK_OUTOFRANGE(position, this->size_);
@@ -136,6 +171,15 @@ Element* World::get(Position position) const
 }
 
 
+/**
+ * Move a element.
+ * @param oldposition current position of the element.
+ * @param newposition new position of the element.
+ * @exception WorldError if the position is out of the limits.
+ * @exception WorldError if the old position is not used.
+ * @exception WorldError if the new position is used.
+ * @exception WorldError if the element can't be moved.
+ */
 void World::move(Position oldposition, Position newposition)
 {
   CHECK_OUTOFRANGE(oldposition, this->size_);

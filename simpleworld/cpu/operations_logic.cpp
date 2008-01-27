@@ -28,6 +28,17 @@ namespace SimpleWorld
 namespace CPU
 {
 
+/**
+ * NOT of a register.
+ *
+ * REGISTERS[FIRST] = ~REGISTERS[SECOND]
+ * @param isa the instruction set architecture.
+ * @param regs the registers.
+ * @param mem the memory.
+ * @param interrupt interrupt.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
+ */
 Update lnot(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
             Instruction inst)
 {
@@ -36,6 +47,17 @@ Update lnot(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
   return UpdatePC;
 }
 
+/**
+ * OR of two registers.
+ *
+ * REGISTERS[FIRST] = REGISTERS[SECOND] | REGISTERS[ADDRESS]
+ * @param isa the instruction set architecture.
+ * @param regs the registers.
+ * @param mem the memory.
+ * @param interrupt interrupt.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
+ */
 Update lor(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
            Instruction inst)
 {
@@ -45,6 +67,17 @@ Update lor(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
   return UpdatePC;
 }
 
+/**
+ * OR of a register and a inmediate value.
+ *
+ * REGISTERS[FIRST] = REGISTERS[SECOND] | ADDRESS
+ * @param isa the instruction set architecture.
+ * @param regs the registers.
+ * @param mem the memory.
+ * @param interrupt interrupt.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
+ */
 Update lori(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
             Instruction inst)
 {
@@ -54,6 +87,17 @@ Update lori(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
   return UpdatePC;
 }
 
+/**
+ * AND of two registers.
+ *
+ * REGISTERS[FIRST] = REGISTERS[SECOND] & REGISTERS[ADDRESS]
+ * @param isa the instruction set architecture.
+ * @param regs the registers.
+ * @param mem the memory.
+ * @param interrupt interrupt.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
+ */
 Update land(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
             Instruction inst)
 {
@@ -63,6 +107,17 @@ Update land(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
   return UpdatePC;
 }
 
+/**
+ * AND of a register and a inmediate value.
+ *
+ * REGISTERS[FIRST] = REGISTERS[SECOND] & ADDRESS
+ * @param isa the instruction set architecture.
+ * @param regs the registers.
+ * @param mem the memory.
+ * @param interrupt interrupt.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
+ */
 Update landi(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
              Instruction inst)
 {
@@ -72,6 +127,17 @@ Update landi(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
   return UpdatePC;
 }
 
+/**
+ * EXOR of two registers.
+ *
+ * REGISTERS[FIRST] = REGISTERS[SECOND] ^ REGISTERS[ADDRESS]
+ * @param isa the instruction set architecture.
+ * @param regs the registers.
+ * @param mem the memory.
+ * @param interrupt interrupt.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
+ */
 Update lxor(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
             Instruction inst)
 {
@@ -81,6 +147,17 @@ Update lxor(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
   return UpdatePC;
 }
 
+/**
+ * EXOR of a register and a inmediate value.
+ *
+ * REGISTERS[FIRST] = REGISTERS[SECOND] ^ ADDRESS
+ * @param isa the instruction set architecture.
+ * @param regs the registers.
+ * @param mem the memory.
+ * @param interrupt interrupt.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
+ */
 Update lxori(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
              Instruction inst)
 {

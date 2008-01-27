@@ -33,17 +33,37 @@ namespace SimpleWorld
 namespace DB
 {
 
+/**
+ * Constructor.
+ * @param db database.
+ * @param id id of the bug.
+ * @param type type of element
+ * @param position position of the bug.
+ * @exception DBException if there is a error in the database.
+ * @exception DBException if the ID is not found in the table.
+ */
 AliveBug::AliveBug(DB* db, ID id, ElementType type, Position position)
   : BugElement(db, id, type, position)
 {
 }
 
+/**
+ * Constructor to insert data.
+ * @param db database.
+ * @param type type of element
+ * @exception DBException if there is a error in the database.
+ */
 AliveBug::AliveBug(DB* db, ElementType type)
   : BugElement(db, type)
 {
 }
 
 
+/**
+ * Convert the alive bug in a dead bug.
+ * @param dead When the bug dead.
+ * @return The id of the new food.
+ */
 ID AliveBug::die(Time dead)
 {
   this->energy = 0;
@@ -63,6 +83,12 @@ ID AliveBug::die(Time dead)
   return food.id();
 }
 
+/**
+ * Convert the alive bug in a dead bug.
+ * @param dead When the bug dead.
+ * @param killer_id Who killed it.
+ * @return The id of the new food.
+ */
 ID AliveBug::die(Time dead, ID killer_id)
 {
   this->energy = 0;

@@ -26,6 +26,11 @@
 namespace SimpleWorld
 {
 
+/**
+ * Constructor.
+ * @param type type of element
+ * @param position position of the element.
+ */
 Element::Element(ElementType type, Position position)
   : type(type), position(position)
 {

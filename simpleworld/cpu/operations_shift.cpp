@@ -28,6 +28,17 @@ namespace SimpleWorld
 namespace CPU
 {
 
+/**
+ * Logic shift left.
+ *
+ * Move the bits X positions to the left inserting zeros on the right.
+ * @param isa the instruction set architecture.
+ * @param regs the registers.
+ * @param mem the memory.
+ * @param interrupt interrupt.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
+ */
 Update sll(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
            Instruction inst)
 {
@@ -37,6 +48,17 @@ Update sll(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
   return UpdatePC;
 }
 
+/**
+ * Logic shift left.
+ *
+ * Move the bits X positions to the left inserting zeros on the right.
+ * @param isa the instruction set architecture.
+ * @param regs the registers.
+ * @param mem the memory.
+ * @param interrupt interrupt.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
+ */
 Update slli(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
             Instruction inst)
 {
@@ -46,6 +68,17 @@ Update slli(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
   return UpdatePC;
 }
 
+/**
+ * Logic shift right.
+ *
+ * Move the bits X positions to the right inserting zeros on the left.
+ * @param isa the instruction set architecture.
+ * @param regs the registers.
+ * @param mem the memory.
+ * @param interrupt interrupt.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
+ */
 Update srl(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
            Instruction inst)
 {
@@ -55,6 +88,17 @@ Update srl(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
   return UpdatePC;
 }
 
+/**
+ * Logic shift right.
+ *
+ * Move the bits X positions to the right inserting zeros on the left.
+ * @param isa the instruction set architecture.
+ * @param regs the registers.
+ * @param mem the memory.
+ * @param interrupt interrupt.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
+ */
 Update srli(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
             Instruction inst)
 {
@@ -64,6 +108,17 @@ Update srli(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
   return UpdatePC;
 }
 
+/**
+ * Arithmetic shift left.
+ *
+ * Same as logic shift left.
+ * @param isa the instruction set architecture.
+ * @param regs the registers.
+ * @param mem the memory.
+ * @param interrupt interrupt.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
+ */
 Update sla(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
            Instruction inst)
 {
@@ -73,6 +128,17 @@ Update sla(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
   return UpdatePC;
 }
 
+/**
+ * Arithmetic shift left.
+ *
+ * Same as logic shift left.
+ * @param isa the instruction set architecture.
+ * @param regs the registers.
+ * @param mem the memory.
+ * @param interrupt interrupt.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
+ */
 Update slai(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
             Instruction inst)
 {
@@ -82,6 +148,17 @@ Update slai(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
   return UpdatePC;
 }
 
+/**
+ * Arithmetic shift right.
+ *
+ * Same as logic shift right but performing sign extension.
+ * @param isa the instruction set architecture.
+ * @param regs the registers.
+ * @param mem the memory.
+ * @param interrupt interrupt.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
+ */
 Update sra(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
            Instruction inst)
 {
@@ -93,6 +170,17 @@ Update sra(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
   return UpdatePC;
 }
 
+/**
+ * Arithmetic shift right.
+ *
+ * Same as logic shift right but performing sign extension.
+ * @param isa the instruction set architecture.
+ * @param regs the registers.
+ * @param mem the memory.
+ * @param interrupt interrupt.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
+ */
 Update srai(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
             Instruction inst)
 {
@@ -103,6 +191,17 @@ Update srai(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
   return UpdatePC;
 }
 
+/**
+ * Rotate left.
+ *
+ * Same as logic shift left but inserting the removed bits on the right.
+ * @param isa the instruction set architecture.
+ * @param regs the registers.
+ * @param mem the memory.
+ * @param interrupt interrupt.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
+ */
 Update rl(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
           Instruction inst)
 {
@@ -114,6 +213,17 @@ Update rl(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
   return UpdatePC;
 }
 
+/**
+ * Rotate left.
+ *
+ * Same as logic shift left but inserting the removed bits on the right.
+ * @param isa the instruction set architecture.
+ * @param regs the registers.
+ * @param mem the memory.
+ * @param interrupt interrupt.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
+ */
 Update rli(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
            Instruction inst)
 {
@@ -124,6 +234,17 @@ Update rli(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
   return UpdatePC;
 }
 
+/**
+ * Rotate right.
+ *
+ * Same as logic shift right but inserting the removed bits on the left.
+ * @param isa the instruction set architecture.
+ * @param regs the registers.
+ * @param mem the memory.
+ * @param interrupt interrupt.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
+ */
 Update rr(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
           Instruction inst)
 {
@@ -135,6 +256,17 @@ Update rr(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
   return UpdatePC;
 }
 
+/**
+ * Rotate right.
+ *
+ * Same as logic shift right but inserting the removed bits on the left.
+ * @param isa the instruction set architecture.
+ * @param regs the registers.
+ * @param mem the memory.
+ * @param interrupt interrupt.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
+ */
 Update rri(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
            Instruction inst)
 {

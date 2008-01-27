@@ -33,11 +33,18 @@ namespace SimpleWorld
 namespace CPU
 {
 
+/**
+ * Constructor for a empty instruction set.
+ */
 ISA::ISA()
 {
 }
 
 
+/**
+ * Instruction codes.
+ * @return the instruction codes.
+ */
 std::vector<Uint8> ISA::instruction_codes() const
 {
   std::vector<Uint8> instructions;
@@ -52,6 +59,10 @@ std::vector<Uint8> ISA::instruction_codes() const
   return instructions;
 }
 
+/**
+ * Register codes.
+ * @return the register codes.
+ */
 std::vector<Uint8> ISA::register_codes() const
 {
   std::vector<Uint8> registers;
@@ -65,6 +76,10 @@ std::vector<Uint8> ISA::register_codes() const
   return registers;
 }
 
+/**
+ * Interrupt codes.
+ * @return the interrupt codes.
+ */
 std::vector<Uint8> ISA::interrupt_codes() const
 {
   std::vector<Uint8> interrupts;
@@ -80,6 +95,12 @@ std::vector<Uint8> ISA::interrupt_codes() const
 }
 
 
+/**
+ * Info about the instruction.
+ * @param code code of the instruction.
+ * @return the info about the instruction.
+ * @exception CodeError if the instruction is not found.
+ */
 InstructionInfo ISA::instruction_info(Uint8 code) const
 {
   std::map<Uint8, InstructionInfo>::const_iterator iter =
@@ -92,6 +113,12 @@ Instruction %02x not found")
   return (*iter).second;
 }
 
+/**
+ * Code of the instruction.
+ * @param name name of the instruction.
+ * @return the code of the instruction.
+ * @exception CodeError if the instruction is not found.
+ */
 Uint8 ISA::instruction_code(std::string name) const
 {
   std::map<std::string, Uint8>::const_iterator iter =
@@ -104,6 +131,12 @@ Instruction %1% not found")
   return (*iter).second;
 }
 
+/**
+ * Name of the register.
+ * @param code code of the register.
+ * @return the name of the register.
+ * @exception CodeError if the register is not found.
+ */
 std::string ISA::register_name(Uint8 code) const
 {
   std::map<Uint8, std::string>::const_iterator iter =
@@ -116,6 +149,12 @@ Register %02x not found")
   return (*iter).second;
 }
 
+/**
+ * Code of the register.
+ * @param name name of the register.
+ * @return the code of the register.
+ * @exception CodeError if the register is not found.
+ */
 Uint8 ISA::register_code(std::string name) const
 {
   std::map<std::string, Uint8>::const_iterator iter =
@@ -128,6 +167,12 @@ Register %1% not found")
   return (*iter).second;
 }
 
+/**
+ * Info about the interrupt.
+ * @param code code of the interrupt.
+ * @return the info about the interrupt.
+ * @exception CodeError if the interrupt is not found.
+ */
 InterruptInfo ISA::interrupt_info(Uint8 code) const
 {
   std::map<Uint8, InterruptInfo>::const_iterator iter =
@@ -140,6 +185,12 @@ Interrupt %02x not found")
   return (*iter).second;
 }
 
+/**
+ * Code of the interrupt.
+ * @param name name of the interrupt.
+ * @return the code of the interrupt.
+ * @exception CodeError if the interrupt is not found.
+ */
 Uint8 ISA::interrupt_code(std::string name) const
 {
   std::map<std::string, Uint8>::const_iterator iter =
@@ -153,6 +204,11 @@ Interrupt %1% not found")
 }
 
 
+/**
+ * Add a new instruction.
+ * @param instruction instruction to add.
+ * @exception CodeError if the instruction already exist.
+ */
 void ISA::add_instruction(InstructionInfo instruction)
 {
   if (this->instructions_.find(instruction.code) != this->instructions_.end())
@@ -168,6 +224,15 @@ Instruction %02x already exists")
                                          instruction.code));
 }
 
+/**
+ * Add a new instruction.
+ * @param code code of the instruction.
+ * @param name name of the instruction.
+ * @param nregs registers used.
+ * @param has_inmediate if the instruction uses the inmediate space.
+ * @param func function that executes the operation.
+ * @exception CodeError if the instruction already exist.
+ */
 void ISA::add_instruction(Uint8 code, std::string name, Uint8 nregs,
                                      bool has_inmediate, Operation func)
 {
@@ -175,6 +240,11 @@ void ISA::add_instruction(Uint8 code, std::string name, Uint8 nregs,
   this->add_instruction(info);
 }
 
+/**
+ * Remove a instruction.
+ * @param code code of the instruction.
+ * @exception CodeError if instruction is not found.
+ */
 void ISA::remove_instruction(Uint8 code)
 {
   std::map<Uint8, InstructionInfo>::iterator iter =
@@ -188,6 +258,12 @@ Instruction %02x not found")
   this->instructions_.erase(iter);
 }
 
+/**
+ * Add a new register.
+ * @param code code of the register.
+ * @param name name of the register.
+ * @exception CodeError if the register already exist.
+ */
 void ISA::add_register(Uint8 code, std::string name)
 {
   if (this->registers_.find(code) != this->registers_.end())
@@ -199,6 +275,11 @@ Register %02x already exists")
   this->register_codes_.insert(std::pair<std::string, Uint8>(name, code));
 }
 
+/**
+ * Remove a register.
+ * @param code code of the register.
+ * @exception CPUexception if the register is not found.
+ */
 void ISA::remove_register(Uint8 code)
 {
   std::map<Uint8, std::string>::iterator iter = this->registers_.find(code);
@@ -211,6 +292,11 @@ Register %02x not found")
   this->registers_.erase(iter);
 }
 
+/**
+ * Add a new interrupt.
+ * @param interrupt interrupt to add.
+ * @exception CodeError if the interrupt already exist.
+ */
 void ISA::add_interrupt(InterruptInfo interrupt)
 {
   if (this->interrupts_.find(interrupt.code) != this->interrupts_.end())
@@ -224,12 +310,24 @@ Interrupt %02x already exists")
                                                               interrupt.code));
 }
 
+/**
+ * Add a new interrupt.
+ * @param code code of the interrupt.
+ * @param name name of the interrupt.
+ * @param thrown_by_inst if it's thrown by a instruction.
+ * @exception CodeError if the interrupt already exist.
+ */
 void ISA::add_interrupt(Uint8 code, std::string name, bool thrown_by_inst)
 {
   InterruptInfo info = {code, name, thrown_by_inst};
   this->add_interrupt(info);
 }
 
+/**
+ * Remove a interrupt.
+ * @param code code of the interrupt.
+ * @exception CPUexception if the interrupt is not found.
+ */
 void ISA::remove_interrupt(Uint8 code)
 {
   std::map<Uint8, InterruptInfo>::iterator iter = this->interrupts_.find(code);

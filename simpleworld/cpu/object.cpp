@@ -39,12 +39,24 @@ namespace SimpleWorld
 namespace CPU
 {
 
+/**
+ * Constructor.
+ * @param isa Instruction set architecture of the CPU
+ * @param filename File to open.
+ */
 Object::Object(const ISA& isa, const std::string& filename)
   : isa_(isa), filename_(filename)
 {
 }
 
 
+/**
+ * Decompile the object code to source code.
+ * If a unknown instruction or register is found suppose that the value
+ * is data.
+ * @param filename File where to save.
+ * @exception IOError problem with file.
+ */
 void Object::decompile(const std::string filename) const
 {
   File file;
@@ -87,6 +99,14 @@ The size of %1% (%2%) is not a multiple of 32bits")
   file.save(filename);
 }
 
+
+/**
+ * Decompile a instruction.
+ * @param instruction Instruction encoded..
+ * @return The a line with the source code.
+ * @exception CPUException if the instruction is not found.
+ * @exception CPUException if the register is not found.
+ */
 std::string Object::decompile(Word instruction) const
 {
   Instruction inst = Instruction::decode(instruction);

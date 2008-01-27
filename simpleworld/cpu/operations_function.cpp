@@ -29,6 +29,17 @@ namespace SimpleWorld
 namespace CPU
 {
 
+/**
+ * Call a function.
+ *
+ * PUSH(PC) and PC = ADDRESS
+ * @param isa the instruction set architecture.
+ * @param regs the registers.
+ * @param mem the memory.
+ * @param interrupt interrupt.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
+ */
 Update call(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
             Instruction inst)
 {
@@ -47,6 +58,17 @@ Update call(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
   return UpdateNone;
 }
 
+/**
+ * Software interrupt.
+ *
+ * @param isa the instruction set architecture.
+ * @param regs the registers.
+ * @param mem the memory.
+ * @param interrupt interrupt.
+ * @param interrupt interrupt.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
+ */
 Update interrupt(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
                  Instruction inst)
 {
@@ -58,6 +80,17 @@ Update interrupt(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
   return UpdateInterrupt;
 }
 
+/**
+ * Return.
+ *
+ * POP(PC)
+ * @param isa the instruction set architecture.
+ * @param regs the registers.
+ * @param mem the memory.
+ * @param interrupt interrupt.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
+ */
 Update ret(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
            Instruction inst)
 {
@@ -69,6 +102,17 @@ Update ret(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
   return UpdatePC;
 }
 
+/**
+ * Return from exception.
+ *
+ * POP(ALL REGISTERS)
+ * @param isa the instruction set architecture.
+ * @param regs the registers.
+ * @param mem the memory.
+ * @param interrupt interrupt.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
+ */
 Update reti(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
             Instruction inst)
 {

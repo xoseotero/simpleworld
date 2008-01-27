@@ -52,6 +52,7 @@ Uint8 get_byte(Word word, Uint8 byte);
  */
 void set_byte(Word* word, Uint8 byte, Uint8 value);
 
+
 /**
  * Change the byte order of a word.
  * Big Endian <-> Little Endian.

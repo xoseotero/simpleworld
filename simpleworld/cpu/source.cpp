@@ -210,12 +210,24 @@ static fs::path find_file(const std::vector<std::string>& path,
 }
 
 
+/**
+ * Constructor for a empty file.
+ * @param isa Instruction set architecture of the CPU
+ * @param include_path Paths where to search the files to include.
+ */
 Source::Source(const ISA& isa,
                const std::vector<std::string>& include_path)
   : File(), isa_(isa), include_path_(include_path)
 {
 }
 
+/**
+ * Constructor.
+ * @param isa Instruction set architecture of the CPU
+ * @param include_path Paths where to search the files to include.
+ * @param filename File to open.
+ * @exception IOError if file can't be opened
+ */
 Source::Source(const ISA& isa,
                const std::vector<std::string>& include_path,
                const std::string& filename)
@@ -225,6 +237,12 @@ Source::Source(const ISA& isa,
 }
 
 
+/**
+ * Load from a file.
+ * Before the load, all the lines of the File are removed.
+ * @param filename File to open.
+ * @exception IOError File can't be opened
+ */
 void Source::load(std::string filename)
 {
   File::load(filename);
@@ -238,6 +256,11 @@ void Source::load(std::string filename)
 }
 
 
+/**
+ * Preprocess the source code.
+ * @exception IOError if a file can't be found.
+ * @exception ParserError file included two times.
+ */
 void Source::preprocess()
 {
   this->replace_includes();
@@ -246,6 +269,12 @@ void Source::preprocess()
 }
 
 
+/**
+ * Compile the source code to object code.
+ * @param filename File where to save.
+ * @exception IOERROR if a problem with file happen.
+ * @exception ParserError error found in the code.
+ */
 void Source::compile(std::string filename)
 {
   this->preprocess();
@@ -272,6 +301,11 @@ Can't write in file %1%")
 }
 
 
+/**
+ * Replace the .include lines with the file contents.
+ * @exception IOError if a file can't be found.
+ * @exception ParserError file included two times.
+ */
 void Source::replace_includes()
 {
   File::size_type i;
@@ -297,6 +331,10 @@ File %2% already included")
     }
 }
 
+/**
+ * Replace the constants and labels with its value.
+ * @exception ParserError error found in the code.
+ */
 void Source::replace_constants()
 {
   // Search constants
@@ -354,6 +392,10 @@ Name %1% already defined")
   }
 }
 
+/**
+ * Replace the blocks of memory with the zero values.
+ * @exception ParserError error found in the code.
+ */
 void Source::replace_blocks()
 {
   File::size_type i;
@@ -372,6 +414,12 @@ void Source::replace_blocks()
 }
 
 
+/**
+ * Compile a line.
+ * @param line Number of the line.
+ * @return the instruction compiled.
+ * @exception ParserError error found in the code.
+ */
 Word Source::compile(File::size_type line) const
 {
   if (this->is_data(line)) {
@@ -431,42 +479,90 @@ Line: %1%\n\
 }
 
 
+/**
+ * Check if a line is a blank one.
+ * @param line Number of the line.
+ * @return the check result.
+ * @exception CPUException if line > lines of the file.
+ */
 bool Source::is_blank(File::size_type line) const
 {
   return boost::regex_match(this->get_line(line), re_blank);
 }
 
 
+/**
+ * Check if a line is a comment.
+ * @param line Number of the line.
+ * @return the check result.
+ * @exception CPUException if line > lines of the file.
+ */
 bool Source::is_comment(File::size_type line) const
 {
   return boost::regex_match(this->get_line(line), re_comment);
 }
 
+/**
+ * Check if a line is a constant definition.
+ * @param line Number of the line.
+ * @return the check result.
+ * @exception CPUException if line > lines of the file.
+ */
 bool Source::is_constant(File::size_type line) const
 {
   return boost::regex_match(this->get_line(line), re_constant);
 }
 
+/**
+ * Check if a line is a block of memory.
+ * @param line Number of the line.
+ * @return the check result.
+ * @exception CPUException if line > lines of the file.
+ */
 bool Source::is_block(File::size_type line) const
 {
   return boost::regex_match(this->get_line(line), re_block);
 }
 
+/**
+ * Check if a line is a label definition.
+ * @param line Number of the line.
+ * @return the check result.
+ * @exception CPUException if line > lines of the file.
+ */
 bool Source::is_label(File::size_type line) const
 {
   return boost::regex_match(this->get_line(line), re_label);
 }
 
+/**
+ * Check if a line is a include.
+ * @param line Number of the line.
+ * @return the check result.
+ * @exception CPUException if line > lines of the file.
+ */
 bool Source::is_include(File::size_type line) const
 {
   return boost::regex_match(this->get_line(line), re_include);
 }
 
+/**
+ * Check if a line is data (32 bits number).
+ * @param line Number of the line.
+ * @return the check result.
+ * @exception CPUException if line > lines of the file.
+ */
 bool Source::is_data(File::size_type line) const
 {
   return boost::regex_match(this->get_line(line), re_data);
 }
 
+/**
+ * Check if a line is a instruction.
+ * @param line Number of the line.
+ * @return the check result.
+ * @exception CPUException if line > lines of the file.
+ */
 bool Source::is_instruction(File::size_type line) const
 {
   return boost::regex_match(this->get_line(line), re_inst0) |
@@ -479,6 +575,15 @@ bool Source::is_instruction(File::size_type line) const
 }
 
 
+/**
+ * Return the components of a constant.
+ *
+ * If the line is not a constant definition a empty vector is returned.
+ * The first position is the name and the second is the value.
+ * @param line Number of the line.
+ * @return the components of a constant.
+ * @exception CPUException if line > lines of the file.
+ */
 std::vector<std::string> Source::get_constant(File::size_type line) const
 {
   std::vector<std::string> result;
@@ -490,6 +595,14 @@ std::vector<std::string> Source::get_constant(File::size_type line) const
   return result;
 }
 
+/**
+ * Return the value of the block of memory.
+ *
+ * If the line is not a block of memory zero value is returned.
+ * @param line Number of the line.
+ * @return the components of a constant.
+ * @exception CPUException if line > lines of the file.
+ */
 Address Source::get_block(File::size_type line) const
 {
   Address result = 0;
@@ -501,6 +614,14 @@ Address Source::get_block(File::size_type line) const
   return result;
 }
 
+/**
+ * Return the label name.
+ *
+ * If the line is not a label definition a empty string is returned.
+ * @param line Number of the line.
+ * @return the label.
+ * @exception CPUException if line > lines of the file.
+ */
 std::string Source::get_label(File::size_type line) const
 {
   std::string result;
@@ -512,6 +633,14 @@ std::string Source::get_label(File::size_type line) const
   return result;
 }
 
+/**
+ * Return the included file.
+ *
+ * If the line is not a include a empty string is returned.
+ * @param line Number of the line.
+ * @return the file name.
+ * @exception CPUException if line > lines of the file.
+ */
 std::string Source::get_include(File::size_type line) const
 {
   std::string result;
@@ -523,6 +652,14 @@ std::string Source::get_include(File::size_type line) const
   return result;
 }
 
+/**
+ * Return the data.
+ *
+ * If the line is not data 0 is returned.
+ * @param line Number of the line.
+ * @return the data.
+ * @exception CPUException if line > lines of the file.
+ */
 Word Source::get_data(File::size_type line) const
 {
   Word result = 0;
@@ -537,6 +674,16 @@ Word Source::get_data(File::size_type line) const
   return result;
 }
 
+/**
+ * Return the components of a instruction.
+ *
+ * If the line is not a instruction a empty vector is returned.
+ * A instruction can have 0-3 operators.
+ * The firs position is the instruction and the next ones are the operators.
+ * @param line Number of the line.
+ * @return the components of a constant.
+ * @exception CPUException if line > lines of the file.
+ */
 std::vector<std::string> Source::get_instruction(File::size_type line) const
 {
   std::vector<std::string> result;

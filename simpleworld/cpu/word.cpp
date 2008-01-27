@@ -31,6 +31,13 @@ namespace SimpleWorld
 namespace CPU
 {
 
+/**
+ * Return the value of a byte in a word.
+ * @param word Word.
+ * @param byte number of byte to get.
+ * @return the byte value.
+ * @exception CPUException if byte > 3
+ */
 Uint8 get_byte(Word word, Uint8 byte)
 {
   if (byte > 3)
@@ -41,6 +48,14 @@ Byte %08x is out of range")
   return reinterpret_cast<Uint8*>(&word)[byte];
 }
 
+/**
+ * Set the value of a byte in a word.
+ * @param word Word.
+ * @param byte Number of byte to change.
+ * @param value New value for the byte.
+ * @return the byte value.
+ * @exception CPUException if byte > 3
+ */
 void set_byte(Word* word, Uint8 byte, Uint8 value)
 {
   if (byte > 3)
@@ -51,12 +66,25 @@ Byte %08x is out of range")
   reinterpret_cast<Uint8*>(word)[byte] = value;
 }
 
+
+/**
+ * Change the byte order of a word.
+ * Big Endian <-> Little Endian.
+ * @param word Word to change.
+ * @return the word with the order changed.
+ */
 Word change_byte_order(Word word)
 {
   return get_byte(word, 0) << 24 | get_byte(word, 1) << 16 |
     get_byte(word, 2) << 8 | get_byte(word, 3);
 }
 
+/**
+ * Change the order of the bytes in a word.
+ * If the normal order of the byte is A B C D, the new order is B A D C.
+ * @param word Word to change.
+ * @return the word with the order changed.
+ */
 Word change_byte_order_middle(Word word)
 {
   return get_byte(word, 0) << 8 | get_byte(word, 1) | get_byte(word, 2) << 24 |

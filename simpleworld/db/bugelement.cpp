@@ -28,12 +28,24 @@ namespace SimpleWorld
 namespace DB
 {
 
+/**
+ * Constructor.
+ * @param db database.
+ * @param id id of the bug.
+ * @param type type of element
+ * @param position position of the element.
+ */
 BugElement::BugElement(DB* db, ID id, ElementType type, Position position)
   : Element(type, position), Table(db, id), code(db, id)
 {
   this->update();
 }
 
+/**
+ * Constructor to insert data.
+ * @param db database.
+ * @param type type of element
+ */
 BugElement::BugElement(DB* db, ElementType type)
   // The position at this moment is unknown
   : Element(type, this->position), Table(db), code(db)
@@ -41,6 +53,13 @@ BugElement::BugElement(DB* db, ElementType type)
 }
 
 
+/**
+ * Update the data of the class with the database.
+ * changed is set to false.
+ * The update() is propagated to the code.
+ * @exception DBException if there is a error in the database.
+ * @exception DBException if the ID is not found in the table.
+ */
 void BugElement::update()
 {
   this->code.update();
@@ -49,6 +68,16 @@ void BugElement::update()
   Table::update();
 }
 
+/**
+ * Update the database with the data of the class in changed or force are
+ * true.
+ * changed is set to false.
+ * The update_db() is propagated to the code but without force. If the
+ * update_db() in the code must be forced, a explicit call to
+ * code::update_db(true) must be made.
+ * @param force force the update of the database.
+ * @exception DBException if there is a error in the database.
+ */
 void BugElement::update_db(bool force)
 {
   this->code.update_db();
@@ -57,6 +86,13 @@ void BugElement::update_db(bool force)
   Table::update_db();
 }
 
+/**
+ * Insert the data in the database.
+ * The ID is updated.
+ * changed is set to false.
+ * The insert() is propagated to the code.
+ * @exception DBException if there is an error in the database.
+ */
 void BugElement::insert()
 {
   this->code.insert(this->id_);
@@ -65,6 +101,12 @@ void BugElement::insert()
   Table::insert();
 }
 
+/**
+ * Remove the data from the database.
+ * changed is set to false.
+ * The remove() is propagated to the code.
+ * @exception DBException if there is an error in the database.
+ */
 void BugElement::remove()
 {
   // It's not needed to propagate the remove() because the database do it

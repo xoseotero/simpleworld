@@ -28,12 +28,30 @@ namespace SimpleWorld
 namespace CPU
 {
 
+/**
+ * Stop the CPU.
+ * @param isa the instruction set architecture.
+ * @param regs the registers.
+ * @param mem the memory.
+ * @param interrupt interrupt.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
+ */
 Update stop(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
             Instruction inst)
 {
   return UpdateStop;
 }
 
+/**
+ * Restart the CPU (zeroing the registers).
+ * @param isa the instruction set architecture.
+ * @param regs the registers.
+ * @param mem the memory.
+ * @param interrupt interrupt.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
+ */
 Update restart(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
                Instruction inst)
 {

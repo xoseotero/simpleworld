@@ -33,6 +33,17 @@ namespace CPU
 // giving the as data.
 
 
+/**
+ * Branch always.
+ *
+ * PC = ADDRESS
+ * @param isa the instruction set architecture.
+ * @param regs the registers.
+ * @param mem the memory.
+ * @param interrupt interrupt.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
+ */
 Update b(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
          Instruction inst)
 {
@@ -44,6 +55,17 @@ Update b(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
   return UpdateNone;
 }
 
+/**
+ * Branch on equal.
+ *
+ * if REGISTERS[FIRST] == REGISTERS[SECOND] -> PC = ADDRESS
+ * @param isa the instruction set architecture.
+ * @param regs the registers.
+ * @param mem the memory.
+ * @param interrupt interrupt.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
+ */
 Update beq(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
            Instruction inst)
 {
@@ -58,6 +80,17 @@ Update beq(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
   return UpdatePC;
 }
 
+/**
+ * Branch on not equal.
+ *
+ * if REGISTERS[FIRST] != REGISTERS[SECOND] -> PC = ADDRESS
+ * @param isa the instruction set architecture.
+ * @param regs the registers.
+ * @param mem the memory.
+ * @param interrupt interrupt.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
+ */
 Update bne(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
            Instruction inst)
 {
@@ -72,6 +105,17 @@ Update bne(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
   return UpdatePC;
 }
 
+/**
+ * Branch on less than (signed comparission).
+ *
+ * if REGISTERS[FIRST] < REGISTERS[SECOND] -> PC = ADDRESS
+ * @param isa the instruction set architecture.
+ * @param regs the registers.
+ * @param mem the memory.
+ * @param interrupt interrupt.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
+ */
 Update blt(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
            Instruction inst)
 {
@@ -87,6 +131,17 @@ Update blt(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
   return UpdatePC;
 }
 
+/**
+ * Branch on less than (unsigned comparission).
+ *
+ * if REGISTERS[FIRST] < REGISTERS[SECOND] -> PC = ADDRESS
+ * @param isa the instruction set architecture.
+ * @param regs the registers.
+ * @param mem the memory.
+ * @param interrupt interrupt.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
+ */
 Update bltu(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
             Instruction inst)
 {
@@ -101,6 +156,17 @@ Update bltu(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
   return UpdatePC;
 }
 
+/**
+ * Branch on great than (signed comparission).
+ *
+ * if REGISTERS[FIRST] > REGISTERS[SECOND] -> PC = ADDRESS
+ * @param isa the instruction set architecture.
+ * @param regs the registers.
+ * @param mem the memory.
+ * @param interrupt interrupt.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
+ */
 Update bgt(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
            Instruction inst)
 {
@@ -116,6 +182,17 @@ Update bgt(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
   return UpdatePC;
 }
 
+/**
+ * Branch on great than (unsigned comparission).
+ *
+ * if REGISTERS[FIRST] > REGISTERS[SECOND] -> PC = ADDRESS
+ * @param isa the instruction set architecture.
+ * @param regs the registers.
+ * @param mem the memory.
+ * @param interrupt interrupt.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
+ */
 Update bgtu(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
             Instruction inst)
 {
@@ -130,6 +207,17 @@ Update bgtu(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
   return UpdatePC;
 }
 
+/**
+ * Branch on less or equal (signed comparission).
+ *
+ * if REGISTERS[FIRST] <= REGISTERS[SECOND] -> PC = ADDRESS
+ * @param isa the instruction set architecture.
+ * @param regs the registers.
+ * @param mem the memory.
+ * @param interrupt interrupt.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
+ */
 Update ble(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
            Instruction inst)
 {
@@ -145,6 +233,17 @@ Update ble(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
   return UpdatePC;
 }
 
+/**
+ * Branch on less or equal (unsigned comparission).
+ *
+ * if REGISTERS[FIRST] <= REGISTERS[SECOND] -> PC = ADDRESS
+ * @param isa the instruction set architecture.
+ * @param regs the registers.
+ * @param mem the memory.
+ * @param interrupt interrupt.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
+ */
 Update bleu(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
             Instruction inst)
 {
@@ -159,6 +258,17 @@ Update bleu(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
   return UpdatePC;
 }
 
+/**
+ * Branch on greater or equal (signed comparission).
+ *
+ * if REGISTERS[FIRST] >= REGISTERS[SECOND] -> PC = ADDRESS
+ * @param isa the instruction set architecture.
+ * @param regs the registers.
+ * @param mem the memory.
+ * @param interrupt interrupt.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
+ */
 Update bge(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
            Instruction inst)
 {
@@ -174,6 +284,17 @@ Update bge(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
   return UpdatePC;
 }
 
+/**
+ * Branch on greater or equal (unsigned comparission).
+ *
+ * if REGISTERS[FIRST] >= REGISTERS[SECOND] -> PC = ADDRESS
+ * @param isa the instruction set architecture.
+ * @param regs the registers.
+ * @param mem the memory.
+ * @param interrupt interrupt.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
+ */
 Update bgeu(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
             Instruction inst)
 {

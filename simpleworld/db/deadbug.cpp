@@ -33,6 +33,13 @@ namespace SimpleWorld
 namespace DB
 {
 
+/**
+ * Constructor.
+ * @param db database.
+ * @param id id of the bug.
+ * @exception DBException if there is a error in the database.
+ * @exception DBException if the ID is not found in the table.
+ */
 DeadBug::DeadBug(DB* db, ID id)
   // The position at this moment is unknown
   : BugElement(db, id, ElementNothing, this->position)
@@ -41,6 +48,12 @@ DeadBug::DeadBug(DB* db, ID id)
 }
 
 
+/**
+ * Update the data of the class with the database.
+ * changed is set to false.
+ * @exception DBException if there is an error in the database.
+ * @exception DBException if the ID is not found in the table.
+ */
 void DeadBug::update()
 {
   sqlite3x::sqlite3_command sql(*this->db_);
@@ -80,6 +93,13 @@ id %1% not found in table Bug")
   BugElement::update();
 }
 
+/**
+ * Update the database with the data of the class in changed or force are
+ * true.
+ * changed is set to false.
+ * @param force force the update of the database.
+ * @exception DBException if there is an error in the database.
+ */
 void DeadBug::update_db(bool force)
 {
   if (this->changed or force) {
@@ -117,6 +137,11 @@ WHERE id = ?;");
   BugElement::update_db(force);
 }
 
+/**
+ * Remove the data from the database.
+ * changed is set to false.
+ * @exception DBException if there is an error in the database.
+ */
 void DeadBug::remove()
 {
   sqlite3x::sqlite3_command sql(*this->db_);

@@ -36,6 +36,11 @@ namespace SimpleWorld
 namespace CPU
 {
 
+/**
+ * Constructor.
+ * @param filename filename from where to load the code.
+ * @exception IOError problem with the file.
+ */
 MemoryFile::MemoryFile(const std::string& filename)
   : Memory()
 {
@@ -43,6 +48,11 @@ MemoryFile::MemoryFile(const std::string& filename)
 }
 
 
+/**
+ * Load the code from a file.
+ * @param filename filename from where to load the code into memory.
+ * @exception IOError problem with the file.
+ */
 void MemoryFile::load_file(const std::string& filename)
 {
   std::ifstream is(filename.c_str(), std::ios::binary);

@@ -28,37 +28,80 @@ namespace SimpleWorld
 namespace DB
 {
 
+/**
+ * Constructor.
+ * @param db database.
+ * @param id id of the row.
+ * @exception DBException if there is a error in the database.
+ * @exception DBException if the ID is not found in the table.
+ */
 Table::Table(DB* db, ID id)
   : db_(db), id_(id)
 {
   this->update();
 }
 
+/**
+ * Constructor to insert data.
+ * insert(id) must be called before any call to update(), update_db() or
+ * remove().
+ * @param db database.
+ * @exception DBException if there is a error in the database.
+ */
 Table::Table(DB* db)
   : db_(db)
 {
 }
 
+/**
+ * Destructor.
+ */
 Table::~Table()
 {
 }
 
 
+/**
+ * Update the data of the class with the database.
+ * changed is set to false.
+ * @exception DBException if there is a error in the database.
+ * @exception DBException if the ID is not found in the table.
+ */
 void Table::update()
 {
   this->changed = false;
 }
 
+/**
+ * Update the database with the data of the class in changed or force are
+ * true.
+ * changed is set to false.
+ * @param force force the update of the database.
+ * @exception DBException if there is a error in the database.
+ */
 void Table::update_db(bool force)
 {
   this->changed = false;
 }
 
+/**
+ * Insert the data in the database.
+ * The ID is updated.
+ * changed is set to false.
+ * @exception DBException if there is an error in the database.
+ */
 void Table::insert()
 {
   this->changed = false;
 }
 
+/**
+ * Insert the data in the database with a specific id.
+ * The ID is updated.
+ * changed is set to false.
+ * @param id id of the row.
+ * @exception DBException if there is an error in the database.
+ */
 void Table::insert(ID id)
 {
   this->id_ = id;
@@ -66,6 +109,11 @@ void Table::insert(ID id)
   this->changed = false;
 }
 
+/**
+ * Remove the data from the database.
+ * changed is set to false.
+ * @exception DBException if there is an error in the database.
+ */
 void Table::remove()
 {
   this->changed = false;

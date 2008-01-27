@@ -30,6 +30,17 @@ namespace SimpleWorld
 namespace CPU
 {
 
+/**
+ * Add two registers.
+ *
+ * REGISTERS[FIRST] = REGISTERS[SECOND] + REGISTERS[ADDRESS]
+ * @param isa the instruction set architecture.
+ * @param regs the registers.
+ * @param mem the memory.
+ * @param interrupt interrupt.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
+ */
 Update add(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
            Instruction inst)
 {
@@ -39,6 +50,17 @@ Update add(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
   return UpdatePC;
 }
 
+/**
+ * Add a register and a inmediate value.
+ *
+ * REGISTERS[FIRST] = REGISTERS[SECOND] + ADDRESS
+ * @param isa the instruction set architecture.
+ * @param regs the registers.
+ * @param mem the memory.
+ * @param interrupt interrupt.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
+ */
 Update addi(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
             Instruction inst)
 {
@@ -48,6 +70,17 @@ Update addi(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
   return UpdatePC;
 }
 
+/**
+ * Substract two registers.
+ *
+ * REGISTERS[FIRST] = REGISTERS[SECOND] - REGISTERS[ADDRESS]
+ * @param isa the instruction set architecture.
+ * @param regs the registers.
+ * @param mem the memory.
+ * @param interrupt interrupt.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
+ */
 Update sub(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
            Instruction inst)
 {
@@ -57,6 +90,17 @@ Update sub(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
   return UpdatePC;
 }
 
+/**
+ * Substract a register and a inmediate value.
+ *
+ * REGISTERS[FIRST] = REGISTERS[SECOND] - ADDRESS
+ * @param isa the instruction set architecture.
+ * @param regs the registers.
+ * @param mem the memory.
+ * @param interrupt interrupt.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
+ */
 Update subi(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
             Instruction inst)
 {
@@ -66,6 +110,17 @@ Update subi(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
   return UpdatePC;
 }
 
+/**
+ * Low 32bits from multiply two signed registers.
+ *
+ * REGISTERS[FIRST] = REGISTERS[SECOND] * REGISTERS[ADDRESS]
+ * @param isa the instruction set architecture.
+ * @param regs the registers.
+ * @param mem the memory.
+ * @param interrupt interrupt.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
+ */
 Update multl(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
              Instruction inst)
 {
@@ -77,6 +132,17 @@ Update multl(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
   return UpdatePC;
 }
 
+/**
+ * Low 32bits from multiply a signed registers and a signed inmediate value.
+ *
+ * REGISTERS[FIRST] = REGISTERS[SECOND] * ADDRESS
+ * @param isa the instruction set architecture.
+ * @param regs the registers.
+ * @param mem the memory.
+ * @param interrupt interrupt.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
+ */
 Update multli(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
               Instruction inst)
 {
@@ -88,6 +154,17 @@ Update multli(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
   return UpdatePC;
 }
 
+/**
+ * Low 32bits from multiply two unsigned registers.
+ *
+ * REGISTERS[FIRST] = REGISTERS[SECOND] * REGISTERS[ADDRESS]
+ * @param isa the instruction set architecture.
+ * @param regs the registers.
+ * @param mem the memory.
+ * @param interrupt interrupt.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
+ */
 Update multlu(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
               Instruction inst)
 {
@@ -98,6 +175,18 @@ Update multlu(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
   return UpdatePC;
 }
 
+/**
+ * Low 32bits from multiply a unsigned registers and a unsigned inmediate
+ * value.
+ *
+ * REGISTERS[FIRST] = REGISTERS[SECOND] * ADDRESS
+ * @param isa the instruction set architecture.
+ * @param regs the registers.
+ * @param mem the memory.
+ * @param interrupt interrupt.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
+ */
 Update multlui(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
                Instruction inst)
 {
@@ -109,6 +198,17 @@ Update multlui(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
   return UpdatePC;
 }
 
+/**
+ * High 32bits from multiply two signed registers.
+ *
+ * REGISTERS[FIRST] = REGISTERS[SECOND] * REGISTERS[ADDRESS]
+ * @param isa the instruction set architecture.
+ * @param regs the registers.
+ * @param mem the memory.
+ * @param interrupt interrupt.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
+ */
 Update multh(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
              Instruction inst)
 {
@@ -119,6 +219,17 @@ Update multh(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
   return UpdatePC;
 }
 
+/**
+ * High 32bits from multiply a signed registers and a signed inmediate value.
+ *
+ * REGISTERS[FIRST] = REGISTERS[SECOND] * ADDRESS
+ * @param isa the instruction set architecture.
+ * @param regs the registers.
+ * @param mem the memory.
+ * @param interrupt interrupt.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
+ */
 Update multhi(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
               Instruction inst)
 {
@@ -129,6 +240,17 @@ Update multhi(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
   return UpdatePC;
 }
 
+/**
+ * High 32bits from multiply two unsigned registers.
+ *
+ * REGISTERS[FIRST] = REGISTERS[SECOND] * REGISTERS[ADDRESS]
+ * @param isa the instruction set architecture.
+ * @param regs the registers.
+ * @param mem the memory.
+ * @param interrupt interrupt.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
+ */
 Update multhu(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
               Instruction inst)
 {
@@ -139,6 +261,18 @@ Update multhu(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
   return UpdatePC;
 }
 
+/**
+ * High 32bits from multiply a unsigned registers and a unsigned inmediate
+ * value.
+ *
+ * REGISTERS[FIRST] = REGISTERS[SECOND] * ADDRESS
+ * @param isa the instruction set architecture.
+ * @param regs the registers.
+ * @param mem the memory.
+ * @param interrupt interrupt.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
+ */
 Update multhui(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
                Instruction inst)
 {
@@ -149,6 +283,17 @@ Update multhui(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
   return UpdatePC;
 }
 
+/**
+ * Divide two signed registers.
+ *
+ * REGISTERS[FIRST] = REGISTERS[SECOND] / REGISTERS[ADDRESS]
+ * @param isa the instruction set architecture.
+ * @param regs the registers.
+ * @param mem the memory.
+ * @param interrupt interrupt.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
+ */
 Update div(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
            Instruction inst)
 {
@@ -168,6 +313,17 @@ Update div(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
   }
 }
 
+/**
+ * Divide a signed register and a signed inmediate value.
+ *
+ * REGISTERS[FIRST] = REGISTERS[SECOND] / ADDRESS
+ * @param isa the instruction set architecture.
+ * @param regs the registers.
+ * @param mem the memory.
+ * @param interrupt interrupt.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
+ */
 Update divi(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
             Instruction inst)
 {
@@ -187,6 +343,17 @@ Update divi(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
   }
 }
 
+/**
+ * Divide two unsigned registers.
+ *
+ * REGISTERS[FIRST] = REGISTERS[SECOND] / REGISTERS[ADDRESS]
+ * @param isa the instruction set architecture.
+ * @param regs the registers.
+ * @param mem the memory.
+ * @param interrupt interrupt.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
+ */
 Update divu(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
             Instruction inst)
 {
@@ -206,6 +373,17 @@ Update divu(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
   }
 }
 
+/**
+ * Divide a unsigned register and a unsigned inmediate value.
+ *
+ * REGISTERS[FIRST] = REGISTERS[SECOND] / ADDRESS
+ * @param isa the instruction set architecture.
+ * @param regs the registers.
+ * @param mem the memory.
+ * @param interrupt interrupt.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
+ */
 Update divui(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
              Instruction inst)
 {
@@ -225,6 +403,17 @@ Update divui(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
   }
 }
 
+/**
+ * Module of two signed registers.
+ *
+ * REGISTERS[FIRST] = REGISTERS[SECOND] % REGISTERS[ADDRESS]
+ * @param isa the instruction set architecture.
+ * @param regs the registers.
+ * @param mem the memory.
+ * @param interrupt interrupt.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
+ */
 Update mod(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
            Instruction inst)
 {
@@ -244,6 +433,17 @@ Update mod(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
   }
 }
 
+/**
+ * Module of a signed register and a signed inmediate value.
+ *
+ * REGISTERS[FIRST] = REGISTERS[SECOND] % ADDRESS
+ * @param isa the instruction set architecture.
+ * @param regs the registers.
+ * @param mem the memory.
+ * @param interrupt interrupt.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
+ */
 Update modi(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
             Instruction inst)
 {
@@ -263,6 +463,17 @@ Update modi(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
   }
 }
 
+/**
+ * Module of two unsigned registers.
+ *
+ * REGISTERS[FIRST] = REGISTERS[SECOND] % REGISTERS[ADDRESS]
+ * @param isa the instruction set architecture.
+ * @param regs the registers.
+ * @param mem the memory.
+ * @param interrupt interrupt.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
+ */
 Update modu(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
             Instruction inst)
 {
@@ -282,6 +493,17 @@ Update modu(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
   }
 }
 
+/**
+ * Module of a unsigned register and a unsigned inmediate value.
+ *
+ * REGISTERS[FIRST] = REGISTERS[SECOND] % ADDRESS
+ * @param isa the instruction set architecture.
+ * @param regs the registers.
+ * @param mem the memory.
+ * @param interrupt interrupt.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
+ */
 Update modui(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
              Instruction inst)
 {
