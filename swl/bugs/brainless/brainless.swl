@@ -135,7 +135,7 @@
 
 	world ACTION_MYSELF_ENERGY
 	loadi r0 ENERGY_TO_CREATE_EGG
-	bgt r0 r1 do_eat_egg
+	bgt r1 r0 do_eat_egg
 
 	.label do_eat_ret	# if MYSELF_ENERGY <= ENERGY_TO_CREATE_EGG
 	ret
