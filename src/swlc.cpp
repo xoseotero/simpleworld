@@ -5,7 +5,7 @@
  * begin:     Sat, 18 Nov 2006 12:26:31 +0100
  * last:      $Date$
  *
- *  Copyright (C) 2006-2007  Xosé Otero <xoseotero@users.sourceforge.net>
+ *  Copyright (C) 2006-2008  Xosé Otero <xoseotero@users.sourceforge.net>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -44,8 +44,8 @@ namespace cpu = SimpleWorld::CPU;
 
 const char* program_short_name = "swlc";
 const char* program_name = "Simple World Language compiler";
-const char* program_version = "1.0a3_svn";
-const char* program_years = "2006, 2007";
+const char* program_version = "1.0a3";
+const char* program_years = "2006-2008";
 const char* program_author = "Xosé Otero";
 const char* program_author_email = "xoseotero@users.sourceforge.net";
 const char* program_mailbugs = "simpleworld-list@lists.sourceforge.net";

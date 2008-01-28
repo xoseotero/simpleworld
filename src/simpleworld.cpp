@@ -58,8 +58,8 @@ namespace db = SimpleWorld::DB;
 // information about he program.
 const char* program_short_name = "simpleworld";
 const char* program_name = "Simple World";
-const char* program_version = "1.0a2";
-const char* program_years = "2006, 2007";
+const char* program_version = "1.0a3";
+const char* program_years = "2006-2008";
 const char* program_author = "Xosé Otero";
 const char* program_author_email = "xoseotero@users.sourceforge.net";
 const char* program_mailbugs = "simpleworld-list@lists.sourceforge.net";
