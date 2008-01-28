@@ -56,7 +56,7 @@ MemoryFile::MemoryFile(const std::string& filename)
 void MemoryFile::load_file(const std::string& filename)
 {
   std::ifstream is(filename.c_str(), std::ios::binary);
-  if (is.rdstate() & std::ifstream::failbit)
+  if (not is.is_open())
     throw EXCEPTION(IOError, boost::str(boost::format("\
 File %1% is not readable")
                                         % filename));
