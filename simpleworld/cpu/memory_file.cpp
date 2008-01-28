@@ -37,6 +37,15 @@ namespace CPU
 {
 
 /**
+ * Copy constructor.
+ * @param memory memory to copy.
+ */
+MemoryFile::MemoryFile(const Memory& memory)
+  : Memory(memory)
+{
+}
+
+/**
  * Constructor.
  * @param filename filename from where to load the code.
  * @exception IOError problem with the file.
@@ -75,7 +84,6 @@ The size of %1% (%2%) is not a multiple of 32bits")
   Word instruction;
   Address i = 0;
   while (is.read(reinterpret_cast<char*>(&instruction), sizeof(Word))) {
-
 #ifdef IS_BIG_ENDIAN
     this->set_word(i * sizeof(Word), instruction);
 #else
@@ -83,6 +91,37 @@ The size of %1% (%2%) is not a multiple of 32bits")
 #endif
 
     i++;
+  }
+}
+
+/**
+ * Save the code to a file.
+ * @param filename filename where to save the code from the memory.
+ * @exception IOError problem with the file.
+ */
+void MemoryFile::save_file(const std::string& filename)
+{
+  std::ofstream os(filename.c_str(), std::ios::binary | std::ios::trunc);
+  if (not os.is_open())
+    throw EXCEPTION(IOError, boost::str(boost::format("\
+File %1% is not writable")
+                                        % filename));
+
+  Word instruction;
+  Address i;
+  for (i = 0; i < this->size(); i += sizeof(Word)) {
+#ifdef IS_BIG_ENDIAN
+    instruction = this->get_word(i);
+#else
+    instruction = this->get_word(i, false);
+#endif
+
+    os.write(reinterpret_cast<char*>(&instruction), sizeof(Word));
+
+    if (not os.good())
+      throw EXCEPTION(IOError, boost::str(boost::format("\
+Error writing to %1%")
+                                          % filename));
   }
 }
 

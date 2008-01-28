@@ -40,6 +40,12 @@ class MemoryFile: public Memory
 {
 public:
   /**
+   * Copy constructor.
+   * @param memory memory to copy.
+   */
+  MemoryFile(const Memory& memory);
+
+  /**
    * Constructor.
    * @param filename filename from where to load the code.
    * @exception IOError problem with the file.
@@ -53,6 +59,13 @@ public:
    * @exception IOError problem with the file.
    */
   void load_file(const std::string& filename);
+
+  /**
+   * Save the code to a file.
+   * @param filename filename where to save the code from the memory.
+   * @exception IOError problem with the file.
+   */
+  void save_file(const std::string& filename);
 };
 
 }
