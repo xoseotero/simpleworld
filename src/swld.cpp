@@ -5,7 +5,7 @@
  * begin:     Sun, 19 Nov 2006 17:58:49 +0100
  * last:      $Date$
  *
- *  Copyright (C) 2006-2007  Xosé Otero <xoseotero@users.sourceforge.net>
+ *  Copyright (C) 2006-2008  Xosé Otero <xoseotero@users.sourceforge.net>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -77,7 +77,7 @@ Simple World Language decompiler.\n\
 \n\
 Mandatory arguments to long options are mandatory for short options too.\n\
   -o, --output=FILE          place the output into FILE\n\
-  -o, --output=FILE          the default value is %2%\n\
+                               the default value is %2%\n\
 \n\
   -h, --help                 display this help and exit\n\
   -v, --version              output version information and exit\n\
