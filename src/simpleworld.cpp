@@ -5,7 +5,7 @@
  * begin:     Tue, 02 Oct 2007 08:03:37 +0200
  * last:      $Date$
  *
- *  Copyright (C) 2006-2007  Xosé Otero <xoseotero@users.sourceforge.net>
+ *  Copyright (C) 2006-2008  Xosé Otero <xoseotero@users.sourceforge.net>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -38,10 +38,14 @@
 #include <simpleworld/types.hpp>
 #include <simpleworld/simpleworld.hpp>
 #include <simpleworld/world.hpp>
+#include <simpleworld/cpu/types.hpp>
 #include <simpleworld/cpu/memory_file.hpp>
+#include <simpleworld/db/types.hpp>
+#include <simpleworld/db/exception.hpp>
 #include <simpleworld/db/environment.hpp>
-#include <simpleworld/db/bug.hpp>
 #include <simpleworld/db/egg.hpp>
+#include <simpleworld/db/bug.hpp>
+#include <simpleworld/db/deadbug.hpp>
 #include <simpleworld/db/food.hpp>
 namespace sw = SimpleWorld;
 namespace cpu = SimpleWorld::CPU;
@@ -93,6 +97,7 @@ Mandatory arguments to long options are mandatory for short options too.\n\
   -i, --info                 show information about the world\n\
   -I, --extrainfo            show information about the world and its\n\
                                elements (eggs, bugs and food)\n\
+  -C, --code=ID              save the code of Bug[ID] as ID.swo\n\
 \n\
       --position=X,Y         position of the element added\n\
                                if not set, a random position is calculated\n\
@@ -144,7 +149,8 @@ There is NO WARRANTY, to the extent permitted by law.")
 // information from the command line
 static std::string database_path;
 static sw::Time cycles = 0;
-static std::string code_path;
+static std::string egg_path;
+static db::ID bug_id;
 static sw::Position position;
 static sw::Orientation orientation;
 static sw::Energy energy = DEFAULT_ENERGY;
@@ -161,6 +167,7 @@ static bool egg_flag = false;
 static bool food_flag = false;
 static bool info_flag = false;
 static bool extrainfo_flag = false;
+static bool code_flag = false;
 
 /**
  * Parse the command line.
@@ -176,6 +183,7 @@ void parse_cmd(int argc, char* argv[])
     {"food", no_argument, NULL, 'f'},
     {"info", no_argument, NULL, 'i'},
     {"extrainfo", no_argument, NULL, 'I'},
+    {"code", required_argument, NULL, 'C'},
 
     {"position", required_argument, NULL, 'p'},
     {"orientation", required_argument, NULL, 'o'},
@@ -222,7 +230,7 @@ void parse_cmd(int argc, char* argv[])
 
     case 'e':
       egg_flag = true;
-      code_path = optarg;
+      egg_path = optarg;
 
       break;
 
@@ -238,6 +246,18 @@ void parse_cmd(int argc, char* argv[])
 
     case 'I':
       extrainfo_flag = true;
+
+      break;
+
+    case 'C':
+      code_flag = true;
+      {
+        char* endptr;
+        bug_id = std::strtoul(optarg, &endptr, 10);
+        if (*endptr != '\0')
+          usage(boost::str(boost::format("invalid argument `%1%'")
+                           % optarg));
+      }
 
       break;
 
@@ -301,7 +321,7 @@ void parse_cmd(int argc, char* argv[])
   }
 
   short commands = create_flag + run_flag + egg_flag + food_flag +
-    info_flag + extrainfo_flag;
+    info_flag + extrainfo_flag + code_flag;
   if (commands == 0)
     usage("a command must be passed");
   else if (commands > 1)
@@ -535,7 +555,7 @@ Food[%1%] added at (%2%, %3%) with a size of %4%")
           << std::endl;
       } else {
         simpleworld.add_egg(energy, position, orientation,
-                            cpu::MemoryFile(code_path));
+                            cpu::MemoryFile(egg_path));
 
         std::cout << boost::format("\
 Egg[%1%] added at (%2%, %3%) with a orientation of %4% and a energy of %5%")
@@ -566,6 +586,43 @@ Position (%1%, %2%) is already used")
 
     if (extrainfo_flag)
       show_world_elements(world);
+  } else if (code_flag) {
+    // the bug can be in several stages: egg, bug or dead bug
+    bool bug_found = false;
+
+    try {
+      // is the bug a egg?
+      db::Egg egg(&simpleworld, bug_id);
+      bug_found = true;
+      cpu::MemoryFile code(egg.code.code);
+      code.save_file(boost::str(boost::format("%1%.swo") % bug_id));
+    } catch (const db::DBException& e) {
+    }
+
+    try {
+      // is the bug a alive bug?
+      db::Bug bug(&simpleworld, bug_id);
+      bug_found = true;
+      cpu::MemoryFile code(bug.code.code);
+      code.save_file(boost::str(boost::format("%1%.swo") % bug_id));
+    } catch (const db::DBException& e) {
+    }
+
+    try {
+      // is the bug a dead bug?
+      db::DeadBug deadbug(&simpleworld, bug_id);
+      bug_found = true;
+      cpu::MemoryFile code(deadbug.code.code);
+      code.save_file(boost::str(boost::format("%1%.swo") % bug_id));
+    } catch (const db::DBException& e) {
+    }
+
+    if (not bug_found)
+      // no, it was a error
+      std::cerr << boost::format("\
+Bug[%1%] not found")
+        % bug_id
+        << std::endl;
   }
 
   std::exit(EXIT_SUCCESS);
