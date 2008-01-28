@@ -369,6 +369,12 @@ void SimpleWorld::move(Bug* bug, Movement movement)
   } catch (const Exception& e) {
     throw EXCEPTION(ActionError, e.what);
   }
+
+  // the movement of the bugs must be sent to the database immediately to
+  // prevent constraints in the database about used positions
+  // this database constraint is thrown because the database still has the
+  // new position of this bug, but the World
+  bug->update_db();
 }
 
 /**
