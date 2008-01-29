@@ -1,6 +1,8 @@
 Simple World 1.0a3 (2008/01/28):
 	* Actions take 16 cycles to be finished.
 	* Implementation of action "egg".
+	* Possible mutations: addition of a random word, elimination of a word
+	  and permutation of a word.
 
 Simple World 1.0a2 (2007/12/10):
 	* Optional use of OpennSSL if available
