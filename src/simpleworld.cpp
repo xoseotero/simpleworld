@@ -202,7 +202,7 @@ void parse_cmd(int argc, char* argv[])
     /* getopt_long stores the option index here. */
     int option_index = 0;
 
-    int c = getopt_long(argc, argv, "cr:e:fiInvh", long_options,
+    int c = getopt_long(argc, argv, "cr:e:fiIC:nvh", long_options,
                         &option_index);
 
     /* Detect the end of the options. */
