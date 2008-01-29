@@ -194,14 +194,14 @@ static void permutate_word(::SimpleWorld::DB::Code* copy,
 
         break;
 
-        case 1:
+      case 1:
         // elimination of a word
         eliminate_word(&copy, copy_pos, code, code_pos);
         code_pos += sizeof(::SimpleWorld::CPU::Word);
 
         break;
 
-        case 2:
+      case 2:
         // permutation of a word
         permutate_word(&copy, copy_pos, code, code_pos);
         code_pos += sizeof(::SimpleWorld::CPU::Word);
