@@ -181,10 +181,8 @@ static void permutate_word(::SimpleWorld::DB::Code* copy,
   ::SimpleWorld::DB::Code copy(code.db());
   copy.code.resize(code.code.size());
 
-  ::SimpleWorld::CPU::Address code_pos, copy_pos;
-  for (code_pos = 0, copy_pos = 0;
-       code_pos < code.code.size();
-       code_pos += sizeof(::SimpleWorld::CPU::Word)) {
+  ::SimpleWorld::CPU::Address code_pos = 0, copy_pos = 0;
+  while (code_pos < code.code.size()) {
     // check if the word will be mutated
     if (randint(0, 1 / mutations_probability) == 0) {
       // mutation
@@ -199,12 +197,14 @@ static void permutate_word(::SimpleWorld::DB::Code* copy,
         case 1:
         // elimination of a word
         eliminate_word(&copy, copy_pos, code, code_pos);
+        code_pos += sizeof(::SimpleWorld::CPU::Word);
 
         break;
 
         case 2:
         // permutation of a word
         permutate_word(&copy, copy_pos, code, code_pos);
+        code_pos += sizeof(::SimpleWorld::CPU::Word);
         copy_pos += sizeof(::SimpleWorld::CPU::Word);
 
         break;
@@ -213,6 +213,7 @@ static void permutate_word(::SimpleWorld::DB::Code* copy,
       // same as original
       copy.code.set_word(copy_pos, code.code[code_pos]);
 
+      code_pos += sizeof(::SimpleWorld::CPU::Word);
       copy_pos += sizeof(::SimpleWorld::CPU::Word);
     }
   }
