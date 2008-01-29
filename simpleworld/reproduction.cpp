@@ -64,26 +64,6 @@ static ::SimpleWorld::CPU::Word random_word()
 }
 
 /**
- * Permute the bytes of a word.
- * @param word the original word.
- * @return the permuted word.
- */
-static ::SimpleWorld::CPU::Word permute_word(const ::SimpleWorld::CPU::Word&
-                                             word)
-{
-  ::SimpleWorld::CPU::Word new_word;
-
-  unsigned int i;
-  for (i = 0; i < sizeof(::SimpleWorld::CPU::Word); i++)
-    ::SimpleWorld::CPU::set_byte(&new_word, i,
-                                 ::SimpleWorld::CPU::get_byte(word,
-                                                              randint(0,
-                                                                      sizeof(::SimpleWorld::CPU::Word))));
-
-  return new_word;
-}
-
-/**
  * Add a random word to the copy.
  * @param copy where to add the word.
  * @param copy_pos position of the new word.
@@ -137,40 +117,7 @@ static void eliminate_word(::SimpleWorld::DB::Code* copy,
 }
 
 /**
- * Permute the bytes of a word.
- * @param copy where to add the word.
- * @param copy_pos position of the new word.
- * @param code original code.
- * @param code_pos position of the original word.
- */
-static void permutate_word(::SimpleWorld::DB::Code* copy,
-                           ::SimpleWorld::CPU::Address copy_pos,
-                           const ::SimpleWorld::DB::Code& code,
-                           ::SimpleWorld::CPU::Address code_pos)
-{
-#ifdef DEBUG
-  std::cout << boost::format("Permutation of a word")
-    << std::endl;
-#endif // DEBUG
-
-  copy->code.set_word(copy_pos, permute_word(code.code[code_pos]));
-
-  // check if the new code is a mutation
-  // when the code is permuted, the permuted code can be the same as the
-  // original code
-  if (copy->code[copy_pos] != code.code[code_pos]) {
-    // this is a mutation
-    ::SimpleWorld::DB::Mutation mutation(code.db());
-    mutation.position = copy_pos;
-    mutation.type = ::SimpleWorld::DB::Mutation::mutation;
-    mutation.original = code.code[code_pos];
-    mutation.mutated = copy->code[copy_pos];
-    copy->mutations.push_back(mutation);
-  }
-}
-
-/**
- * Change a word by other.
+ * Change a word by a random one.
  * @param copy where to add the word.
  * @param copy_pos position of the new word.
  * @param code original code.
@@ -219,7 +166,7 @@ static void change_word(::SimpleWorld::DB::Code* copy,
     // check if the word will be mutated
     if (randint(0, 1 / mutations_probability) == 0) {
       // mutation
-      switch (randint(0, 4)) {
+      switch (randint(0, 3)) {
       case 0:
         // addition of a random word
         add_word(&copy, copy_pos, code);
@@ -235,16 +182,8 @@ static void change_word(::SimpleWorld::DB::Code* copy,
         break;
 
       case 2:
-        // change the word
+        // change the word by a random one
         change_word(&copy, copy_pos, code, code_pos);
-        code_pos += sizeof(::SimpleWorld::CPU::Word);
-        copy_pos += sizeof(::SimpleWorld::CPU::Word);
-
-        break;
-
-      case 3:
-        // permutation of a word
-        permutate_word(&copy, copy_pos, code, code_pos);
         code_pos += sizeof(::SimpleWorld::CPU::Word);
         copy_pos += sizeof(::SimpleWorld::CPU::Word);
 
