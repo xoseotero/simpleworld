@@ -169,6 +169,39 @@ static void permutate_word(::SimpleWorld::DB::Code* copy,
   }
 }
 
+/**
+ * Change a word by other.
+ * @param copy where to add the word.
+ * @param copy_pos position of the new word.
+ * @param code original code.
+ * @param code_pos position of the original word.
+ */
+static void change_word(::SimpleWorld::DB::Code* copy,
+                        ::SimpleWorld::CPU::Address copy_pos,
+                        const ::SimpleWorld::DB::Code& code,
+                        ::SimpleWorld::CPU::Address code_pos)
+{
+#ifdef DEBUG
+  std::cout << boost::format("Change of a word")
+    << std::endl;
+#endif // DEBUG
+
+  copy->code.set_word(copy_pos, random_word());
+
+  // check if the new code is a mutation
+  // when the code is changed, the changed code can be the same as the
+  // original code
+  if (copy->code[copy_pos] != code.code[code_pos]) {
+    // this is a mutation
+    ::SimpleWorld::DB::Mutation mutation(code.db());
+    mutation.position = copy_pos;
+    mutation.type = ::SimpleWorld::DB::Mutation::mutation;
+    mutation.original = code.code[code_pos];
+    mutation.mutated = copy->code[copy_pos];
+    copy->mutations.push_back(mutation);
+  }
+}
+
 
 /**
  * Get a copy of the code but with occasional mutations.
@@ -186,7 +219,7 @@ static void permutate_word(::SimpleWorld::DB::Code* copy,
     // check if the word will be mutated
     if (randint(0, 1 / mutations_probability) == 0) {
       // mutation
-      switch (randint(0, 3)) {
+      switch (randint(0, 4)) {
       case 0:
         // addition of a random word
         add_word(&copy, copy_pos, code);
@@ -202,6 +235,14 @@ static void permutate_word(::SimpleWorld::DB::Code* copy,
         break;
 
       case 2:
+        // change the word
+        change_word(&copy, copy_pos, code, code_pos);
+        code_pos += sizeof(::SimpleWorld::CPU::Word);
+        copy_pos += sizeof(::SimpleWorld::CPU::Word);
+
+        break;
+
+      case 3:
         // permutation of a word
         permutate_word(&copy, copy_pos, code, code_pos);
         code_pos += sizeof(::SimpleWorld::CPU::Word);
