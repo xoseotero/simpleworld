@@ -117,8 +117,6 @@ CREATE TABLE Bug
   CHECK(killer_id IS NULL OR (killer_id IS NOT NULL AND dead IS NOT NULL))
 );
 
-CREATE INDEX Bug_index ON Bug(id);
-
 CREATE INDEX Bug_position_index ON Bug(position_x, position_y);
 
 CREATE INDEX Bug_dead_index ON Bug(dead);
@@ -301,8 +299,6 @@ CREATE TABLE Code
   CHECK(size == length(code))
 );
 
-CREATE INDEX Code_index ON Code(bug_id);
-
 /* Check if the id will change */
 CREATE TRIGGER Code_update_id_trigger
 BEFORE UPDATE
@@ -379,8 +375,6 @@ CREATE TABLE CPU
   PRIMARY KEY(bug_id),
   FOREIGN KEY(bug_id) REFERENCES Bug(id)
 );
-
-CREATE INDEX CPU_index ON CPU(bug_id);
 
 /* Check if the id will change */
 CREATE TRIGGER CPU_update_id_trigger
@@ -499,8 +493,6 @@ CREATE TABLE Food
   CHECK(position_x >= 0 AND position_y >= 0),
   CHECK(size >= 0)
 );
-
-CREATE INDEX Food_index ON Food(id);
 
 /* Check that two food elements are not in the same position */
 CREATE TRIGGER Food_insert_position_trigger

@@ -364,9 +364,6 @@ CREATE TABLE Bug\n\
 );",
 
     "\
-CREATE INDEX Bug_index ON Bug(id);",
-
-    "\
 CREATE INDEX Bug_position_index ON Bug(position_x, position_y);",
 
     "\
@@ -566,9 +563,6 @@ CREATE TABLE Code\n\
   CHECK(size == length(code))\n\
 );",
 
-    "\
-CREATE INDEX Code_index ON Code(bug_id);",
-
     /* Check if the id will change */
     "\
 CREATE TRIGGER Code_update_id_trigger\n\
@@ -652,9 +646,6 @@ CREATE TABLE CPU\n\
   PRIMARY KEY(bug_id),\n\
   FOREIGN KEY(bug_id) REFERENCES Bug(id)\n\
 );"
-
-    "\
-CREATE INDEX CPU_index ON CPU(bug_id);",
 
     /* Check if the id will change */
     "\
@@ -782,9 +773,6 @@ CREATE TABLE Food\n\
   CHECK(position_x >= 0 AND position_y >= 0),\n\
   CHECK(size >= 0)\n\
 );",
-
-    "\
-CREATE INDEX Food_index ON Food(id);",
 
     /* Check that two food elements are not in the same position */
     "\
