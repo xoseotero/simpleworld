@@ -181,6 +181,7 @@ static void update_1(sqlite3x::sqlite3_connection* connection)
 
   // Environment table has a new primary key (id)
   // a temporary table must be used because a new primary key can't be added
+  // all the indexes or triggers are dropped automatically
   connection->executenonquery("\
 CREATE TABLE Environment_temp\n\
 (\n\
@@ -305,10 +306,10 @@ END;");
 
 
   // remove unnecesary indexes
-  connection->executenonquery("DROP INDEX Bug_index;");
-  connection->executenonquery("DROP INDEX Code_index;");
-  connection->executenonquery("DROP INDEX CPU_index;");
-  connection->executenonquery("DROP INDEX Food_index;");
+  connection->executenonquery("DROP INDEX IF EXISTS Bug_index;");
+  connection->executenonquery("DROP INDEX IF EXISTS Code_index;");
+  connection->executenonquery("DROP INDEX IF EXISTS CPU_index;");
+  connection->executenonquery("DROP INDEX IF EXISTS Food_index;");
 
 
   // all the changes have been done
