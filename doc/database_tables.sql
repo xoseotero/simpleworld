@@ -3,6 +3,8 @@
  */
 CREATE TABLE Environment
 (
+  id INTEGER NOT NULL,
+
   time INTEGER NOT NULL,
 
   -- the rest of the rows can't change
@@ -25,7 +27,7 @@ CREATE TABLE Environment
   energy_eat INTEGER NOT NULL,
   energy_egg INTEGER NOT NULL,
 
-  PRIMARY KEY(time),
+  PRIMARY KEY(id),
   CHECK(time >= 0),
   CHECK(size_x > 0 AND size_y > 0),
   CHECK(energy_developed >= 0),
@@ -59,8 +61,23 @@ FOR EACH ROW BEGIN
          FROM Environment) >= NEW.time;
 END;
 
+/* The size of the World can't change */
+CREATE TRIGGER Environment_insert
+BEFORE INSERT
+ON Environment
+FOR EACH ROW
+BEGIN
+  SELECT RAISE(ROLLBACK, "The size of the World can't change")
+  WHERE (SELECT count(id)
+         FROM Environment) > 0
+	AND
+        (SELECT id
+         FROM Environment
+         WHERE size_x = NEW.size_x AND size_y = NEW.size_y) IS NULL;
+END;
+
 /* Only time can change */
-CREATE TRIGGER Environment_update_valid_time
+CREATE TRIGGER Environment_update
 BEFORE UPDATE
 ON Environment
 FOR EACH ROW
