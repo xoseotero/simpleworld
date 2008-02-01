@@ -5,7 +5,7 @@
  * begin:     Thu, 25 Jan 2007 03:53:57 +0100
  * last:      $Date$
  *
- *  Copyright (C) 2007  Xosé Otero <xoseotero@users.sourceforge.net>
+ *  Copyright (C) 2007-2008  Xosé Otero <xoseotero@users.sourceforge.net>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -96,7 +96,7 @@ public:
 
   Energy energy_developed;
 
-  float mutations_probability;
+  double mutations_probability;
 
   Time time_birth;
 
