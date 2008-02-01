@@ -34,12 +34,12 @@ namespace DB
 /**
  * Constructor.
  * @param db database.
- * @param time time of the environment (the real time can be >= than this).
+ * @param id id of the environment.
  * @exception DBException if there is a error in the database.
- * @exception DBException if the time is not found in the table.
+ * @exception DBException if the ID is not found in the table.
  */
-Environment::Environment(DB* db, Time time)
-  : Table(db, time), time(time)
+Environment::Environment(DB* db, ID id)
+  : Table(db, id)
 {
   this->update();
 }
@@ -72,9 +72,7 @@ SELECT time, size_x, size_y,\n\
        energy_nothing, energy_myself, energy_detect, energy_info,\n\
        energy_move, energy_turn, energy_attack, energy_eat, energy_egg\n\
 FROM Environment\n\
-WHERE time >= ?\n\
-ORDER BY time\n\
-LIMIT 1;");
+WHERE id = ?");
     sql.bind(1, this->id_);
 
     sqlite3x::sqlite3_cursor cursor(sql.executecursor());
@@ -83,7 +81,7 @@ LIMIT 1;");
 time %1% not found in table Environment")
                                               % this->id_));
 
-    this->id_ = this->time = cursor.getint(0);
+    this->time = cursor.getint(0);
     this->size.x = cursor.getint(1);
     this->size.y = cursor.getint(2);
     this->energy_developed = cursor.getint(3);
@@ -126,11 +124,11 @@ SET time = ?, size_x = ?, size_y = ?,\n\
     energy_nothing = ?, energy_myself = ?, energy_detect = ?,\n\
     energy_info = ?, energy_move = ?, energy_turn = ?,\n\
     energy_attack = ?, energy_eat = ?, energy_egg = ?\n\
-WHERE time = ?;");
+WHERE id = ?;");
       sql.bind(1, static_cast<int>(this->time));
-      sql.bind(2, static_cast<ID>(this->size.x));
-      sql.bind(3, static_cast<ID>(this->size.y));
-      sql.bind(4, static_cast<ID>(this->energy_developed));
+      sql.bind(2, static_cast<int>(this->size.x));
+      sql.bind(3, static_cast<int>(this->size.y));
+      sql.bind(4, static_cast<int>(this->energy_developed));
       sql.bind(5, this->mutations_probability);
       sql.bind(6, static_cast<int>(this->time_birth));
       sql.bind(7, static_cast<int>(this->energy_nothing));
@@ -148,8 +146,6 @@ WHERE time = ?;");
     } catch (const sqlite3x::database_error& e) {
       throw EXCEPTION(DBException, e.what());
     }
-
-    this->id_ = this->time;
   }
 
 
@@ -175,9 +171,9 @@ INSERT INTO Environment(time, size_x, size_y,\n\
                         energy_attack, energy_eat, energy_egg)\n\
 VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
     sql.bind(1, static_cast<int>(this->time));
-    sql.bind(2, static_cast<ID>(this->size.x));
-    sql.bind(3, static_cast<ID>(this->size.y));
-    sql.bind(4, static_cast<ID>(this->energy_developed));
+    sql.bind(2, static_cast<int>(this->size.x));
+    sql.bind(3, static_cast<int>(this->size.y));
+    sql.bind(4, static_cast<int>(this->energy_developed));
     sql.bind(5, this->mutations_probability);
     sql.bind(6, static_cast<int>(this->time_birth));
     sql.bind(7, static_cast<int>(this->energy_nothing));
@@ -212,7 +208,7 @@ void Environment::remove()
   try {
     sql.prepare("\
 DELETE FROM Environment\n\
-WHERE time = ?;");
+WHERE id = ?;");
     sql.bind(1, this->id_);
 
     sql.executenonquery();

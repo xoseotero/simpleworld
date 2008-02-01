@@ -42,11 +42,11 @@ public:
   /**
    * Constructor.
    * @param db database.
-   * @param time time of the environment (the real time can be >= than this).
+   * @param id id of the environment.
    * @exception DBException if there is a error in the database.
-   * @exception DBException if the time is not found in the table.
+   * @exception DBException if the ID is not found in the table.
    */
-  Environment(DB* db, Time time);
+  Environment(DB* db, ID id);
 
   /**
    * Constructor to insert data.

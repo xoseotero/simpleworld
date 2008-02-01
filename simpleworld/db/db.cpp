@@ -27,7 +27,7 @@
 #include "wrongversion.hpp"
 #include "db.hpp"
 
-#define DATABASE_VERSION 1
+#define DATABASE_VERSION 2
 
 namespace SimpleWorld
 {
@@ -64,7 +64,7 @@ std::vector<Time> DB::environments()
 
   try {
     sql.prepare("\
-SELECT time\n\
+SELECT id\n\
 FROM Environment\n\
 ORDER BY time;");
     sqlite3x::sqlite3_cursor cursor = sql.executecursor();
@@ -89,8 +89,12 @@ Time DB::last_environment()
 
   try {
     sql.prepare("\
-SELECT max(time)\n\
-FROM Environment;");
+SELECT id\n\
+FROM Environment\n\
+WHERE time = (SELECT max(time)\n\
+              FROM Environment)\n\
+ORDER BY id DESC\n\
+LIMIT 1;");
     sqlite3x::sqlite3_cursor cursor = sql.executecursor();
     if (cursor.step())
       return cursor.getint(0);
@@ -219,9 +223,11 @@ void DB::on_open()
   // DATABASE_VERSION) to check if the database is compatible
   this->version_ = this->executeint("PRAGMA user_version;");
   if (this->version_ == 0) {    // Data base was created now
-    //sqlite3x::sqlite3_command sql(*this, "PRAGMA user_version = '?';");
+    //sqlite3x::sqlite3_command sql(*this, "PRAGMA user_version = ?;");
     //sql.bind(1, static_cast<int>(DATABASE_VERSION));
-    sqlite3x::sqlite3_command sql(*this, "PRAGMA user_version = 1;");
+    sqlite3x::sqlite3_command sql(*this, boost::str(boost::format("\
+PRAGMA user_version = %1%;")
+                                                    % DATABASE_VERSION));
     sql.executenonquery();
     this->version_ = DATABASE_VERSION;
 
@@ -245,6 +251,8 @@ void DB::create_tables()
     "\
 CREATE TABLE Environment\n\
 (\n\
+  id INTEGER NOT NULL,\n\
+\n\
   time INTEGER NOT NULL,\n\
 \n\
   -- the rest of the rows can't change\n\
@@ -267,7 +275,7 @@ CREATE TABLE Environment\n\
   energy_eat INTEGER NOT NULL,\n\
   energy_egg INTEGER NOT NULL,\n\
 \n\
-  PRIMARY KEY(time),\n\
+  PRIMARY KEY(id),\n\
   CHECK(time >= 0),\n\
   CHECK(size_x > 0 AND size_y > 0),\n\
   CHECK(energy_developed >= 0),\n\
@@ -304,9 +312,25 @@ FOR EACH ROW BEGIN\n\
          FROM Environment) >= NEW.time;\n\
 END;",
 
+    /* The size of the World can't change */
+    "\
+CREATE TRIGGER Environment_insert\n\
+BEFORE INSERT\n\
+ON Environment\n\
+FOR EACH ROW\n\
+BEGIN\n\
+  SELECT RAISE(ROLLBACK, \"The size of the World can't change\")\n\
+  WHERE (SELECT count(id)\n\
+         FROM Environment) > 0\n\
+	      AND\n\
+        (SELECT id\n\
+         FROM Environment\n\
+         WHERE size_x = NEW.size_x AND size_y = NEW.size_y) IS NULL;\n\
+END;",
+
     /* Only time can change */
     "\
-CREATE TRIGGER Environment_update_valid_time\n\
+CREATE TRIGGER Environment_update\n\
 BEFORE UPDATE\n\
 ON Environment\n\
 FOR EACH ROW\n\
