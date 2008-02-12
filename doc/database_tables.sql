@@ -373,7 +373,7 @@ END;
 /* Propagate the deletion */
 CREATE TRIGGER Code_delete_trigger
 BEFORE DELETE
-ON Bug
+ON Code
 FOR EACH ROW BEGIN
   DELETE FROM Mutation WHERE bug_id = OLD.id;
 END;

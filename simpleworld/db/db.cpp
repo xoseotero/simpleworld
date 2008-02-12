@@ -650,7 +650,7 @@ END;",
     "\
 CREATE TRIGGER Code_delete_trigger\n\
 BEFORE DELETE\n\
-ON Bug\n\
+ON Code\n\
 FOR EACH ROW BEGIN\n\
   DELETE FROM Mutation WHERE bug_id = OLD.id;\n\
 END;",
