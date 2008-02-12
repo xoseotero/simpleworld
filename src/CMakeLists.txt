@@ -27,9 +27,7 @@ TARGET_LINK_LIBRARIES(simpleworld_exe
   ${Boost_filesystem_LIBRARY}
   ${Boost_regex_LIBRARY}
   ${SQLite3x_LIB}
-  ${SQLite3_LIB}
-  ${XySSL_LIB}
-  ${OpenSSL_LIB})
+  ${SQLite3_LIB})
 SET_TARGET_PROPERTIES(simpleworld_exe PROPERTIES
   OUTPUT_NAME simpleworld
   INSTALL_RPATH_USE_LINK_PATH ON

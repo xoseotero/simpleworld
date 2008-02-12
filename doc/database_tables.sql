@@ -303,7 +303,6 @@ CREATE TABLE Code
   bug_id INTEGER NOT NULL,
 
   size INTEGER NOT NULL,
-  md5 CHAR[32] NOT NULL,
 
   /* The blob is the last col for performance */
   code BLOB NOT NULL,
@@ -311,7 +310,6 @@ CREATE TABLE Code
   PRIMARY KEY(bug_id),
   FOREIGN KEY(bug_id) REFERENCES Bug(id),
   CHECK(size >= 0 AND (size % 4 == 0)),
-  CHECK(length(md5) == 32),
   CHECK(length(code) % 4 == 0),
   CHECK(size == length(code))
 );

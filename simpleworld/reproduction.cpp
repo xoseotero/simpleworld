@@ -203,7 +203,6 @@ static void change_word(::SimpleWorld::DB::Code* copy,
     add_word(&copy, copy_pos, code);
 
   copy.size = copy.code.size();
-  copy.update_md5(true);
 
   return copy;
 }

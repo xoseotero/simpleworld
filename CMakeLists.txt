@@ -3,7 +3,6 @@ PROJECT(SimpleWorld)
 SUBDIRS(getopt
   sqlite3
   sqlite3x
-  xyssl
   simpleworld
   src
   tests)
@@ -122,43 +121,6 @@ ELSE(NOT SQLite3x_FOUND OR SQLite3x_USE_INTERNAL)
 ENDIF(NOT SQLite3x_FOUND OR SQLite3x_USE_INTERNAL)
 
 
-# SSL: search for XySSL or OpenSSL (prefered)
-# If any library is found, a internal version of XySSL is used
-FIND_PACKAGE(XySSL)
-FIND_PACKAGE(OpenSSL)
-
-# Force the use of the internal version of the XySSL
-OPTION(XySSL_USE_INTERNAL "Use internal XySSL library" OFF)
-
-# XySSL is found always, if the library is not found in the system
-# a internal version is used
-SET(HAVE_XYSSL 1)
-
-SET(XySSL_LIB "")
-SET(OpenSSL_LIB "")
-
-IF(XySSL_USE_INTERNAL)
-  INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/xyssl")
-  SET(XySSL_LIB "xyssl")
-ELSE(XySSL_USE_INTERNAL)
-  IF(OPENSSL_FOUND)
-    SET(HAVE_OPENSSL 1)
-    INCLUDE_DIRECTORIES(OPENSSL_INCLUDE_DIR)
-    SET(OpenSSL_LIB ${OPENSSL_LIBRARIES})
-  ELSE(OPENSSL_FOUND)
-    IF(XySSL_FOUND)
-      SET(XySSL_USE_INTERNAL 0)
-      INCLUDE_DIRECTORIES(${XySSL_INCLUDE_DIRS})
-      SET(XySSL_LIB ${XySSL_LIBRARIES})
-    ELSE(XySSL_FOUND)
-      SET(XySSL_USE_INTERNAL 1)
-      INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/xyssl")
-      SET(XySSL_LIB "xyssl")
-    ENDIF(XySSL_FOUND)
-  ENDIF(OPENSSL_FOUND)
-ENDIF(XySSL_USE_INTERNAL)
-
-
 CHECK_CXX_ACCEPTS_FLAG("-Wall" CXX_ACCEPTS_WALL)
 IF(CXX_ACCEPTS_WALL)
   ADD_DEFINITIONS("-Wall")
@@ -210,16 +172,3 @@ IF(SQLite3x_USE_INTERNAL)
 ELSE(SQLite3x_USE_INTERNAL)
   MESSAGE("\tSQLite3x:\texternal library used")
 ENDIF(SQLite3x_USE_INTERNAL)
-
-IF(XySSL_USE_INTERNAL)
-  MESSAGE("\tXySSL:\tinternal library used")
-  MESSAGE("\tOpenSSL:\tlibrary not used")
-ELSE(XySSL_USE_INTERNAL)
-  IF(OPENSSL_FOUND)
-    MESSAGE("\tXySSL:\tlibrary not used")
-    MESSAGE("\tOpenSSL:\texternal library used")
-  ELSE(OPENSSL_FOUND)
-    MESSAGE("\tXySSL:\tinternal library used")
-    MESSAGE("\tXySSL:\texternal library used")
-  ENDIF(OPENSSL_FOUND)
-ENDIF(XySSL_USE_INTERNAL)

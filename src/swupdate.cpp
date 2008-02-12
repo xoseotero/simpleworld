@@ -179,6 +179,7 @@ static void update_1(sqlite3x::sqlite3_connection* connection)
 {
   connection->executenonquery("BEGIN TRANSACTION");
 
+  // first change:
   // Environment table has a new primary key (id)
   // a temporary table must be used because a new primary key can't be added
   // all the indexes or triggers are dropped automatically
@@ -275,7 +276,7 @@ BEGIN\n\
   SELECT RAISE(ROLLBACK, \"The size of the World can't change\")\n\
   WHERE (SELECT count(id)\n\
          FROM Environment) > 0\n\
-	AND\n\
+        AND\n\
         (SELECT id\n\
          FROM Environment\n\
          WHERE size_x = NEW.size_x AND size_y = NEW.size_y) IS NULL;\n\
@@ -305,6 +306,106 @@ BEGIN\n\
 END;");
 
 
+  // second change:
+  // Code table loss the md5 field
+  // a temporary table must be used because a field can't be removed
+  // all the indexes or triggers are dropped automatically
+  connection->executenonquery("\
+CREATE TABLE Code_temp\n\
+(\n\
+  bug_id INTEGER NOT NULL,\n\
+\n\
+  size INTEGER NOT NULL,\n\
+\n\
+  code BLOB NOT NULL,\n\
+  PRIMARY KEY(bug_id),\n\
+  FOREIGN KEY(bug_id) REFERENCES Bug(id),\n\
+  CHECK(size >= 0 AND (size % 4 == 0)),\n\
+  CHECK(length(code) % 4 == 0),\n\
+  CHECK(size == length(code))\n\
+);");
+
+  // this trigger must be manually dropped because it was connected to Bug by
+  // error
+  connection->executenonquery("DROP TRIGGER Code_delete_trigger;");
+
+  // copy the data to the new Code table
+  connection->executenonquery("\
+INSERT INTO Code_temp(bug_id, size, code)\n\
+SELECT bug_id, size, code\n\
+FROM Code;");
+  connection->executenonquery("DROP TABLE Code;");
+  connection->executenonquery("\
+ALTER TABLE Code_temp\n\
+RENAME TO Code;");
+
+  // create the indexes and triggers
+  connection->executenonquery("\
+CREATE TRIGGER Code_update_id_trigger\n\
+BEFORE UPDATE\n\
+ON Code\n\
+FOR EACH ROW\n\
+WHEN OLD.bug_id != NEW.bug_id\n\
+BEGIN\n\
+  SELECT RAISE(ROLLBACK, 'id changed');\n\
+END;");
+
+  connection->executenonquery("\
+CREATE TRIGGER Code_insert_valid_trigger\n\
+BEFORE INSERT\n\
+ON Code\n\
+FOR EACH ROW BEGIN\n\
+  SELECT RAISE(ROLLBACK, 'id of bug not found')\n\
+  WHERE (SELECT id\n\
+         FROM Bug\n\
+         WHERE id=NEW.bug_id AND dead IS NULL) IS NULL;\n\
+END;");
+
+  connection->executenonquery("\
+CREATE TRIGGER Code_update_valid_trigger\n\
+BEFORE UPDATE\n\
+ON Code\n\
+FOR EACH ROW BEGIN\n\
+  SELECT RAISE(ROLLBACK, 'id of bug not found')\n\
+  WHERE (SELECT id\n\
+         FROM Bug\n\
+         WHERE id=NEW.bug_id AND dead IS NULL) IS NULL;\n\
+END;");
+
+  connection->executenonquery("\
+CREATE TRIGGER Code_insert_uniq_trigger\n\
+BEFORE INSERT\n\
+ON Code\n\
+FOR EACH ROW BEGIN\n\
+  SELECT RAISE(ROLLBACK, 'id of bug already in table')\n\
+  WHERE (SELECT count(bug_id)\n\
+         FROM Code\n\
+         WHERE bug_id=NEW.bug_id) != 0;\n\
+END;");
+
+  connection->executenonquery("\
+CREATE TRIGGER Code_update_uniq_trigger\n\
+BEFORE UPDATE\n\
+ON Code\n\
+FOR EACH ROW\n\
+WHEN OLD.bug_id != NEW.bug_id\n\
+BEGIN\n\
+  SELECT RAISE(ROLLBACK, 'id of bug already in table')\n\
+  WHERE (SELECT count(bug_id)\n\
+         FROM Code\n\
+         WHERE bug_id=NEW.bug_id) != 0;\n\
+END;");
+
+  connection->executenonquery("\
+CREATE TRIGGER Code_delete_trigger\n\
+BEFORE DELETE\n\
+ON Bug\n\
+FOR EACH ROW BEGIN\n\
+  DELETE FROM Mutation WHERE bug_id = OLD.id;\n\
+END;");
+
+
+  // third change
   // remove unnecesary indexes
   connection->executenonquery("DROP INDEX IF EXISTS Bug_index;");
   connection->executenonquery("DROP INDEX IF EXISTS Code_index;");

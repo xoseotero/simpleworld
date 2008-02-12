@@ -139,7 +139,6 @@ void SimpleWorld::add_egg(Energy energy,
   egg.energy = energy;
   egg.code.size = code.size();
   egg.code.code = code;
-  egg.code.update_md5();
   egg.insert();
 
   Egg* ptr = new Egg(this, egg.id());

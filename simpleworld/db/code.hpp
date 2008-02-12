@@ -25,7 +25,6 @@
 #define SIMPLEWORLD_DB_CODE_HPP
 
 #include <vector>
-#include <string>
 
 #include <simpleworld/ints.hpp>
 #include <simpleworld/db/types.hpp>
@@ -101,15 +100,8 @@ public:
   void remove();
 
 
-  /**
-   * Update the MD5 check sum of the code if changed or force are is true.
-   * changed is set to true.
-   */
-  void update_md5(bool force = false);
-
   // Data
   Uint16 size;
-  std::string md5;
   Memory code;
 
   std::vector<Mutation> mutations;

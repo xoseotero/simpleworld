@@ -25,17 +25,9 @@
 
 #include <simpleworld/config.hpp>
 
-#include <cstdio>
-#include <cstring>
 #include <cassert>
 
 #include <sqlite3x/sqlite3x.hpp>
-
-#ifdef HAVE_OPENSSL
-#include <openssl/md5.h>
-#else
-#include <xyssl/md5.h>
-#endif // HAVE_OPENSSL
 
 #include <simpleworld/cpu/types.hpp>
 #include "exception.hpp"
@@ -167,7 +159,7 @@ void Code::update()
 
   try {
     sql.prepare("\
-SELECT size, md5, code\n\
+SELECT size, code\n\
 FROM Code\n\
 WHERE bug_id = ?;");
     sql.bind(1, this->id_);
@@ -179,8 +171,7 @@ bug_id %1% not found in table Code")
                                               % this->id_));
 
     this->size = cursor.getint(0);
-    this->md5 = cursor.getstring(1);
-    this->code = get_memory(&cursor, 2);
+    this->code = get_memory(&cursor, 1);
     assert(this->code.size() == this->size);
 
     sqlite3x::sqlite3_command sql_mutations(*this->db_,
@@ -215,19 +206,16 @@ WHERE bug_id = ?;");
 void Code::update_db(bool force)
 {
   if (this->changed or force) {
-    this->update_md5(force);
-
     sqlite3x::sqlite3_command sql(*this->db_);
 
     try {
       sql.prepare("\
 UPDATE Code\n\
-SET size = ?, md5 = ?, code = ?\n\
+SET size = ?, code = ?\n\
 WHERE bug_id = ?;");
       sql.bind(1, static_cast<int>(this->size));
-      sql.bind(2, this->md5);
-      bind_memory(&sql, 3, this->code);
-      sql.bind(4, this->id_);
+      bind_memory(&sql, 2, this->code);
+      sql.bind(3, this->id_);
 
       sql.executenonquery();
     } catch (const sqlite3x::database_error& e) {
@@ -255,12 +243,11 @@ void Code::insert(ID bug_id)
 
   try {
     sql.prepare("\
-INSERT INTO Code(bug_id, size, md5, code)\n\
-VALUES(?, ?, ?, ?);");
+INSERT INTO Code(bug_id, size, code)\n\
+VALUES(?, ?, ?);");
     sql.bind(1, bug_id);
     sql.bind(2, static_cast<int>(this->size));
-    sql.bind(3, this->md5);
-    bind_memory(&sql, 4, this->code);
+    bind_memory(&sql, 3, this->code);
 
     sql.executenonquery();
   } catch (const sqlite3x::database_error& e) {
@@ -299,77 +286,6 @@ WHERE id = ?;");
   //remove_mutations(&this->mutations);
 
   Table::remove();
-}
-
-
-/**
- * Get the MD5 digest: 16 bytes
- * @param code Code to hash.
- * @param digest where to return the MD5 digest.
- */
-static void md5_digest(const CPU::Memory& code, unsigned char digest[16])
-{
-#ifdef HAVE_OPENSSL
-  MD5_CTX ctx;
-  MD5_Init(&ctx);
-#else
-  md5_context ctx;
-  md5_starts(&ctx);
-#endif // HAVE_OPENSSL
-
-  CPU::Address i;
-  CPU::Word word;
-  for (i = 0; i < code.size(); i += sizeof(CPU::Word)) {
-    word = code.get_word(i, false);
-#ifdef HAVE_OPENSSL
-    MD5_Update(&ctx, reinterpret_cast<unsigned char*>(&word),
-               sizeof(CPU::Word));
-#else
-    md5_update(&ctx, reinterpret_cast<unsigned char*>(&word),
-               sizeof(CPU::Word));
-#endif // HAVE_OPENSSL
-  }
-
-#ifdef HAVE_OPENSSL
-  MD5_Final(digest, &ctx);
-#else
-  md5_finish(&ctx, digest);
-#endif // HAVE_ OPENSSL
-}
-
-/**
- * Get the MD5 hexadecimal representation: 32 bytes
- * @param digest MD5 hash.
- * @return the MD5 hexadecimal representation.
- */
-static std::string md5_hex(unsigned char digest[16])
-{
-  std::string md5;
-  char hex[3];
-  int i;
-  for (i = 0; i < 16; i++) {
-    std::sprintf(hex, "%02x", digest[i]);
-    md5 += hex;
-  }
-
-  return md5;
-}
-
-/**
- * Update the MD5 check sum of the code if changed or force are is true.
- * changed is set to true.
- */
-void Code::update_md5(bool force)
-{
-  if (not this->changed and not force)
-    return;
-
-  unsigned char digest[16];
-  md5_digest(this->code, digest);
-
-  this->md5 = md5_hex(digest);
-
-  this->changed = true;
 }
 
 }
