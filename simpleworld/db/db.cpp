@@ -49,6 +49,8 @@ DB::DB(std::string filename)
   } catch (const sqlite3x::database_error& e) {
     throw EXCEPTION(DBException, e.what());
   }
+
+  this->setbusytimeout(60000);
 }
 
 
