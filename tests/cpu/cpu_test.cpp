@@ -21,7 +21,6 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <iostream>
 #include <typeinfo>
 #include <cxxabi.h>
 
@@ -147,7 +146,7 @@ BOOST_AUTO_TEST_CASE(cpu_management_restart)
 
 /**
  * Execute the load operations.
- * Operations: load, loadi, loadrr, loadri
+ * Operations: load, loadi, loada, loadrr, loadri
  */
 BOOST_AUTO_TEST_CASE(cpu_load)
 {
@@ -155,7 +154,7 @@ BOOST_AUTO_TEST_CASE(cpu_load)
   cpu::Source::size_type line = 0;
 
   // Load a inmediate value
-  source.insert(line++, "loadi r0 data");
+  source.insert(line++, "loada r0 data");
   source.insert(line++, "loadi r1 0x0");
   source.insert(line++, "loadi r2 0x4");
   source.insert(line++, "loadi r3 0x8");
@@ -225,7 +224,7 @@ BOOST_AUTO_TEST_CASE(cpu_store)
   cpu::Source::size_type line = 0;
 
   // Load into the registers the data to be stored in the memory
-  source.insert(line++, "loadi r0 data");
+  source.insert(line++, "loada r0 data");
   source.insert(line++, "loadi r1 0x0");
   source.insert(line++, "loadi r2 0x4");
   source.insert(line++, "loadi r3 0x8");
@@ -320,7 +319,7 @@ BOOST_AUTO_TEST_CASE(cpu_stack)
   cpu::Source::size_type line = 0;
 
   // Initialize the stack pointer
-  source.insert(line++, "loadi stp stack");
+  source.insert(line++, "loada stp stack");
   source.insert(line++, "loadi r0 0xabcd");
   source.insert(line++, "loadi r1 0x0000");
 
@@ -356,7 +355,7 @@ BOOST_AUTO_TEST_CASE(cpu_branch)
   cpu::Source::size_type line = 0;
 
   // Load into the registers the data to be stored in the memory
-  source.insert(line++, "loadi r0 data");
+  source.insert(line++, "loada r0 data");
   source.insert(line++, "loadi r1 0x1");
 
   // Load into the registers the data to be compared
@@ -472,7 +471,7 @@ BOOST_AUTO_TEST_CASE(cpu_function)
   cpu::Source::size_type line = 0;
 
   // Initialize the stack pointer
-  source.insert(line++, "loadi stp stack");
+  source.insert(line++, "loada stp stack");
 
   // Execute some functions
   source.insert(line++, "call func0");
@@ -528,8 +527,8 @@ BOOST_AUTO_TEST_CASE(cpu_interrupt)
   cpu::Source::size_type line = 0;
 
   // Initialize the stack pointer and the interrupt table pointer
-  source.insert(line++, "loadi stp stack");
-  source.insert(line++, "loadi itp interrupts_table");
+  source.insert(line++, "loada stp stack");
+  source.insert(line++, "loada itp interrupts_table");
 
   // Raise some interrupts
   source.insert(line++, "int 0x1111");     // Software interrupt
@@ -549,13 +548,14 @@ BOOST_AUTO_TEST_CASE(cpu_interrupt)
   // Store the code of the interrupt in a the position data + 4 * code
   source.insert(line++, ".label handler_int");
   source.insert(line++, "multlui r1 r0 0x4");
-  source.insert(line++, "storeri r0 r1 data");
+  source.insert(line++, "loada r2 data");
+  source.insert(line++, "storerr r0 r1 r2");
   source.insert(line++, "reti");
 
   // Software interrupt handler
   // Store the data of the software interrupt in data + 4
   source.insert(line++, ".label handler_soft");
-  source.insert(line++, "loadi r0 data");
+  source.insert(line++, "loada r0 data");
   source.insert(line++, "storeri r1 r0 0x4");
   source.insert(line++, "reti");
 
@@ -602,8 +602,8 @@ BOOST_AUTO_TEST_CASE(cpu_stack_increases)
   cpu::Source::size_type line = 0;
 
   // Initialize the stack pointer and the interrupt table pointer
-  source.insert(line++, "loadi stp stack");
-  source.insert(line++, "loadi itp interrupts_table");
+  source.insert(line++, "loada stp stack");
+  source.insert(line++, "loada itp interrupts_table");
 
   // Increase the stack
   source.insert(line++, "push r0");
@@ -654,8 +654,8 @@ BOOST_AUTO_TEST_CASE(cpu_stack_decreases)
   cpu::Source::size_type line = 0;
 
   // Initialize the stack pointer and the interrupt table pointer
-  source.insert(line++, "loadi stp stack");
-  source.insert(line++, "loadi itp interrupts_table");
+  source.insert(line++, "loada stp stack");
+  source.insert(line++, "loada itp interrupts_table");
 
   // Use the stack
   source.insert(line++, "push r0");

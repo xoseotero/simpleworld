@@ -102,7 +102,7 @@ bool compare_swo(const std::string& file1, const std::string& file2)
       if (inst1.second != inst2.second)
         return false;
     if (info.nregs == 3 or info.has_inmediate)
-      if (inst1.address != inst2.address)
+      if (inst1.data != inst2.data)
         return false;
   }
 

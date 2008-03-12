@@ -98,7 +98,7 @@ Update swap(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
 /**
  * Load a word from memory.
  *
- * REGISTERS[FIRST] = MEMORY[ADDRESS]
+ * REGISTERS[FIRST] = MEMORY[PC + OFFSET]
  * @param isa the instruction set architecture.
  * @param regs the registers.
  * @param mem the memory.
@@ -110,9 +110,10 @@ Update load(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
             Instruction inst);
 
 /**
- * Load a inmediate value.
+ * Load the data.
+ * The higher 16 bits are set to 0.
  *
- * REGISTERS[FIRST] = ADDRESS (the upper 32bits are cleared)
+ * REGISTERS[FIRST] = DATA (the upper 32bits are cleared)
  * @param isa the instruction set architecture.
  * @param regs the registers.
  * @param mem the memory.
@@ -124,9 +125,23 @@ Update loadi(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
              Instruction inst);
 
 /**
+ * Load the absolute address from the offset.
+ *
+ * REGISTERS[FIRST] = PC + OFFSET
+ * @param isa the instruction set architecture.
+ * @param regs the registers.
+ * @param mem the memory.
+ * @param interrupt interrupt.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
+ */
+Update loada(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
+             Instruction inst);
+
+/**
  * Load a word from memory using two base registers.
  *
- * REGISTERS[FIRST] = MEMORY[REGISTERS[SECOND] + REGISTERS[ADDRESS]]
+ * REGISTERS[FIRST] = MEMORY[REGISTERS[SECOND] + REGISTERS[DATA]]
  * @param isa the instruction set architecture.
  * @param regs the registers.
  * @param mem the memory.
@@ -138,9 +153,9 @@ Update loadrr(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
               Instruction inst);
 
 /**
- * Load a word from memory using a base register and a inmediate value.
+ * Load a word from memory using a base register and a offset.
  *
- * REGISTERS[FIRST] = MEMORY[REGISTERS[SECOND] + ADDRESS]
+ * REGISTERS[FIRST] = MEMORY[REGISTERS[SECOND] + OFFSET]
  * @param isa the instruction set architecture.
  * @param regs the registers.
  * @param mem the memory.
@@ -156,7 +171,7 @@ Update loadri(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
 /**
  * Store a word to memory.
  *
- * MEMORY[ADDRESS] = REGISTERS[FIRST]
+ * MEMORY[PC + OFFSET] = REGISTERS[FIRST]
  * @param isa the instruction set architecture.
  * @param regs the registers.
  * @param mem the memory.
@@ -170,7 +185,7 @@ Update store(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
 /**
  * Store a word to memory using two base registers.
  *
- * MEMORY[REGISTERS[FIRST] + REGISTERS[ADDRESS]] = REGISTERS[SECOND]
+ * MEMORY[REGISTERS[FIRST] + REGISTERS[DATA]] = REGISTERS[SECOND]
  * @param isa the instruction set architecture.
  * @param regs the registers.
  * @param mem the memory.
@@ -182,9 +197,9 @@ Update storerr(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
                Instruction inst);
 
 /**
- * Store a word to memory using a base register and a inmediate value.
+ * Store a word to memory using a base register and a offset.
  *
- * MEMORY[REGISTERS[FIRST] + INMEDIATE] = REGISTERS[SECOND]
+ * MEMORY[REGISTERS[FIRST] + OFFSET] = REGISTERS[SECOND]
  * @param isa the instruction set architecture.
  * @param regs the registers.
  * @param mem the memory.
@@ -227,7 +242,7 @@ Update pop(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
 /**
  * Branch always.
  *
- * PC = ADDRESS
+ * PC += OFFSET
  * @param isa the instruction set architecture.
  * @param regs the registers.
  * @param mem the memory.
@@ -241,7 +256,7 @@ Update b(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
 /**
  * Branch on equal.
  *
- * if REGISTERS[FIRST] == REGISTERS[SECOND] -> PC = ADDRESS
+ * if REGISTERS[FIRST] == REGISTERS[SECOND] -> PC += OFFSET
  * @param isa the instruction set architecture.
  * @param regs the registers.
  * @param mem the memory.
@@ -255,7 +270,7 @@ Update beq(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
 /**
  * Branch on not equal.
  *
- * if REGISTERS[FIRST] != REGISTERS[SECOND] -> PC = ADDRESS
+ * if REGISTERS[FIRST] != REGISTERS[SECOND] -> PC += OFFSET
  * @param isa the instruction set architecture.
  * @param regs the registers.
  * @param mem the memory.
@@ -269,7 +284,7 @@ Update bne(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
 /**
  * Branch on less than (signed comparission).
  *
- * if REGISTERS[FIRST] < REGISTERS[SECOND] -> PC = ADDRESS
+ * if REGISTERS[FIRST] < REGISTERS[SECOND] -> PC += OFFSET
  * @param isa the instruction set architecture.
  * @param regs the registers.
  * @param mem the memory.
@@ -283,7 +298,7 @@ Update blt(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
 /**
  * Branch on less than (unsigned comparission).
  *
- * if REGISTERS[FIRST] < REGISTERS[SECOND] -> PC = ADDRESS
+ * if REGISTERS[FIRST] < REGISTERS[SECOND] -> PC += OFFSET
  * @param isa the instruction set architecture.
  * @param regs the registers.
  * @param mem the memory.
@@ -297,7 +312,7 @@ Update bltu(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
 /**
  * Branch on great than (signed comparission).
  *
- * if REGISTERS[FIRST] > REGISTERS[SECOND] -> PC = ADDRESS
+ * if REGISTERS[FIRST] > REGISTERS[SECOND] -> PC += OFFSET
  * @param isa the instruction set architecture.
  * @param regs the registers.
  * @param mem the memory.
@@ -311,7 +326,7 @@ Update bgt(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
 /**
  * Branch on great than (unsigned comparission).
  *
- * if REGISTERS[FIRST] > REGISTERS[SECOND] -> PC = ADDRESS
+ * if REGISTERS[FIRST] > REGISTERS[SECOND] -> PC += OFFSET
  * @param isa the instruction set architecture.
  * @param regs the registers.
  * @param mem the memory.
@@ -325,7 +340,7 @@ Update bgtu(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
 /**
  * Branch on less or equal (signed comparission).
  *
- * if REGISTERS[FIRST] <= REGISTERS[SECOND] -> PC = ADDRESS
+ * if REGISTERS[FIRST] <= REGISTERS[SECOND] -> PC += OFFSET
  * @param isa the instruction set architecture.
  * @param regs the registers.
  * @param mem the memory.
@@ -339,7 +354,7 @@ Update ble(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
 /**
  * Branch on less or equal (unsigned comparission).
  *
- * if REGISTERS[FIRST] <= REGISTERS[SECOND] -> PC = ADDRESS
+ * if REGISTERS[FIRST] <= REGISTERS[SECOND] -> PC += OFFSET
  * @param isa the instruction set architecture.
  * @param regs the registers.
  * @param mem the memory.
@@ -353,7 +368,7 @@ Update bleu(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
 /**
  * Branch on greater or equal (signed comparission).
  *
- * if REGISTERS[FIRST] >= REGISTERS[SECOND] -> PC = ADDRESS
+ * if REGISTERS[FIRST] >= REGISTERS[SECOND] -> PC += OFFSET
  * @param isa the instruction set architecture.
  * @param regs the registers.
  * @param mem the memory.
@@ -367,7 +382,7 @@ Update bge(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
 /**
  * Branch on greater or equal (unsigned comparission).
  *
- * if REGISTERS[FIRST] >= REGISTERS[SECOND] -> PC = ADDRESS
+ * if REGISTERS[FIRST] >= REGISTERS[SECOND] -> PC += OFFSET
  * @param isa the instruction set architecture.
  * @param regs the registers.
  * @param mem the memory.
@@ -383,7 +398,7 @@ Update bgeu(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
 /**
  * Call a function.
  *
- * PUSH(PC) and PC = ADDRESS
+ * PUSH(PC) and PC += OFFSET
  * @param isa the instruction set architecture.
  * @param regs the registers.
  * @param mem the memory.
@@ -453,7 +468,7 @@ Update add(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
            Instruction inst);
 
 /**
- * Add a register and a inmediate value.
+ * Add a register and the data.
  *
  * REGISTERS[FIRST] = REGISTERS[SECOND] + ADDRESS
  * @param isa the instruction set architecture.
@@ -481,7 +496,7 @@ Update sub(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
            Instruction inst);
 
 /**
- * Substract a register and a inmediate value.
+ * Substract a register and the data.
  *
  * REGISTERS[FIRST] = REGISTERS[SECOND] - ADDRESS
  * @param isa the instruction set architecture.
@@ -509,7 +524,7 @@ Update multl(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
              Instruction inst);
 
 /**
- * Low 32bits from multiply a signed registers and a signed inmediate value.
+ * Low 32bits from multiply a signed registers and the data (signed value).
  *
  * REGISTERS[FIRST] = REGISTERS[SECOND] * ADDRESS
  * @param isa the instruction set architecture.
@@ -537,8 +552,7 @@ Update multlu(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
               Instruction inst);
 
 /**
- * Low 32bits from multiply a unsigned registers and a unsigned inmediate
- * value.
+ * Low 32bits from multiply a unsigned registers and the data (unsigned value).
  *
  * REGISTERS[FIRST] = REGISTERS[SECOND] * ADDRESS
  * @param isa the instruction set architecture.
@@ -566,7 +580,7 @@ Update multh(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
              Instruction inst);
 
 /**
- * High 32bits from multiply a signed registers and a signed inmediate value.
+ * High 32bits from multiply a signed registers and the data (signed value).
  *
  * REGISTERS[FIRST] = REGISTERS[SECOND] * ADDRESS
  * @param isa the instruction set architecture.
@@ -594,8 +608,7 @@ Update multhu(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
               Instruction inst);
 
 /**
- * High 32bits from multiply a unsigned registers and a unsigned inmediate
- * value.
+ * High 32bits from multiply a unsigned registers and the data (unsigned value).
  *
  * REGISTERS[FIRST] = REGISTERS[SECOND] * ADDRESS
  * @param isa the instruction set architecture.
@@ -623,7 +636,7 @@ Update div(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
            Instruction inst);
 
 /**
- * Divide a signed register and a signed inmediate value.
+ * Divide a signed register and the data (signed value).
  *
  * REGISTERS[FIRST] = REGISTERS[SECOND] / ADDRESS
  * @param isa the instruction set architecture.
@@ -651,7 +664,7 @@ Update divu(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
             Instruction inst);
 
 /**
- * Divide a unsigned register and a unsigned inmediate value.
+ * Divide a unsigned register and the data (unsigned value).
  *
  * REGISTERS[FIRST] = REGISTERS[SECOND] / ADDRESS
  * @param isa the instruction set architecture.
@@ -679,7 +692,7 @@ Update mod(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
            Instruction inst);
 
 /**
- * Module of a signed register and a signed inmediate value.
+ * Module of a signed register and the data (signed value).
  *
  * REGISTERS[FIRST] = REGISTERS[SECOND] % ADDRESS
  * @param isa the instruction set architecture.
@@ -707,7 +720,7 @@ Update modu(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
             Instruction inst);
 
 /**
- * Module of a unsigned register and a unsigned inmediate value.
+ * Module of a unsigned register and the data (unsigned value).
  *
  * REGISTERS[FIRST] = REGISTERS[SECOND] % ADDRESS
  * @param isa the instruction set architecture.
@@ -751,7 +764,7 @@ Update lor(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
            Instruction inst);
 
 /**
- * OR of a register and a inmediate value.
+ * OR of a register and the data.
  *
  * REGISTERS[FIRST] = REGISTERS[SECOND] | ADDRESS
  * @param isa the instruction set architecture.
@@ -779,7 +792,7 @@ Update land(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
             Instruction inst);
 
 /**
- * AND of a register and a inmediate value.
+ * AND of a register and the data.
  *
  * REGISTERS[FIRST] = REGISTERS[SECOND] & ADDRESS
  * @param isa the instruction set architecture.
@@ -807,7 +820,7 @@ Update lxor(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
             Instruction inst);
 
 /**
- * EXOR of a register and a inmediate value.
+ * EXOR of a register and the data.
  *
  * REGISTERS[FIRST] = REGISTERS[SECOND] ^ ADDRESS
  * @param isa the instruction set architecture.

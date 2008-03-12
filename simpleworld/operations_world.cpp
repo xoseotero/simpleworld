@@ -101,7 +101,7 @@ CPU::Update world(CPU::ISA& isa, CPU::Memory& regs, CPU::Memory& mem,
     CPU::Word ypos;
 
     try {
-      switch (inst.address) {
+      switch (inst.data) {
       case ACTION_NOTHING:
         bug->world->nothing(bug);
         regs.set_word(REGISTER(0), static_cast<CPU::Word>(ActionSuccess));
@@ -217,7 +217,7 @@ CPU::Update world(CPU::ISA& isa, CPU::Memory& regs, CPU::Memory& mem,
       default:
         throw EXCEPTION(ActionError, boost::str(boost::format(\
 "Unknown action (%04x)")
-                                                % inst.address));
+                                                % inst.data));
       }
     } catch (const ActionError& e) {
       regs.set_word(REGISTER(0), static_cast<CPU::Word>(ActionFailure));

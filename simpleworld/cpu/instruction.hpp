@@ -37,10 +37,19 @@ namespace CPU
  */
 struct Instruction {
   Uint8 code;                   /**< Code of the instruction */
+
   Uint8 first:4;                /**< First operand of the operation (destiny) */
-  Uint8 second:4;               /**< Second operand of the operation (first source) */
-  Address address;              /**< Memory address or third operand of the operation
+  Uint8 second:4;               /**< Second operand of the operation
+                                     (first source) */
+
+  union {
+    // third is not defined because I don't know how the data is aligned in
+    // all the CPUs/compilers
+    // Uint8 third:4;
+    Uint16 data;                /**< Data or third operand of the operation
                                      (second source) */
+    Offset offset;              /**< Memory offset */
+  };
 
 
   /**

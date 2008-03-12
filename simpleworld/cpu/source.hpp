@@ -42,7 +42,7 @@ namespace CPU
  * Simple World Language source file.
  *
  * The source code can be compiled to object code.
- * Labels and constants are the same, so a label and a constant can't have
+ * Labels and defines are the same, so a label and a define can't have
  * the same name.
  * A file only can be included 1 time.
  */
@@ -104,10 +104,16 @@ protected:
   void replace_includes();
 
   /**
-   * Replace the constants and labels with its value.
+   * Replace the defines with its value.
    * @exception ParserError error found in the code.
    */
-  void replace_constants();
+  void replace_defines();
+
+  /**
+   * Replace the labels with its value.
+   * @exception ParserError error found in the code.
+   */
+  void replace_labels();
 
   /**
    * Replace the blocks of memory with the zero values.
@@ -142,12 +148,12 @@ protected:
   bool is_comment(File::size_type line) const;
 
   /**
-   * Check if a line is a constant definition.
+   * Check if a line is a define.
    * @param line Number of the line.
    * @return the check result.
    * @exception CPUException if line > lines of the file.
    */
-  bool is_constant(File::size_type line) const;
+  bool is_define(File::size_type line) const;
 
   /**
    * Check if a line is a block of memory.
@@ -164,6 +170,14 @@ protected:
    * @exception CPUException if line > lines of the file.
    */
   bool is_label(File::size_type line) const;
+
+  /**
+   * Check if a line is a label used as data.
+   * @param line Number of the line.
+   * @return the check result.
+   * @exception CPUException if line > lines of the file.
+   */
+  bool is_label_as_data(File::size_type line) const;
 
   /**
    * Check if a line is a include.
@@ -191,22 +205,22 @@ protected:
 
 
   /**
-   * Return the components of a constant.
+   * Return the components of a define.
    *
-   * If the line is not a constant definition a empty vector is returned.
+   * If the line is not a define a empty vector is returned.
    * The first position is the name and the second is the value.
    * @param line Number of the line.
-   * @return the components of a constant.
+   * @return the components of a define.
    * @exception CPUException if line > lines of the file.
    */
-  std::vector<std::string> get_constant(File::size_type line) const;
+  std::vector<std::string> get_define(File::size_type line) const;
 
   /**
    * Return the value of the block of memory.
    *
    * If the line is not a block of memory zero value is returned.
    * @param line Number of the line.
-   * @return the components of a constant.
+   * @return the components of a define.
    * @exception CPUException if line > lines of the file.
    */
   Address get_block(File::size_type line) const;
@@ -248,7 +262,7 @@ protected:
    * A instruction can have 0-3 operators.
    * The firs position is the instruction and the next ones are the operators.
    * @param line Number of the line.
-   * @return the components of a constant.
+   * @return the components of a instruction.
    * @exception CPUException if line > lines of the file.
    */
   std::vector<std::string> get_instruction(File::size_type line) const;
@@ -257,7 +271,8 @@ private:
   const ISA& isa_;
   std::vector<std::string> include_path_;
   std::set<std::string> includes_;
-  std::map<std::string, std::string> constants_;
+  std::map<std::string, std::string> defines_;
+  std::map<std::string, Address> labels_;
 };
 
 }

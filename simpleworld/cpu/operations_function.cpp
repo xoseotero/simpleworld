@@ -21,6 +21,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "types.hpp"
 #include "operations.hpp"
 #include "interrupt.hpp"
 
@@ -32,7 +33,7 @@ namespace CPU
 /**
  * Call a function.
  *
- * PUSH(PC) and PC = ADDRESS
+ * PUSH(PC) and PC += OFFSET
  * @param isa the instruction set architecture.
  * @param regs the registers.
  * @param mem the memory.
@@ -46,14 +47,15 @@ Update call(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
   // Check if the address is valid.
   // If the addres is out of range, a Invalid Memory location is raised
   // giving this instruction as data.
-  mem[inst.address];
+  Address address = regs[REGISTER_PC] + inst.offset;
+  mem[address];
 
   // Save the program counter (pc) in the top of the stack
   mem.set_word(regs[REGISTER_STP], regs[REGISTER_PC]);
   // Update stack pointer
   regs.set_word(REGISTER_STP, regs[REGISTER_STP] + 4);
   // Execute the function
-  regs.set_word(REGISTER_PC, inst.address);
+  regs.set_word(REGISTER_PC, address);
 
   return UpdateNone;
 }
@@ -75,7 +77,7 @@ Update interrupt(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
   Word code = static_cast<Word>(isa.interrupt_code("SoftwareInterrupt"));
   interrupt.code = code;
   interrupt.r0 = code;
-  interrupt.r1 = inst.address;
+  interrupt.r1 = inst.data;
 
   return UpdateInterrupt;
 }

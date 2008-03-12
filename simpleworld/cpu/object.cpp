@@ -122,13 +122,13 @@ std::string Object::decompile(Word instruction) const
     result += " ";
     result += this->isa_.register_name(inst.second);
   }
-  // Instruction::address can store the third register or a inmediate value
+  // Instruction::address can store the third register or data
   if (info.nregs > 2) {
     result += " ";
-    result += this->isa_.register_name(static_cast<Uint8>(inst.address));
+    result += this->isa_.register_name(static_cast<Uint8>(inst.data));
   } else if (info.has_inmediate) {
     char address[7];
-    std::snprintf(address, 7, "0x%x", inst.address);
+    std::snprintf(address, 7, "0x%x", inst.data);
     result += " ";
     result += address;
   }

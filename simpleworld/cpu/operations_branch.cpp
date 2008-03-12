@@ -36,7 +36,7 @@ namespace CPU
 /**
  * Branch always.
  *
- * PC = ADDRESS
+ * PC += OFFSET
  * @param isa the instruction set architecture.
  * @param regs the registers.
  * @param mem the memory.
@@ -48,9 +48,10 @@ Update b(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
          Instruction inst)
 {
   // Check if the address is valid.
-  mem[inst.address];
+  Address address = regs[REGISTER_PC] + inst.offset;
+  mem[address];
 
-  regs.set_word(REGISTER_PC, inst.address);
+  regs.set_word(REGISTER_PC, address);
 
   return UpdateNone;
 }
@@ -58,7 +59,7 @@ Update b(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
 /**
  * Branch on equal.
  *
- * if REGISTERS[FIRST] == REGISTERS[SECOND] -> PC = ADDRESS
+ * if REGISTERS[FIRST] == REGISTERS[SECOND] -> PC += OFFSET
  * @param isa the instruction set architecture.
  * @param regs the registers.
  * @param mem the memory.
@@ -70,10 +71,11 @@ Update beq(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
            Instruction inst)
 {
   // Check if the address is valid.
-  mem[inst.address];
+  Address address = regs[REGISTER_PC] + inst.offset;
+  mem[address];
 
   if (regs[REGISTER(inst.first)] == regs[REGISTER(inst.second)]) {
-    regs.set_word(REGISTER_PC, inst.address);
+    regs.set_word(REGISTER_PC, address);
     return UpdateNone;
   }
 
@@ -83,7 +85,7 @@ Update beq(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
 /**
  * Branch on not equal.
  *
- * if REGISTERS[FIRST] != REGISTERS[SECOND] -> PC = ADDRESS
+ * if REGISTERS[FIRST] != REGISTERS[SECOND] -> PC += OFFSET
  * @param isa the instruction set architecture.
  * @param regs the registers.
  * @param mem the memory.
@@ -95,10 +97,11 @@ Update bne(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
            Instruction inst)
 {
   // Check if the address is valid.
-  mem[inst.address];
+  Address address = regs[REGISTER_PC] + inst.offset;
+  mem[address];
 
   if (regs[REGISTER(inst.first)] != regs[REGISTER(inst.second)]) {
-    regs.set_word(REGISTER_PC, inst.address);
+    regs.set_word(REGISTER_PC, address);
     return UpdateNone;
   }
 
@@ -108,7 +111,7 @@ Update bne(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
 /**
  * Branch on less than (signed comparission).
  *
- * if REGISTERS[FIRST] < REGISTERS[SECOND] -> PC = ADDRESS
+ * if REGISTERS[FIRST] < REGISTERS[SECOND] -> PC += OFFSET
  * @param isa the instruction set architecture.
  * @param regs the registers.
  * @param mem the memory.
@@ -120,11 +123,12 @@ Update blt(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
            Instruction inst)
 {
   // Check if the address is valid.
-  mem[inst.address];
+  Address address = regs[REGISTER_PC] + inst.offset;
+  mem[address];
 
   if (static_cast<Sint32>(regs[REGISTER(inst.first)]) <
       static_cast<Sint32>(regs[REGISTER(inst.second)])) {
-    regs.set_word(REGISTER_PC, inst.address);
+    regs.set_word(REGISTER_PC, address);
     return UpdateNone;
   }
 
@@ -134,7 +138,7 @@ Update blt(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
 /**
  * Branch on less than (unsigned comparission).
  *
- * if REGISTERS[FIRST] < REGISTERS[SECOND] -> PC = ADDRESS
+ * if REGISTERS[FIRST] < REGISTERS[SECOND] -> PC += OFFSET
  * @param isa the instruction set architecture.
  * @param regs the registers.
  * @param mem the memory.
@@ -146,10 +150,11 @@ Update bltu(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
             Instruction inst)
 {
   // Check if the address is valid.
-  mem[inst.address];
+  Address address = regs[REGISTER_PC] + inst.offset;
+  mem[address];
 
   if (regs[REGISTER(inst.first)] < regs[REGISTER(inst.second)]) {
-    regs.set_word(REGISTER_PC, inst.address);
+    regs.set_word(REGISTER_PC, address);
     return UpdateNone;
   }
 
@@ -159,7 +164,7 @@ Update bltu(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
 /**
  * Branch on great than (signed comparission).
  *
- * if REGISTERS[FIRST] > REGISTERS[SECOND] -> PC = ADDRESS
+ * if REGISTERS[FIRST] > REGISTERS[SECOND] -> PC += OFFSET
  * @param isa the instruction set architecture.
  * @param regs the registers.
  * @param mem the memory.
@@ -171,11 +176,12 @@ Update bgt(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
            Instruction inst)
 {
   // Check if the address is valid.
-  mem[inst.address];
+  Address address = regs[REGISTER_PC] + inst.offset;
+  mem[address];
 
   if (static_cast<Sint32>(regs[REGISTER(inst.first)]) >
       static_cast<Sint32>(regs[REGISTER(inst.second)])) {
-    regs.set_word(REGISTER_PC, inst.address);
+    regs.set_word(REGISTER_PC, address);
     return UpdateNone;
   }
 
@@ -185,7 +191,7 @@ Update bgt(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
 /**
  * Branch on great than (unsigned comparission).
  *
- * if REGISTERS[FIRST] > REGISTERS[SECOND] -> PC = ADDRESS
+ * if REGISTERS[FIRST] > REGISTERS[SECOND] -> PC += OFFSET
  * @param isa the instruction set architecture.
  * @param regs the registers.
  * @param mem the memory.
@@ -197,10 +203,11 @@ Update bgtu(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
             Instruction inst)
 {
   // Check if the address is valid.
-  mem[inst.address];
+  Address address = regs[REGISTER_PC] + inst.offset;
+  mem[address];
 
   if (regs[REGISTER(inst.first)] > regs[REGISTER(inst.second)]) {
-    regs.set_word(REGISTER_PC, inst.address);
+    regs.set_word(REGISTER_PC, address);
     return UpdateNone;
   }
 
@@ -210,7 +217,7 @@ Update bgtu(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
 /**
  * Branch on less or equal (signed comparission).
  *
- * if REGISTERS[FIRST] <= REGISTERS[SECOND] -> PC = ADDRESS
+ * if REGISTERS[FIRST] <= REGISTERS[SECOND] -> PC += OFFSET
  * @param isa the instruction set architecture.
  * @param regs the registers.
  * @param mem the memory.
@@ -222,11 +229,12 @@ Update ble(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
            Instruction inst)
 {
   // Check if the address is valid.
-  mem[inst.address];
+  Address address = regs[REGISTER_PC] + inst.offset;
+  mem[address];
 
   if (static_cast<Sint32>(regs[REGISTER(inst.first)]) <=
       static_cast<Sint32>(regs[REGISTER(inst.second)])) {
-    regs.set_word(REGISTER_PC, inst.address);
+    regs.set_word(REGISTER_PC, address);
     return UpdateNone;
   }
 
@@ -236,7 +244,7 @@ Update ble(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
 /**
  * Branch on less or equal (unsigned comparission).
  *
- * if REGISTERS[FIRST] <= REGISTERS[SECOND] -> PC = ADDRESS
+ * if REGISTERS[FIRST] <= REGISTERS[SECOND] -> PC += OFFSET
  * @param isa the instruction set architecture.
  * @param regs the registers.
  * @param mem the memory.
@@ -248,10 +256,11 @@ Update bleu(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
             Instruction inst)
 {
   // Check if the address is valid.
-  mem[inst.address];
+  Address address = regs[REGISTER_PC] + inst.offset;
+  mem[address];
 
   if (regs[REGISTER(inst.first)] <= regs[REGISTER(inst.second)]) {
-    regs.set_word(REGISTER_PC, inst.address);
+    regs.set_word(REGISTER_PC, address);
     return UpdateNone;
   }
 
@@ -261,7 +270,7 @@ Update bleu(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
 /**
  * Branch on greater or equal (signed comparission).
  *
- * if REGISTERS[FIRST] >= REGISTERS[SECOND] -> PC = ADDRESS
+ * if REGISTERS[FIRST] >= REGISTERS[SECOND] -> PC += OFFSET
  * @param isa the instruction set architecture.
  * @param regs the registers.
  * @param mem the memory.
@@ -273,11 +282,12 @@ Update bge(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
            Instruction inst)
 {
   // Check if the address is valid.
-  mem[inst.address];
+  Address address = regs[REGISTER_PC] + inst.offset;
+  mem[address];
 
   if (static_cast<Sint32>(regs[REGISTER(inst.first)]) >=
       static_cast<Sint32>(regs[REGISTER(inst.second)])) {
-    regs.set_word(REGISTER_PC, inst.address);
+    regs.set_word(REGISTER_PC, address);
     return UpdateNone;
   }
 
@@ -287,7 +297,7 @@ Update bge(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
 /**
  * Branch on greater or equal (unsigned comparission).
  *
- * if REGISTERS[FIRST] >= REGISTERS[SECOND] -> PC = ADDRESS
+ * if REGISTERS[FIRST] >= REGISTERS[SECOND] -> PC += OFFSET
  * @param isa the instruction set architecture.
  * @param regs the registers.
  * @param mem the memory.
@@ -299,10 +309,11 @@ Update bgeu(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
             Instruction inst)
 {
   // Check if the address is valid.
-  mem[inst.address];
+  Address address = regs[REGISTER_PC] + inst.offset;
+  mem[address];
 
   if (regs[REGISTER(inst.first)] >= regs[REGISTER(inst.second)]) {
-    regs.set_word(REGISTER_PC, inst.address);
+    regs.set_word(REGISTER_PC, address);
     return UpdateNone;
   }
 

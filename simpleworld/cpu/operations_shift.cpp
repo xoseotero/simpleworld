@@ -43,7 +43,7 @@ Update sll(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
            Instruction inst)
 {
   regs.set_word(REGISTER(inst.first),
-                regs[REGISTER(inst.second)] << regs[REGISTER(inst.address)]);
+                regs[REGISTER(inst.second)] << regs[REGISTER(inst.data)]);
 
   return UpdatePC;
 }
@@ -63,7 +63,7 @@ Update slli(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
             Instruction inst)
 {
   regs.set_word(REGISTER(inst.first),
-                regs[REGISTER(inst.second)] << inst.address);
+                regs[REGISTER(inst.second)] << inst.data);
 
   return UpdatePC;
 }
@@ -83,7 +83,7 @@ Update srl(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
            Instruction inst)
 {
   regs.set_word(REGISTER(inst.first),
-                regs[REGISTER(inst.second)] >> regs[REGISTER(inst.address)]);
+                regs[REGISTER(inst.second)] >> regs[REGISTER(inst.data)]);
 
   return UpdatePC;
 }
@@ -103,7 +103,7 @@ Update srli(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
             Instruction inst)
 {
   regs.set_word(REGISTER(inst.first),
-                regs[REGISTER(inst.second)] >> inst.address);
+                regs[REGISTER(inst.second)] >> inst.data);
 
   return UpdatePC;
 }
@@ -123,7 +123,7 @@ Update sla(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
            Instruction inst)
 {
   regs.set_word(REGISTER(inst.first),
-                regs[REGISTER(inst.second)] << regs[REGISTER(inst.address)]);
+                regs[REGISTER(inst.second)] << regs[REGISTER(inst.data)]);
 
   return UpdatePC;
 }
@@ -143,7 +143,7 @@ Update slai(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
             Instruction inst)
 {
   regs.set_word(REGISTER(inst.first),
-                regs[REGISTER(inst.second)] << inst.address);
+                regs[REGISTER(inst.second)] << inst.data);
 
   return UpdatePC;
 }
@@ -165,7 +165,7 @@ Update sra(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
   Uint32 sign = regs[REGISTER(inst.second)] & 0x80000000;
   regs.set_word(REGISTER(inst.first),
                 (regs[REGISTER(inst.second)] >>
-                 regs[REGISTER(inst.address)]) | sign);
+                 regs[REGISTER(inst.data)]) | sign);
 
   return UpdatePC;
 }
@@ -186,7 +186,7 @@ Update srai(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
 {
   Uint32 sign = regs[REGISTER(inst.second)] & 0x80000000;
   regs.set_word(REGISTER(inst.first),
-                (regs[REGISTER(inst.second)] >> inst.address) | sign);
+                (regs[REGISTER(inst.second)] >> inst.data) | sign);
 
   return UpdatePC;
 }
@@ -206,9 +206,9 @@ Update rl(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
           Instruction inst)
 {
   regs.set_word(REGISTER(inst.first),
-                regs[REGISTER(inst.second)] << regs[REGISTER(inst.address)] |
+                regs[REGISTER(inst.second)] << regs[REGISTER(inst.data)] |
                 regs[REGISTER(inst.second)] >>
-                (32 - (regs[REGISTER(inst.address)] % 32)));
+                (32 - (regs[REGISTER(inst.data)] % 32)));
 
   return UpdatePC;
 }
@@ -228,8 +228,8 @@ Update rli(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
            Instruction inst)
 {
   regs.set_word(REGISTER(inst.first),
-                regs[REGISTER(inst.second)] << inst.address |
-                regs[REGISTER(inst.second)] >> (32 - (inst.address % 32)));
+                regs[REGISTER(inst.second)] << inst.data |
+                regs[REGISTER(inst.second)] >> (32 - (inst.data % 32)));
 
   return UpdatePC;
 }
@@ -249,9 +249,9 @@ Update rr(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
           Instruction inst)
 {
   regs.set_word(REGISTER(inst.first),
-                regs[REGISTER(inst.second)] >> regs[REGISTER(inst.address)] |
+                regs[REGISTER(inst.second)] >> regs[REGISTER(inst.data)] |
                 regs[REGISTER(inst.second)] <<
-                (32 - (regs[REGISTER(inst.address)] % 32)));
+                (32 - (regs[REGISTER(inst.data)] % 32)));
 
   return UpdatePC;
 }
@@ -271,8 +271,8 @@ Update rri(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
            Instruction inst)
 {
   regs.set_word(REGISTER(inst.first),
-                regs[REGISTER(inst.second)] >> inst.address |
-                regs[REGISTER(inst.second)] << (32 - (inst.address % 32)));
+                regs[REGISTER(inst.second)] >> inst.data |
+                regs[REGISTER(inst.second)] << (32 - (inst.data % 32)));
 
   return UpdatePC;
 }

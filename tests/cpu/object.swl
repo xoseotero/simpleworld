@@ -6,11 +6,12 @@ push r4
 pop r5
 load r6 0x1adc
 loadi r7 0x1adc
-loadrr r8 r9 r10
+loada r8 0x0
+loadrr r9 r9 r10
 loadri r11 r12 0x1
 store pc 0xafff
 storerr stp itp r0
-storeri r0 r0 0x1
+storeri r10 r0 0x1
 b 0xffff
 beq r0 r1 0x0
 bne r0 r1 0x0
@@ -65,6 +66,6 @@ rl r5 r6 r8
 rli r5 r6 0x5
 rr r5 r6 r7
 rri r5 r6 0x6
-0x1234abcd
+loada r3 0xabcd
 0xabcd0123
 0x1ef56789

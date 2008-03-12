@@ -19,7 +19,7 @@
        # restart the CPU
        restart
 
-       b 0x0		# loop
+       b 0xffffffd8		# loop
 
 # 4 bytes for the stack
 0x00000000

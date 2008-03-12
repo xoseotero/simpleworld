@@ -77,23 +77,23 @@ static const boost::regex re_include(BEGIN_LINE
                                      OPTIONAL_SPACE
                                      OPTIONAL_COMMENT
                                      END_LINE);
-// A line with a constant definition
-static const boost::regex re_constant(BEGIN_LINE
-                                      OPTIONAL_SPACE
-                                      "\\.define"
-                                      SPACE
-                                      "(" KEYWORD ")"
-                                      SPACE
-                                      "(" NUMBER16 ")"
-                                      OPTIONAL_SPACE
-                                      OPTIONAL_COMMENT
-                                      END_LINE);
+// A line with a define
+static const boost::regex re_define(BEGIN_LINE
+                                    OPTIONAL_SPACE
+                                    "\\.define"
+                                    SPACE
+                                    "(" KEYWORD ")"
+                                    SPACE
+                                    "(" NUMBER16 ")"
+                                    OPTIONAL_SPACE
+                                    OPTIONAL_COMMENT
+                                    END_LINE);
 // A line with a block of memory
 static const boost::regex re_block(BEGIN_LINE
                                    OPTIONAL_SPACE
                                    "\\.block"
                                    SPACE
-                                   "(" NUMBER16 ")"
+                                   "(" NUMBER32 ")"
                                    OPTIONAL_SPACE
                                    OPTIONAL_COMMENT
                                    END_LINE);
@@ -106,6 +106,13 @@ static const boost::regex re_label(BEGIN_LINE
                                    OPTIONAL_SPACE
                                    OPTIONAL_COMMENT
                                    END_LINE);
+// A line with a label used as data
+static const boost::regex re_label_as_data(BEGIN_LINE
+                                           OPTIONAL_SPACE
+                                           "(" KEYWORD ")"
+                                           OPTIONAL_SPACE
+                                           OPTIONAL_COMMENT
+                                           END_LINE);
 // Data
 static const boost::regex re_data(BEGIN_LINE
                                   OPTIONAL_SPACE
@@ -120,7 +127,7 @@ static const boost::regex re_inst0(BEGIN_LINE
                                    OPTIONAL_SPACE
                                    OPTIONAL_COMMENT
                                    END_LINE);
-// A instruction with 0 registers + inmediate
+// A instruction with 0 registers + data
 static const boost::regex re_inst0i(BEGIN_LINE
                                     OPTIONAL_SPACE
                                     "(" KEYWORD ")"
@@ -138,7 +145,7 @@ static const boost::regex re_inst1(BEGIN_LINE
                                    OPTIONAL_SPACE
                                    OPTIONAL_COMMENT
                                    END_LINE);
-// A instruction with 1 register + inmediate
+// A instruction with 1 register + data
 static const boost::regex re_inst1i(BEGIN_LINE
                                     OPTIONAL_SPACE
                                     "(" KEYWORD ")"
@@ -160,7 +167,7 @@ static const boost::regex re_inst2(BEGIN_LINE
                                    OPTIONAL_SPACE
                                    OPTIONAL_COMMENT
                                    END_LINE);
-// A instruction with 2 registers + inmediate
+// A instruction with 2 registers + data
 static const boost::regex re_inst2i(BEGIN_LINE
                                     OPTIONAL_SPACE
                                     "(" KEYWORD ")"
@@ -265,7 +272,8 @@ void Source::preprocess()
 {
   this->replace_includes();
   this->replace_blocks();
-  this->replace_constants();
+  this->replace_defines();
+  this->replace_labels();
 }
 
 
@@ -297,6 +305,7 @@ File %1% is not writable")
 Can't write in file %1%")
                                            % filename));
   }
+
   file.close();
 }
 
@@ -332,54 +341,37 @@ File %2% already included")
 }
 
 /**
- * Replace the constants and labels with its value.
+ * Replace the defines with its value.
  * @exception ParserError error found in the code.
  */
-void Source::replace_constants()
+void Source::replace_defines()
 {
-  // Search constants
+  // Search defines
   File::size_type i = 0;
-  File::size_type lines_code = 0;
   while (i < this->lines())
-    if (this->is_constant(i)) {
-      std::vector<std::string> constant(this->get_constant(i));
-      if (this->constants_.find(constant[0]) != this->constants_.end())
+    if (this->is_define(i)) {
+      std::vector<std::string> define(this->get_define(i));
+      if (this->defines_.find(define[0]) != this->defines_.end())
         throw EXCEPTION(ParserError, boost::str(boost::format("\
 Line: %1%\n\
-Name %2% already defined")
+Constant %2% already defined")
                                                 % this->get_line(i)
-                                                % constant[0]));
+                                                % define[0]));
 
       this->remove(i, 1);
-      this->constants_.insert(std::pair<std::string,
-                              std::string>(constant[0], constant[1]));
-    } else if (this->is_label(i)) {
-      std::string label(this->get_label(i));
-      if (this->constants_.find(label) != this->constants_.end())
-        throw EXCEPTION(ParserError, boost::str(boost::format("\
-Line: %1%\n\
-Name %1% already defined")
-                                                % this->get_line(i)
-                                                % label));
-      char address[11];
-      std::snprintf(address, 11, "0x%x", lines_code * sizeof(Word));
-      this->remove(i, 1);
-      this->constants_.insert(std::pair<std::string, std::string>(label,
-                                                                  address));
-    } else if (this->is_instruction(i) or this->is_data(i)) {
-      lines_code++;
-      i++;
+      this->defines_.insert(std::pair<std::string,
+                            std::string>(define[0], define[1]));
     } else
       i++;
 
-  // Replace constants
-  for (i = 0; i < this->lines(); i++) {
-    std::map<std::string, std::string>::const_iterator iter =
-      this->constants_.begin();
-    while (iter != this->constants_.end()) {
-      // Don't replace constants in comments
-      // TODO: the constants is replaced if the it is in a inline comment
-      if (not this->is_comment(i))
+  // Replace defines
+  for (i = 0; i < this->lines(); i++)
+    // Don't replace defines in comments
+    // TODO: the defines is replaced if the it is in a inline comment
+    if (not this->is_comment(i)) {
+      std::map<std::string, std::string>::const_iterator iter =
+        this->defines_.begin();
+      while (iter != this->defines_.end()) {
         this->get_line(i) =
           boost::regex_replace(this->get_line(i),
                                boost::regex(std::string(BEGIN_WORD) +
@@ -387,9 +379,84 @@ Name %1% already defined")
                                             std::string(END_WORD)),
                                (*iter).second);
 
-      ++iter;
+        ++iter;
+      }
     }
-  }
+}
+
+/**
+ * Replace the labels with its value.
+ * @exception ParserError error found in the code.
+ */
+void Source::replace_labels()
+{
+  // Search labels
+  File::size_type i = 0;
+  File::size_type lines_code = 0;
+  while (i < this->lines())
+    if (this->is_label(i)) {
+      std::string label(this->get_label(i));
+      if (this->labels_.find(label) != this->labels_.end())
+        throw EXCEPTION(ParserError, boost::str(boost::format("\
+Line: %1%\n\
+Label %1% already defined")
+                                                % this->get_line(i)
+                                                % label));
+      this->remove(i, 1);
+      this->labels_.insert(std::pair<std::string, Address>(label,
+        lines_code * sizeof(Word)));
+    } else if (this->is_instruction(i) or this->is_data(i)) {
+      lines_code++;
+      i++;
+    } else
+      i++;
+
+  // Replace labels
+  for (i = 0, lines_code = 0; i < this->lines(); i++)
+    // is_label_as_data() must be checked first because a label could be
+    // confused with a instruction without arguments
+    if (this->is_label_as_data(i)) {
+      // If a label is used as data, it's replaced by the address
+      std::map<std::string, Address>::const_iterator iter =
+        this->labels_.begin();
+      while (iter != this->labels_.end()) {
+        char address[11];
+        std::snprintf(address, 11, "0x%x", (*iter).second);
+
+        this->get_line(i) =
+          boost::regex_replace(this->get_line(i),
+                               boost::regex(std::string(BEGIN_WORD) +
+                                            (*iter).first +
+                                            std::string(END_WORD)),
+                               address);
+
+        ++iter;
+      }
+
+      lines_code++;
+    } else if (this->is_instruction(i)) {
+      // If a label is used in a instruction, it's replaced by the offset to pc
+      std::map<std::string, Address>::const_iterator iter =
+        this->labels_.begin();
+      while (iter != this->labels_.end()) {
+        char offset[11];
+        std::snprintf(offset, 11, "0x%x",
+                      (*iter).second - lines_code * sizeof(Word));
+
+        this->get_line(i) =
+          boost::regex_replace(this->get_line(i),
+                               boost::regex(std::string(BEGIN_WORD) +
+                                            (*iter).first +
+                                            std::string(END_WORD)),
+                               offset);
+
+        ++iter;
+      }
+
+      lines_code++;
+    } else if(this->is_data(i)) {
+      lines_code++;
+    }
 }
 
 /**
@@ -461,11 +528,11 @@ Wrong number of parameters (%2%)")
     if (info.nregs >= 2)
       inst.second = this->isa_.register_code(keywords[2]);
     if (info.nregs == 3)
-      inst.address = this->isa_.register_code(keywords[3]);
+      inst.data = this->isa_.register_code(keywords[3]);
     else if (info.has_inmediate) {
       const char* str = keywords[info.nregs + 1].c_str();
       char* ptr;
-      inst.address = std::strtoul(str, &ptr, 16);
+      inst.data = std::strtoul(str, &ptr, 16);
     }
   } catch (const CPUException& e) {
     throw EXCEPTION(ParserError, boost::str(boost::format("\
@@ -503,14 +570,14 @@ bool Source::is_comment(File::size_type line) const
 }
 
 /**
- * Check if a line is a constant definition.
+ * Check if a line is a define.
  * @param line Number of the line.
  * @return the check result.
  * @exception CPUException if line > lines of the file.
  */
-bool Source::is_constant(File::size_type line) const
+bool Source::is_define(File::size_type line) const
 {
-  return boost::regex_match(this->get_line(line), re_constant);
+  return boost::regex_match(this->get_line(line), re_define);
 }
 
 /**
@@ -533,6 +600,23 @@ bool Source::is_block(File::size_type line) const
 bool Source::is_label(File::size_type line) const
 {
   return boost::regex_match(this->get_line(line), re_label);
+}
+
+/**
+ * Check if a line is a label used as data.
+ * @param line Number of the line.
+ * @return the check result.
+ * @exception CPUException if line > lines of the file.
+ */
+bool Source::is_label_as_data(File::size_type line) const
+{
+  std::string result;
+
+  boost::smatch what;
+  if (boost::regex_match(this->get_line(line), what, re_label_as_data))
+    result = what[1];
+
+  return this->labels_.find(result) != this->labels_.end();
 }
 
 /**
@@ -576,20 +660,20 @@ bool Source::is_instruction(File::size_type line) const
 
 
 /**
- * Return the components of a constant.
+ * Return the components of a define.
  *
- * If the line is not a constant definition a empty vector is returned.
+ * If the line is not a define a empty vector is returned.
  * The first position is the name and the second is the value.
  * @param line Number of the line.
- * @return the components of a constant.
+ * @return the components of a define.
  * @exception CPUException if line > lines of the file.
  */
-std::vector<std::string> Source::get_constant(File::size_type line) const
+std::vector<std::string> Source::get_define(File::size_type line) const
 {
   std::vector<std::string> result;
 
   boost::smatch what;
-  if (boost::regex_match(this->get_line(line), what, re_constant))
+  if (boost::regex_match(this->get_line(line), what, re_define))
     result.insert(result.begin(), what.begin() + 1, what.end());
 
   return result;
@@ -600,7 +684,7 @@ std::vector<std::string> Source::get_constant(File::size_type line) const
  *
  * If the line is not a block of memory zero value is returned.
  * @param line Number of the line.
- * @return the components of a constant.
+ * @return the components of a define.
  * @exception CPUException if line > lines of the file.
  */
 Address Source::get_block(File::size_type line) const
@@ -681,7 +765,7 @@ Word Source::get_data(File::size_type line) const
  * A instruction can have 0-3 operators.
  * The firs position is the instruction and the next ones are the operators.
  * @param line Number of the line.
- * @return the components of a constant.
+ * @return the components of a define.
  * @exception CPUException if line > lines of the file.
  */
 std::vector<std::string> Source::get_instruction(File::size_type line) const

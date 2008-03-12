@@ -45,13 +45,13 @@ Update add(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
            Instruction inst)
 {
   regs.set_word(REGISTER(inst.first), regs[REGISTER(inst.second)] +
-                regs[REGISTER(inst.address)]);
+                regs[REGISTER(inst.data)]);
 
   return UpdatePC;
 }
 
 /**
- * Add a register and a inmediate value.
+ * Add a register and the data.
  *
  * REGISTERS[FIRST] = REGISTERS[SECOND] + ADDRESS
  * @param isa the instruction set architecture.
@@ -65,7 +65,7 @@ Update addi(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
             Instruction inst)
 {
   regs.set_word(REGISTER(inst.first), regs[REGISTER(inst.second)] +
-                inst.address);
+                inst.data);
 
   return UpdatePC;
 }
@@ -85,13 +85,13 @@ Update sub(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
            Instruction inst)
 {
   regs.set_word(REGISTER(inst.first), regs[REGISTER(inst.second)] -
-                regs[REGISTER(inst.address)]);
+                regs[REGISTER(inst.data)]);
 
   return UpdatePC;
 }
 
 /**
- * Substract a register and a inmediate value.
+ * Substract a register and the data.
  *
  * REGISTERS[FIRST] = REGISTERS[SECOND] - ADDRESS
  * @param isa the instruction set architecture.
@@ -105,7 +105,7 @@ Update subi(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
             Instruction inst)
 {
   regs.set_word(REGISTER(inst.first), regs[REGISTER(inst.second)] -
-                inst.address);
+                inst.data);
 
   return UpdatePC;
 }
@@ -125,7 +125,7 @@ Update multl(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
              Instruction inst)
 {
   Sint64 result = static_cast<Sint32>(regs[REGISTER(inst.second)]) *
-    static_cast<Sint32>(regs[REGISTER(inst.address)]);
+    static_cast<Sint32>(regs[REGISTER(inst.data)]);
   regs.set_word(REGISTER(inst.first),
                 static_cast<Sint32>(result & LOWBITS_64BITS));
 
@@ -133,7 +133,7 @@ Update multl(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
 }
 
 /**
- * Low 32bits from multiply a signed registers and a signed inmediate value.
+ * Low 32bits from multiply a signed registers and the data (signed value).
  *
  * REGISTERS[FIRST] = REGISTERS[SECOND] * ADDRESS
  * @param isa the instruction set architecture.
@@ -147,7 +147,7 @@ Update multli(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
               Instruction inst)
 {
   Sint64 result = static_cast<Sint32>(regs[REGISTER(inst.second)]) *
-    static_cast<Sint32>(inst.address);
+    static_cast<Sint32>(inst.data);
   regs.set_word(REGISTER(inst.first),
                 static_cast<Sint32>(result & LOWBITS_64BITS));
 
@@ -168,7 +168,7 @@ Update multli(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
 Update multlu(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
               Instruction inst)
 {
-  Uint64 result = regs[REGISTER(inst.second)] * regs[REGISTER(inst.address)];
+  Uint64 result = regs[REGISTER(inst.second)] * regs[REGISTER(inst.data)];
   regs.set_word(REGISTER(inst.first),
                 static_cast<Uint32>(result & LOWBITS_64BITS));
 
@@ -176,8 +176,7 @@ Update multlu(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
 }
 
 /**
- * Low 32bits from multiply a unsigned registers and a unsigned inmediate
- * value.
+ * Low 32bits from multiply a unsigned registers and the data (unsigned value).
  *
  * REGISTERS[FIRST] = REGISTERS[SECOND] * ADDRESS
  * @param isa the instruction set architecture.
@@ -191,7 +190,7 @@ Update multlui(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
                Instruction inst)
 {
   Uint64 result = regs[REGISTER(inst.second)] *
-    static_cast<Uint32>(inst.address);
+    static_cast<Uint32>(inst.data);
   regs.set_word(REGISTER(inst.first),
                 static_cast<Uint32>(result & LOWBITS_64BITS));
 
@@ -213,14 +212,14 @@ Update multh(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
              Instruction inst)
 {
   Sint64 result = static_cast<Sint32>(regs[REGISTER(inst.second)]) *
-    static_cast<Sint32>(regs[REGISTER(inst.address)]);
+    static_cast<Sint32>(regs[REGISTER(inst.data)]);
   regs.set_word(REGISTER(inst.first), static_cast<Sint32>(result >> 32));
 
   return UpdatePC;
 }
 
 /**
- * High 32bits from multiply a signed registers and a signed inmediate value.
+ * High 32bits from multiply a signed registers and the data (signed value).
  *
  * REGISTERS[FIRST] = REGISTERS[SECOND] * ADDRESS
  * @param isa the instruction set architecture.
@@ -234,7 +233,7 @@ Update multhi(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
               Instruction inst)
 {
   Sint64 result = static_cast<Sint32>(regs[REGISTER(inst.second)]) *
-    static_cast<Sint32>(inst.address);
+    static_cast<Sint32>(inst.data);
   regs.set_word(REGISTER(inst.first), static_cast<Sint32>(result >> 32));
 
   return UpdatePC;
@@ -255,15 +254,14 @@ Update multhu(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
               Instruction inst)
 {
   Uint64 result = static_cast<Uint64>(regs[REGISTER(inst.second)]) *
-    regs[REGISTER(inst.address)];
+    regs[REGISTER(inst.data)];
   regs.set_word(REGISTER(inst.first), static_cast<Uint32>(result >> 32));
 
   return UpdatePC;
 }
 
 /**
- * High 32bits from multiply a unsigned registers and a unsigned inmediate
- * value.
+ * High 32bits from multiply a unsigned registers and the data (unsigned value).
  *
  * REGISTERS[FIRST] = REGISTERS[SECOND] * ADDRESS
  * @param isa the instruction set architecture.
@@ -277,7 +275,7 @@ Update multhui(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
                Instruction inst)
 {
   Uint64 result = static_cast<Uint64>(regs[REGISTER(inst.second)]) *
-    inst.address;
+    inst.data;
   regs.set_word(REGISTER(inst.first), static_cast<Uint32>(result >> 32));
 
   return UpdatePC;
@@ -298,7 +296,7 @@ Update div(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
            Instruction inst)
 {
   Word dividend = static_cast<Sint32>(regs[REGISTER(inst.second)]);
-  Word divisor = static_cast<Sint32>(regs[REGISTER(inst.address)]);
+  Word divisor = static_cast<Sint32>(regs[REGISTER(inst.data)]);
   if (divisor == 0) {
     Word code = static_cast<Word>(isa.interrupt_code("DivisionByZero"));
     interrupt.code = interrupt.r0 = code;
@@ -314,7 +312,7 @@ Update div(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
 }
 
 /**
- * Divide a signed register and a signed inmediate value.
+ * Divide a signed register and the data (signed value).
  *
  * REGISTERS[FIRST] = REGISTERS[SECOND] / ADDRESS
  * @param isa the instruction set architecture.
@@ -328,7 +326,7 @@ Update divi(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
             Instruction inst)
 {
   Word dividend = static_cast<Sint32>(regs[REGISTER(inst.second)]);
-  Word divisor = static_cast<Sint32>(inst.address);
+  Word divisor = static_cast<Sint32>(inst.data);
   if (divisor == 0) {
     Word code = static_cast<Word>(isa.interrupt_code("DivisionByZero"));
     interrupt.code = interrupt.r0 = code;
@@ -358,7 +356,7 @@ Update divu(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
             Instruction inst)
 {
   Word dividend = regs[REGISTER(inst.second)];
-                       Word divisor = regs[REGISTER(inst.address)];
+                       Word divisor = regs[REGISTER(inst.data)];
   if (divisor == 0) {
     Word code = static_cast<Word>(isa.interrupt_code("DivisionByZero"));
     interrupt.code = interrupt.r0 = code;
@@ -374,7 +372,7 @@ Update divu(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
 }
 
 /**
- * Divide a unsigned register and a unsigned inmediate value.
+ * Divide a unsigned register and a the data (unsigned value).
  *
  * REGISTERS[FIRST] = REGISTERS[SECOND] / ADDRESS
  * @param isa the instruction set architecture.
@@ -388,7 +386,7 @@ Update divui(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
              Instruction inst)
 {
   Word dividend = regs[REGISTER(inst.second)];
-  Word divisor = inst.address;
+  Word divisor = inst.data;
   if (divisor == 0) {
     Word code = static_cast<Word>(isa.interrupt_code("DivisionByZero"));
     interrupt.code = interrupt.r0 = code;
@@ -418,7 +416,7 @@ Update mod(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
            Instruction inst)
 {
   Word dividend = static_cast<Sint32>(regs[REGISTER(inst.second)]);
-  Word divisor = static_cast<Sint32>(regs[REGISTER(inst.address)]);
+  Word divisor = static_cast<Sint32>(regs[REGISTER(inst.data)]);
   if (divisor == 0) {
     Word code = static_cast<Word>(isa.interrupt_code("DivisionByZero"));
     interrupt.code = interrupt.r0 = code;
@@ -434,7 +432,7 @@ Update mod(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
 }
 
 /**
- * Module of a signed register and a signed inmediate value.
+ * Module of a signed register and the data (signed value).
  *
  * REGISTERS[FIRST] = REGISTERS[SECOND] % ADDRESS
  * @param isa the instruction set architecture.
@@ -448,7 +446,7 @@ Update modi(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
             Instruction inst)
 {
   Word dividend = static_cast<Sint32>(regs[REGISTER(inst.second)]);
-  Word divisor = static_cast<Sint32>(inst.address);
+  Word divisor = static_cast<Sint32>(inst.data);
   if (divisor == 0) {
     Word code = static_cast<Word>(isa.interrupt_code("DivisionByZero"));
     interrupt.code = interrupt.r0 = code;
@@ -478,7 +476,7 @@ Update modu(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
             Instruction inst)
 {
   Word dividend = regs[REGISTER(inst.second)];
-  Word divisor = regs[REGISTER(inst.address)];
+  Word divisor = regs[REGISTER(inst.data)];
   if (divisor == 0) {
     Word code = static_cast<Word>(isa.interrupt_code("DivisionByZero"));
     interrupt.code = interrupt.r0 = code;
@@ -494,7 +492,7 @@ Update modu(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
 }
 
 /**
- * Module of a unsigned register and a unsigned inmediate value.
+ * Module of a unsigned register and the data (unsigned value).
  *
  * REGISTERS[FIRST] = REGISTERS[SECOND] % ADDRESS
  * @param isa the instruction set architecture.
@@ -508,7 +506,7 @@ Update modui(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
              Instruction inst)
 {
   Word dividend = regs[REGISTER(inst.second)];
-  Word divisor = inst.address;
+  Word divisor = inst.data;
   if (divisor == 0) {
     Word code = static_cast<Word>(isa.interrupt_code("DivisionByZero"));
     interrupt.code = interrupt.r0 = code;
@@ -517,7 +515,7 @@ Update modui(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
 
     return UpdateInterrupt;
   } else {
-    regs.set_word(REGISTER(inst.first), dividend % inst.address);
+    regs.set_word(REGISTER(inst.first), dividend % inst.data);
 
     return UpdatePC;
   }

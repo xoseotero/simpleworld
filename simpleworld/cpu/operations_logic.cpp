@@ -62,13 +62,13 @@ Update lor(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
            Instruction inst)
 {
   regs.set_word(REGISTER(inst.first),
-                regs[REGISTER(inst.second)] | regs[REGISTER(inst.address)]);
+                regs[REGISTER(inst.second)] | regs[REGISTER(inst.data)]);
 
   return UpdatePC;
 }
 
 /**
- * OR of a register and a inmediate value.
+ * OR of a register and the data.
  *
  * REGISTERS[FIRST] = REGISTERS[SECOND] | ADDRESS
  * @param isa the instruction set architecture.
@@ -82,7 +82,7 @@ Update lori(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
             Instruction inst)
 {
   regs.set_word(REGISTER(inst.first),
-                regs[REGISTER(inst.second)] | inst.address);
+                regs[REGISTER(inst.second)] | inst.data);
 
   return UpdatePC;
 }
@@ -102,13 +102,13 @@ Update land(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
             Instruction inst)
 {
   regs.set_word(REGISTER(inst.first),
-                regs[REGISTER(inst.second)] & regs[REGISTER(inst.address)]);
+                regs[REGISTER(inst.second)] & regs[REGISTER(inst.data)]);
 
   return UpdatePC;
 }
 
 /**
- * AND of a register and a inmediate value.
+ * AND of a register and the data.
  *
  * REGISTERS[FIRST] = REGISTERS[SECOND] & ADDRESS
  * @param isa the instruction set architecture.
@@ -122,7 +122,7 @@ Update landi(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
              Instruction inst)
 {
   regs.set_word(REGISTER(inst.first),
-                regs[REGISTER(inst.second)] & inst.address);
+                regs[REGISTER(inst.second)] & inst.data);
 
   return UpdatePC;
 }
@@ -142,13 +142,13 @@ Update lxor(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
             Instruction inst)
 {
   regs.set_word(REGISTER(inst.first),
-                regs[REGISTER(inst.second)] ^ regs[REGISTER(inst.address)]);
+                regs[REGISTER(inst.second)] ^ regs[REGISTER(inst.data)]);
 
   return UpdatePC;
 }
 
 /**
- * EXOR of a register and a inmediate value.
+ * EXOR of a register and the data.
  *
  * REGISTERS[FIRST] = REGISTERS[SECOND] ^ ADDRESS
  * @param isa the instruction set architecture.
@@ -162,7 +162,7 @@ Update lxori(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
              Instruction inst)
 {
   regs.set_word(REGISTER(inst.first),
-                regs[REGISTER(inst.second)] ^ inst.address);
+                regs[REGISTER(inst.second)] ^ inst.data);
 
   return UpdatePC;
 }

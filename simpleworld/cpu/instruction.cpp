@@ -47,11 +47,11 @@ Word Instruction::encode(const Instruction& instruction)
                                         instruction.second));
 
 #ifdef IS_BIG_ENDIAN
-  set_byte(&word, 2, get_byte(static_cast<Word>(instruction.address), 2));
-  set_byte(&word, 3, get_byte(static_cast<Word>(instruction.address), 3));
+  set_byte(&word, 2, get_byte(static_cast<Word>(instruction.data), 2));
+  set_byte(&word, 3, get_byte(static_cast<Word>(instruction.data), 3));
 #else
-  set_byte(&word, 2, get_byte(static_cast<Word>(instruction.address), 1));
-  set_byte(&word, 3, get_byte(static_cast<Word>(instruction.address), 0));
+  set_byte(&word, 2, get_byte(static_cast<Word>(instruction.data), 1));
+  set_byte(&word, 3, get_byte(static_cast<Word>(instruction.data), 0));
 #endif
 
   return word;
@@ -71,12 +71,12 @@ Instruction Instruction::decode(Word word)
   instruction.second = get_byte(word, 1) & 0x0f;
 
 #ifdef IS_BIG_ENDIAN
-  set_byte(&instruction.address, 0, get_byte(word, 2));
-  set_byte(&instruction.address, 1, get_byte(word, 3));
+  set_byte(&instruction.data, 0, get_byte(word, 2));
+  set_byte(&instruction.data, 1, get_byte(word, 3));
 #else
-  set_byte(reinterpret_cast<Word*>(&instruction.address), 0,
+  set_byte(reinterpret_cast<Word*>(&instruction.data), 0,
            get_byte(word, 3));
-  set_byte(reinterpret_cast<Word*>(&instruction.address), 1,
+  set_byte(reinterpret_cast<Word*>(&instruction.data), 1,
            get_byte(word, 2));
 #endif
 

@@ -75,7 +75,7 @@ Update swap(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
 /**
  * Load a word from memory.
  *
- * REGISTERS[FIRST] = MEMORY[ADDRESS]
+ * REGISTERS[FIRST] = MEMORY[PC + OFFSET]
  * @param isa the instruction set architecture.
  * @param regs the registers.
  * @param mem the memory.
@@ -86,15 +86,16 @@ Update swap(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
 Update load(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
             Instruction inst)
 {
-  regs.set_word(REGISTER(inst.first), mem[inst.address]);
+  regs.set_word(REGISTER(inst.first), mem[regs[REGISTER_PC] + inst.offset]);
 
   return UpdatePC;
 }
 
 /**
- * Load a inmediate value.
+ * Load the data.
+ * The higher 16 bits are set to 0.
  *
- * REGISTERS[FIRST] = ADDRESS (the upper 32bits are cleared)
+ * REGISTERS[FIRST] = DATA (the upper 32bits are cleared)
  * @param isa the instruction set architecture.
  * @param regs the registers.
  * @param mem the memory.
@@ -105,7 +106,26 @@ Update load(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
 Update loadi(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
              Instruction inst)
 {
-  regs.set_word(REGISTER(inst.first), inst.address);
+  regs.set_word(REGISTER(inst.first), inst.data);
+
+  return UpdatePC;
+}
+
+/**
+ * Load the absolute address from the offset.
+ *
+ * REGISTERS[FIRST] = PC + OFFSET
+ * @param isa the instruction set architecture.
+ * @param regs the registers.
+ * @param mem the memory.
+ * @param interrupt interrupt.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
+ */
+Update loada(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
+             Instruction inst)
+{
+  regs.set_word(REGISTER(inst.first), regs[REGISTER_PC] + inst.offset);
 
   return UpdatePC;
 }
@@ -113,7 +133,7 @@ Update loadi(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
 /**
  * Load a word from memory using two base registers.
  *
- * REGISTERS[FIRST] = MEMORY[REGISTERS[SECOND] + REGISTERS[ADDRESS]]
+ * REGISTERS[FIRST] = MEMORY[REGISTERS[SECOND] + REGISTERS[DATA]]
  * @param isa the instruction set architecture.
  * @param regs the registers.
  * @param mem the memory.
@@ -126,15 +146,15 @@ Update loadrr(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
 {
   regs.set_word(REGISTER(inst.first),
                 mem[regs[REGISTER(inst.second)] +
-                    regs[REGISTER(inst.address)]]);
+                    regs[REGISTER(inst.data)]]);
 
   return UpdatePC;
 }
 
 /**
- * Load a word from memory using a base register and a inmediate value.
+ * Load a word from memory using a base register and the data.
  *
- * REGISTERS[FIRST] = MEMORY[REGISTERS[SECOND] + ADDRESS]
+ * REGISTERS[FIRST] = MEMORY[REGISTERS[SECOND] + OFFSET]
  * @param isa the instruction set architecture.
  * @param regs the registers.
  * @param mem the memory.
@@ -146,7 +166,7 @@ Update loadri(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
               Instruction inst)
 {
   regs.set_word(REGISTER(inst.first),
-                mem[regs[REGISTER(inst.second)] + inst.address]);
+                mem[regs[REGISTER(inst.second)] + inst.offset]);
 
   return UpdatePC;
 }
@@ -157,7 +177,7 @@ Update loadri(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
 /**
  * Store a word to memory.
  *
- * MEMORY[ADDRESS] = REGISTERS[FIRST]
+ * MEMORY[PC + OFFSET] = REGISTERS[FIRST]
  * @param isa the instruction set architecture.
  * @param regs the registers.
  * @param mem the memory.
@@ -168,7 +188,7 @@ Update loadri(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
 Update store(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
              Instruction inst)
 {
-  mem.set_word(inst.address, regs[REGISTER(inst.first)]);
+  mem.set_word(regs[REGISTER_PC] + inst.offset, regs[REGISTER(inst.first)]);
 
   return UpdatePC;
 }
@@ -176,7 +196,7 @@ Update store(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
 /**
  * Store a word to memory using two base registers.
  *
- * MEMORY[REGISTERS[FIRST] + REGISTERS[ADDRESS]] = REGISTERS[SECOND]
+ * MEMORY[REGISTERS[FIRST] + REGISTERS[DATA]] = REGISTERS[SECOND]
  * @param isa the instruction set architecture.
  * @param regs the registers.
  * @param mem the memory.
@@ -187,16 +207,16 @@ Update store(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
 Update storerr(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
                Instruction inst)
 {
-  mem.set_word(regs[REGISTER(inst.second)] + regs[REGISTER(inst.address)],
+  mem.set_word(regs[REGISTER(inst.second)] + regs[REGISTER(inst.data)],
                regs[REGISTER(inst.first)]);
 
   return UpdatePC;
 }
 
 /**
- * Store a word to memory using a base register and a inmediate value.
+ * Store a word to memory using a base register and the data.
  *
- * MEMORY[REGISTERS[FIRST] + INMEDIATE] = REGISTERS[SECOND]
+ * MEMORY[REGISTERS[FIRST] + OFFSET] = REGISTERS[SECOND]
  * @param isa the instruction set architecture.
  * @param regs the registers.
  * @param mem the memory.
@@ -207,7 +227,7 @@ Update storerr(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
 Update storeri(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
                Instruction inst)
 {
-  mem.set_word(regs[REGISTER(inst.second)] + inst.address,
+  mem.set_word(regs[REGISTER(inst.second)] + inst.offset,
                regs[REGISTER(inst.first)]);
 
   return UpdatePC;

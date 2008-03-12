@@ -32,7 +32,9 @@ namespace CPU
 {
 
 typedef Uint32 Word;
-typedef Uint16 Address;
+
+typedef Uint32 Address;
+typedef Sint16 Offset;
 
 }
 }
