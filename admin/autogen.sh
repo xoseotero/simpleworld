@@ -91,7 +91,6 @@ if [ "${release}" == 1 ]; then
       -D CMAKE_BUILD_TYPE=Release"
 fi
 
-echo "create_build ${directory} ${options}"
 create_build "${directory}" "${options}" "${prefix}"
 
 exit 0
