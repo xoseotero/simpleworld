@@ -1,11 +1,5 @@
 #! /bin/sh
 # Compile, build and install Simple World.
-# The prefix path can be passed as argument optionally
+# Arguments passed to compile.sh are passed to autogen.sh
 
-if [ "$1" != "" ]; then
-	prefix=$1
-else
-	prefix=""
-fi
-
-rm -rf build/ && admin/autogen.sh ${prefix} && cd build/ && make && make tests && make install
+rm -rf build/ && admin/autogen.sh $* && cd build/ && make && make tests && make install
