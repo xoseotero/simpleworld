@@ -55,6 +55,7 @@ create_build()
 {
     directory=$1
     options=$2
+    prefix=$3
 
     rm -rf ${directory}
     mkdir ${directory}
@@ -91,6 +92,6 @@ if [ "${release}" == 1 ]; then
 fi
 
 echo "create_build ${directory} ${options}"
-create_build "${directory}" "${options}"
+create_build "${directory}" "${options}" "${prefix}"
 
 exit 0
