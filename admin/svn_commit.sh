@@ -2,7 +2,7 @@
 # Add diffstat information to the commits.
 
 SVN=svn
-DIFFSTAT=diffstat
+DIFFSTAT="diffstat -p 0 -u"
 TEMPFILE=commit.txt
 EDITOR=nano
 RM=rm
