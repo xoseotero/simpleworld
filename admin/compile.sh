@@ -2,4 +2,4 @@
 # Compile, build and install Simple World.
 # Arguments passed to compile.sh are passed to autogen.sh
 
-rm -rf build/ && admin/autogen.sh $* && cd build/ && make && make tests && make install
+rm -rf build/ && admin/autogen.sh $* && cd build/ && make && make test && make install
