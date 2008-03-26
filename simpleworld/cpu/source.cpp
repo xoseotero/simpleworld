@@ -21,7 +21,6 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <cstdio>
 #include <cstdlib>
 
 #include <boost/format.hpp>
@@ -420,9 +419,8 @@ Label %1% already defined")
       std::map<std::string, Address>::const_iterator iter =
         this->labels_.begin();
       while (iter != this->labels_.end()) {
-        char address[11];
-        std::snprintf(address, 11, "0x%x", (*iter).second);
-
+        std::string address(boost::str(boost::format("0x%x") %
+                                       (*iter).second));
         this->get_line(i) =
           boost::regex_replace(this->get_line(i),
                                boost::regex(std::string(BEGIN_WORD) +
@@ -439,10 +437,9 @@ Label %1% already defined")
       std::map<std::string, Address>::const_iterator iter =
         this->labels_.begin();
       while (iter != this->labels_.end()) {
-        char offset[11];
-        std::snprintf(offset, 11, "0x%x",
-                      (*iter).second - lines_code * sizeof(Word));
-
+        std::string offset(boost::str(boost::format("0x%x") %
+                                      ((*iter).second -
+                                       lines_code * sizeof(Word))));
         this->get_line(i) =
           boost::regex_replace(this->get_line(i),
                                boost::regex(std::string(BEGIN_WORD) +

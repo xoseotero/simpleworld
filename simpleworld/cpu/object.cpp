@@ -77,20 +77,21 @@ The size of %1% (%2%) is not a multiple of 32bits")
                                         % filename
                                         % is.tellg()));
 
+  // Decompile all the code
   is.seekg(0);
   while (is.read(reinterpret_cast<char*>(&instruction), sizeof(Word))) {
-    // If a unknown instruction or register is found suppose that the value
-    // is data.
     try {
       file.insert(i, this->decompile(instruction));
     } catch (const CodeError& e) {
-      char address[11];
+      // If a unknown instruction or register is found suppose that the value
+      // is data.
 #ifdef IS_BIG_ENDIAN
-      std::snprintf(address, 11, "0x%x", instruction);
+      std::string data(boost::str(boost::format("0x%x") % instruction));
 #else
-      std::snprintf(address, 11, "0x%x", change_byte_order(instruction));
+      std::string data(boost::str(boost::format("0x%x") %
+                                  change_byte_order(instruction)));
 #endif // IS_BIG_ENDIAN
-      file.insert(i, address);
+      file.insert(i, data);
     }
 
     i++;
@@ -127,10 +128,10 @@ std::string Object::decompile(Word instruction) const
     result += " ";
     result += this->isa_.register_name(static_cast<Uint8>(inst.data));
   } else if (info.has_inmediate) {
-    char address[7];
-    std::snprintf(address, 7, "0x%x", inst.data);
+    std::string inmediate(boost::str(boost::format("0x%x") % inst.data));;
+
     result += " ";
-    result += address;
+    result += inmediate;
   }
 
   return result;
