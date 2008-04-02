@@ -212,8 +212,8 @@ BOOST_AUTO_TEST_CASE(cpu_load)
 
   source.insert(line++, "loadi r0 0x0");
   source.insert(line++, "loadi r1 0x10");
-  source.insert(line++, "loadi r2 0xffff");
-  source.insert(line++, "loadi r3 0x7f07");
+  source.insert(line++, "loadhi r2 0xffff");
+  source.insert(line++, "loadhi r3 0x7f07");
 
   // Data to be loaded into the registers
   sw::Uint8 data = line;
@@ -233,8 +233,8 @@ BOOST_AUTO_TEST_CASE(cpu_load)
 
   BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r0")], 0x0000);
   BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r1")], 0x0010);
-  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r2")], 0xffff);
-  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r3")], 0x7f07);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r2")], 0xffff0004);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r3")], 0x7f070008);
 
   BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r4")], 0x000c);
 

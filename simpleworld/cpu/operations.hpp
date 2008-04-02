@@ -104,6 +104,17 @@ Update load(CPU& cpu, Instruction inst);
 Update loadi(CPU& cpu, Instruction inst);
 
 /**
+ * Load the data into the higher 16 bits.
+ * The lower 16 bits don't change.
+ *
+ * REGISTERS[FIRST] = DATA (the lower 16bits are perserved)
+ * @param cpu the CPU.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
+ */
+Update loadhi(CPU& cpu, Instruction inst);
+
+/**
  * Load the absolute address from the offset.
  *
  * REGISTERS[FIRST] = PC + OFFSET

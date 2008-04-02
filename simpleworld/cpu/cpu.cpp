@@ -95,7 +95,8 @@ CPU::CPU(Memory* registers, Memory* memory)
   // Load operations
   this->isa_.add_instruction(0x10, "load", 1, true, load);
   this->isa_.add_instruction(0x11, "loadi", 1, true, loadi);
-  this->isa_.add_instruction(0x12, "loada", 1, true, loada);
+  this->isa_.add_instruction(0x12, "loadhi", 1, true, loadhi);
+  this->isa_.add_instruction(0x13, "loada", 1, true, loada);
   this->isa_.add_instruction(0x14, "loadrr", 3, false, loadrr);
   this->isa_.add_instruction(0x15, "loadri", 2, true, loadri);
 

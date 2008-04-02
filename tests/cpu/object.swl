@@ -6,8 +6,9 @@ push r4
 pop r5
 load r6 0x1adc
 loadi r7 0x1adc
-loada r8 0x0
-loadrr r9 r9 r10
+loadhi r8 0xdc1a
+loada r9 0x0
+loadrr r10 r9 r10
 loadri r11 r12 0x1
 store pc 0xafff
 storerr sp cs r0
