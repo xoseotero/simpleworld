@@ -85,7 +85,7 @@ BOOST_AUTO_TEST_CASE(cpu_initialization)
   BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r11")], 0x0);
   BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r12")], 0x0);
   BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "pc")], 0x0);
-  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "stp")], 0x0);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "sp")], 0x0);
   BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "cs")], 0x0);
 }
 
@@ -176,7 +176,7 @@ BOOST_AUTO_TEST_CASE(cpu_management_restart)
   BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r11")], 0x0);
   BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r12")], 0x0);
   BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "pc")], 0x0);
-  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "stp")], 0x0);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "sp")], 0x0);
   BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "cs")], 0x0);
 }
 
@@ -355,7 +355,7 @@ BOOST_AUTO_TEST_CASE(cpu_stack)
   cpu::Source::size_type line = 0;
 
   // Initialize the stack pointer
-  source.insert(line++, "loada stp stack");
+  source.insert(line++, "loada sp stack");
   source.insert(line++, "loadi r0 0xabcd");
   source.insert(line++, "loadi r1 0x0000");
 
@@ -507,7 +507,7 @@ BOOST_AUTO_TEST_CASE(cpu_function)
   cpu::Source::size_type line = 0;
 
   // Initialize the stack pointer
-  source.insert(line++, "loada stp stack");
+  source.insert(line++, "loada sp stack");
 
   // Execute some functions
   source.insert(line++, "call func0");
@@ -563,7 +563,7 @@ BOOST_AUTO_TEST_CASE(cpu_interrupt)
   cpu::Source::size_type line = 0;
 
   // Initialize the stack pointer
-  source.insert(line++, "loada stp stack");
+  source.insert(line++, "loada sp stack");
 
   // Initialize the control & status register
   source.insert(line++, "loada r0 interrupts_table");
@@ -655,7 +655,7 @@ BOOST_AUTO_TEST_CASE(cpu_stack_increases)
   cpu::Source::size_type line = 0;
 
   // Initialize the stack pointer
-  source.insert(line++, "loada stp stack");
+  source.insert(line++, "loada sp stack");
 
   // Initialize the control & status register
   source.insert(line++, "loada r0 interrupts_table");
@@ -693,14 +693,14 @@ BOOST_AUTO_TEST_CASE(cpu_stack_increases)
   cpu::MemoryFile memory(CPU_SAVE);
   cpu::CPU cpu(&registers, &memory);
 
-  sw::Uint32 stp = 0;
+  sw::Uint32 sp = 0;
   while (cpu.running()) {
     cpu.execute(1);
 
-    sw::Uint32 new_stp = registers[REGISTER(cpu, "stp")];
-    BOOST_CHECK(new_stp >= stp);
+    sw::Uint32 new_sp = registers[REGISTER(cpu, "sp")];
+    BOOST_CHECK(new_sp >= sp);
 
-    stp = new_stp;
+    sp = new_sp;
   }
 }
 
@@ -713,7 +713,7 @@ BOOST_AUTO_TEST_CASE(cpu_stack_decreases)
   cpu::Source::size_type line = 0;
 
   // Initialize the stack pointer
-  source.insert(line++, "loada stp stack");
+  source.insert(line++, "loada sp stack");
 
   // Initialize the control & status register
   source.insert(line++, "loada r0 interrupts_table");
@@ -766,9 +766,9 @@ BOOST_AUTO_TEST_CASE(cpu_stack_decreases)
   cpu::CPU cpu(&registers, &memory);
 
   cpu.execute(1);
-  sw::Uint32 stp = registers[REGISTER(cpu, "stp")];
+  sw::Uint32 sp = registers[REGISTER(cpu, "sp")];
   cpu.execute();
-  BOOST_CHECK_EQUAL(stp, registers[REGISTER(cpu, "stp")]);
+  BOOST_CHECK_EQUAL(sp, registers[REGISTER(cpu, "sp")]);
 }
 
 /**

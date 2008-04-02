@@ -200,9 +200,9 @@ Update storeri(CPU& cpu, Instruction inst)
 Update push(CPU& cpu, Instruction inst)
 {
   // Save the register in the top of the stack
-  cpu.set_mem(cpu.get_reg(REGISTER_STP), cpu.get_reg(inst.first));
+  cpu.set_mem(cpu.get_reg(REGISTER_SP), cpu.get_reg(inst.first));
   // Update stack pointer
-  cpu.set_reg(REGISTER_STP, cpu.get_reg(REGISTER_STP) + 4);
+  cpu.set_reg(REGISTER_SP, cpu.get_reg(REGISTER_SP) + 4);
 
   return UpdatePC;
 }
@@ -216,9 +216,9 @@ Update push(CPU& cpu, Instruction inst)
 Update pop(CPU& cpu, Instruction inst)
 {
   // Update stack pointer
-  cpu.set_reg(REGISTER_STP, cpu.get_reg(REGISTER_STP) - 4);
+  cpu.set_reg(REGISTER_SP, cpu.get_reg(REGISTER_SP) - 4);
   // Restore the register
-  cpu.set_reg(inst.first, cpu.get_mem(cpu.get_reg(REGISTER_STP)));
+  cpu.set_reg(inst.first, cpu.get_mem(cpu.get_reg(REGISTER_SP)));
 
   return UpdatePC;
 }

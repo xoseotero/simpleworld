@@ -29,7 +29,7 @@
 
 #define REGISTER(NUMBER) (NUMBER * sizeof(CPU::Word))
 #define REGISTER_PC REGISTER(0xd)
-#define REGISTER_STP REGISTER(0xe)
+#define REGISTER_SP REGISTER(0xe)
 #define REGISTER_CS REGISTER(0xf)
 
 #define INTERRUPT_TIMER (0x0)

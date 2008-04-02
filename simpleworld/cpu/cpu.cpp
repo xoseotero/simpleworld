@@ -69,7 +69,7 @@ CPU::CPU(Memory* registers, Memory* memory)
   this->isa_.add_register(0xb, "r11");
   this->isa_.add_register(0xc, "r12");
   this->isa_.add_register(0xd, "pc");
-  this->isa_.add_register(0xe, "stp");
+  this->isa_.add_register(0xe, "sp");
   this->isa_.add_register(0xf, "cs");
 
   // Interrupts
@@ -343,11 +343,11 @@ Interrupt thrown:\tcode: 0x%02x, name: %s")
   for (i = 0; i < 16; i++) {
     // Store a register:
     // Save the register in the top of the stack
-    this->memory_->set_word(this->registers_->get_word(ADDRESS(REGISTER_STP)),
+    this->memory_->set_word(this->registers_->get_word(ADDRESS(REGISTER_SP)),
                             this->registers_->get_word(ADDRESS(i)));
     // Update stack pointer
-    this->registers_->set_word(ADDRESS(REGISTER_STP),
-                               this->registers_->get_word(ADDRESS(REGISTER_STP)) + 4);
+    this->registers_->set_word(ADDRESS(REGISTER_SP),
+                               this->registers_->get_word(ADDRESS(REGISTER_SP)) + 4);
   }
 
   // Store the information of the interrupt

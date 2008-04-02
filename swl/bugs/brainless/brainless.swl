@@ -26,7 +26,7 @@
 
 # Initialization
 .label init
-	loadi stp stack		# Initialize the Stack Pointer
+	loadi sp stack		# Initialize the Stack Pointer
 	b main
 
 

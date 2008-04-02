@@ -19,7 +19,7 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# Push all the general purpose registers (all except pc, stp and cs)
+# Push all the general purpose registers (all except pc, sp and cs)
 .label stack_push
 	push r0
 	push r1
@@ -38,7 +38,7 @@
 
 
 
-# Pop all the general purpose register (all except pc, stp and cs)
+# Pop all the general purpose register (all except pc, sp and cs)
 .label stack_pop
 	push r11
 	push r10

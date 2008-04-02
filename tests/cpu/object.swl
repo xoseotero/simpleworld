@@ -10,7 +10,7 @@ loada r8 0x0
 loadrr r9 r9 r10
 loadri r11 r12 0x1
 store pc 0xafff
-storerr stp cs r0
+storerr sp cs r0
 storeri r10 r0 0x1
 b 0xffff
 beq r0 r1 0x0

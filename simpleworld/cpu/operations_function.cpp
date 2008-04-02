@@ -46,9 +46,9 @@ Update call(CPU& cpu, Instruction inst)
   cpu.get_mem(address);
 
   // Save the program counter (pc) in the top of the stack
-  cpu.set_mem(cpu.get_reg(REGISTER_STP), cpu.get_reg(REGISTER_PC));
+  cpu.set_mem(cpu.get_reg(REGISTER_SP), cpu.get_reg(REGISTER_PC));
   // Update stack pointer
-  cpu.set_reg(REGISTER_STP, cpu.get_reg(REGISTER_STP) + 4);
+  cpu.set_reg(REGISTER_SP, cpu.get_reg(REGISTER_SP) + 4);
   // Execute the function
   cpu.set_reg(REGISTER_PC, address);
 
@@ -80,9 +80,9 @@ Update interrupt(CPU& cpu, Instruction inst)
 Update ret(CPU& cpu, Instruction inst)
 {
   // Update stack pointer
-  cpu.set_reg(REGISTER_STP, cpu.get_reg(REGISTER_STP) - 4);
+  cpu.set_reg(REGISTER_SP, cpu.get_reg(REGISTER_SP) - 4);
   // Restore the program counter
-  cpu.set_reg(REGISTER_PC, cpu.get_mem(cpu.get_reg(REGISTER_STP)));
+  cpu.set_reg(REGISTER_PC, cpu.get_mem(cpu.get_reg(REGISTER_SP)));
 
   return UpdatePC;
 }
@@ -101,9 +101,9 @@ Update reti(CPU& cpu, Instruction inst)
   Sint8 i;
   for (i = 15; i >= 0; i--) {
     // Update stack pointer
-    cpu.set_reg(REGISTER_STP, cpu.get_reg(REGISTER_STP) - 4);
+    cpu.set_reg(REGISTER_SP, cpu.get_reg(REGISTER_SP) - 4);
     // Restore the register
-    cpu.set_reg(i, cpu.get_mem(cpu.get_reg(REGISTER_STP)));
+    cpu.set_reg(i, cpu.get_mem(cpu.get_reg(REGISTER_SP)));
   }
 
   // It's not needed to update the cs register because the correct values
