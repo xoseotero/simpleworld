@@ -9,7 +9,6 @@ RM=rm
 
 echo "comment for the commit here" > ${TEMPFILE}
 echo >> ${TEMPFILE}
-echo " -------------------" >> ${TEMPFILE}
 
 ${SVN} diff $* | ${DIFFSTAT} >> ${TEMPFILE}
 ${EDITOR} ${TEMPFILE}
