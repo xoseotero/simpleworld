@@ -383,7 +383,7 @@ BOOST_AUTO_TEST_CASE(cpu_stack)
 
 /**
  * Execute the branch operations.
- * Operations: b, beq, bne, blt, bltu, bgt, bgtu, ble, bleu, bge, begu
+ * Operations: b, bz, bnz, beq, bne, blt, bltu, bgt, bgtu, ble, bleu, bge, begu
  */
 BOOST_AUTO_TEST_CASE(cpu_branch)
 {
