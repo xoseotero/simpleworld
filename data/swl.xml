@@ -25,6 +25,8 @@
             <!-- Load operations -->
             <item> load </item>
             <item> loadi </item>
+            <item> loadhi </item>
+            <item> loada </item>
             <item> loadrr </item>
             <item> loadri </item>
 
@@ -36,6 +38,8 @@
 
             <!-- Branch operations -->
             <item> b </item>
+            <item> bz </item>
+            <item> bnz </item>
             <item> beq </item>
             <item> bne </item>
             <item> blt </item>
@@ -115,7 +119,7 @@
             <item> r12 </item>
             <item> pc </item>
             <item> sp </item>
-            <item> etp </item>
+            <item> cs </item>
         </list>
         <contexts>
             <context name="normal" attribute="Normal Text" lineEndContext="#stay" >
