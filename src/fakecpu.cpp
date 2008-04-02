@@ -27,11 +27,6 @@
 #include <simpleworld/cpu/memory.hpp>
 #include <simpleworld/cpu/instruction.hpp>
 
-#define REGISTER(NUMBER) (NUMBER * sizeof(cpu::Word))
-#define REGISTER_PC REGISTER(0xd)
-#define REGISTER_STP REGISTER(0xe)
-#define REGISTER_ITP REGISTER(0xf)
-
 /**
  * Fake World operation that does nothing.
  * @param cpu the CPU.
