@@ -40,7 +40,7 @@ namespace CPU
 Update call(CPU& cpu, Instruction inst)
 {
   // Check if the address is valid.
-  // If the addres is out of range, a Invalid Memory location is raised
+  // If the address is out of range, a Invalid Memory location is raised
   // giving this instruction as data.
   Address address = cpu.get_reg(REGISTER_PC) + inst.offset;
   cpu.get_mem(address);

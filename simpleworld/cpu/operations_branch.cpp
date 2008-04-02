@@ -29,7 +29,7 @@ namespace CPU
 {
 
 // Before executing each operation, it's checked if the address is valid.
-// If the addres is out of range, a Invalid Memory location is raised
+// If the address is out of range, a Invalid Memory location is raised
 // giving the as data.
 
 
