@@ -86,10 +86,8 @@ bool compare_swo(const std::string& file1, const std::string& file2)
 
   cpu::Address i;
   for (i = 0; i < memory1.size(); i += sizeof(cpu::Word)) {
-    cpu::Instruction inst1 =
-      cpu::Instruction::decode(memory1.get_word(i, false));
-    cpu::Instruction inst2 =
-      cpu::Instruction::decode(memory2.get_word(i, false));
+    cpu::Instruction inst1(memory1.get_word(i, false));
+    cpu::Instruction inst2(memory2.get_word(i, false));
 
     if (inst1.code != inst2.code)
       return false;

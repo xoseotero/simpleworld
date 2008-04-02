@@ -539,7 +539,7 @@ Line: %1%\n\
                                             % e.what));
   }
 
-  return Instruction::encode(inst);
+  return inst.encode();
 }
 
 

@@ -5,7 +5,7 @@
  * begin:     Sat, 11 Nov 2006 19:15:19 +0100
  * last:      $Date$
  *
- *  Copyright (C) 2006-2007  Xosé Otero <xoseotero@users.sourceforge.net>
+ *  Copyright (C) 2006-2008  Xosé Otero <xoseotero@users.sourceforge.net>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -21,7 +21,6 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <simpleworld/ints.hpp>
 #include "operations.hpp"
 
 namespace SimpleWorld
@@ -35,36 +34,27 @@ namespace CPU
  * Move the content of a register to a register.
  *
  * REGISTERS[FIRST] = REGISTERS[SECOND]
- * @param isa the instruction set architecture.
- * @param regs the registers.
- * @param mem the memory.
- * @param interrupt interrupt.
+ * @param CPU& cpu.
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update move(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
-            Instruction inst)
+Update move(CPU& cpu, Instruction inst)
 {
-  regs.set_word(REGISTER(inst.first), regs[REGISTER(inst.second)]);
+  cpu.set_reg(inst.first, cpu.get_reg(inst.second));
 
   return UpdatePC;
 }
 
 /**
  * Swap the high half-word and the low half-word of a word.
- * @param isa the instruction set architecture.
- * @param regs the registers.
- * @param mem the memory.
- * @param interrupt interrupt.
+ * @param CPU& cpu.
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update swap(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
-            Instruction inst)
+Update swap(CPU& cpu, Instruction inst)
 {
-  regs.set_word(REGISTER(inst.first),
-                regs[REGISTER(inst.second)] << 16 |
-                regs[REGISTER(inst.second)] >> 16);
+  cpu.set_reg(inst.first,
+              cpu.get_reg(inst.second) << 16 | cpu.get_reg(inst.second) >> 16);
 
   return UpdatePC;
 }
@@ -76,17 +66,13 @@ Update swap(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
  * Load a word from memory.
  *
  * REGISTERS[FIRST] = MEMORY[PC + OFFSET]
- * @param isa the instruction set architecture.
- * @param regs the registers.
- * @param mem the memory.
- * @param interrupt interrupt.
+ * @param CPU& cpu.
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update load(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
-            Instruction inst)
+Update load(CPU& cpu, Instruction inst)
 {
-  regs.set_word(REGISTER(inst.first), mem[regs[REGISTER_PC] + inst.offset]);
+  cpu.set_reg(inst.first, cpu.get_mem(cpu.get_reg(REGISTER_PC) + inst.offset));
 
   return UpdatePC;
 }
@@ -96,17 +82,13 @@ Update load(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
  * The higher 16 bits are set to 0.
  *
  * REGISTERS[FIRST] = DATA (the upper 32bits are cleared)
- * @param isa the instruction set architecture.
- * @param regs the registers.
- * @param mem the memory.
- * @param interrupt interrupt.
+ * @param CPU& cpu.
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update loadi(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
-             Instruction inst)
+Update loadi(CPU& cpu, Instruction inst)
 {
-  regs.set_word(REGISTER(inst.first), inst.data);
+  cpu.set_reg(inst.first, inst.data);
 
   return UpdatePC;
 }
@@ -115,17 +97,13 @@ Update loadi(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
  * Load the absolute address from the offset.
  *
  * REGISTERS[FIRST] = PC + OFFSET
- * @param isa the instruction set architecture.
- * @param regs the registers.
- * @param mem the memory.
- * @param interrupt interrupt.
+ * @param CPU& cpu.
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update loada(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
-             Instruction inst)
+Update loada(CPU& cpu, Instruction inst)
 {
-  regs.set_word(REGISTER(inst.first), regs[REGISTER_PC] + inst.offset);
+  cpu.set_reg(inst.first, cpu.get_reg(REGISTER_PC) + inst.offset);
 
   return UpdatePC;
 }
@@ -134,19 +112,14 @@ Update loada(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
  * Load a word from memory using two base registers.
  *
  * REGISTERS[FIRST] = MEMORY[REGISTERS[SECOND] + REGISTERS[DATA]]
- * @param isa the instruction set architecture.
- * @param regs the registers.
- * @param mem the memory.
- * @param interrupt interrupt.
+ * @param CPU& cpu.
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update loadrr(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
-              Instruction inst)
+Update loadrr(CPU& cpu, Instruction inst)
 {
-  regs.set_word(REGISTER(inst.first),
-                mem[regs[REGISTER(inst.second)] +
-                    regs[REGISTER(inst.data)]]);
+  cpu.set_reg(inst.first,
+              cpu.get_mem(cpu.get_reg(inst.second) + cpu.get_reg(inst.data)));
 
   return UpdatePC;
 }
@@ -155,18 +128,13 @@ Update loadrr(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
  * Load a word from memory using a base register and the data.
  *
  * REGISTERS[FIRST] = MEMORY[REGISTERS[SECOND] + OFFSET]
- * @param isa the instruction set architecture.
- * @param regs the registers.
- * @param mem the memory.
- * @param interrupt interrupt.
+ * @param CPU& cpu.
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update loadri(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
-              Instruction inst)
+Update loadri(CPU& cpu, Instruction inst)
 {
-  regs.set_word(REGISTER(inst.first),
-                mem[regs[REGISTER(inst.second)] + inst.offset]);
+  cpu.set_reg(inst.first, cpu.get_mem(cpu.get_reg(inst.second) + inst.offset));
 
   return UpdatePC;
 }
@@ -178,17 +146,13 @@ Update loadri(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
  * Store a word to memory.
  *
  * MEMORY[PC + OFFSET] = REGISTERS[FIRST]
- * @param isa the instruction set architecture.
- * @param regs the registers.
- * @param mem the memory.
- * @param interrupt interrupt.
+ * @param CPU& cpu.
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update store(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
-             Instruction inst)
+Update store(CPU& cpu, Instruction inst)
 {
-  mem.set_word(regs[REGISTER_PC] + inst.offset, regs[REGISTER(inst.first)]);
+  cpu.set_mem(cpu.get_reg(REGISTER_PC) + inst.offset, cpu.get_reg(inst.first));
 
   return UpdatePC;
 }
@@ -197,18 +161,14 @@ Update store(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
  * Store a word to memory using two base registers.
  *
  * MEMORY[REGISTERS[FIRST] + REGISTERS[DATA]] = REGISTERS[SECOND]
- * @param isa the instruction set architecture.
- * @param regs the registers.
- * @param mem the memory.
- * @param interrupt interrupt.
+ * @param CPU& cpu.
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update storerr(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
-               Instruction inst)
+Update storerr(CPU& cpu, Instruction inst)
 {
-  mem.set_word(regs[REGISTER(inst.second)] + regs[REGISTER(inst.data)],
-               regs[REGISTER(inst.first)]);
+  cpu.set_mem(cpu.get_reg(inst.second) + cpu.get_reg(inst.data),
+              cpu.get_reg(inst.first));
 
   return UpdatePC;
 }
@@ -217,18 +177,13 @@ Update storerr(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
  * Store a word to memory using a base register and the data.
  *
  * MEMORY[REGISTERS[FIRST] + OFFSET] = REGISTERS[SECOND]
- * @param isa the instruction set architecture.
- * @param regs the registers.
- * @param mem the memory.
- * @param interrupt interrupt.
+ * @param CPU& cpu.
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update storeri(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
-               Instruction inst)
+Update storeri(CPU& cpu, Instruction inst)
 {
-  mem.set_word(regs[REGISTER(inst.second)] + inst.offset,
-               regs[REGISTER(inst.first)]);
+  cpu.set_mem(cpu.get_reg(inst.second) + inst.offset, cpu.get_reg(inst.first));
 
   return UpdatePC;
 }
@@ -238,40 +193,32 @@ Update storeri(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
 
 /**
  * Move the content of the register to the top of the stack.
- * @param isa the instruction set architecture.
- * @param regs the registers.
- * @param mem the memory.
- * @param interrupt interrupt.
+ * @param CPU& cpu.
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update push(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
-            Instruction inst)
+Update push(CPU& cpu, Instruction inst)
 {
   // Save the register in the top of the stack
-  mem.set_word(regs[REGISTER_STP], regs[REGISTER(inst.first)]);
+  cpu.set_mem(cpu.get_reg(REGISTER_STP), cpu.get_reg(inst.first));
   // Update stack pointer
-  regs.set_word(REGISTER_STP, regs[REGISTER_STP] + 4);
+  cpu.set_reg(REGISTER_STP, cpu.get_reg(REGISTER_STP) + 4);
 
   return UpdatePC;
 }
 
 /**
  * Move the top of the stack to a register.
- * @param isa the instruction set architecture.
- * @param regs the registers.
- * @param mem the memory.
- * @param interrupt interrupt.
+ * @param CPU& cpu.
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update pop(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
-           Instruction inst)
+Update pop(CPU& cpu, Instruction inst)
 {
   // Update stack pointer
-  regs.set_word(REGISTER_STP, regs[REGISTER_STP] - 4);
+  cpu.set_reg(REGISTER_STP, cpu.get_reg(REGISTER_STP) - 4);
   // Restore the register
-  regs.set_word(REGISTER(inst.first), mem[regs[REGISTER_STP]]);
+  cpu.set_reg(inst.first, cpu.get_mem(cpu.get_reg(REGISTER_STP)));
 
   return UpdatePC;
 }

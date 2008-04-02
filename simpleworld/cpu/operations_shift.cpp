@@ -5,7 +5,7 @@
  * begin:     Sat, 11 Nov 2006 19:15:19 +0100
  * last:      $Date$
  *
- *  Copyright (C) 2006-2007  Xosé Otero <xoseotero@users.sourceforge.net>
+ *  Copyright (C) 2006-2008  Xosé Otero <xoseotero@users.sourceforge.net>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -32,18 +32,13 @@ namespace CPU
  * Logic shift left.
  *
  * Move the bits X positions to the left inserting zeros on the right.
- * @param isa the instruction set architecture.
- * @param regs the registers.
- * @param mem the memory.
- * @param interrupt interrupt.
+ * @param cpu the CPU.
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update sll(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
-           Instruction inst)
+Update sll(CPU& cpu, Instruction inst)
 {
-  regs.set_word(REGISTER(inst.first),
-                regs[REGISTER(inst.second)] << regs[REGISTER(inst.data)]);
+  cpu.set_reg(inst.first, cpu.get_reg(inst.second) << cpu.get_reg(inst.data));
 
   return UpdatePC;
 }
@@ -52,18 +47,13 @@ Update sll(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
  * Logic shift left.
  *
  * Move the bits X positions to the left inserting zeros on the right.
- * @param isa the instruction set architecture.
- * @param regs the registers.
- * @param mem the memory.
- * @param interrupt interrupt.
+ * @param cpu the CPU.
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update slli(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
-            Instruction inst)
+Update slli(CPU& cpu, Instruction inst)
 {
-  regs.set_word(REGISTER(inst.first),
-                regs[REGISTER(inst.second)] << inst.data);
+  cpu.set_reg(inst.first, cpu.get_reg(inst.second) << inst.data);
 
   return UpdatePC;
 }
@@ -72,18 +62,13 @@ Update slli(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
  * Logic shift right.
  *
  * Move the bits X positions to the right inserting zeros on the left.
- * @param isa the instruction set architecture.
- * @param regs the registers.
- * @param mem the memory.
- * @param interrupt interrupt.
+ * @param cpu the CPU.
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update srl(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
-           Instruction inst)
+Update srl(CPU& cpu, Instruction inst)
 {
-  regs.set_word(REGISTER(inst.first),
-                regs[REGISTER(inst.second)] >> regs[REGISTER(inst.data)]);
+  cpu.set_reg(inst.first, cpu.get_reg(inst.second) >> cpu.get_reg(inst.data));
 
   return UpdatePC;
 }
@@ -92,18 +77,13 @@ Update srl(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
  * Logic shift right.
  *
  * Move the bits X positions to the right inserting zeros on the left.
- * @param isa the instruction set architecture.
- * @param regs the registers.
- * @param mem the memory.
- * @param interrupt interrupt.
+ * @param cpu the CPU.
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update srli(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
-            Instruction inst)
+Update srli(CPU& cpu, Instruction inst)
 {
-  regs.set_word(REGISTER(inst.first),
-                regs[REGISTER(inst.second)] >> inst.data);
+  cpu.set_reg(inst.first, cpu.get_reg(inst.second) >> inst.data);
 
   return UpdatePC;
 }
@@ -112,18 +92,13 @@ Update srli(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
  * Arithmetic shift left.
  *
  * Same as logic shift left.
- * @param isa the instruction set architecture.
- * @param regs the registers.
- * @param mem the memory.
- * @param interrupt interrupt.
+ * @param cpu the CPU.
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update sla(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
-           Instruction inst)
+Update sla(CPU& cpu, Instruction inst)
 {
-  regs.set_word(REGISTER(inst.first),
-                regs[REGISTER(inst.second)] << regs[REGISTER(inst.data)]);
+  cpu.set_reg(inst.first, cpu.get_reg(inst.second) << cpu.get_reg(inst.data));
 
   return UpdatePC;
 }
@@ -132,18 +107,13 @@ Update sla(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
  * Arithmetic shift left.
  *
  * Same as logic shift left.
- * @param isa the instruction set architecture.
- * @param regs the registers.
- * @param mem the memory.
- * @param interrupt interrupt.
+ * @param cpu the CPU.
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update slai(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
-            Instruction inst)
+Update slai(CPU& cpu, Instruction inst)
 {
-  regs.set_word(REGISTER(inst.first),
-                regs[REGISTER(inst.second)] << inst.data);
+  cpu.set_reg(inst.first, cpu.get_reg(inst.second) << inst.data);
 
   return UpdatePC;
 }
@@ -152,20 +122,15 @@ Update slai(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
  * Arithmetic shift right.
  *
  * Same as logic shift right but performing sign extension.
- * @param isa the instruction set architecture.
- * @param regs the registers.
- * @param mem the memory.
- * @param interrupt interrupt.
+ * @param cpu the CPU.
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update sra(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
-           Instruction inst)
+Update sra(CPU& cpu, Instruction inst)
 {
-  Uint32 sign = regs[REGISTER(inst.second)] & 0x80000000;
-  regs.set_word(REGISTER(inst.first),
-                (regs[REGISTER(inst.second)] >>
-                 regs[REGISTER(inst.data)]) | sign);
+  Uint32 sign = cpu.get_reg(inst.second) & 0x80000000;
+  cpu.set_reg(inst.first,
+              (cpu.get_reg(inst.second) >> cpu.get_reg(inst.data)) | sign);
 
   return UpdatePC;
 }
@@ -174,19 +139,14 @@ Update sra(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
  * Arithmetic shift right.
  *
  * Same as logic shift right but performing sign extension.
- * @param isa the instruction set architecture.
- * @param regs the registers.
- * @param mem the memory.
- * @param interrupt interrupt.
+ * @param cpu the CPU.
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update srai(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
-            Instruction inst)
+Update srai(CPU& cpu, Instruction inst)
 {
-  Uint32 sign = regs[REGISTER(inst.second)] & 0x80000000;
-  regs.set_word(REGISTER(inst.first),
-                (regs[REGISTER(inst.second)] >> inst.data) | sign);
+  Uint32 sign = cpu.get_reg(inst.second) & 0x80000000;
+  cpu.set_reg(inst.first, (cpu.get_reg(inst.second) >> inst.data) | sign);
 
   return UpdatePC;
 }
@@ -195,20 +155,16 @@ Update srai(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
  * Rotate left.
  *
  * Same as logic shift left but inserting the removed bits on the right.
- * @param isa the instruction set architecture.
- * @param regs the registers.
- * @param mem the memory.
- * @param interrupt interrupt.
+ * @param cpu the CPU.
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update rl(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
-          Instruction inst)
+Update rl(CPU& cpu, Instruction inst)
 {
-  regs.set_word(REGISTER(inst.first),
-                regs[REGISTER(inst.second)] << regs[REGISTER(inst.data)] |
-                regs[REGISTER(inst.second)] >>
-                (32 - (regs[REGISTER(inst.data)] % 32)));
+  cpu.set_reg(inst.first,
+              cpu.get_reg(inst.second) << cpu.get_reg(inst.data) |
+              cpu.get_reg(inst.second) >> (32 -
+                                           (cpu.get_reg(inst.data) % 32)));
 
   return UpdatePC;
 }
@@ -217,19 +173,15 @@ Update rl(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
  * Rotate left.
  *
  * Same as logic shift left but inserting the removed bits on the right.
- * @param isa the instruction set architecture.
- * @param regs the registers.
- * @param mem the memory.
- * @param interrupt interrupt.
+ * @param cpu the CPU.
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update rli(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
-           Instruction inst)
+Update rli(CPU& cpu, Instruction inst)
 {
-  regs.set_word(REGISTER(inst.first),
-                regs[REGISTER(inst.second)] << inst.data |
-                regs[REGISTER(inst.second)] >> (32 - (inst.data % 32)));
+  cpu.set_reg(inst.first,
+              cpu.get_reg(inst.second) << inst.data |
+              cpu.get_reg(inst.second) >> (32 - (inst.data % 32)));
 
   return UpdatePC;
 }
@@ -238,20 +190,16 @@ Update rli(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
  * Rotate right.
  *
  * Same as logic shift right but inserting the removed bits on the left.
- * @param isa the instruction set architecture.
- * @param regs the registers.
- * @param mem the memory.
- * @param interrupt interrupt.
+ * @param cpu the CPU.
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update rr(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
-          Instruction inst)
+Update rr(CPU& cpu, Instruction inst)
 {
-  regs.set_word(REGISTER(inst.first),
-                regs[REGISTER(inst.second)] >> regs[REGISTER(inst.data)] |
-                regs[REGISTER(inst.second)] <<
-                (32 - (regs[REGISTER(inst.data)] % 32)));
+  cpu.set_reg(inst.first,
+              cpu.get_reg(inst.second) >> cpu.get_reg(inst.data) |
+              cpu.get_reg(inst.second) << (32 -
+                                           (cpu.get_reg(inst.data) % 32)));
 
   return UpdatePC;
 }
@@ -260,19 +208,15 @@ Update rr(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
  * Rotate right.
  *
  * Same as logic shift right but inserting the removed bits on the left.
- * @param isa the instruction set architecture.
- * @param regs the registers.
- * @param mem the memory.
- * @param interrupt interrupt.
+ * @param cpu the CPU.
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update rri(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
-           Instruction inst)
+Update rri(CPU& cpu, Instruction inst)
 {
-  regs.set_word(REGISTER(inst.first),
-                regs[REGISTER(inst.second)] >> inst.data |
-                regs[REGISTER(inst.second)] << (32 - (inst.data % 32)));
+  cpu.set_reg(inst.first,
+              cpu.get_reg(inst.second) >> inst.data |
+              cpu.get_reg(inst.second) << (32 - (inst.data % 32)));
 
   return UpdatePC;
 }

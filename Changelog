@@ -4,6 +4,8 @@ Simple World 1.0b1:
 	* Change in mutations: replace the permutation of a word by the change
 	  of a word.
 	* Update to database version 2.
+	* Convert the itp register to cs (control & status) register, which
+	  has 16 bits for the itp.
 	* Make the jumps of the branch and function operations relative to
 	  the pc.
 

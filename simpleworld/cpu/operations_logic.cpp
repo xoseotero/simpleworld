@@ -5,7 +5,7 @@
  * begin:     Sat, 11 Nov 2006 19:15:19 +0100
  * last:      $Date$
  *
- *  Copyright (C) 2006-2007  Xosé Otero <xoseotero@users.sourceforge.net>
+ *  Copyright (C) 2006-2008  Xosé Otero <xoseotero@users.sourceforge.net>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -32,17 +32,13 @@ namespace CPU
  * NOT of a register.
  *
  * REGISTERS[FIRST] = ~REGISTERS[SECOND]
- * @param isa the instruction set architecture.
  * @param regs the registers.
- * @param mem the memory.
- * @param interrupt interrupt.
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update lnot(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
-            Instruction inst)
+Update lnot(CPU& cpu, Instruction inst)
 {
-  regs.set_word(REGISTER(inst.first), ~ regs[REGISTER(inst.second)]);
+  cpu.set_reg(inst.first, ~ cpu.get_reg(inst.second));
 
   return UpdatePC;
 }
@@ -51,18 +47,13 @@ Update lnot(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
  * OR of two registers.
  *
  * REGISTERS[FIRST] = REGISTERS[SECOND] | REGISTERS[ADDRESS]
- * @param isa the instruction set architecture.
- * @param regs the registers.
- * @param mem the memory.
- * @param interrupt interrupt.
+ * @param cpu the CPU.
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update lor(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
-           Instruction inst)
+Update lor(CPU& cpu, Instruction inst)
 {
-  regs.set_word(REGISTER(inst.first),
-                regs[REGISTER(inst.second)] | regs[REGISTER(inst.data)]);
+  cpu.set_reg(inst.first, cpu.get_reg(inst.second) | cpu.get_reg(inst.data));
 
   return UpdatePC;
 }
@@ -71,18 +62,13 @@ Update lor(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
  * OR of a register and the data.
  *
  * REGISTERS[FIRST] = REGISTERS[SECOND] | ADDRESS
- * @param isa the instruction set architecture.
- * @param regs the registers.
- * @param mem the memory.
- * @param interrupt interrupt.
+ * @param cpu the CPU.
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update lori(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
-            Instruction inst)
+Update lori(CPU& cpu, Instruction inst)
 {
-  regs.set_word(REGISTER(inst.first),
-                regs[REGISTER(inst.second)] | inst.data);
+  cpu.set_reg(inst.first, cpu.get_reg(inst.second) | inst.data);
 
   return UpdatePC;
 }
@@ -91,18 +77,13 @@ Update lori(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
  * AND of two registers.
  *
  * REGISTERS[FIRST] = REGISTERS[SECOND] & REGISTERS[ADDRESS]
- * @param isa the instruction set architecture.
- * @param regs the registers.
- * @param mem the memory.
- * @param interrupt interrupt.
+ * @param cpu the CPU.
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update land(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
-            Instruction inst)
+Update land(CPU& cpu, Instruction inst)
 {
-  regs.set_word(REGISTER(inst.first),
-                regs[REGISTER(inst.second)] & regs[REGISTER(inst.data)]);
+  cpu.set_reg(inst.first, cpu.get_reg(inst.second) & cpu.get_reg(inst.data));
 
   return UpdatePC;
 }
@@ -111,18 +92,13 @@ Update land(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
  * AND of a register and the data.
  *
  * REGISTERS[FIRST] = REGISTERS[SECOND] & ADDRESS
- * @param isa the instruction set architecture.
- * @param regs the registers.
- * @param mem the memory.
- * @param interrupt interrupt.
+ * @param cpu the CPU.
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update landi(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
-             Instruction inst)
+Update landi(CPU& cpu, Instruction inst)
 {
-  regs.set_word(REGISTER(inst.first),
-                regs[REGISTER(inst.second)] & inst.data);
+  cpu.set_reg(inst.first, cpu.get_reg(inst.second) & inst.data);
 
   return UpdatePC;
 }
@@ -131,18 +107,13 @@ Update landi(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
  * EXOR of two registers.
  *
  * REGISTERS[FIRST] = REGISTERS[SECOND] ^ REGISTERS[ADDRESS]
- * @param isa the instruction set architecture.
- * @param regs the registers.
- * @param mem the memory.
- * @param interrupt interrupt.
+ * @param cpu the CPU.
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update lxor(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
-            Instruction inst)
+Update lxor(CPU& cpu, Instruction inst)
 {
-  regs.set_word(REGISTER(inst.first),
-                regs[REGISTER(inst.second)] ^ regs[REGISTER(inst.data)]);
+  cpu.set_reg(inst.first, cpu.get_reg(inst.second) ^ cpu.get_reg(inst.data));
 
   return UpdatePC;
 }
@@ -151,18 +122,13 @@ Update lxor(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
  * EXOR of a register and the data.
  *
  * REGISTERS[FIRST] = REGISTERS[SECOND] ^ ADDRESS
- * @param isa the instruction set architecture.
- * @param regs the registers.
- * @param mem the memory.
- * @param interrupt interrupt.
+ * @param cpu the CPU.
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update lxori(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
-             Instruction inst)
+Update lxori(CPU& cpu, Instruction inst)
 {
-  regs.set_word(REGISTER(inst.first),
-                regs[REGISTER(inst.second)] ^ inst.data);
+  cpu.set_reg(inst.first, cpu.get_reg(inst.second) ^ inst.data);
 
   return UpdatePC;
 }

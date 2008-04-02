@@ -1,6 +1,6 @@
 /**
  * @file simpleworld/cpu/instruction.cpp
- * Struct of a instruction.
+ * A instruction.
  *
  * begin:     Wed, 08 Nov 2006 16:29:51 +0100
  * last:      $Date$
@@ -21,8 +21,6 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <boost/format.hpp>
-
 #include <simpleworld/config.hpp>
 
 #include "word.hpp"
@@ -34,24 +32,39 @@ namespace CPU
 {
 
 /**
+ * Default constructor.
+ */
+Instruction::Instruction()
+{
+}
+
+/**
+ * Constructor that decodes a word (in big endian).
+ * @param word word to decode (in big endian).
+ */
+Instruction::Instruction(Word word)
+{
+  this->decode(word);
+}
+
+
+/**
  * Encode the instruction to a Word (in big endian).
- * @param instruction instruction to encode.
  * @return the instruction encoded.
  */
-Word Instruction::encode(const Instruction& instruction)
+Word Instruction::encode() const
 {
   Word word;
 
-  set_byte(&word, 0, instruction.code);
-  set_byte(&word, 1, static_cast<Uint8>(instruction.first << 4 |
-                                        instruction.second));
+  set_byte(&word, 0, this->code);
+  set_byte(&word, 1, static_cast<Uint8>(this->first << 4 | this->second));
 
 #ifdef IS_BIG_ENDIAN
-  set_byte(&word, 2, get_byte(static_cast<Word>(instruction.data), 2));
-  set_byte(&word, 3, get_byte(static_cast<Word>(instruction.data), 3));
+  set_byte(&word, 2, get_byte(static_cast<Word>(this->data), 2));
+  set_byte(&word, 3, get_byte(static_cast<Word>(this->data), 3));
 #else
-  set_byte(&word, 2, get_byte(static_cast<Word>(instruction.data), 1));
-  set_byte(&word, 3, get_byte(static_cast<Word>(instruction.data), 0));
+  set_byte(&word, 2, get_byte(static_cast<Word>(this->data), 1));
+  set_byte(&word, 3, get_byte(static_cast<Word>(this->data), 0));
 #endif
 
   return word;
@@ -60,27 +73,22 @@ Word Instruction::encode(const Instruction& instruction)
 /**
  * Decode the instruction (in big endian).
  * @param word word to decode (in big endian).
- * @return the instruction decoded.
  */
-Instruction Instruction::decode(Word word)
+void Instruction::decode(Word word)
 {
-  Instruction instruction;
+  this->code = get_byte(word, 0);
+  this->first = get_byte(word, 1) >> 4;
+  this->second = get_byte(word, 1) & 0x0f;
 
-  instruction.code = get_byte(word, 0);
-  instruction.first = get_byte(word, 1) >> 4;
-  instruction.second = get_byte(word, 1) & 0x0f;
-
+  Word data = static_cast<Word>(this->data);
 #ifdef IS_BIG_ENDIAN
-  set_byte(&instruction.data, 0, get_byte(word, 2));
-  set_byte(&instruction.data, 1, get_byte(word, 3));
+  set_byte(&data, 2, get_byte(word, 2));
+  set_byte(&data, 3, get_byte(word, 3));
 #else
-  set_byte(reinterpret_cast<Word*>(&instruction.data), 0,
-           get_byte(word, 3));
-  set_byte(reinterpret_cast<Word*>(&instruction.data), 1,
-           get_byte(word, 2));
+  set_byte(&data, 0, get_byte(word, 3));
+  set_byte(&data, 1, get_byte(word, 2));
 #endif
-
-  return instruction;
+  this->data = data;
 }
 
 }

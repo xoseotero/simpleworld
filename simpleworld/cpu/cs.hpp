@@ -1,11 +1,11 @@
 /**
- * @file simpleworld/cpu/instruction.hpp
- * A instruction.
+ * @file simpleworld/cpu/cs.hpp
+ * Control & Status register.
  *
- * begin:     Wed, 08 Nov 2006 16:29:51 +0100
+ * begin:     Mon, 17 Mar 2008 10:18:20 +0100
  * last:      $Date$
  *
- *  Copyright (C) 2006-2007  Xosé Otero <xoseotero@users.sourceforge.net>
+ *  Copyright (C) 2008  Xosé Otero <xoseotero@users.sourceforge.net>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -21,11 +21,22 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef SIMPLEWORLD_CPU_INSTRUCTION_HPP
-#define SIMPLEWORLD_CPU_INSTRUCTION_HPP
+#ifndef SIMPLEWORLD_CPU_CS_HPP
+#define SIMPLEWORLD_CPU_CS_HPP
 
 #include <simpleworld/ints.hpp>
 #include <simpleworld/cpu/types.hpp>
+
+// flags for specific bits
+#ifdef IS_BIG_ENDIAN
+#define ENABLE_FLAG    0x00000080
+#define INTERRUPT_FLAG 0x00000040
+#define MAXINTS_MASK   0x0000000F
+#else // IS_BIG_ENDIAN
+#define ENABLE_FLAG    0x80000000
+#define INTERRUPT_FLAG 0x40000000
+#define MAXINTS_MASK   0x0F000000
+#endif // IS_BIG_ENDIAN
 
 namespace SimpleWorld
 {
@@ -33,54 +44,45 @@ namespace CPU
 {
 
 /**
- * A instruction.
+ * Control & Status register.
  */
-class Instruction
+class CS
 {
 public:
   /**
    * Default constructor.
    */
-  Instruction();
+  CS();
 
   /**
    * Constructor that decodes a word (in big endian).
    * @param word word to decode (in big endian).
    */
-  Instruction(Word word);
+  CS(Word word);
 
 
   /**
-   * Encode the instruction to a Word (in big endian).
-   * @return the instruction encoded.
+   * Encode the data to a Word (in big endian).
+   * @return the data encoded.
    */
   Word encode() const;
 
   /**
-   * Decode the instruction (in big endian).
+   * Decode the  (in big endian).
    * @param word word to decode (in big endian).
    */
   void decode(Word word);
 
 
   // data
-  Uint8 code;                   /**< Code of the instruction */
+  Uint16 itp;                   /**< Interrupt Table Pointer */
 
-  Uint8 first:4;                /**< First operand of the operation (destiny) */
-  Uint8 second:4;               /**< Second operand of the operation
-                                     (first source) */
-
-  union {
-    // third is not defined because I don't know how the data is aligned in
-    // all the CPUs/compilers
-    // Uint8 third:4;
-    Uint16 data;                /**< Data or third operand of the operation
-                                     (second source) */
-    Offset offset;              /**< Memory offset */
-  };
+  bool enable;                  /**< Interrupt enabled */
+  bool interrupt;               /**< Interrupt found */
+  Uint8 max_interrupts:4;       /**< Maximun number of interrupts */
 };
 
 }
 }
 
-#endif // SIMPLEWORLD_CPU_INSTRUCTION_HPP
+#endif // SIMPLEWORLD_CPU_CS_HPP

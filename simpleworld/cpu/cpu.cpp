@@ -6,7 +6,7 @@
  * begin:     Mon, 06 Nov 2006 13:39:29 +0100
  * last:      $Date$
  *
- *  Copyright (C) 2006-2007  Xosé Otero <xoseotero@users.sourceforge.net>
+ *  Copyright (C) 2006-2008  Xosé Otero <xoseotero@users.sourceforge.net>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -30,7 +30,11 @@
 #include "codeerror.hpp"
 #include "memoryerror.hpp"
 #include "cpu.hpp"
+#include "cs.hpp"
 #include "operations.hpp"
+
+// Address of nth element in the memory
+#define ADDRESS(n) ((n) * sizeof(Word))
 
 namespace SimpleWorld
 {
@@ -44,8 +48,7 @@ namespace CPU
  * @param memory memory of the CPU.
  */
 CPU::CPU(Memory* registers, Memory* memory)
-  : registers_(registers), memory_(memory),
-    interrupt_request_(false), running_(true)
+  : registers_(registers), memory_(memory), running_(true)
 {
   // 16 registers
   static const Address min_size = sizeof(Word) * 16;
@@ -67,14 +70,14 @@ CPU::CPU(Memory* registers, Memory* memory)
   this->isa_.add_register(0xc, "r12");
   this->isa_.add_register(0xd, "pc");
   this->isa_.add_register(0xe, "stp");
-  this->isa_.add_register(0xf, "itp");
+  this->isa_.add_register(0xf, "cs");
 
   // Interrupts
-  this->isa_.add_interrupt(0x0, "TimerInterrupt", false);
-  this->isa_.add_interrupt(0x1, "SoftwareInterrupt", true);
-  this->isa_.add_interrupt(0x2, "InvalidInstruction", true);
-  this->isa_.add_interrupt(0x3, "InvalidMemoryLocation", true);
-  this->isa_.add_interrupt(0x4, "DivisionByZero", true);
+  this->isa_.add_interrupt(INTERRUPT_TIMER, "TimerInterrupt", false);
+  this->isa_.add_interrupt(INTERRUPT_SOFTWARE, "SoftwareInterrupt", true);
+  this->isa_.add_interrupt(INTERRUPT_INSTRUCTION, "InvalidInstruction", true);
+  this->isa_.add_interrupt(INTERRUPT_MEMORY, "InvalidMemoryLocation", true);
+  this->isa_.add_interrupt(INTERRUPT_DIVISION, "DivisionByZero", true);
 
   // Instructions
   // Management operations
@@ -116,7 +119,8 @@ CPU::CPU(Memory* registers, Memory* memory)
 
   // Function operations
   this->isa_.add_instruction(0x30, "call", 0, true, call);
-  this->isa_.add_instruction(0x31, "int", 0, true, interrupt);
+  this->isa_.add_instruction(0x31, "int", 0, true,
+                             ::SimpleWorld::CPU::interrupt);
   this->isa_.add_instruction(0x34, "ret", 0, false, ret);
   this->isa_.add_instruction(0x35, "reti", 0, false, reti);
 
@@ -201,17 +205,6 @@ void CPU::next()
   if (not this->running_)
     throw EXCEPTION(CPUException, "CPU stopped");
 
-  if (this->interrupt_request_) {
-#ifdef DEBUG
-    std::cout << boost::str(boost::format("\
-Interrupt info:\tcode: 0x%02x, name: %s")
-                            % static_cast<int>(this->interrupt_.code)
-                            % this->isa_.interrupt_info(this->interrupt_.code).name)
-                            << std::endl;
-#endif
-    this->interrupt_handler_();
-  }
-
   Instruction instruction;
   try {
     instruction = this->fetch_instruction_();
@@ -226,16 +219,14 @@ Instruction info:\tcode: 0x%02x, name: %s, nregs: %d, has_i: %d")
                             << std::endl;
 #endif
 
-    switch (info.func(this->isa_, *this->registers_, *this->memory_,
-                      this->interrupt_, instruction)) {
+    switch (info.func(*this, instruction)) {
     case UpdatePC:
       // Update PC
-      this->registers_->set_word(REGISTER_PC,
-                                 this->registers_->get_word(REGISTER_PC) + 4);
+      this->registers_->set_word(ADDRESS(REGISTER_PC),
+                                 this->registers_->get_word(ADDRESS(REGISTER_PC)) + 4);
       break;
     case UpdateInterrupt:
       // Throw a interrupt
-      this->interrupt_request_ = true;
       break;
     case UpdateStop:
       this->running_ = false;
@@ -244,44 +235,141 @@ Instruction info:\tcode: 0x%02x, name: %s, nregs: %d, has_i: %d")
       break;
     }
   } catch (const CodeError& exc) {
-    // Prepare the interrupt
-    this->interrupt_request_ = true;
-
-    Word code =
-      static_cast<Word>(this->isa_.interrupt_code("InvalidInstruction"));
-    this->interrupt_.code = this->interrupt_.r0 = code;
-    this->interrupt_.r1 = this->memory_->get_word(REGISTER_PC);
-    this->interrupt_.r2 = static_cast<Word>(instruction.code);
+    this->interrupt(INTERRUPT_INSTRUCTION,
+                    this->memory_->get_word(ADDRESS(REGISTER_PC)),
+                    instruction.code);
   } catch (const MemoryError& exc) {
-    // Prepare the interrupt
-    this->interrupt_request_ = true;
-
-    Uint8 code =
-      static_cast<Word>(this->isa_.interrupt_code("InvalidMemoryLocation"));
-    this->interrupt_.code = this->interrupt_.r0 = code;
+    // The pc could be out of range
     try {
-      // The pc could be out of range
-      this->interrupt_.r1 = this->memory_->get_word(REGISTER_PC);
+      this->interrupt(INTERRUPT_MEMORY,
+                      this->memory_->get_word(ADDRESS(REGISTER_PC)),
+                      instruction.data);
     } catch (const MemoryError& exc) {
       // Set the instruction as 0.
       // This is a value that can't raise a exception, because is a "stop",
       // so the code can know that the pc was out of range.
-      this->interrupt_.r1 = 0;
+      this->interrupt(INTERRUPT_MEMORY,
+                      0,
+                      instruction.data);
     }
-      this->interrupt_.r2 = static_cast<Word>(instruction.data);
   }
 }
 
+
+/**
+ * Get the value of a register.
+ * @param reg the register.
+ * @param system_endian if the address must be in the system endianness
+ * @return the value of the register.
+ */
+Word CPU::get_reg(Uint8 reg, bool system_endian) const
+{
+  return this->registers_->get_word(ADDRESS(reg), system_endian);
+}
+
+/**
+ * Set the value of a register.
+ * @param reg the register.
+ * @param word the new value.
+ * @param system_endian if the address must be in the system endianness
+ */
+void CPU::set_reg(Uint8 reg, Word word, bool system_endian)
+{
+  this->registers_->set_word(ADDRESS(reg), word, system_endian); 
+}
+
+/**
+ * Get the value of a address of memory.
+ * @param addr the address of the memory.
+ * @param system_endian if the address must be in the system endianness
+ * @return the value of the address of memory.
+ */
+Word CPU::get_mem(Address addr, bool system_endian) const
+{
+  return this->memory_->get_word(addr, system_endian);
+}
+
+/**
+ * Set the value of a address of memory.
+ * @param addr the address of the memory.
+ * @param word the new value.
+ * @param system_endian if the address must be in the system endianness
+ */
+void CPU::set_mem(Address addr, Word word, bool system_endian)
+{
+  this->memory_->set_word(addr, word, system_endian);
+}
+
+
+/**
+ * Throw a interrupt.
+ * @param code the ode of the interrupt.
+ * @param r1 the word stored in r1.
+ * @param r2 the word stored in r2.
+ */
+void CPU::interrupt(Uint8 code, Word r1, Word r2)
+{
+  // Update pc if the interrupt is thrown by a instruction.
+  if (this->isa_.interrupt_info(code).thrown_by_inst)
+    this->registers_->set_word(ADDRESS(REGISTER_PC),
+                               this->registers_->get_word(ADDRESS(REGISTER_PC)) + 4);
+
+
+  if (not this->interrupt_enabled(code)) {
+#ifdef DEBUG
+    std::cout << boost::str(boost::format("\
+Interrupt couldn't be thrown:\tcode: 0x%02x, name: %s")
+                            % static_cast<int>(code)
+                            % this->isa_.interrupt_info(code).name)
+                            << std::endl;
+#endif
+
+    return;
+  }
+
+#ifdef DEBUG
+  std::cout << boost::str(boost::format("\
+Interrupt thrown:\tcode: 0x%02x, name: %s")
+                          % static_cast<int>(code)
+                          % this->isa_.interrupt_info(code).name)
+            << std::endl;
+#endif
+
+  CS cs(this->registers_->get_word(ADDRESS(REGISTER_CS), false));
+  Word handler = this->memory_->get_word(cs.itp + ADDRESS(code));
+
+  // Save all the registers in the stack
+  Sint8 i;
+  for (i = 0; i < 16; i++) {
+    // Store a register:
+    // Save the register in the top of the stack
+    this->memory_->set_word(this->registers_->get_word(ADDRESS(REGISTER_STP)),
+                            this->registers_->get_word(ADDRESS(i)));
+    // Update stack pointer
+    this->registers_->set_word(ADDRESS(REGISTER_STP),
+                               this->registers_->get_word(ADDRESS(REGISTER_STP)) + 4);
+  }
+
+  // Store the information of the interrupt
+  this->registers_->set_word(ADDRESS(0), code);
+  this->registers_->set_word(ADDRESS(1), r1);
+  this->registers_->set_word(ADDRESS(2), r2);
+
+  // Update the PC with the interrupt handler location
+  this->registers_->set_word(ADDRESS(REGISTER_PC), handler);
+
+  // Update the cs register
+  cs.interrupt = true;
+  cs.max_interrupts--;
+  this->registers_->set_word(ADDRESS(REGISTER_CS), cs.encode(), false);
+}
 
 /**
  * Throw the Timer Interrupt.
  */
 void CPU::timer_interrupt()
 {
-  this->interrupt_request_ = true;
-
-  Word code = static_cast<Word>(this->isa_.interrupt_code("TimerInterrupt"));
-  this->interrupt_.code = this->interrupt_.r0 = code;
+  this->interrupt(INTERRUPT_TIMER);
 }
 
 
@@ -294,11 +382,12 @@ Instruction CPU::fetch_instruction_() const
 {
 #ifdef DEBUG
   std::cout << boost::str(boost::format("Instruction[0x%08x]: 0x%08x")
-    % this->registers_->get_word(REGISTER_PC)
-    % this->memory_->get_word(this->registers_->get_word(REGISTER_PC), false))
+    % this->registers_->get_word(ADDRESS(REGISTER_PC))
+    % this->memory_->get_word(this->registers_->get_word(ADDRESS(REGISTER_PC)),
+                              false))
     << std::endl;
 #endif
-  return Instruction::decode(this->memory_->get_word(this->registers_->get_word(REGISTER_PC), false));
+  return Instruction(this->memory_->get_word(this->registers_->get_word(ADDRESS(REGISTER_PC)), false));
 }
 
 
@@ -310,62 +399,9 @@ Instruction CPU::fetch_instruction_() const
  */
 bool CPU::interrupt_enabled(Uint8 code) const
 {
-  Word itp;
-  return (itp = this->registers_->get_word(REGISTER_ITP)) != 0 and
-    this->memory_->get_word(itp + code * sizeof(Word)) != 0;
-}
-
-
-/**
- * Handle the interrupt.
- */
-void CPU::interrupt_handler_()
-{
-  if (not this->interrupt_request_)
-    return;
-
-  if (this->interrupt_enabled(this->interrupt_.code)) {
-    Word itp = this->registers_->get_word(REGISTER_ITP);
-    Word handler = this->memory_->get_word(itp + this->interrupt_.code *
-                                           sizeof(Word));
-#ifdef DEBUG
-    std::cout << boost::str(boost::format("\
-Interrupt 0x%02x handled")
-                            % static_cast<int>(this->interrupt_.code))
-              << std::endl;
-#endif
-
-    // Save all the registers in the stack
-    Sint8 i;
-    for (i = 0; i < 16; i++) {
-      // Store a register:
-      // Save the register in the top of the stack
-      this->memory_->set_word(this->registers_->get_word(REGISTER_STP),
-                              this->registers_->get_word(REGISTER(i)));
-      // Update stack pointer
-      this->registers_->set_word(REGISTER_STP,
-                                 this->registers_->get_word(REGISTER_STP) + 4);
-    }
-
-    // Store the information of the interrupt
-    this->registers_->set_word(REGISTER(0), this->interrupt_.r0);
-    this->registers_->set_word(REGISTER(1), this->interrupt_.r1);
-    this->registers_->set_word(REGISTER(2), this->interrupt_.r2);
-
-    // Update the PC with the interrupt handler location
-    this->registers_->set_word(REGISTER_PC, handler);
-  } else if (this->isa_.interrupt_info(this->interrupt_.code).thrown_by_inst) {
-    // Update PC to avoid a loop when a interrupt not handled is found.
-    // The interrupt is not handler, so a call to reti isn't executed
-    // and the pc isn't updated.
-    // This is only needed if the interrupt is raised by a instruction
-    // in the code.
-    this->registers_->set_word(REGISTER_PC,
-                               this->registers_->get_word(REGISTER_PC) + 4);
-  }
-
-  // Clear the interrupt request
-  this->interrupt_request_ = false;
+  CS cs(this->registers_->get_word(ADDRESS(REGISTER_CS), false));
+  Word handler = this->memory_->get_word(cs.itp + ADDRESS(code));
+  return (cs.enable and cs.max_interrupts > 0 and handler != 0);
 }
 
 }

@@ -6,7 +6,7 @@
  * begin:     Mon, 06 Nov 2006 13:39:29 +0100
  * last:      $Date$
  *
- *  Copyright (C) 2006-2007  Xosé Otero <xoseotero@users.sourceforge.net>
+ *  Copyright (C) 2006-2008  Xosé Otero <xoseotero@users.sourceforge.net>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -32,7 +32,6 @@
 #include <simpleworld/cpu/memory.hpp>
 #include <simpleworld/cpu/instruction.hpp>
 #include <simpleworld/cpu/isa.hpp>
-#include <simpleworld/cpu/interrupt.hpp>
 
 namespace SimpleWorld
 {
@@ -107,6 +106,48 @@ public:
   virtual void next();
 
 
+  // Basic operations of the CPU
+  /**
+   * Get the value of a register.
+   * @param reg the register.
+   * @param system_endian if the address must be in the system endianness
+   * @return the value of the register.
+   */
+  Word get_reg(Uint8 reg, bool system_endian = true) const;
+
+  /**
+   * Set the value of a register.
+   * @param reg the register.
+   * @param word the new value.
+   * @param system_endian if the address must be in the system endianness
+   */
+  void set_reg(Uint8 reg, Word word, bool system_endian = true);
+
+  /**
+   * Get the value of a address of memory.
+   * @param addr the address of the memory.
+   * @param system_endian if the address must be in the system endianness
+   * @return the value of the address of memory.
+   */
+  Word get_mem(Address addr, bool system_endian = true) const;
+
+  /**
+   * Set the value of a address of memory.
+   * @param addr the address of the memory.
+   * @param word the new value.
+   * @param system_endian if the address must be in the system endianness
+   */
+  void set_mem(Address addr, Word word, bool system_endian = true);
+
+
+  /**
+   * Throw a interrupt.
+   * @param code the ode of the interrupt.
+   * @param r1 the word stored in r1.
+   * @param r2 the word stored in r2.
+   */
+  void interrupt(Uint8 code, Word r1 = 0, Word r2 = 0);
+
   /**
    * Throw the Timer Interrupt.
    */
@@ -117,9 +158,6 @@ protected:
 
   Memory* registers_;
   Memory* memory_;
-
-  bool interrupt_request_;      /**< If a interrupt was thrown. */
-  Interrupt interrupt_;
 
   bool running_;
 
@@ -138,12 +176,6 @@ protected:
    * @exception CPUexception if the interrupt is not found.
    */
   bool interrupt_enabled(Uint8 code) const;
-
-private:
-  /**
-   * Handle the interrupt.
-   */
-  void interrupt_handler_();
 };
 
 }

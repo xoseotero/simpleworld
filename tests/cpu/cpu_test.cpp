@@ -5,7 +5,7 @@
  * begin:     Fri, 30 Nov 2007 18:23:33 +0100
  * last:      $Date$
  *
- *  Copyright (C) 2007  Xosé Otero <xoseotero@users.sourceforge.net>
+ *  Copyright (C) 2007-2008  Xosé Otero <xoseotero@users.sourceforge.net>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -39,8 +39,9 @@ namespace sw = SimpleWorld;
 namespace cpu = SimpleWorld::CPU;
 
 
-#define WORD_ALIGN(value) ((value) * sizeof(cpu::Word))
-#define REGISTER(cpu, name) WORD_ALIGN((cpu).isa().register_code(name))
+// Address of the nth element in the memory
+#define ADDRESS(n) ((n) * sizeof(cpu::Word))
+#define REGISTER(cpu, name) ADDRESS((cpu).isa().register_code(name))
 
 #define CPU_SAVE (TESTOUTPUT "cpu_save.swo")
 
@@ -85,7 +86,42 @@ BOOST_AUTO_TEST_CASE(cpu_initialization)
   BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r12")], 0x0);
   BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "pc")], 0x0);
   BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "stp")], 0x0);
-  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "itp")], 0x0);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "cs")], 0x0);
+}
+
+/**
+ * Check the getters/setters of the registers.
+ */
+BOOST_AUTO_TEST_CASE(cpu_reg)
+{
+  cpu::Memory registers;
+  cpu::CPU cpu(&registers, NULL);
+
+  cpu.set_reg(0, 0x0123ABCD);
+  cpu.set_reg(15, 0x01100110);
+
+  BOOST_CHECK_EQUAL(cpu.get_reg(0), 0x0123ABCD);
+  BOOST_CHECK_EQUAL(cpu.get_reg(0, true), 0x0123ABCD);
+  BOOST_CHECK_EQUAL(cpu.get_reg(0, false), 0xCDAB2301);
+  BOOST_CHECK_EQUAL(cpu.get_reg(15), 0x01100110);
+}
+
+/**
+ * Check the getters/setters of the memory.
+ */
+BOOST_AUTO_TEST_CASE(cpu_mem)
+{
+  cpu::Memory registers;
+  cpu::Memory memory(16 * sizeof(cpu::Word));
+  cpu::CPU cpu(&registers, &memory);
+
+  cpu.set_mem(0, 0x0123ABCD);
+  cpu.set_mem(15, 0x01100110);
+
+  BOOST_CHECK_EQUAL(cpu.get_mem(0), 0x0123ABCD);
+  BOOST_CHECK_EQUAL(cpu.get_mem(0, true), 0x0123ABCD);
+  BOOST_CHECK_EQUAL(cpu.get_mem(0, false), 0xCDAB2301);
+  BOOST_CHECK_EQUAL(cpu.get_mem(15), 0x01100110);
 }
 
 /**
@@ -141,7 +177,7 @@ BOOST_AUTO_TEST_CASE(cpu_management_restart)
   BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r12")], 0x0);
   BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "pc")], 0x0);
   BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "stp")], 0x0);
-  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "itp")], 0x0);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "cs")], 0x0);
 }
 
 /**
@@ -259,10 +295,10 @@ BOOST_AUTO_TEST_CASE(cpu_store)
   cpu::CPU cpu(&registers, &memory);
   cpu.execute(data);
 
-  BOOST_CHECK_EQUAL(memory[WORD_ALIGN(data)], 0x1010);
-  BOOST_CHECK_EQUAL(memory[WORD_ALIGN(data) + 0x4], 0x0f0f);
-  BOOST_CHECK_EQUAL(memory[WORD_ALIGN(data) + 0x8], 0x7777);
-  BOOST_CHECK_EQUAL(memory[WORD_ALIGN(data) + 0xc], 0xffff);
+  BOOST_CHECK_EQUAL(memory[ADDRESS(data)], 0x1010);
+  BOOST_CHECK_EQUAL(memory[ADDRESS(data) + 0x4], 0x0f0f);
+  BOOST_CHECK_EQUAL(memory[ADDRESS(data) + 0x8], 0x7777);
+  BOOST_CHECK_EQUAL(memory[ADDRESS(data) + 0xc], 0xffff);
 }
 
 /**
@@ -449,17 +485,17 @@ BOOST_AUTO_TEST_CASE(cpu_branch)
 
   cpu.execute();
 
-  BOOST_CHECK_EQUAL(memory[WORD_ALIGN(data)], 0x1);
-  BOOST_CHECK_EQUAL(memory[WORD_ALIGN(data) + 0x4], 0x1);
-  BOOST_CHECK_EQUAL(memory[WORD_ALIGN(data) + 0x8], 0x1);
-  BOOST_CHECK_EQUAL(memory[WORD_ALIGN(data) + 0xc], 0x1);
-  BOOST_CHECK_EQUAL(memory[WORD_ALIGN(data) + 0x10], 0x1);
-  BOOST_CHECK_EQUAL(memory[WORD_ALIGN(data) + 0x14], 0x1);
-  BOOST_CHECK_EQUAL(memory[WORD_ALIGN(data) + 0x18], 0x1);
-  BOOST_CHECK_EQUAL(memory[WORD_ALIGN(data) + 0x1c], 0x1);
-  BOOST_CHECK_EQUAL(memory[WORD_ALIGN(data) + 0x20], 0x1);
-  BOOST_CHECK_EQUAL(memory[WORD_ALIGN(data) + 0x24], 0x1);
-  BOOST_CHECK_EQUAL(memory[WORD_ALIGN(data) + 0x28], 0x1);
+  BOOST_CHECK_EQUAL(memory[ADDRESS(data)], 0x1);
+  BOOST_CHECK_EQUAL(memory[ADDRESS(data) + 0x4], 0x1);
+  BOOST_CHECK_EQUAL(memory[ADDRESS(data) + 0x8], 0x1);
+  BOOST_CHECK_EQUAL(memory[ADDRESS(data) + 0xc], 0x1);
+  BOOST_CHECK_EQUAL(memory[ADDRESS(data) + 0x10], 0x1);
+  BOOST_CHECK_EQUAL(memory[ADDRESS(data) + 0x14], 0x1);
+  BOOST_CHECK_EQUAL(memory[ADDRESS(data) + 0x18], 0x1);
+  BOOST_CHECK_EQUAL(memory[ADDRESS(data) + 0x1c], 0x1);
+  BOOST_CHECK_EQUAL(memory[ADDRESS(data) + 0x20], 0x1);
+  BOOST_CHECK_EQUAL(memory[ADDRESS(data) + 0x24], 0x1);
+  BOOST_CHECK_EQUAL(memory[ADDRESS(data) + 0x28], 0x1);
 }
 
 /**
@@ -526,9 +562,14 @@ BOOST_AUTO_TEST_CASE(cpu_interrupt)
   cpu::File source;
   cpu::Source::size_type line = 0;
 
-  // Initialize the stack pointer and the interrupt table pointer
+  // Initialize the stack pointer
   source.insert(line++, "loada stp stack");
-  source.insert(line++, "loada itp interrupts_table");
+
+  // Initialize the control & status register
+  source.insert(line++, "loada r0 interrupts_table");
+  source.insert(line++, "loadi r1 0x1");
+  source.insert(line++, "loadi r2 0x1");
+  source.insert(line++, "call cs_set");
 
   // Raise some interrupts
   source.insert(line++, "int 0x1111");     // Software interrupt
@@ -538,11 +579,23 @@ BOOST_AUTO_TEST_CASE(cpu_interrupt)
 
   // Disable the sotware interrupt
   source.insert(line++, "loadi r0 0x0");
-  source.insert(line++, "storeri r0 itp 0x4");
+  source.insert(line++, "loada r1 interrupts_table");
+  source.insert(line++, "storeri r0 r1 0x4");
+
   source.insert(line++, "int 0x7777");
 
   // End of test
   source.insert(line++, "stop");
+
+  // Set the values of the cs
+  source.insert(line++, ".label cs_set");
+  source.insert(line++, "slli cs r0 0x10");
+  source.insert(line++, "loadi r3 0x0");
+  source.insert(line++, "beq r1 r3 _interrupt_continue");
+  source.insert(line++, "ori cs cs 0x80");
+  source.insert(line++, ".label _interrupt_continue");
+  source.insert(line++, "or cs cs r2");
+  source.insert(line++, "ret");
 
   // Interrupt handler
   // Store the code of the interrupt in a the position data + 4 * code
@@ -560,7 +613,7 @@ BOOST_AUTO_TEST_CASE(cpu_interrupt)
   source.insert(line++, "reti");
 
   // Space to store 5 words of data
-  sw::Uint8 data = line - 2;
+  sw::Uint8 data = line - 4;
   source.insert(line++, ".label data");
   source.insert(line++, ".block 0x14");
 
@@ -585,11 +638,11 @@ BOOST_AUTO_TEST_CASE(cpu_interrupt)
 
   cpu.execute();
 
-  BOOST_CHECK_EQUAL(memory[WORD_ALIGN(data)], 0x0);
-  BOOST_CHECK_EQUAL(memory[WORD_ALIGN(data) + 0x4], 0x1111);
-  BOOST_CHECK_EQUAL(memory[WORD_ALIGN(data) + 0x8], 0x2);
-  BOOST_CHECK_EQUAL(memory[WORD_ALIGN(data) + 0xc], 0x3);
-  BOOST_CHECK_EQUAL(memory[WORD_ALIGN(data) + 0x10], 0x4);
+  BOOST_CHECK_EQUAL(memory[ADDRESS(data)], 0x0);
+  BOOST_CHECK_EQUAL(memory[ADDRESS(data) + 0x4], 0x1111);
+  BOOST_CHECK_EQUAL(memory[ADDRESS(data) + 0x8], 0x2);
+  BOOST_CHECK_EQUAL(memory[ADDRESS(data) + 0xc], 0x3);
+  BOOST_CHECK_EQUAL(memory[ADDRESS(data) + 0x10], 0x4);
 }
 
 /**
@@ -601,9 +654,15 @@ BOOST_AUTO_TEST_CASE(cpu_stack_increases)
   cpu::File source;
   cpu::Source::size_type line = 0;
 
-  // Initialize the stack pointer and the interrupt table pointer
+  // Initialize the stack pointer
   source.insert(line++, "loada stp stack");
-  source.insert(line++, "loada itp interrupts_table");
+
+  // Initialize the control & status register
+  source.insert(line++, "loada r0 interrupts_table");
+  source.insert(line++, "slli cs r0 0x10");
+  source.insert(line++, "loadi r0 0x0");
+  source.insert(line++, "ori cs cs 0x80");
+  source.insert(line++, "ori cs cs 0x1");
 
   // Increase the stack
   source.insert(line++, "push r0");
@@ -653,9 +712,14 @@ BOOST_AUTO_TEST_CASE(cpu_stack_decreases)
   cpu::File source;
   cpu::Source::size_type line = 0;
 
-  // Initialize the stack pointer and the interrupt table pointer
+  // Initialize the stack pointer
   source.insert(line++, "loada stp stack");
-  source.insert(line++, "loada itp interrupts_table");
+
+  // Initialize the control & status register
+  source.insert(line++, "loada r0 interrupts_table");
+  source.insert(line++, "loadi r1 0x1");
+  source.insert(line++, "loadi r2 0x1");
+  source.insert(line++, "call cs_set");
 
   // Use the stack
   source.insert(line++, "push r0");
@@ -664,6 +728,16 @@ BOOST_AUTO_TEST_CASE(cpu_stack_decreases)
 
   // End of test
   source.insert(line++, "stop");
+
+  // Set the values of the cs
+  source.insert(line++, ".label cs_set");
+  source.insert(line++, "slli cs r0 0x10");
+  source.insert(line++, "loadi r3 0x0");
+  source.insert(line++, "beq r1 r3 _interrupt_continue");
+  source.insert(line++, "ori cs cs 0x80");
+  source.insert(line++, ".label _interrupt_continue");
+  source.insert(line++, "or cs cs r2");
+  source.insert(line++, "ret");
 
   source.insert(line++, ".label function");
   source.insert(line++, "int 0x0");

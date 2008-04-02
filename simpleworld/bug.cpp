@@ -48,22 +48,10 @@ namespace SimpleWorld
 Bug::Bug(SimpleWorld* sw, DB::ID id)
   : DB::Bug(sw, id), CPU(&this->cpu.registers, &this->code.code), world(sw)
 {
-  Bug::bugs[this->registers_] = this;
-
-  this->isa_.add_interrupt(0x5, "InvalidWorldCommand", true);
-  this->isa_.add_interrupt(0x6, "WorldEvent", false);
+  this->isa_.add_interrupt(INTERRUPT_WORLDACTION, "InvalidWorldCommand", true);
+  this->isa_.add_interrupt(INTERRUPT_WORLDEVENT, "WorldEvent", false);
 
   this->isa_.add_instruction(0x38, "world", 0, true, ::SimpleWorld::world);
-}
-
-/**
- * Destructor.
- */
-Bug::~Bug()
-{
-  assert(Bug::bugs.find(this->registers_) != Bug::bugs.end());
-
-  Bug::bugs.erase(this->registers_);
 }
 
 
@@ -79,20 +67,7 @@ Bug[%1%] attacked")
     << std::endl;
 #endif // DEBUG
 
-  this->interrupt_request_ = true;
-
-  ::SimpleWorld::CPU::Word code =
-      static_cast< ::SimpleWorld::CPU::Word >(this->isa_.interrupt_code("WorldEvent"));
-  this->interrupt_.code = this->interrupt_.r0 = code;
-  this->interrupt_.r1 = static_cast< ::SimpleWorld::CPU::Word >(EventAttack);
+  this->interrupt(INTERRUPT_WORLDEVENT, EventAttack);
 }
-
-
-/**
- * Association of registers and bugs.
- * This is needed for the world operation (operations_world.cpp). The
- * operations of the Simple CPU don't receive as a parameter the bug
- */
-std::map< ::SimpleWorld::CPU::Memory*, Bug*> Bug::bugs;
 
 }

@@ -212,7 +212,7 @@ void CPU::next()
 {
   cpu::Instruction instruction = this->fetch_instruction_();
   std::cout
-    << this->decompile(cpu::Instruction::encode(instruction))
+    << this->decompile(instruction.encode())
     << std::endl;
 
   FakeCPU::next();

@@ -5,7 +5,7 @@
  * begin:     Sat, 11 Nov 2006 19:15:19 +0100
  * last:      $Date$
  *
- *  Copyright (C) 2006-2007  Xosé Otero <xoseotero@users.sourceforge.net>
+ *  Copyright (C) 2006-2008  Xosé Otero <xoseotero@users.sourceforge.net>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -23,7 +23,6 @@
 
 #include "types.hpp"
 #include "operations.hpp"
-#include "interrupt.hpp"
 
 namespace SimpleWorld
 {
@@ -34,28 +33,24 @@ namespace CPU
  * Call a function.
  *
  * PUSH(PC) and PC += OFFSET
- * @param isa the instruction set architecture.
- * @param regs the registers.
- * @param mem the memory.
- * @param interrupt interrupt.
+ * @param cpu the CPU.
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update call(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
-            Instruction inst)
+Update call(CPU& cpu, Instruction inst)
 {
   // Check if the address is valid.
   // If the addres is out of range, a Invalid Memory location is raised
   // giving this instruction as data.
-  Address address = regs[REGISTER_PC] + inst.offset;
-  mem[address];
+  Address address = cpu.get_reg(REGISTER_PC) + inst.offset;
+  cpu.get_mem(address);
 
   // Save the program counter (pc) in the top of the stack
-  mem.set_word(regs[REGISTER_STP], regs[REGISTER_PC]);
+  cpu.set_mem(cpu.get_reg(REGISTER_STP), cpu.get_reg(REGISTER_PC));
   // Update stack pointer
-  regs.set_word(REGISTER_STP, regs[REGISTER_STP] + 4);
+  cpu.set_reg(REGISTER_STP, cpu.get_reg(REGISTER_STP) + 4);
   // Execute the function
-  regs.set_word(REGISTER_PC, address);
+  cpu.set_reg(REGISTER_PC, address);
 
   return UpdateNone;
 }
@@ -63,21 +58,13 @@ Update call(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
 /**
  * Software interrupt.
  *
- * @param isa the instruction set architecture.
- * @param regs the registers.
- * @param mem the memory.
- * @param interrupt interrupt.
- * @param interrupt interrupt.
+ * @param cpu the CPU.
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update interrupt(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
-                 Instruction inst)
+Update interrupt(CPU& cpu, Instruction inst)
 {
-  Word code = static_cast<Word>(isa.interrupt_code("SoftwareInterrupt"));
-  interrupt.code = code;
-  interrupt.r0 = code;
-  interrupt.r1 = inst.data;
+  cpu.interrupt(INTERRUPT_SOFTWARE, inst.data);
 
   return UpdateInterrupt;
 }
@@ -86,20 +73,16 @@ Update interrupt(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
  * Return.
  *
  * POP(PC)
- * @param isa the instruction set architecture.
- * @param regs the registers.
- * @param mem the memory.
- * @param interrupt interrupt.
+ * @param cpu the CPU.
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update ret(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
-           Instruction inst)
+Update ret(CPU& cpu, Instruction inst)
 {
   // Update stack pointer
-  regs.set_word(REGISTER_STP, regs[REGISTER_STP] - 4);
+  cpu.set_reg(REGISTER_STP, cpu.get_reg(REGISTER_STP) - 4);
   // Restore the program counter
-  regs.set_word(REGISTER_PC, mem[regs[REGISTER_STP]]);
+  cpu.set_reg(REGISTER_PC, cpu.get_mem(cpu.get_reg(REGISTER_STP)));
 
   return UpdatePC;
 }
@@ -108,26 +91,27 @@ Update ret(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
  * Return from exception.
  *
  * POP(ALL REGISTERS)
- * @param isa the instruction set architecture.
- * @param regs the registers.
- * @param mem the memory.
- * @param interrupt interrupt.
+ * @param cpu the CPU.
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update reti(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
-            Instruction inst)
+Update reti(CPU& cpu, Instruction inst)
 {
+  // Restore all the registers
   Sint8 i;
   for (i = 15; i >= 0; i--) {
-    // Restore a register:
     // Update stack pointer
-    regs.set_word(REGISTER_STP, regs[REGISTER_STP] - 4);
+    cpu.set_reg(REGISTER_STP, cpu.get_reg(REGISTER_STP) - 4);
     // Restore the register
-    regs.set_word(REGISTER(i), mem[regs[REGISTER_STP]]);
+    cpu.set_reg(i, cpu.get_mem(cpu.get_reg(REGISTER_STP)));
   }
 
-  return UpdatePC;
+  // It's not needed to update the cs register because the correct values
+  // were stored in the stack
+
+  // It's not needed to update the pc because it already udpated by
+  // CPU::interrupt()
+  return UpdateNone;
 }
 
 }

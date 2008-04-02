@@ -25,30 +25,31 @@
 #define SIMPLEWORLD_OPERATIONS_HPP
 
 #include <simpleworld/cpu/types.hpp>
-#include <simpleworld/cpu/memory.hpp>
-#include <simpleworld/cpu/interrupt.hpp>
 #include <simpleworld/cpu/instruction.hpp>
-#include <simpleworld/cpu/isa.hpp>
 
 #define REGISTER(NUMBER) (NUMBER * sizeof(CPU::Word))
 #define REGISTER_PC REGISTER(0xd)
 #define REGISTER_STP REGISTER(0xe)
-#define REGISTER_ITP REGISTER(0xf)
+#define REGISTER_CS REGISTER(0xf)
+
+#define INTERRUPT_TIMER (0x0)
+#define INTERRUPT_SOFTWARE (0x1)
+#define INTERRUPT_INSTRUCTION (0x2)
+#define INTERRUPT_MEMORY (0x3)
+#define INTERRUPT_DIVISION (0x4)
+#define INTERRUPT_WORLDACTION (0x5)
+#define INTERRUPT_WORLDEVENT (0x6)
 
 namespace SimpleWorld
 {
 
 /**
  * Make a action in the world.
- * @param isa the instruction set architecture.
- * @param regs the registers.
- * @param mem the memory.
- * @param interrupt interrupt.
+ * @param cpu the CPU.
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-CPU::Update world(CPU::ISA& isa, CPU::Memory& regs, CPU::Memory& mem,
-                  CPU::Interrupt& interrupt, CPU::Instruction inst);
+CPU::Update world(CPU::CPU& cpu, CPU::Instruction inst);
 
 }
 

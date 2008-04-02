@@ -110,7 +110,7 @@ The size of %1% (%2%) is not a multiple of 32bits")
  */
 std::string Object::decompile(Word instruction) const
 {
-  Instruction inst = Instruction::decode(instruction);
+  Instruction inst(instruction);
   InstructionInfo info = this->isa_.instruction_info(inst.code);
 
   std::string result;

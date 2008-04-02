@@ -4,7 +4,7 @@ SET(CPU_SRCS
   operations_management.cpp operations_move.cpp operations_branch.cpp
   operations_function.cpp operations_arithmetic.cpp operations_logic.cpp
   operations_shift.cpp
-  instruction.cpp isa.cpp
+  instruction.cpp cs.cpp isa.cpp
   cpu.cpp
   file.cpp source.cpp
   object.cpp)

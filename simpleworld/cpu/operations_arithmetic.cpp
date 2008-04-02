@@ -5,7 +5,7 @@
  * begin:     Sat, 11 Nov 2006 19:15:19 +0100
  * last:      $Date$
  *
- *  Copyright (C) 2006-2007  Xosé Otero <xoseotero@users.sourceforge.net>
+ *  Copyright (C) 2006-2008  Xosé Otero <xoseotero@users.sourceforge.net>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -21,6 +21,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <simpleworld/ints.hpp>
 #include "operations.hpp"
 
 #define LOWBITS_64BITS SINT64(0x00000000ffffffff)
@@ -34,18 +35,13 @@ namespace CPU
  * Add two registers.
  *
  * REGISTERS[FIRST] = REGISTERS[SECOND] + REGISTERS[ADDRESS]
- * @param isa the instruction set architecture.
- * @param regs the registers.
- * @param mem the memory.
- * @param interrupt interrupt.
+ * @param cpu the CPU.
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update add(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
-           Instruction inst)
+Update add(CPU& cpu, Instruction inst)
 {
-  regs.set_word(REGISTER(inst.first), regs[REGISTER(inst.second)] +
-                regs[REGISTER(inst.data)]);
+  cpu.set_reg(inst.first, cpu.get_reg(inst.second) + cpu.get_reg(inst.data));
 
   return UpdatePC;
 }
@@ -54,18 +50,13 @@ Update add(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
  * Add a register and the data.
  *
  * REGISTERS[FIRST] = REGISTERS[SECOND] + ADDRESS
- * @param isa the instruction set architecture.
- * @param regs the registers.
- * @param mem the memory.
- * @param interrupt interrupt.
+ * @param cpu the CPU.
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update addi(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
-            Instruction inst)
+Update addi(CPU& cpu, Instruction inst)
 {
-  regs.set_word(REGISTER(inst.first), regs[REGISTER(inst.second)] +
-                inst.data);
+  cpu.set_reg(inst.first, cpu.get_reg(inst.second) + inst.data);
 
   return UpdatePC;
 }
@@ -74,18 +65,13 @@ Update addi(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
  * Substract two registers.
  *
  * REGISTERS[FIRST] = REGISTERS[SECOND] - REGISTERS[ADDRESS]
- * @param isa the instruction set architecture.
- * @param regs the registers.
- * @param mem the memory.
- * @param interrupt interrupt.
+ * @param cpu the CPU.
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update sub(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
-           Instruction inst)
+Update sub(CPU& cpu, Instruction inst)
 {
-  regs.set_word(REGISTER(inst.first), regs[REGISTER(inst.second)] -
-                regs[REGISTER(inst.data)]);
+  cpu.set_reg(inst.first, cpu.get_reg(inst.second) - cpu.get_reg(inst.data));
 
   return UpdatePC;
 }
@@ -94,18 +80,13 @@ Update sub(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
  * Substract a register and the data.
  *
  * REGISTERS[FIRST] = REGISTERS[SECOND] - ADDRESS
- * @param isa the instruction set architecture.
- * @param regs the registers.
- * @param mem the memory.
- * @param interrupt interrupt.
+ * @param cpu the CPU.
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update subi(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
-            Instruction inst)
+Update subi(CPU& cpu, Instruction inst)
 {
-  regs.set_word(REGISTER(inst.first), regs[REGISTER(inst.second)] -
-                inst.data);
+  cpu.set_reg(inst.first, cpu.get_reg(inst.second) - inst.data);
 
   return UpdatePC;
 }
@@ -114,20 +95,15 @@ Update subi(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
  * Low 32bits from multiply two signed registers.
  *
  * REGISTERS[FIRST] = REGISTERS[SECOND] * REGISTERS[ADDRESS]
- * @param isa the instruction set architecture.
- * @param regs the registers.
- * @param mem the memory.
- * @param interrupt interrupt.
+ * @param cpu the CPU.
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update multl(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
-             Instruction inst)
+Update multl(CPU& cpu, Instruction inst)
 {
-  Sint64 result = static_cast<Sint32>(regs[REGISTER(inst.second)]) *
-    static_cast<Sint32>(regs[REGISTER(inst.data)]);
-  regs.set_word(REGISTER(inst.first),
-                static_cast<Sint32>(result & LOWBITS_64BITS));
+  Sint64 result = static_cast<Sint32>(cpu.get_reg(inst.second)) *
+    static_cast<Sint32>(cpu.get_reg(inst.data));
+  cpu.set_reg(inst.first, static_cast<Sint32>(result & LOWBITS_64BITS));
 
   return UpdatePC;
 }
@@ -136,20 +112,15 @@ Update multl(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
  * Low 32bits from multiply a signed registers and the data (signed value).
  *
  * REGISTERS[FIRST] = REGISTERS[SECOND] * ADDRESS
- * @param isa the instruction set architecture.
- * @param regs the registers.
- * @param mem the memory.
- * @param interrupt interrupt.
+ * @param cpu the CPU.
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update multli(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
-              Instruction inst)
+Update multli(CPU& cpu, Instruction inst)
 {
-  Sint64 result = static_cast<Sint32>(regs[REGISTER(inst.second)]) *
+  Sint64 result = static_cast<Sint32>(cpu.get_reg(inst.second)) *
     static_cast<Sint32>(inst.data);
-  regs.set_word(REGISTER(inst.first),
-                static_cast<Sint32>(result & LOWBITS_64BITS));
+  cpu.set_reg(inst.first, static_cast<Sint32>(result & LOWBITS_64BITS));
 
   return UpdatePC;
 }
@@ -158,19 +129,14 @@ Update multli(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
  * Low 32bits from multiply two unsigned registers.
  *
  * REGISTERS[FIRST] = REGISTERS[SECOND] * REGISTERS[ADDRESS]
- * @param isa the instruction set architecture.
- * @param regs the registers.
- * @param mem the memory.
- * @param interrupt interrupt.
+ * @param cpu the CPU.
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update multlu(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
-              Instruction inst)
+Update multlu(CPU& cpu, Instruction inst)
 {
-  Uint64 result = regs[REGISTER(inst.second)] * regs[REGISTER(inst.data)];
-  regs.set_word(REGISTER(inst.first),
-                static_cast<Uint32>(result & LOWBITS_64BITS));
+  Uint64 result = cpu.get_reg(inst.second) * cpu.get_reg(inst.data);
+  cpu.set_reg(inst.first, static_cast<Uint32>(result & LOWBITS_64BITS));
 
   return UpdatePC;
 }
@@ -179,20 +145,14 @@ Update multlu(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
  * Low 32bits from multiply a unsigned registers and the data (unsigned value).
  *
  * REGISTERS[FIRST] = REGISTERS[SECOND] * ADDRESS
- * @param isa the instruction set architecture.
- * @param regs the registers.
- * @param mem the memory.
- * @param interrupt interrupt.
+ * @param cpu the CPU.
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update multlui(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
-               Instruction inst)
+Update multlui(CPU& cpu, Instruction inst)
 {
-  Uint64 result = regs[REGISTER(inst.second)] *
-    static_cast<Uint32>(inst.data);
-  regs.set_word(REGISTER(inst.first),
-                static_cast<Uint32>(result & LOWBITS_64BITS));
+  Uint64 result = cpu.get_reg(inst.second) * static_cast<Uint32>(inst.data);
+  cpu.set_reg(inst.first, static_cast<Uint32>(result & LOWBITS_64BITS));
 
   return UpdatePC;
 }
@@ -201,19 +161,15 @@ Update multlui(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
  * High 32bits from multiply two signed registers.
  *
  * REGISTERS[FIRST] = REGISTERS[SECOND] * REGISTERS[ADDRESS]
- * @param isa the instruction set architecture.
- * @param regs the registers.
- * @param mem the memory.
- * @param interrupt interrupt.
+ * @param cpu the CPU.
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update multh(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
-             Instruction inst)
+Update multh(CPU& cpu, Instruction inst)
 {
-  Sint64 result = static_cast<Sint32>(regs[REGISTER(inst.second)]) *
-    static_cast<Sint32>(regs[REGISTER(inst.data)]);
-  regs.set_word(REGISTER(inst.first), static_cast<Sint32>(result >> 32));
+  Sint64 result = static_cast<Sint32>(cpu.get_reg(inst.second)) *
+    static_cast<Sint32>(cpu.get_reg(inst.data));
+  cpu.set_reg(inst.first, static_cast<Sint32>(result >> 32));
 
   return UpdatePC;
 }
@@ -222,19 +178,15 @@ Update multh(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
  * High 32bits from multiply a signed registers and the data (signed value).
  *
  * REGISTERS[FIRST] = REGISTERS[SECOND] * ADDRESS
- * @param isa the instruction set architecture.
- * @param regs the registers.
- * @param mem the memory.
- * @param interrupt interrupt.
+ * @param cpu the CPU.
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update multhi(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
-              Instruction inst)
+Update multhi(CPU& cpu, Instruction inst)
 {
-  Sint64 result = static_cast<Sint32>(regs[REGISTER(inst.second)]) *
+  Sint64 result = static_cast<Sint32>(cpu.get_reg(inst.second)) *
     static_cast<Sint32>(inst.data);
-  regs.set_word(REGISTER(inst.first), static_cast<Sint32>(result >> 32));
+  cpu.set_reg(inst.first, static_cast<Sint32>(result >> 32));
 
   return UpdatePC;
 }
@@ -243,19 +195,15 @@ Update multhi(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
  * High 32bits from multiply two unsigned registers.
  *
  * REGISTERS[FIRST] = REGISTERS[SECOND] * REGISTERS[ADDRESS]
- * @param isa the instruction set architecture.
- * @param regs the registers.
- * @param mem the memory.
- * @param interrupt interrupt.
+ * @param cpu the CPU.
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update multhu(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
-              Instruction inst)
+Update multhu(CPU& cpu, Instruction inst)
 {
-  Uint64 result = static_cast<Uint64>(regs[REGISTER(inst.second)]) *
-    regs[REGISTER(inst.data)];
-  regs.set_word(REGISTER(inst.first), static_cast<Uint32>(result >> 32));
+  Uint64 result = static_cast<Uint64>(cpu.get_reg(inst.second)) *
+    cpu.get_reg(inst.data);
+  cpu.set_reg(inst.first, static_cast<Uint32>(result >> 32));
 
   return UpdatePC;
 }
@@ -264,19 +212,14 @@ Update multhu(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
  * High 32bits from multiply a unsigned registers and the data (unsigned value).
  *
  * REGISTERS[FIRST] = REGISTERS[SECOND] * ADDRESS
- * @param isa the instruction set architecture.
- * @param regs the registers.
- * @param mem the memory.
- * @param interrupt interrupt.
+ * @param cpu the CPU.
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update multhui(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
-               Instruction inst)
+Update multhui(CPU& cpu, Instruction inst)
 {
-  Uint64 result = static_cast<Uint64>(regs[REGISTER(inst.second)]) *
-    inst.data;
-  regs.set_word(REGISTER(inst.first), static_cast<Uint32>(result >> 32));
+  Uint64 result = static_cast<Uint64>(cpu.get_reg(inst.second)) * inst.data;
+  cpu.set_reg(inst.first, static_cast<Uint32>(result >> 32));
 
   return UpdatePC;
 }
@@ -285,27 +228,20 @@ Update multhui(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
  * Divide two signed registers.
  *
  * REGISTERS[FIRST] = REGISTERS[SECOND] / REGISTERS[ADDRESS]
- * @param isa the instruction set architecture.
- * @param regs the registers.
- * @param mem the memory.
- * @param interrupt interrupt.
+ * @param cpu the CPU.
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update div(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
-           Instruction inst)
+Update div(CPU& cpu, Instruction inst)
 {
-  Word dividend = static_cast<Sint32>(regs[REGISTER(inst.second)]);
-  Word divisor = static_cast<Sint32>(regs[REGISTER(inst.data)]);
+  Word dividend = static_cast<Sint32>(cpu.get_reg(inst.second));
+  Word divisor = static_cast<Sint32>(cpu.get_reg(inst.data));
   if (divisor == 0) {
-    Word code = static_cast<Word>(isa.interrupt_code("DivisionByZero"));
-    interrupt.code = interrupt.r0 = code;
-    interrupt.r1 = regs[REGISTER_PC];
-    interrupt.r2 = dividend;
+    cpu.interrupt(INTERRUPT_DIVISION, cpu.get_reg(REGISTER_PC), dividend);
 
     return UpdateInterrupt;
   } else {
-    regs.set_word(REGISTER(inst.first), dividend / divisor);
+    cpu.set_reg(inst.first, dividend / divisor);
 
     return UpdatePC;
   }
@@ -315,27 +251,20 @@ Update div(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
  * Divide a signed register and the data (signed value).
  *
  * REGISTERS[FIRST] = REGISTERS[SECOND] / ADDRESS
- * @param isa the instruction set architecture.
- * @param regs the registers.
- * @param mem the memory.
- * @param interrupt interrupt.
+ * @param cpu the CPU.
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update divi(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
-            Instruction inst)
+Update divi(CPU& cpu, Instruction inst)
 {
-  Word dividend = static_cast<Sint32>(regs[REGISTER(inst.second)]);
+  Word dividend = static_cast<Sint32>(cpu.get_reg(inst.second));
   Word divisor = static_cast<Sint32>(inst.data);
   if (divisor == 0) {
-    Word code = static_cast<Word>(isa.interrupt_code("DivisionByZero"));
-    interrupt.code = interrupt.r0 = code;
-    interrupt.r1 = regs[REGISTER_PC];
-    interrupt.r2 = dividend;
+    cpu.interrupt(INTERRUPT_DIVISION, cpu.get_reg(REGISTER_PC), dividend);
 
     return UpdateInterrupt;
   } else {
-    regs.set_word(REGISTER(inst.first), dividend / divisor);
+    cpu.set_reg(inst.first, dividend / divisor);
 
     return UpdatePC;
   }
@@ -345,27 +274,20 @@ Update divi(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
  * Divide two unsigned registers.
  *
  * REGISTERS[FIRST] = REGISTERS[SECOND] / REGISTERS[ADDRESS]
- * @param isa the instruction set architecture.
- * @param regs the registers.
- * @param mem the memory.
- * @param interrupt interrupt.
+ * @param cpu the CPU.
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update divu(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
-            Instruction inst)
+Update divu(CPU& cpu, Instruction inst)
 {
-  Word dividend = regs[REGISTER(inst.second)];
-                       Word divisor = regs[REGISTER(inst.data)];
+  Word dividend = cpu.get_reg(inst.second);
+  Word divisor = cpu.get_reg(inst.data);
   if (divisor == 0) {
-    Word code = static_cast<Word>(isa.interrupt_code("DivisionByZero"));
-    interrupt.code = interrupt.r0 = code;
-    interrupt.r1 = regs[REGISTER_PC];
-    interrupt.r2 = dividend;
+    cpu.interrupt(INTERRUPT_DIVISION, cpu.get_reg(REGISTER_PC), dividend);
 
     return UpdateInterrupt;
   } else {
-    regs.set_word(REGISTER(inst.first), dividend / divisor);
+    cpu.set_reg(inst.first, dividend / divisor);
 
     return UpdatePC;
   }
@@ -375,27 +297,20 @@ Update divu(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
  * Divide a unsigned register and a the data (unsigned value).
  *
  * REGISTERS[FIRST] = REGISTERS[SECOND] / ADDRESS
- * @param isa the instruction set architecture.
- * @param regs the registers.
- * @param mem the memory.
- * @param interrupt interrupt.
+ * @param cpu the CPU.
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update divui(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
-             Instruction inst)
+Update divui(CPU& cpu, Instruction inst)
 {
-  Word dividend = regs[REGISTER(inst.second)];
+  Word dividend = cpu.get_reg(inst.second);
   Word divisor = inst.data;
   if (divisor == 0) {
-    Word code = static_cast<Word>(isa.interrupt_code("DivisionByZero"));
-    interrupt.code = interrupt.r0 = code;
-    interrupt.r1 = regs[REGISTER_PC];
-    interrupt.r2 = dividend;
+    cpu.interrupt(INTERRUPT_DIVISION, cpu.get_reg(REGISTER_PC), dividend);
 
     return UpdateInterrupt;
   } else {
-    regs.set_word(REGISTER(inst.first), dividend / divisor);
+    cpu.set_reg(inst.first, dividend / divisor);
 
     return UpdatePC;
   }
@@ -405,27 +320,20 @@ Update divui(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
  * Module of two signed registers.
  *
  * REGISTERS[FIRST] = REGISTERS[SECOND] % REGISTERS[ADDRESS]
- * @param isa the instruction set architecture.
- * @param regs the registers.
- * @param mem the memory.
- * @param interrupt interrupt.
+ * @param cpu the CPU.
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update mod(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
-           Instruction inst)
+Update mod(CPU& cpu, Instruction inst)
 {
-  Word dividend = static_cast<Sint32>(regs[REGISTER(inst.second)]);
-  Word divisor = static_cast<Sint32>(regs[REGISTER(inst.data)]);
+  Word dividend = static_cast<Sint32>(cpu.get_reg(inst.second));
+  Word divisor = static_cast<Sint32>(cpu.get_reg(inst.data));
   if (divisor == 0) {
-    Word code = static_cast<Word>(isa.interrupt_code("DivisionByZero"));
-    interrupt.code = interrupt.r0 = code;
-    interrupt.r1 = regs[REGISTER_PC];
-    interrupt.r2 = dividend;
+    cpu.interrupt(INTERRUPT_DIVISION, cpu.get_reg(REGISTER_PC), dividend);
 
     return UpdateInterrupt;
   } else {
-    regs.set_word(REGISTER(inst.first), dividend % divisor);
+    cpu.set_reg(inst.first, dividend % divisor);
 
     return UpdatePC;
   }
@@ -435,27 +343,20 @@ Update mod(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
  * Module of a signed register and the data (signed value).
  *
  * REGISTERS[FIRST] = REGISTERS[SECOND] % ADDRESS
- * @param isa the instruction set architecture.
- * @param regs the registers.
- * @param mem the memory.
- * @param interrupt interrupt.
+ * @param cpu the CPU.
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update modi(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
-            Instruction inst)
+Update modi(CPU& cpu, Instruction inst)
 {
-  Word dividend = static_cast<Sint32>(regs[REGISTER(inst.second)]);
+  Word dividend = static_cast<Sint32>(cpu.get_reg(inst.second));
   Word divisor = static_cast<Sint32>(inst.data);
   if (divisor == 0) {
-    Word code = static_cast<Word>(isa.interrupt_code("DivisionByZero"));
-    interrupt.code = interrupt.r0 = code;
-    interrupt.r1 = regs[REGISTER_PC];
-    interrupt.r2 = dividend;
+    cpu.interrupt(INTERRUPT_DIVISION, cpu.get_reg(REGISTER_PC), dividend);
 
     return UpdateInterrupt;
   } else {
-    regs.set_word(REGISTER(inst.first), dividend % divisor);
+    cpu.set_reg(inst.first, dividend % divisor);
 
     return UpdatePC;
   }
@@ -465,27 +366,20 @@ Update modi(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
  * Module of two unsigned registers.
  *
  * REGISTERS[FIRST] = REGISTERS[SECOND] % REGISTERS[ADDRESS]
- * @param isa the instruction set architecture.
- * @param regs the registers.
- * @param mem the memory.
- * @param interrupt interrupt.
+ * @param cpu the CPU.
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update modu(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
-            Instruction inst)
+Update modu(CPU& cpu, Instruction inst)
 {
-  Word dividend = regs[REGISTER(inst.second)];
-  Word divisor = regs[REGISTER(inst.data)];
+  Word dividend = cpu.get_reg(inst.second);
+  Word divisor = cpu.get_reg(inst.data);
   if (divisor == 0) {
-    Word code = static_cast<Word>(isa.interrupt_code("DivisionByZero"));
-    interrupt.code = interrupt.r0 = code;
-    interrupt.r1 = regs[REGISTER_PC];
-    interrupt.r2 = dividend;
+    cpu.interrupt(INTERRUPT_DIVISION, cpu.get_reg(REGISTER_PC), dividend);
 
     return UpdateInterrupt;
   } else {
-    regs.set_word(REGISTER(inst.first), dividend % divisor);
+    cpu.set_reg(inst.first, dividend % divisor);
 
     return UpdatePC;
   }
@@ -495,27 +389,20 @@ Update modu(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
  * Module of a unsigned register and the data (unsigned value).
  *
  * REGISTERS[FIRST] = REGISTERS[SECOND] % ADDRESS
- * @param isa the instruction set architecture.
- * @param regs the registers.
- * @param mem the memory.
- * @param interrupt interrupt.
+ * @param cpu the CPU.
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update modui(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
-             Instruction inst)
+Update modui(CPU& cpu, Instruction inst)
 {
-  Word dividend = regs[REGISTER(inst.second)];
+  Word dividend = cpu.get_reg(inst.second);
   Word divisor = inst.data;
   if (divisor == 0) {
-    Word code = static_cast<Word>(isa.interrupt_code("DivisionByZero"));
-    interrupt.code = interrupt.r0 = code;
-    interrupt.r1 = regs[REGISTER_PC];
-    interrupt.r2 = dividend;
+    cpu.interrupt(INTERRUPT_DIVISION, cpu.get_reg(REGISTER_PC), dividend);
 
     return UpdateInterrupt;
   } else {
-    regs.set_word(REGISTER(inst.first), dividend % inst.data);
+    cpu.set_reg(inst.first, dividend % inst.data);
 
     return UpdatePC;
   }

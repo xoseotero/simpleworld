@@ -5,7 +5,7 @@
  * begin:     Xov Nov 30 2006
  * last:      $Date$
  *
- *  Copyright (C) 2006-2007  Xosé Otero <xoseotero@users.sourceforge.net>
+ *  Copyright (C) 2006-2008  Xosé Otero <xoseotero@users.sourceforge.net>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -30,34 +30,26 @@ namespace CPU
 
 /**
  * Stop the CPU.
- * @param isa the instruction set architecture.
- * @param regs the registers.
- * @param mem the memory.
- * @param interrupt interrupt.
+ * @param cpu the CPU.
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update stop(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
-            Instruction inst)
+Update stop(CPU& cpu, Instruction inst)
 {
   return UpdateStop;
 }
 
 /**
  * Restart the CPU (zeroing the registers).
- * @param isa the instruction set architecture.
- * @param regs the registers.
- * @param mem the memory.
- * @param interrupt interrupt.
+ * @param cpu the CPU.
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update restart(ISA& isa, Memory& regs, Memory& mem, Interrupt& interrupt,
-               Instruction inst)
+Update restart(CPU& cpu, Instruction inst)
 {
   Uint8 i;
   for (i = 0; i < 16; i++)
-    regs.set_word(REGISTER(i), 0);
+    cpu.set_reg(i, 0);
 
   return UpdateNone;
 }

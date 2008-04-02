@@ -45,9 +45,9 @@ BOOST_AUTO_TEST_CASE(instruction_encode)
   inst.second = 0x4;
   inst.data = 0x5678;
 #ifdef IS_BIG_ENDIAN
-  BOOST_CHECK_EQUAL(cpu::Instruction::encode(inst), 0x12345678);
+  BOOST_CHECK_EQUAL(inst.encode(), 0x12345678);
 #else
-  BOOST_CHECK_EQUAL(cpu::Instruction::encode(inst), 0x78563412);
+  BOOST_CHECK_EQUAL(inst.encode(), 0x78563412);
 #endif
 }
 
@@ -61,7 +61,7 @@ BOOST_AUTO_TEST_CASE(instruction_decode)
 #else
   sw::Uint32 inst_coded = 0x78563412;
 #endif
-  cpu::Instruction inst = cpu::Instruction::decode(inst_coded);
+  cpu::Instruction inst(inst_coded);
 
   BOOST_CHECK_EQUAL(inst.code, 0x12);
   BOOST_CHECK_EQUAL(inst.first, 0x3);

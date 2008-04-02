@@ -32,7 +32,6 @@
 #include <simpleworld/cpu/types.hpp>
 #include <simpleworld/cpu/instruction.hpp>
 #include <simpleworld/cpu/memory.hpp>
-#include <simpleworld/cpu/interrupt.hpp>
 
 namespace SimpleWorld
 {
@@ -50,20 +49,16 @@ enum Update {
 };
 
 
-class ISA;                      /**< Forward declaration of ISA, needed
+class CPU;                      /**< Forward declaration of CPU, needed
                                      for the definition of Operation. */
 
 /**
  * Pointer to a function that executes a instruction.
- * @param isa the instruction set architecture.
- * @param regs the registers.
- * @param mem the memory.
- * @param interrupt interrupt.
+ * @param cpu the cpu.
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-typedef Update (*Operation) (ISA& isa, Memory& regs, Memory& mem,
-                             Interrupt& interrupt, Instruction inst);
+typedef Update (*Operation) (CPU& cpu, Instruction inst);
 
 /**
  * Information about instruction's parameters.

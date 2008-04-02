@@ -27,7 +27,6 @@
 #include <map>
 
 #include <simpleworld/egg.hpp>
-#include <simpleworld/cpu/memory.hpp>
 #include <simpleworld/cpu/cpu.hpp>
 #include <simpleworld/db/bug.hpp>
 
@@ -47,11 +46,6 @@ public:
    */
   Bug(SimpleWorld* sw, DB::ID id);
 
-  /**
-   * Destructor.
-   */
-  ~Bug();
-
 
   /**
    * The bug has been attacked.
@@ -60,14 +54,6 @@ public:
 
 
   SimpleWorld* world;
-
-
-  /**
-   * Association of registers and bugs.
-   * This is needed for the world operation (operations_world.cpp). The
-   * operations of the Simple CPU don't receive as a parameter the bug
-   */
-  static std::map< ::SimpleWorld::CPU::Memory*, Bug*> bugs;
 };
 
 }
