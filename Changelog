@@ -5,6 +5,7 @@ Simple World 1.0b1:
 	* Rename the stp register to sp.
 	* Make the jumps of the branch and function operations relative to
 	  the pc.
+	* Add instructions bz and bnz.
 	* Change in mutations: replace the permutation of a word by the change
 	  of a word.
 

@@ -408,73 +408,85 @@ BOOST_AUTO_TEST_CASE(cpu_branch)
   // If r3 == r4
   source.insert(line++, ".label branch_always");
   source.insert(line++, "storeri r1 r0 0x0");
-  source.insert(line++, "beq r3 r4 branch_equal");
+  source.insert(line++, "beq r3 r4 branch_zero");
+  source.insert(line++, "stop");
+
+  // If r2 == 0
+  source.insert(line++, ".label branch_zero");
+  source.insert(line++, "storeri r1 r0 0x4");
+  source.insert(line++, "bz r2 branch_nonzero");
+  source.insert(line++, "stop");
+
+  // If r3 != 0
+  source.insert(line++, ".label branch_nonzero");
+  source.insert(line++, "storeri r1 r0 0x8");
+  source.insert(line++, "bnz r3 branch_equal");
   source.insert(line++, "stop");
 
   // If r2 != r3
   source.insert(line++, ".label branch_equal");
-  source.insert(line++, "storeri r1 r0 0x4");
+  source.insert(line++, "storeri r1 r0 0xc");
   source.insert(line++, "bne r2 r3 branch_notequal");
   source.insert(line++, "stop");
 
   // If r5 < r4
   source.insert(line++, ".label branch_notequal");
-  source.insert(line++, "storeri r1 r0 0x8");
+  source.insert(line++, "storeri r1 r0 0x10");
   source.insert(line++, "blt r5 r4 branch_less");
   source.insert(line++, "stop");
 
   // If r4 < r5
   source.insert(line++, ".label branch_less");
-  source.insert(line++, "storeri r1 r0 0xc");
+  source.insert(line++, "storeri r1 r0 0x14");
   source.insert(line++, "bltu r4 r5 branch_lessu");
   source.insert(line++, "stop");
 
   // If r3 > r5
   source.insert(line++, ".label branch_lessu");
-  source.insert(line++, "storeri r1 r0 0x10");
+  source.insert(line++, "storeri r1 r0 0x18");
   source.insert(line++, "bgt r3 r5 branch_greater");
   source.insert(line++, "stop");
 
   // If r5 > r3
   source.insert(line++, ".label branch_greater");
-  source.insert(line++, "storeri r1 r0 0x14");
+  source.insert(line++, "storeri r1 r0 0x1c");
   source.insert(line++, "bgtu r5 r3 branch_greateru");
   source.insert(line++, "stop");
 
   // If r2 <= r3
   source.insert(line++, ".label branch_greateru");
-  source.insert(line++, "storeri r1 r0 0x18");
+  source.insert(line++, "storeri r1 r0 0x20");
   source.insert(line++, "ble r2 r3 branch_lessequal");
   source.insert(line++, "stop");
 
   // If r2 <= r3
   source.insert(line++, ".label branch_lessequal");
-  source.insert(line++, "storeri r1 r0 0x1c");
+  source.insert(line++, "storeri r1 r0 0x24");
   source.insert(line++, "bleu r2 r3 branch_lessequalu");
   source.insert(line++, "stop");
 
   // If r3 >= r4
   source.insert(line++, ".label branch_lessequalu");
-  source.insert(line++, "storeri r1 r0 0x20");
+  source.insert(line++, "storeri r1 r0 0x28");
   source.insert(line++, "bge r3 r4 branch_greaterequal");
   source.insert(line++, "stop");
 
   // If r5 >= r4
   source.insert(line++, ".label branch_greaterequal");
-  source.insert(line++, "storeri r1 r0 0x24");
+  source.insert(line++, "storeri r1 r0 0x2c");
   source.insert(line++, "bgeu r5 r4 branch_greaterequalu");
   source.insert(line++, "stop");
 
   source.insert(line++, ".label branch_greaterequalu");
-  source.insert(line++, "storeri r1 r0 0x28");
+  source.insert(line++, "storeri r1 r0 0x30");
 
   // End of test
   source.insert(line++, "stop");
 
   // Space to store 11 words of data
-  sw::Uint8 data = line - 11;
+  sw::Uint8 data = line - 13;
   source.insert(line++, ".label data");
-  source.insert(line++, ".block 0x2c");
+  source.insert(line++, ".block 0x34");
 
   compile(source);
 
@@ -496,6 +508,8 @@ BOOST_AUTO_TEST_CASE(cpu_branch)
   BOOST_CHECK_EQUAL(memory[ADDRESS(data) + 0x20], 0x1);
   BOOST_CHECK_EQUAL(memory[ADDRESS(data) + 0x24], 0x1);
   BOOST_CHECK_EQUAL(memory[ADDRESS(data) + 0x28], 0x1);
+  BOOST_CHECK_EQUAL(memory[ADDRESS(data) + 0x2c], 0x1);
+  BOOST_CHECK_EQUAL(memory[ADDRESS(data) + 0x30], 0x1);
 }
 
 /**

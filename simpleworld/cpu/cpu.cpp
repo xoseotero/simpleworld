@@ -106,16 +106,18 @@ CPU::CPU(Memory* registers, Memory* memory)
 
   // Branch operations
   this->isa_.add_instruction(0x20, "b", 0, true, b);
-  this->isa_.add_instruction(0x21, "beq", 2, true, beq);
-  this->isa_.add_instruction(0x22, "bne", 2, true, bne);
-  this->isa_.add_instruction(0x23, "blt", 2, true, blt);
-  this->isa_.add_instruction(0x24, "bltu", 2, true, bltu);
-  this->isa_.add_instruction(0x25, "bgt", 2, true, bgt);
-  this->isa_.add_instruction(0x26, "bgtu", 2, true, bgtu);
-  this->isa_.add_instruction(0x27, "ble", 2, true, ble);
-  this->isa_.add_instruction(0x28, "bleu", 2, true, bleu);
-  this->isa_.add_instruction(0x29, "bge", 2, true, bge);
-  this->isa_.add_instruction(0x2a, "bgeu", 2, true, bgeu);
+  this->isa_.add_instruction(0x22, "bz", 1, true, bz);
+  this->isa_.add_instruction(0x23, "bnz", 1, true, bnz);
+  this->isa_.add_instruction(0x24, "beq", 2, true, beq);
+  this->isa_.add_instruction(0x25, "bne", 2, true, bne);
+  this->isa_.add_instruction(0x26, "blt", 2, true, blt);
+  this->isa_.add_instruction(0x27, "bltu", 2, true, bltu);
+  this->isa_.add_instruction(0x28, "bgt", 2, true, bgt);
+  this->isa_.add_instruction(0x29, "bgtu", 2, true, bgtu);
+  this->isa_.add_instruction(0x2a, "ble", 2, true, ble);
+  this->isa_.add_instruction(0x2b, "bleu", 2, true, bleu);
+  this->isa_.add_instruction(0x2c, "bge", 2, true, bge);
+  this->isa_.add_instruction(0x2d, "bgeu", 2, true, bgeu);
 
   // Function operations
   this->isa_.add_instruction(0x30, "call", 0, true, call);

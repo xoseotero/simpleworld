@@ -53,6 +53,50 @@ Update b(CPU& cpu, Instruction inst)
 }
 
 /**
+ * Branch if zero.
+ *
+ * if REGISTERS[FIRST] == 0 -> PC += OFFSET
+ * @param cpu the CPU.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
+ */
+Update bz(CPU& cpu, Instruction inst)
+{
+  // Check if the address is valid.
+  Address address = cpu.get_reg(REGISTER_PC) + inst.offset;
+  cpu.get_mem(address);
+
+  if (cpu.get_reg(inst.first) == 0) {
+    cpu.set_reg(REGISTER_PC, address);
+    return UpdateNone;
+  }
+
+  return UpdatePC;
+}
+
+/**
+ * Branch if not zero.
+ *
+ * if REGISTERS[FIRST] != 0 -> PC += OFFSET
+ * @param cpu the CPU.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
+ */
+Update bnz(CPU& cpu, Instruction inst)
+{
+  // Check if the address is valid.
+  Address address = cpu.get_reg(REGISTER_PC) + inst.offset;
+  cpu.get_mem(address);
+
+  if (cpu.get_reg(inst.first) != 0) {
+    cpu.set_reg(REGISTER_PC, address);
+    return UpdateNone;
+  }
+
+  return UpdatePC;
+}
+
+/**
  * Branch on equal.
  *
  * if REGISTERS[FIRST] == REGISTERS[SECOND] -> PC += OFFSET
