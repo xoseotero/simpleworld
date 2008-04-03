@@ -1,4 +1,4 @@
-#! /bin/sh
+ #! /bin/sh
 # Prepare the project to be build in the directory build/.
 #
 # Use: autogen.sh [OPTIONS] PREFIX
@@ -10,7 +10,7 @@ release=0
 debug=0
 prefix=""
 directory="build/"
-options="-D RUN_TESTS=ON"
+options="-D UNIT_TESTS=ON"
 
 
 usage()
@@ -80,7 +80,7 @@ if [ "${debug}" == 1 ]; then
     options="${options} \
       -D CMAKE_BUILD_TYPE=Debug \
       -D DEBUG_MODE=ON \
-      -D RUN_TESTS=ON \
+      -D UNIT_TESTS=ON \
       -D SQLite3_USE_INTERNAL=ON \
       -D SQLite3x_USE_INTERNAL=ON \
       -D XySSL_USE_INTERNAL=ON \

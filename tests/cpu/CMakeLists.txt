@@ -1,8 +1,8 @@
 ADD_DEFINITIONS("-DTESTDATA=\\\"${CMAKE_SOURCE_DIR}/tests/cpu/\\\"")
 ADD_DEFINITIONS("-DTESTOUTPUT=\\\"${CMAKE_BINARY_DIR}/tests/cpu/\\\"")
 
-# Only if RUN_TESTS is set
-IF(RUN_TESTS)
+# Only if UNIT_TESTS is set
+IF(UNIT_TESTS)
   ADD_EXECUTABLE(word_test word_test.cpp)
   TARGET_LINK_LIBRARIES(word_test simpleworld_cpu
     ${Boost_program_options_LIBRARY} ${Boost_filesystem_LIBRARY}
@@ -57,4 +57,4 @@ IF(RUN_TESTS)
   ADD_TEST("CPU::Source" source_test)
   ADD_TEST("CPU::object" object_test)
   ADD_TEST("CPU::CPU" cpu_test)
-ENDIF(RUN_TESTS)
+ENDIF(UNIT_TESTS)

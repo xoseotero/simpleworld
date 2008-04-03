@@ -1,8 +1,8 @@
 ADD_DEFINITIONS("-DTESTDATA=\\\"${CMAKE_SOURCE_DIR}/tests/simpleworld/\\\"")
 ADD_DEFINITIONS("-DTESTOUTPUT=\\\"${CMAKE_BINARY_DIR}/tests/simpleworld/\\\"")
 
-# Only if RUN_TESTS is set
-IF(RUN_TESTS)
+# Only if UNIT_TESTS is set
+IF(UNIT_TESTS)
   ADD_EXECUTABLE(world_test world_test.cpp)
   TARGET_LINK_LIBRARIES(world_test simpleworld_cpu simpleworld_db simpleworld
     ${Boost_program_options_LIBRARY} ${Boost_filesystem_LIBRARY}
@@ -20,4 +20,4 @@ IF(RUN_TESTS)
 
   ADD_TEST("World" world_test)
   ADD_TEST("movement.hpp" movement_test)
-ENDIF(RUN_TESTS)
+ENDIF(UNIT_TESTS)
