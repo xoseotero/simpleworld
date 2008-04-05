@@ -28,8 +28,9 @@
 #include <simpleworld/cpu/cpu.hpp>
 #include <simpleworld/cpu/instruction.hpp>
 
-#define REGISTER_PC 0xd
-#define REGISTER_SP 0xe
+#define REGISTER_PC 0xc
+#define REGISTER_SP 0xd
+#define REGISTER_FP 0xe
 #define REGISTER_CS 0xf
 
 #define INTERRUPT_TIMER (0x0)

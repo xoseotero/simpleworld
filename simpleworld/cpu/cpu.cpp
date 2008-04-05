@@ -67,9 +67,9 @@ CPU::CPU(Memory* registers, Memory* memory)
   this->isa_.add_register(0x9, "r9");
   this->isa_.add_register(0xa, "r10");
   this->isa_.add_register(0xb, "r11");
-  this->isa_.add_register(0xc, "r12");
-  this->isa_.add_register(0xd, "pc");
-  this->isa_.add_register(0xe, "sp");
+  this->isa_.add_register(0xc, "pc");
+  this->isa_.add_register(0xd, "sp");
+  this->isa_.add_register(0xe, "fp");
   this->isa_.add_register(0xf, "cs");
 
   // Interrupts
@@ -352,6 +352,10 @@ Interrupt thrown:\tcode: 0x%02x, name: %s")
     this->registers_->set_word(ADDRESS(REGISTER_SP),
                                this->registers_->get_word(ADDRESS(REGISTER_SP)) + 4);
   }
+
+  // Update the frame pointer
+  this->registers_->set_word(ADDRESS(REGISTER_FP),
+                             this->registers_->get_word(ADDRESS(REGISTER_SP)));
 
   // Store the information of the interrupt
   this->registers_->set_word(ADDRESS(0), code);

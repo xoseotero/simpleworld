@@ -9,10 +9,10 @@ loadi r7 0x1adc
 loadhi r8 0xdc1a
 loada r9 0x0
 loadrr r10 r9 r10
-loadri r11 r12 0x1
+loadri r11 r11 0x1
 store pc 0xafff
-storerr sp cs r0
-storeri r10 r0 0x1
+storerr pc sp r0
+storeri fp cs 0x1
 b 0xffff
 bz r0 0x0
 bnz r0 0x0
@@ -57,7 +57,7 @@ and r0 r1 r2
 andi r0 r1 0xffff
 xor r0 r1 r2
 xori r0 r1 0xffff
-sll r5 r6 r12
+sll r5 r6 fp
 slli r5 r6 0x1
 srl r5 r6 r11
 srli r5 r6 0x2

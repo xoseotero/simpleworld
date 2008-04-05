@@ -1,5 +1,7 @@
 Simple World 1.0b1:
 	* Update to database version 2.
+	* Add fp (frame pointer) register to help the programmer to use local
+	  variables.
 	* Convert the itp register to cs (control & status) register, which
 	  has 16 bits for the itp.
 	* Rename the stp register to sp.

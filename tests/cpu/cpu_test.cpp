@@ -83,9 +83,9 @@ BOOST_AUTO_TEST_CASE(cpu_initialization)
   BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r9")], 0x0);
   BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r10")], 0x0);
   BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r11")], 0x0);
-  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r12")], 0x0);
   BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "pc")], 0x0);
   BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "sp")], 0x0);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "fp")], 0x0);
   BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "cs")], 0x0);
 }
 
@@ -174,9 +174,9 @@ BOOST_AUTO_TEST_CASE(cpu_management_restart)
   BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r9")], 0x0);
   BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r10")], 0x0);
   BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r11")], 0x0);
-  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r12")], 0x0);
   BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "pc")], 0x0);
   BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "sp")], 0x0);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "fp")], 0x0);
   BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "cs")], 0x0);
 }
 
@@ -208,7 +208,7 @@ BOOST_AUTO_TEST_CASE(cpu_load)
   // Load data with a offset (inmediate)
   source.insert(line++, "loadri r10 r0 0x0");
   source.insert(line++, "loadri r11 r0 0x4");
-  source.insert(line++, "loadri r12 r0 0x8");
+  source.insert(line++, "loadri cs r0 0x8");
 
   source.insert(line++, "loadi r0 0x0");
   source.insert(line++, "loadi r1 0x10");
@@ -247,7 +247,7 @@ BOOST_AUTO_TEST_CASE(cpu_load)
 
   BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r10")], 0x1234abcd);
   BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r11")], 0xef567890);
-  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r12")], 0x77777757);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "cs")], 0x77777757);
 }
 
 /**
@@ -551,7 +551,7 @@ BOOST_AUTO_TEST_CASE(cpu_function)
 
   // Space for a word in the stack
   source.insert(line++, ".label stack");
-  source.insert(line++, ".block 0x4");
+  source.insert(line++, ".block 0x8");
 
   compile(source);
 
@@ -657,6 +657,148 @@ BOOST_AUTO_TEST_CASE(cpu_interrupt)
   BOOST_CHECK_EQUAL(memory[ADDRESS(data) + 0x8], 0x2);
   BOOST_CHECK_EQUAL(memory[ADDRESS(data) + 0xc], 0x3);
   BOOST_CHECK_EQUAL(memory[ADDRESS(data) + 0x10], 0x4);
+}
+
+/**
+ * Check if the frame pointer works.
+ */
+BOOST_AUTO_TEST_CASE(cpu_frame_pointer)
+{
+  cpu::File source;
+  cpu::Source::size_type line = 0;
+
+  // Initialize the stack pointer
+  source.insert(line++, "loada sp stack");
+
+  // Initialize the control & status register
+  source.insert(line++, "loada r0 interrupts_table");
+  source.insert(line++, "loadi r1 0x1");
+  source.insert(line++, "loadi r2 0x1");
+  source.insert(line++, "call cs_set");
+
+  // Test the frame pointer
+  source.insert(line++, "call function");
+  source.insert(line++, "int 0x0");
+
+  // End of test
+  source.insert(line++, "stop");
+
+  // Set the values of the cs
+  source.insert(line++, ".label cs_set");
+  source.insert(line++, "slli cs r0 0x10");
+  source.insert(line++, "loadi r3 0x0");
+  source.insert(line++, "beq r1 r3 _interrupt_continue");
+  source.insert(line++, "ori cs cs 0x80");
+  source.insert(line++, ".label _interrupt_continue");
+  source.insert(line++, "or cs cs r2");
+  source.insert(line++, "ret");
+
+  // Function that allocates space for 64 words in the stack
+  source.insert(line++, ".label function");
+  source.insert(line++, "addi sp sp 0x100");
+  // Store 0x1 in data
+  source.insert(line++, "loada r0 data");
+  source.insert(line++, "loadi r1 0x1");
+  source.insert(line++, "storeri r1 r0 0x0");
+  source.insert(line++, "ret");
+
+  // Interrupt that allocates space for 64 words in the stack
+  source.insert(line++, ".label handler_int");
+  source.insert(line++, "addi sp sp 0x100");
+  // Store 0x1 in data + 4
+  source.insert(line++, "loada r0 data");
+  source.insert(line++, "loadi r1 0x2");
+  source.insert(line++, "storeri r1 r0 0x4");
+  source.insert(line++, "reti");
+
+  // Space to store 2 words of data
+  sw::Uint8 data = line - 4;
+  source.insert(line++, ".label data");
+  source.insert(line++, ".block 0x8");
+
+  // Space for 16 word in the stack
+  source.insert(line++, ".label stack");
+  source.insert(line++, ".block 0x40");
+
+  // Interrupts table
+  source.insert(line++, ".label interrupts_table");
+  source.insert(line++, "0x0");         // Timer interrupt
+  source.insert(line++, "handler_int"); // Software interrupt
+  source.insert(line++, "0x0");         // Invalid instruction
+  source.insert(line++, "0x0");         // Invalid memory location
+  source.insert(line++, "0x0");         // Division by zero
+
+  compile(source);
+
+
+  cpu::Memory registers;
+  cpu::MemoryFile memory(CPU_SAVE);
+  cpu::CPU cpu(&registers, &memory);
+
+  cpu.execute();
+
+  BOOST_CHECK_EQUAL(memory[ADDRESS(data)], 0x1);
+  BOOST_CHECK_EQUAL(memory[ADDRESS(data) + 0x4], 0x2);
+}
+
+/**
+ * Check if the frame pointer works for passing data in the stack.
+ */
+BOOST_AUTO_TEST_CASE(cpu_frame_pointer2)
+{
+  cpu::File source;
+  cpu::Source::size_type line = 0;
+
+  // Initialize the stack pointer
+  source.insert(line++, "loada sp stack");
+
+  // Test the frame pointer
+  source.insert(line++, "loada r0 data");
+  source.insert(line++, "push r0");
+  source.insert(line++, "loadi r0 0x1");
+  source.insert(line++, "push r0");
+  source.insert(line++, "call store_data");
+  source.insert(line++, "subi sp sp 0x8");
+
+  source.insert(line++, "loada r0 data");
+  source.insert(line++, "addi r0 r0 0x4");
+  source.insert(line++, "push r0");
+  source.insert(line++, "loadi r0 0x2");
+  source.insert(line++, "push r0");
+  source.insert(line++, "call store_data");
+
+  // End of test
+  source.insert(line++, "stop");
+
+  // Function that receibes 2 parameters in the stack
+  source.insert(line++, ".label store_data");
+  // Get the parammeters from the stack
+  source.insert(line++, "loadri r0 fp 0xFFF0");
+  source.insert(line++, "loadri r1 fp 0xFFF4");
+  // Store the second parameter in the address pointed by the first one
+  source.insert(line++, "storeri r1 r0 0x0");
+  source.insert(line++, "ret");
+
+  // Space to store 2 words of data
+  sw::Uint8 data = line - 1;
+  source.insert(line++, ".label data");
+  source.insert(line++, ".block 0x8");
+
+  // Space for 4 word in the stack
+  source.insert(line++, ".label stack");
+  source.insert(line++, ".block 0x10");
+
+  compile(source);
+
+
+  cpu::Memory registers;
+  cpu::MemoryFile memory(CPU_SAVE);
+  cpu::CPU cpu(&registers, &memory);
+
+  cpu.execute();
+
+  BOOST_CHECK_EQUAL(memory[ADDRESS(data)], 0x1);
+  BOOST_CHECK_EQUAL(memory[ADDRESS(data) + 0x4], 0x2);
 }
 
 /**
@@ -994,8 +1136,8 @@ BOOST_AUTO_TEST_CASE(cpu_shift)
   source.insert(line++, "slai r11 r2 0x4");
   source.insert(line++, "srai r11 r11 0x4"); // r11 = 0x0707
 
-  source.insert(line++, "rli r12 r2 0x4");
-  source.insert(line++, "rri r12 r12 0x4"); // r12 = 0x0707
+  source.insert(line++, "rli cs r2 0x4");
+  source.insert(line++, "rri cs cs 0x4");    // cs = 0x0707
 
   compile(source);
 
@@ -1011,5 +1153,5 @@ BOOST_AUTO_TEST_CASE(cpu_shift)
   BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r9")], 0xffffffff);
   BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r10")], 0x0707);
   BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r11")], 0x0707);
-  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r12")], 0x0707);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "cs")], 0x0707);
 }
