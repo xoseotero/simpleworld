@@ -4,10 +4,10 @@
 <language name="Simple World Language" version="1.00" kateversion="2.4" section="Assembler" extensions="*.swl;" mimetype="text/x-swl" casesensitive="1" author="XosÃ© Otero" license="GPL" priority="-1">
     <highlighting>
         <list name="prep">
-            <item> .define  </item>
-            <item> .label  </item>
+            <item> .define </item>
+            <item> .label </item>
             <item> .include </item>
-            <item> .block  </item>
+            <item> .block </item>
         </list>
         <list name="inst">
             <!-- Management operations -->
