@@ -398,7 +398,7 @@ void Source::replace_labels()
       if (this->labels_.find(label) != this->labels_.end())
         throw EXCEPTION(ParserError, boost::str(boost::format("\
 Line: %1%\n\
-Label %1% already defined")
+Label %2% already defined")
                                                 % this->get_line(i)
                                                 % label));
       this->remove(i, 1);
