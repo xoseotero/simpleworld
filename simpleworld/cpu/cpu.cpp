@@ -387,8 +387,7 @@ Instruction CPU::fetch_instruction_() const
 #ifdef DEBUG
   std::cout << boost::str(boost::format("Instruction[0x%08x]: 0x%08x")
     % this->registers_->get_word(ADDRESS(REGISTER_PC))
-    % this->memory_->get_word(this->registers_->get_word(ADDRESS(REGISTER_PC)),
-                              false))
+    % this->memory_->get_word(this->registers_->get_word(ADDRESS(REGISTER_PC))))
     << std::endl;
 #endif
   return Instruction(this->memory_->get_word(this->registers_->get_word(ADDRESS(REGISTER_PC)), false));
