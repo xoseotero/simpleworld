@@ -24,7 +24,7 @@
 #include <vector>
 #include <string>
 
-#define BOOST_TEST_MODULE Unit test for CPU::Source
+#define BOOST_TEST_MODULE Unit test for cpu::Source
 #define BOOST_TEST_DYN_LINK
 #include <boost/test/unit_test.hpp>
 

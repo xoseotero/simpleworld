@@ -1,3 +1,4 @@
 SUBDIRS(
   cpu
+  db
   simpleworld)

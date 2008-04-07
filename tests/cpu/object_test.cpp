@@ -23,7 +23,7 @@
 
 #include <string>
 
-#define BOOST_TEST_MODULE Unit test for CPU::Object
+#define BOOST_TEST_MODULE Unit test for cpu::Object
 #define BOOST_TEST_DYN_LINK
 #include <boost/test/unit_test.hpp>
 
