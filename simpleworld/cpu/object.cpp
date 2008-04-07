@@ -86,9 +86,9 @@ The size of %1% (%2%) is not a multiple of 32bits")
       // If a unknown instruction or register is found suppose that the value
       // is data.
 #ifdef IS_BIG_ENDIAN
-      std::string data(boost::str(boost::format("0x%x") % instruction));
+      std::string data(boost::str(boost::format("0x%08X") % instruction));
 #else
-      std::string data(boost::str(boost::format("0x%x") %
+      std::string data(boost::str(boost::format("0x%08X") %
                                   change_byte_order(instruction)));
 #endif // IS_BIG_ENDIAN
       file.insert(i, data);
@@ -128,7 +128,7 @@ std::string Object::decompile(Word instruction) const
     result += " ";
     result += this->isa_.register_name(static_cast<Uint8>(inst.data));
   } else if (info.has_inmediate) {
-    std::string inmediate(boost::str(boost::format("0x%x") % inst.data));;
+    std::string inmediate(boost::str(boost::format("0x%04X") % inst.data));;
 
     result += " ";
     result += inmediate;

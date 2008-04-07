@@ -14,12 +14,12 @@
        push r0
        div r0 r1 r2
        pop r0
-       rri r0 r0 0xf
+       rri r0 r0 0x000F
 
        # restart the CPU
        restart
 
-       b 0xffffffd8		# loop
+       b 0xFFFFFFD8		# loop
 
 # 4 bytes for the stack
 0x00000000

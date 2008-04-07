@@ -45,13 +45,13 @@ Orientation turn(Orientation orientation, Turn side)
       orientation != OrientationSouth and
       orientation != OrientationWest)
     throw EXCEPTION(WorldError, boost::str(boost::format("\
-Wrong orientation value (%04x)")
+Wrong orientation value (0x%04x)")
                                            % orientation));
 
 
   if (side != TurnLeft and side != TurnRight)
     throw EXCEPTION(WorldError, boost::str(boost::format("\
-Wrong turn value (%04x)")
+Wrong turn value (0x%04x)")
                                            % side));
 
   if (side == TurnLeft)
@@ -93,13 +93,13 @@ Position move(Position position, Orientation orientation, Movement movement,
       orientation != OrientationSouth and
       orientation != OrientationWest)
     throw EXCEPTION(WorldError, boost::str(boost::format("\
-Wrong orientation value (%04x)")
+Wrong orientation value (0x%04x)")
                                            % orientation));
 
   if (movement != MoveForward and
       movement != MoveBackward)
     throw EXCEPTION(WorldError, boost::str(boost::format("\
-Wrong movement value (%04x)")
+Wrong movement value (0x%04x)")
                                            % movement));
 
   switch (orientation) {

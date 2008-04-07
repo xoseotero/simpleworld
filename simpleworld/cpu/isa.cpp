@@ -107,7 +107,7 @@ InstructionInfo ISA::instruction_info(Uint8 code) const
     this->instructions_.find(code);
   if (iter == this->instructions_.end())
     throw EXCEPTION(CodeError, boost::str(boost::format("\
-Instruction %02x not found")
+Instruction 0x%02X not found")
                                           % code));
 
   return (*iter).second;
@@ -143,7 +143,7 @@ std::string ISA::register_name(Uint8 code) const
     this->registers_.find(code);
   if (iter == this->registers_.end())
     throw EXCEPTION(CodeError, boost::str(boost::format("\
-Register %02x not found")
+Register 0x%02X not found")
                                           % code));
 
   return (*iter).second;
@@ -179,7 +179,7 @@ InterruptInfo ISA::interrupt_info(Uint8 code) const
     this->interrupts_.find(code);
   if (iter == this->interrupts_.end())
     throw EXCEPTION(CodeError, boost::str(boost::format("\
-Interrupt %02x not found")
+Interrupt 0x%02X not found")
                                           % code));
 
   return (*iter).second;
@@ -213,7 +213,7 @@ void ISA::add_instruction(InstructionInfo instruction)
 {
   if (this->instructions_.find(instruction.code) != this->instructions_.end())
     throw EXCEPTION(CodeError, boost::str(boost::format("\
-Instruction %02x already exists")
+Instruction 0x%02X already exists")
                                           % instruction.code));
 
   this->instructions_.insert(std::pair<Uint8,
@@ -251,7 +251,7 @@ void ISA::remove_instruction(Uint8 code)
     this->instructions_.find(code);
   if (iter == this->instructions_.end())
     throw EXCEPTION(CodeError, boost::str(boost::format("\
-Instruction %02x not found")
+Instruction 0x%02X not found")
                                           % code));
 
   this->instruction_codes_.erase((*iter).second.name);
@@ -268,7 +268,7 @@ void ISA::add_register(Uint8 code, std::string name)
 {
   if (this->registers_.find(code) != this->registers_.end())
     throw EXCEPTION(CodeError, boost::str(boost::format("\
-Register %02x already exists")
+Register 0x%02X already exists")
                                           % code));
 
   this->registers_.insert(std::pair<Uint8, std::string>(code, name));
@@ -285,7 +285,7 @@ void ISA::remove_register(Uint8 code)
   std::map<Uint8, std::string>::iterator iter = this->registers_.find(code);
   if (iter == this->registers_.end())
     throw EXCEPTION(CodeError, boost::str(boost::format("\
-Register %02x not found")
+Register 0x%02X not found")
                                           % code));
 
   this->register_codes_.erase((*iter).second);
@@ -301,7 +301,7 @@ void ISA::add_interrupt(InterruptInfo interrupt)
 {
   if (this->interrupts_.find(interrupt.code) != this->interrupts_.end())
     throw EXCEPTION(CodeError, boost::str(boost::format("\
-Interrupt %02x already exists")
+Interrupt 0x%02X already exists")
                                           % interrupt.code));
 
   this->interrupts_.insert(std::pair<Uint8, InterruptInfo>(interrupt.code,
@@ -333,7 +333,7 @@ void ISA::remove_interrupt(Uint8 code)
   std::map<Uint8, InterruptInfo>::iterator iter = this->interrupts_.find(code);
   if (iter == this->interrupts_.end())
     throw EXCEPTION(CodeError, boost::str(boost::format("\
-Interrupt %02x not found")
+Interrupt 0x%02X not found")
                                           % code));
 
   this->interrupt_codes_.erase((*iter).second.name);

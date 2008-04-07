@@ -42,7 +42,7 @@ Uint8 get_byte(Word word, Uint8 byte)
 {
   if (byte > 3)
     throw EXCEPTION(CPUException, boost::str(boost::format("\
-Byte %08x is out of range")
+Byte 0x%02X is out of range")
                                              % byte));
 
   return reinterpret_cast<Uint8*>(&word)[byte];
@@ -60,7 +60,7 @@ void set_byte(Word* word, Uint8 byte, Uint8 value)
 {
   if (byte > 3)
     throw EXCEPTION(CPUException, boost::str(boost::format("\
-Byte %08x is out of range")
+Byte 0x%02X is out of range")
                                              % byte));
 
   reinterpret_cast<Uint8*>(word)[byte] = value;

@@ -211,7 +211,7 @@ void CPU::next()
     InstructionInfo info = this->isa_.instruction_info(instruction.code);
 #ifdef DEBUG
     std::cout << boost::str(boost::format("\
-Instruction info:\tcode: 0x%02x, name: %s, nregs: %d, has_i: %d")
+Instruction info:\tcode: 0x%02X, name: %s, nregs: %d, has_i: %d")
                             % static_cast<int>(info.code)
                             % info.name
                             % static_cast<int>(info.nregs)
@@ -318,7 +318,7 @@ void CPU::interrupt(Uint8 code, Word r1, Word r2)
   if (not this->interrupt_enabled(code)) {
 #ifdef DEBUG
     std::cout << boost::str(boost::format("\
-Interrupt couldn't be thrown:\tcode: 0x%02x, name: %s")
+Interrupt couldn't be thrown:\tcode: 0x%02X, name: %s")
                             % static_cast<int>(code)
                             % this->isa_.interrupt_info(code).name)
                             << std::endl;
@@ -329,7 +329,7 @@ Interrupt couldn't be thrown:\tcode: 0x%02x, name: %s")
 
 #ifdef DEBUG
   std::cout << boost::str(boost::format("\
-Interrupt thrown:\tcode: 0x%02x, name: %s")
+Interrupt thrown:\tcode: 0x%02X, name: %s")
                           % static_cast<int>(code)
                           % this->isa_.interrupt_info(code).name)
             << std::endl;
@@ -385,7 +385,7 @@ void CPU::timer_interrupt()
 Instruction CPU::fetch_instruction_() const
 {
 #ifdef DEBUG
-  std::cout << boost::str(boost::format("Instruction[0x%08x]: 0x%08x")
+  std::cout << boost::str(boost::format("Instruction[0x%08X]: 0x%08X")
     % this->registers_->get_word(ADDRESS(REGISTER_PC))
     % this->memory_->get_word(this->registers_->get_word(ADDRESS(REGISTER_PC))))
     << std::endl;

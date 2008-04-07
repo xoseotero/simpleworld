@@ -256,7 +256,7 @@ cpu::Word SimpleWorld::myself(Bug* bug, Info info, cpu::Word* ypos)
 
   default:
     throw EXCEPTION(ActionError, boost::str(boost::format(\
-"Type of information (%04x) unknown")
+"Type of information (0x%04x) unknown")
                                             % info));
   }
 }
@@ -341,7 +341,7 @@ There is nothing in (%1%, %2%)")
 
   default:
     throw EXCEPTION(ActionError, boost::str(boost::format(\
-"Type of information (%04x) unknown")
+"Type of information (0x%04x) unknown")
                                             % info));
   }
 }

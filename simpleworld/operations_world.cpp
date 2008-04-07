@@ -200,7 +200,7 @@ cpu::Update world(cpu::CPU& cpu, cpu::Instruction inst)
 
       default:
         throw EXCEPTION(ActionError, boost::str(boost::format(\
-"Unknown action (%04x)")
+"Unknown action (0x%04x)")
                                                 % inst.data));
       }
     } catch (const ActionError& e) {

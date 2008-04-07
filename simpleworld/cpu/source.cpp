@@ -419,7 +419,7 @@ Label %2% already defined")
       std::map<std::string, Address>::const_iterator iter =
         this->labels_.begin();
       while (iter != this->labels_.end()) {
-        std::string address(boost::str(boost::format("0x%x") %
+        std::string address(boost::str(boost::format("0x%08X") %
                                        (*iter).second));
         this->get_line(i) =
           boost::regex_replace(this->get_line(i),
@@ -437,7 +437,7 @@ Label %2% already defined")
       std::map<std::string, Address>::const_iterator iter =
         this->labels_.begin();
       while (iter != this->labels_.end()) {
-        std::string offset(boost::str(boost::format("0x%x") %
+        std::string offset(boost::str(boost::format("0x%04X") %
                                       ((*iter).second -
                                        lines_code * sizeof(Word))));
         this->get_line(i) =
