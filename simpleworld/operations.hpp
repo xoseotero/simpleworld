@@ -27,19 +27,6 @@
 #include <simpleworld/cpu/types.hpp>
 #include <simpleworld/cpu/instruction.hpp>
 
-#define REGISTER(NUMBER) (NUMBER * sizeof(CPU::Word))
-#define REGISTER_PC REGISTER(0xd)
-#define REGISTER_SP REGISTER(0xe)
-#define REGISTER_CS REGISTER(0xf)
-
-#define INTERRUPT_TIMER (0x0)
-#define INTERRUPT_SOFTWARE (0x1)
-#define INTERRUPT_INSTRUCTION (0x2)
-#define INTERRUPT_MEMORY (0x3)
-#define INTERRUPT_DIVISION (0x4)
-#define INTERRUPT_WORLDACTION (0x5)
-#define INTERRUPT_WORLDEVENT (0x6)
-
 namespace simpleworld
 {
 

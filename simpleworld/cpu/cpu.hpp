@@ -33,6 +33,20 @@
 #include <simpleworld/cpu/instruction.hpp>
 #include <simpleworld/cpu/isa.hpp>
 
+#define REGISTER_PC 0xc
+#define REGISTER_SP 0xd
+#define REGISTER_FP 0xe
+#define REGISTER_CS 0xf
+
+#define INTERRUPT_TIMER (0x0)
+#define INTERRUPT_SOFTWARE (0x1)
+#define INTERRUPT_INSTRUCTION (0x2)
+#define INTERRUPT_MEMORY (0x3)
+#define INTERRUPT_DIVISION (0x4)
+
+// Address of nth element in the memory
+#define ADDRESS(n) ((n) * sizeof(::simpleworld::cpu::Word))
+
 namespace simpleworld
 {
 /**

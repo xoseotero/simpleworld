@@ -30,6 +30,9 @@
 #include <simpleworld/cpu/cpu.hpp>
 #include <simpleworld/db/bug.hpp>
 
+#define INTERRUPT_WORLDACTION (0x5)
+#define INTERRUPT_WORLDEVENT (0x6)
+
 namespace simpleworld
 {
 

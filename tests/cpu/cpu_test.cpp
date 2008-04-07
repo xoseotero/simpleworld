@@ -39,8 +39,6 @@ namespace sw = simpleworld;
 namespace cpu = simpleworld::cpu;
 
 
-// Address of the nth element in the memory
-#define ADDRESS(n) ((n) * sizeof(cpu::Word))
 #define REGISTER(cpu, name) ADDRESS((cpu).isa().register_code(name))
 
 #define CPU_SAVE (TESTOUTPUT "cpu_save.swo")

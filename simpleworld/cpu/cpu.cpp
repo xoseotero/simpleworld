@@ -33,9 +33,6 @@
 #include "cs.hpp"
 #include "operations.hpp"
 
-// Address of nth element in the memory
-#define ADDRESS(n) ((n) * sizeof(Word))
-
 namespace simpleworld
 {
 namespace cpu
