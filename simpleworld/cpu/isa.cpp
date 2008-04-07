@@ -28,9 +28,9 @@
 #include "codeerror.hpp"
 #include "isa.hpp"
 
-namespace SimpleWorld
+namespace simpleworld
 {
-namespace CPU
+namespace cpu
 {
 
 /**

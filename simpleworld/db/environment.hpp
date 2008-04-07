@@ -28,9 +28,9 @@
 #include <simpleworld/db/types.hpp>
 #include <simpleworld/db/table.hpp>
 
-namespace SimpleWorld
+namespace simpleworld
 {
-namespace DB
+namespace db
 {
 
 /**

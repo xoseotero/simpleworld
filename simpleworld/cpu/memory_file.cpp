@@ -31,9 +31,9 @@ namespace fs = boost::filesystem;
 
 #include "memory_file.hpp"
 
-namespace SimpleWorld
+namespace simpleworld
 {
-namespace CPU
+namespace cpu
 {
 
 /**

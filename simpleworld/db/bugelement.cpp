@@ -23,9 +23,9 @@
 
 #include "bugelement.hpp"
 
-namespace SimpleWorld
+namespace simpleworld
 {
-namespace DB
+namespace db
 {
 
 /**

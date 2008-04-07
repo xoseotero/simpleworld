@@ -30,12 +30,12 @@
 #include <simpleworld/cpu/cpu.hpp>
 #include <simpleworld/db/bug.hpp>
 
-namespace SimpleWorld
+namespace simpleworld
 {
 
 class SimpleWorld;
 
-class Bug: public DB::Bug, public CPU::CPU
+class Bug: public db::Bug, public cpu::CPU
 {
 public:
   /**
@@ -44,7 +44,7 @@ public:
    * @param id id of the bug.
    * @exception DBException if there is a error in the database.
    */
-  Bug(SimpleWorld* sw, DB::ID id);
+  Bug(SimpleWorld* sw, db::ID id);
 
 
   /**

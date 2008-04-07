@@ -32,12 +32,12 @@
 #include <simpleworld/types.hpp>
 #include <simpleworld/db/types.hpp>
 
-namespace SimpleWorld
+namespace simpleworld
 {
 /**
  * Namespace for Simple World Data Base.
  */
-namespace DB
+namespace db
 {
 
 /**

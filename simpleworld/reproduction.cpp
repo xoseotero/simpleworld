@@ -35,7 +35,7 @@
 #include <boost/format.hpp>
 #endif // DEBUG
 
-namespace SimpleWorld
+namespace simpleworld
 {
 
 /**
@@ -53,12 +53,12 @@ static int randint(int min, int max)
  * Create a random word.
  * @return the random word.
  */
-static ::SimpleWorld::CPU::Word random_word()
+static cpu::Word random_word()
 {
-  ::SimpleWorld::CPU::Word word;
+  cpu::Word word;
   unsigned int i;
-  for (i = 0; i < sizeof(::SimpleWorld::CPU::Word); i++)
-    ::SimpleWorld::CPU::set_byte(&word, i, randint(0, 256));
+  for (i = 0; i < sizeof(cpu::Word); i++)
+    cpu::set_byte(&word, i, randint(0, 256));
 
   return word;
 }
@@ -69,21 +69,20 @@ static ::SimpleWorld::CPU::Word random_word()
  * @param copy_pos position of the new word.
  * @param code original code.
  */
-static void add_word(::SimpleWorld::DB::Code* copy,
-                     ::SimpleWorld::CPU::Address copy_pos,
-                     const ::SimpleWorld::DB::Code& code)
+static void add_word(db::Code* copy, cpu::Address copy_pos,
+                     const db::Code& code)
 {
 #ifdef DEBUG
   std::cout << boost::format("Addition of a random word")
     << std::endl;
 #endif // DEBUG
 
-  copy->code.resize(copy->code.size() + sizeof(::SimpleWorld::CPU::Word));
+  copy->code.resize(copy->code.size() + sizeof(cpu::Word));
   copy->code.set_word(copy_pos, random_word());
 
-  ::SimpleWorld::DB::Mutation mutation(code.db());
+  db::Mutation mutation(code.db());
   mutation.position = copy_pos;
-  mutation.type = ::SimpleWorld::DB::Mutation::addition;
+  mutation.type = db::Mutation::addition;
   mutation.mutated = copy->code[copy_pos];
   mutation.add_null("original");
   copy->mutations.push_back(mutation);
@@ -96,21 +95,19 @@ static void add_word(::SimpleWorld::DB::Code* copy,
  * @param code original code.
  * @param code_pos position of the original word.
  */
-static void eliminate_word(::SimpleWorld::DB::Code* copy,
-                           ::SimpleWorld::CPU::Address copy_pos,
-                           const ::SimpleWorld::DB::Code& code,
-                           ::SimpleWorld::CPU::Address code_pos)
+static void eliminate_word(db::Code* copy, cpu::Address copy_pos,
+                           const db::Code& code, cpu::Address code_pos)
 {
 #ifdef DEBUG
   std::cout << boost::format("Deletion of a word")
     << std::endl;
 #endif // DEBUG
 
-  copy->code.resize(copy->code.size() - sizeof(::SimpleWorld::CPU::Word));
+  copy->code.resize(copy->code.size() - sizeof(cpu::Word));
 
-  ::SimpleWorld::DB::Mutation mutation(code.db());
+  db::Mutation mutation(code.db());
   mutation.position = copy_pos;
-  mutation.type = ::SimpleWorld::DB::Mutation::deletion;
+  mutation.type = db::Mutation::deletion;
   mutation.original = code.code[code_pos];
   mutation.add_null("mutated");
   copy->mutations.push_back(mutation);
@@ -123,10 +120,8 @@ static void eliminate_word(::SimpleWorld::DB::Code* copy,
  * @param code original code.
  * @param code_pos position of the original word.
  */
-static void change_word(::SimpleWorld::DB::Code* copy,
-                        ::SimpleWorld::CPU::Address copy_pos,
-                        const ::SimpleWorld::DB::Code& code,
-                        ::SimpleWorld::CPU::Address code_pos)
+static void change_word(db::Code* copy, cpu::Address copy_pos,
+                        const db::Code& code, cpu::Address code_pos)
 {
 #ifdef DEBUG
   std::cout << boost::format("Change of a word")
@@ -140,9 +135,9 @@ static void change_word(::SimpleWorld::DB::Code* copy,
   // original code
   if (copy->code[copy_pos] != code.code[code_pos]) {
     // this is a mutation
-    ::SimpleWorld::DB::Mutation mutation(code.db());
+    db::Mutation mutation(code.db());
     mutation.position = copy_pos;
-    mutation.type = ::SimpleWorld::DB::Mutation::mutation;
+    mutation.type = db::Mutation::mutation;
     mutation.original = code.code[code_pos];
     mutation.mutated = copy->code[copy_pos];
     copy->mutations.push_back(mutation);
@@ -155,13 +150,13 @@ static void change_word(::SimpleWorld::DB::Code* copy,
  * @param code the original code.
  * @return the copy of the code.
  */
-::SimpleWorld::DB::Code copy_code(const ::SimpleWorld::DB::Code& code,
+db::Code copy_code(const db::Code& code,
                                   float mutations_probability)
 {
-  ::SimpleWorld::DB::Code copy(code.db());
+  db::Code copy(code.db());
   copy.code.resize(code.code.size());
 
-  ::SimpleWorld::CPU::Address code_pos = 0, copy_pos = 0;
+  cpu::Address code_pos = 0, copy_pos = 0;
   while (code_pos < code.code.size()) {
     // check if the word will be mutated
     if (randint(0, 1 / mutations_probability) == 0) {
@@ -170,22 +165,22 @@ static void change_word(::SimpleWorld::DB::Code* copy,
       case 0:
         // addition of a random word
         add_word(&copy, copy_pos, code);
-        copy_pos += sizeof(::SimpleWorld::CPU::Word);
+        copy_pos += sizeof(cpu::Word);
 
         break;
 
       case 1:
         // elimination of a word
         eliminate_word(&copy, copy_pos, code, code_pos);
-        code_pos += sizeof(::SimpleWorld::CPU::Word);
+        code_pos += sizeof(cpu::Word);
 
         break;
 
       case 2:
         // change the word by a random one
         change_word(&copy, copy_pos, code, code_pos);
-        code_pos += sizeof(::SimpleWorld::CPU::Word);
-        copy_pos += sizeof(::SimpleWorld::CPU::Word);
+        code_pos += sizeof(cpu::Word);
+        copy_pos += sizeof(cpu::Word);
 
         break;
       }
@@ -193,8 +188,8 @@ static void change_word(::SimpleWorld::DB::Code* copy,
       // same as original
       copy.code.set_word(copy_pos, code.code[code_pos]);
 
-      code_pos += sizeof(::SimpleWorld::CPU::Word);
-      copy_pos += sizeof(::SimpleWorld::CPU::Word);
+      code_pos += sizeof(cpu::Word);
+      copy_pos += sizeof(cpu::Word);
     }
   }
 

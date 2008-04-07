@@ -40,7 +40,7 @@
 #define INTERRUPT_WORLDACTION (0x5)
 #define INTERRUPT_WORLDEVENT (0x6)
 
-namespace SimpleWorld
+namespace simpleworld
 {
 
 /**
@@ -49,7 +49,7 @@ namespace SimpleWorld
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-CPU::Update world(CPU::CPU& cpu, CPU::Instruction inst);
+cpu::Update world(cpu::CPU& cpu, cpu::Instruction inst);
 
 }
 

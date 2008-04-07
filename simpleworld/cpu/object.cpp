@@ -34,9 +34,9 @@
 #include "file.hpp"
 #include "object.hpp"
 
-namespace SimpleWorld
+namespace simpleworld
 {
-namespace CPU
+namespace cpu
 {
 
 /**

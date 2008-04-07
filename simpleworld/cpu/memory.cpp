@@ -30,9 +30,9 @@
 #include "memory.hpp"
 #include "memoryerror.hpp"
 
-namespace SimpleWorld
+namespace simpleworld
 {
-namespace CPU
+namespace cpu
 {
 
 /**

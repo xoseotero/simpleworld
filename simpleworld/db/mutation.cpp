@@ -26,9 +26,9 @@
 #include "exception.hpp"
 #include "mutation.hpp"
 
-namespace SimpleWorld
+namespace simpleworld
 {
-namespace DB
+namespace db
 {
 
 /**

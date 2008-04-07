@@ -26,7 +26,7 @@
 #include "worlderror.hpp"
 #include "world.hpp"
 
-namespace SimpleWorld
+namespace simpleworld
 {
 
 /**

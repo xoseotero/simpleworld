@@ -31,9 +31,9 @@
 #include "exception.hpp"
 #include "bug.hpp"
 
-namespace SimpleWorld
+namespace simpleworld
 {
-namespace DB
+namespace db
 {
 
 /**

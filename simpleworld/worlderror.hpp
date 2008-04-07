@@ -28,7 +28,7 @@
 #include <simpleworld/ints.hpp>
 #include <simpleworld/exception.hpp>
 
-namespace SimpleWorld
+namespace simpleworld
 {
 
 /**

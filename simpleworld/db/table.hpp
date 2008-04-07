@@ -31,9 +31,9 @@
 #include <simpleworld/db/types.hpp>
 #include <simpleworld/db/db.hpp>
 
-namespace SimpleWorld
+namespace simpleworld
 {
-namespace DB
+namespace db
 {
 
 /**

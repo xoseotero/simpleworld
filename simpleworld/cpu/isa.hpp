@@ -33,9 +33,9 @@
 #include <simpleworld/cpu/instruction.hpp>
 #include <simpleworld/cpu/memory.hpp>
 
-namespace SimpleWorld
+namespace simpleworld
 {
-namespace CPU
+namespace cpu
 {
 
 /**

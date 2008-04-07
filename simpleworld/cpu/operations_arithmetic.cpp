@@ -26,9 +26,9 @@
 
 #define LOWBITS_64BITS SINT64(0x00000000ffffffff)
 
-namespace SimpleWorld
+namespace simpleworld
 {
-namespace CPU
+namespace cpu
 {
 
 /**

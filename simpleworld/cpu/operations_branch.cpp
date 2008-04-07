@@ -23,9 +23,9 @@
 
 #include "operations.hpp"
 
-namespace SimpleWorld
+namespace simpleworld
 {
-namespace CPU
+namespace cpu
 {
 
 // Before executing each operation, it's checked if the address is valid.

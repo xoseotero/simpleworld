@@ -29,9 +29,9 @@
 #include <simpleworld/ints.hpp>
 #include <simpleworld/db/exception.hpp>
 
-namespace SimpleWorld
+namespace simpleworld
 {
-namespace DB
+namespace db
 {
 
 /**

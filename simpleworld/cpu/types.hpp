@@ -26,9 +26,9 @@
 
 #include <simpleworld/ints.hpp>
 
-namespace SimpleWorld
+namespace simpleworld
 {
-namespace CPU
+namespace cpu
 {
 
 typedef Uint32 Word;

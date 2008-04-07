@@ -37,9 +37,9 @@ namespace fs = boost::filesystem;
 #include "exception.hpp"
 #include "parsererror.hpp"
 
-namespace SimpleWorld
+namespace simpleworld
 {
-namespace CPU
+namespace cpu
 {
 
 // Regular expressions for the code

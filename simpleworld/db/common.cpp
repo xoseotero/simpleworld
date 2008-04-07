@@ -27,9 +27,9 @@
 #include <simpleworld/cpu/types.hpp>
 #include "common.hpp"
 
-namespace SimpleWorld
+namespace simpleworld
 {
-namespace DB
+namespace db
 {
 
 /**
@@ -38,20 +38,19 @@ namespace DB
  * @param index row where the BLOB is stored.
  * @return the block of memory.
  */
-::SimpleWorld::CPU::Memory get_memory(sqlite3x::sqlite3_cursor* cursor,
-                                      int index)
+cpu::Memory get_memory(sqlite3x::sqlite3_cursor* cursor, int index)
 {
-  ::SimpleWorld::CPU::Memory memory;
+  cpu::Memory memory;
 
   int size;
-  const CPU::Word* blob =
-    static_cast<const CPU::Word*>(cursor->getblob(index, size));
+  const cpu::Word* blob =
+    static_cast<const cpu::Word*>(cursor->getblob(index, size));
 
-  memory.resize(static_cast<CPU::Address>(size));
+  memory.resize(static_cast<cpu::Address>(size));
 
-  CPU::Address i;
-  for (i = 0; i < size; i += sizeof(CPU::Word))
-    memory.set_word(i, blob[i / sizeof(CPU::Word)], false);
+  cpu::Address i;
+  for (i = 0; i < size; i += sizeof(cpu::Word))
+    memory.set_word(i, blob[i / sizeof(cpu::Word)], false);
 
   return memory;
 }
@@ -63,15 +62,15 @@ namespace DB
  * @param memory the block of memory.
  */
 void bind_memory(sqlite3x::sqlite3_command* sql, int index,
-                 const ::SimpleWorld::CPU::Memory& memory)
+                 const cpu::Memory& memory)
 {
   Uint16 size = memory.size();
 
-  boost::scoped_array<CPU::Word> blob(new CPU::Word[size / sizeof(CPU::Word)]);
+  boost::scoped_array<cpu::Word> blob(new cpu::Word[size / sizeof(cpu::Word)]);
 
-  CPU::Address i;
-  for (i = 0; i < size; i += sizeof(CPU::Word))
-    blob[i / sizeof(CPU::Word)] = memory.get_word(i, false);
+  cpu::Address i;
+  for (i = 0; i < size; i += sizeof(cpu::Word))
+    blob[i / sizeof(cpu::Word)] = memory.get_word(i, false);
 
   sql->bind(index, blob.get(), size);
 }

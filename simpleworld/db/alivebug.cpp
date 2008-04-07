@@ -28,9 +28,9 @@
 #include "deadbug.hpp"
 #include "alivebug.hpp"
 
-namespace SimpleWorld
+namespace simpleworld
 {
-namespace DB
+namespace db
 {
 
 /**

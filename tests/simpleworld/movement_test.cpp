@@ -27,10 +27,10 @@
 
 #include <simpleworld/types.hpp>
 #include <simpleworld/movement.hpp>
-namespace sw = SimpleWorld;
+namespace sw = simpleworld;
 
 
-namespace SimpleWorld
+namespace simpleworld
 {
 
 /**

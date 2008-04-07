@@ -26,12 +26,12 @@
 
 #include <simpleworld/cpu/memory.hpp>
 
-namespace SimpleWorld
+namespace simpleworld
 {
-namespace DB
+namespace db
 {
 
-class Memory: public CPU::Memory
+class Memory: public cpu::Memory
 {
 public:
   /**
@@ -41,7 +41,7 @@ public:
    * @param changed pointer to the variable used to advise about a change.
    * @param size bytes of the memory
    */
-  Memory(bool* changed, CPU::Address size = 0);
+  Memory(bool* changed, cpu::Address size = 0);
 
   /**
    * Copy constructor.
@@ -55,7 +55,7 @@ public:
    * Set the size of the memory.
    * The new memory is zeroed.
    */
-  void resize(CPU::Address size);
+  void resize(cpu::Address size);
 
 
   /**
@@ -68,7 +68,7 @@ public:
    * @param system_endian if the word is in the systen endianness
    * @exception SimpleWorld::Exception address > (size - 4)
    */
-  void set_word(CPU::Address address, CPU::Word value,
+  void set_word(cpu::Address address, cpu::Word value,
                 bool system_endian = true);
 
 
@@ -77,14 +77,14 @@ public:
    * @param memory memory to copy.
    * @return a reference to this object.
    */
-  Memory& assign(const CPU::Memory& memory);
+  Memory& assign(const cpu::Memory& memory);
 
   /**
    * Copy the content of other Memory class.
    * @param memory memory to copy.
    * @return a reference to this object.
    */
-  Memory& operator =(const CPU::Memory& memory) { return this->assign(memory); }
+  Memory& operator =(const cpu::Memory& memory) { return this->assign(memory); }
 
 private:
   bool* changed_;

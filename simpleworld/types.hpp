@@ -26,7 +26,7 @@
 
 #include <simpleworld/ints.hpp>
 
-namespace SimpleWorld
+namespace simpleworld
 {
 
 /**

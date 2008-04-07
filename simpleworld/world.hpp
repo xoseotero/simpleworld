@@ -30,7 +30,7 @@
 #include <simpleworld/ints.hpp>
 #include <simpleworld/element.hpp>
 
-namespace SimpleWorld
+namespace simpleworld
 {
 
 /**

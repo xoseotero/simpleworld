@@ -30,8 +30,8 @@
 #include <simpleworld/config.hpp>
 #include <simpleworld/ints.hpp>
 #include <simpleworld/cpu/instruction.hpp>
-namespace sw = SimpleWorld;
-namespace cpu = SimpleWorld::CPU;
+namespace sw = simpleworld;
+namespace cpu = simpleworld::cpu;
 
 
 /**

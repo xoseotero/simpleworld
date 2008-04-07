@@ -38,9 +38,9 @@
 #define MAXINTS_MASK   0x0F000000
 #endif // IS_BIG_ENDIAN
 
-namespace SimpleWorld
+namespace simpleworld
 {
-namespace CPU
+namespace cpu
 {
 
 /**

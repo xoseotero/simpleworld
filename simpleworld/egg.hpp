@@ -26,12 +26,12 @@
 
 #include <simpleworld/db/egg.hpp>
 
-namespace SimpleWorld
+namespace simpleworld
 {
 
 class SimpleWorld;
 
-class Egg: public DB::Egg
+class Egg: public db::Egg
 {
 public:
   /**
@@ -40,7 +40,7 @@ public:
    * @param id id of the egg.
    * @exception DBException if there is a error in the database.
    */
-  Egg(SimpleWorld* sw, DB::ID id);
+  Egg(SimpleWorld* sw, db::ID id);
 };
 
 }

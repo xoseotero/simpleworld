@@ -39,9 +39,9 @@
 #define INTERRUPT_MEMORY (0x3)
 #define INTERRUPT_DIVISION (0x4)
 
-namespace SimpleWorld
+namespace simpleworld
 {
-namespace CPU
+namespace cpu
 {
 
 /* Management operations. */

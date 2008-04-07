@@ -34,8 +34,8 @@
 #include <simpleworld/cpu/parsererror.hpp>
 #include <simpleworld/cpu/memory.hpp>
 #include <simpleworld/cpu/source.hpp>
-namespace sw = SimpleWorld;
-namespace cpu = SimpleWorld::CPU;
+namespace sw = simpleworld;
+namespace cpu = simpleworld::cpu;
 
 #include "printexc.hpp"
 #include "fakecpu.hpp"

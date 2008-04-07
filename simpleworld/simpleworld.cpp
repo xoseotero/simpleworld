@@ -67,7 +67,7 @@
 #define DEFAULT_ENERGY_EAT 3
 #define DEFAULT_ENERGY_EGG 4
 
-namespace SimpleWorld
+namespace simpleworld
 {
 
 /**
@@ -126,12 +126,12 @@ SimpleWorld::~SimpleWorld()
  */
 void SimpleWorld::add_egg(Energy energy,
                           Position position, Orientation orientation,
-                          const CPU::Memory& code)
+                          const cpu::Memory& code)
 {
   // begin a transaction
   sqlite3x::sqlite3_transaction transaction(*this);
 
-  ::SimpleWorld::DB::Egg egg(this);
+  db::Egg egg(this);
   egg.position = position;
   egg.orientation = orientation;
   egg.birth = this->env_->time + this->env_->time_birth;
@@ -160,7 +160,7 @@ void SimpleWorld::add_food(Position position, Energy size)
   // begin a transaction
   sqlite3x::sqlite3_transaction transaction(*this);
 
-  ::SimpleWorld::DB::Food food(this);
+  db::Food food(this);
   food.position = position;
   food.size = size;
   food.insert();
@@ -226,7 +226,7 @@ void SimpleWorld::nothing(Bug* bug)
  * @return The information.
  * @exception ActionError if something fails.
  */
-CPU::Word SimpleWorld::myself(Bug* bug, Info info, CPU::Word* ypos)
+cpu::Word SimpleWorld::myself(Bug* bug, Info info, cpu::Word* ypos)
 {
 #ifdef DEBUG
   std::cout << boost::format("Bug %1% doing action myself")
@@ -239,20 +239,20 @@ CPU::Word SimpleWorld::myself(Bug* bug, Info info, CPU::Word* ypos)
 
   switch (info) {
   case InfoID:
-    return static_cast<CPU::Word>(bug->id());
+    return static_cast<cpu::Word>(bug->id());
 
   case InfoSize:
-    return static_cast<CPU::Word>(bug->code.size);
+    return static_cast<cpu::Word>(bug->code.size);
 
   case InfoEnergy:
-    return static_cast<CPU::Word>(bug->energy);
+    return static_cast<cpu::Word>(bug->energy);
 
   case InfoPosition:
-    *ypos = static_cast<CPU::Word>(bug->position.y);
-    return static_cast<CPU::Word>(bug->position.x);
+    *ypos = static_cast<cpu::Word>(bug->position.y);
+    return static_cast<cpu::Word>(bug->position.x);
 
   case InfoOrientation:
-    return static_cast<CPU::Word>(bug->orientation);
+    return static_cast<cpu::Word>(bug->orientation);
 
   default:
     throw EXCEPTION(ActionError, boost::str(boost::format(\
@@ -294,7 +294,7 @@ ElementType SimpleWorld::detect(Bug* bug)
  * @return The information.
  * @exception ActionError if something fails.
  */
-CPU::Word SimpleWorld::information(Bug* bug, Info info, CPU::Word* ypos)
+cpu::Word SimpleWorld::information(Bug* bug, Info info, cpu::Word* ypos)
 {
 #ifdef DEBUG
   std::cout << boost::format("Bug %1% doing action information")
@@ -321,23 +321,23 @@ There is nothing in (%1%, %2%)")
 
   switch (info) {
   case InfoID:  // Only eggs and bugs
-    return static_cast<CPU::Word>(static_cast< ::SimpleWorld::DB::BugElement* >(target)->id());
+    return static_cast<cpu::Word>(static_cast< db::BugElement* >(target)->id());
 
   case InfoSize: // Every element
     if (target->type == ElementFood)
-      return static_cast<CPU::Word>(static_cast<Food*>(target)->size);
+      return static_cast<cpu::Word>(static_cast<Food*>(target)->size);
     else
-      return static_cast<CPU::Word>(static_cast< ::SimpleWorld::DB::BugElement* >(target)->code.size);
+      return static_cast<cpu::Word>(static_cast< db::BugElement* >(target)->code.size);
 
   case InfoEnergy: // Only eggs and bugs
-    return static_cast<CPU::Word>(static_cast< ::SimpleWorld::DB::AliveBug* >(target)->energy);
+    return static_cast<cpu::Word>(static_cast< db::AliveBug* >(target)->energy);
 
   case InfoPosition: // Every element
-    *ypos = static_cast<CPU::Word>(target->position.y);
-    return static_cast<CPU::Word>(target->position.x);
+    *ypos = static_cast<cpu::Word>(target->position.y);
+    return static_cast<cpu::Word>(target->position.x);
 
   case InfoOrientation: // Only eggs and bugs
-    return static_cast<CPU::Word>(static_cast< ::SimpleWorld::DB::BugElement* >(target)->orientation);
+    return static_cast<cpu::Word>(static_cast< db::BugElement* >(target)->orientation);
 
   default:
     throw EXCEPTION(ActionError, boost::str(boost::format(\
@@ -394,7 +394,7 @@ void SimpleWorld::turn(Bug* bug, Turn turn)
   bug->changed = true;
 
   try {
-    bug->orientation = ::SimpleWorld::turn(bug->orientation, turn);
+    bug->orientation = ::simpleworld::turn(bug->orientation, turn);
   } catch (const Exception& e) {
     throw EXCEPTION(ActionError, e.what);
   }
@@ -539,10 +539,10 @@ Position used (%1%, %2%)")
                                             % front.y));
 
 
-  ::SimpleWorld::DB::Egg egg(this);
+  db::Egg egg(this);
   egg.position = front;
   // the egg is looking to the father
-  egg.orientation = ::SimpleWorld::turn(::SimpleWorld::turn(bug->orientation,
+  egg.orientation = ::simpleworld::turn(::simpleworld::turn(bug->orientation,
                                                             TurnLeft),
                                         TurnLeft);
   egg.birth = this->env_->time + this->env_->time_birth;
@@ -568,7 +568,7 @@ void SimpleWorld::on_open()
 
   // Load the environment
   if (this->environments().empty()) {
-    this->env_ = new ::SimpleWorld::DB::Environment(this);
+    this->env_ = new db::Environment(this);
     this->env_->time = 0;
     this->env_->size = DEFAULT_SIZE;
     this->env_->energy_developed = DEFAULT_ENERGY_DEVELOPED;
@@ -585,7 +585,7 @@ void SimpleWorld::on_open()
     this->env_->energy_egg = DEFAULT_ENERGY_EGG;
     this->env_->insert();
   } else {
-    this->env_ = new ::SimpleWorld::DB::Environment(this,
+    this->env_ = new db::Environment(this,
       this->last_environment());
   }
 
@@ -593,8 +593,8 @@ void SimpleWorld::on_open()
 
 
   // Load the elements of the world
-  std::vector< ::SimpleWorld::DB::ID > ids;
-  std::vector< ::SimpleWorld::DB::ID >::const_iterator iter;
+  std::vector< db::ID > ids;
+  std::vector< db::ID >::const_iterator iter;
 
   ids = this->food();
   for (iter = ids.begin(); iter != ids.end(); ++iter) {
@@ -625,7 +625,7 @@ void SimpleWorld::on_open()
  */
 Position SimpleWorld::front(Bug* bug)
 {
-  return ::SimpleWorld::move(bug->position, bug->orientation,
+  return ::simpleworld::move(bug->position, bug->orientation,
                              MoveForward, this->world_->size());
 }
 
@@ -738,7 +738,7 @@ Egg[%1%] died")
  * @param egg The egg.
  * @param killer_id Who killed it.
  */
-void SimpleWorld::kill(Egg* egg, ::SimpleWorld::DB::ID killer_id)
+void SimpleWorld::kill(Egg* egg, db::ID killer_id)
 {
   // Convert the egg in food
   Food* food = new Food(this, egg->die(this->env_->time, killer_id));
@@ -805,7 +805,7 @@ Bug[%1%] died")
  * @param bug The bug.
  * @param killer_id Who killed it.
  */
-void SimpleWorld::kill(Bug* bug, ::SimpleWorld::DB::ID killer_id)
+void SimpleWorld::kill(Bug* bug, db::ID killer_id)
 {
   // Convert the bug in food
   Food* food = new Food(this, bug->die(this->env_->time, killer_id));
@@ -851,7 +851,7 @@ void SimpleWorld::bugs_run()
     try {
       // execute a instruction
       (*bug)->next();
-    } catch (const ::SimpleWorld::CPU::CPUException& e) {
+    } catch (const cpu::CPUException& e) {
       // some uncaught error in the CPU (CPU stopped)
       this->kill(*bug);
     } catch (const BugDeath& e) {

@@ -25,7 +25,7 @@
 
 #include "food.hpp"
 
-namespace SimpleWorld
+namespace simpleworld
 {
 
 /**
@@ -34,8 +34,8 @@ namespace SimpleWorld
  * @param id id of the food.
  * @exception DBException if there is a error in the database.
  */
-Food::Food(SimpleWorld* sw, DB::ID id)
-  : DB::Food(sw, id)
+Food::Food(SimpleWorld* sw, db::ID id)
+  : db::Food(sw, id)
 {
 }
 

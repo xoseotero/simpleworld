@@ -23,7 +23,7 @@
 
 #include "element.hpp"
 
-namespace SimpleWorld
+namespace simpleworld
 {
 
 /**

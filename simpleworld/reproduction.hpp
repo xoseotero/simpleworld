@@ -26,7 +26,7 @@
 
 #include <simpleworld/db/code.hpp>
 
-namespace SimpleWorld
+namespace simpleworld
 {
 
 /**
@@ -34,8 +34,7 @@ namespace SimpleWorld
  * @param code the original code.
  * @return the copy of the code.
  */
-::SimpleWorld::DB::Code copy_code(const ::SimpleWorld::DB::Code& code,
-                                  float mutations_probability);
+db::Code copy_code(const db::Code& code, float mutations_probability);
 
 }
 

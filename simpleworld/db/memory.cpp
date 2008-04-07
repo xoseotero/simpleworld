@@ -23,9 +23,9 @@
 
 #include "memory.hpp"
 
-namespace SimpleWorld
+namespace simpleworld
 {
-namespace DB
+namespace db
 {
 
 /**
@@ -35,8 +35,8 @@ namespace DB
  * @param changed pointer to the variable used to advise about a change.
  * @param size bytes of the memory
  */
-Memory::Memory(bool* changed, CPU::Address size)
-  : CPU::Memory(size), changed_(changed)
+Memory::Memory(bool* changed, cpu::Address size)
+  : cpu::Memory(size), changed_(changed)
 {
   *this->changed_ = false;
 }
@@ -47,7 +47,7 @@ Memory::Memory(bool* changed, CPU::Address size)
  * @param changed pointer to the variable used to advise about a change.
  */
 Memory::Memory(const Memory& memory, bool* changed)
-  : CPU::Memory(memory), changed_(changed)
+  : cpu::Memory(memory), changed_(changed)
 {
   *this->changed_ = false;
 }
@@ -57,9 +57,9 @@ Memory::Memory(const Memory& memory, bool* changed)
  * Set the size of the memory.
  * The new memory is zeroed.
  */
-void Memory::resize(CPU::Address size)
+void Memory::resize(cpu::Address size)
 {
-  CPU::Memory::resize(size);
+  cpu::Memory::resize(size);
 
   *this->changed_ = true;
 }
@@ -75,10 +75,10 @@ void Memory::resize(CPU::Address size)
  * @param system_endian if the word is in the systen endianness
  * @exception SimpleWorld::Exception address > (size - 4)
  */
-void Memory::set_word(CPU::Address address, CPU::Word value,
+void Memory::set_word(cpu::Address address, cpu::Word value,
                       bool system_endian)
 {
-  CPU::Memory::set_word(address, value, system_endian);
+  cpu::Memory::set_word(address, value, system_endian);
 
   *this->changed_ = true;
 }
@@ -89,9 +89,9 @@ void Memory::set_word(CPU::Address address, CPU::Word value,
  * @param memory memory to copy.
  * @return a reference to this object.
  */
-Memory& Memory::assign(const CPU::Memory& memory)
+Memory& Memory::assign(const cpu::Memory& memory)
 {
-  CPU::Memory::assign(memory);
+  cpu::Memory::assign(memory);
 
   *this->changed_ = true;
 

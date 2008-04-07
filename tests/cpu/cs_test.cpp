@@ -28,8 +28,8 @@
 #include <simpleworld/config.hpp>
 #include <simpleworld/ints.hpp>
 #include <simpleworld/cpu/cs.hpp>
-namespace sw = SimpleWorld;
-namespace cpu = SimpleWorld::CPU;
+namespace sw = simpleworld;
+namespace cpu = simpleworld::cpu;
 
 
 /**

@@ -28,7 +28,7 @@
 #include <simpleworld/ints.hpp>
 #include <simpleworld/worlderror.hpp>
 
-namespace SimpleWorld
+namespace simpleworld
 {
 
 /**

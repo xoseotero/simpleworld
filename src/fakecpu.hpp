@@ -25,8 +25,8 @@
 #define FAKECPU_HPP
 
 #include <simpleworld/cpu/cpu.hpp>
-namespace sw = SimpleWorld;
-namespace cpu = SimpleWorld::CPU;
+namespace sw = simpleworld;
+namespace cpu = simpleworld::cpu;
 
 /**
  * Fake CPU that add a "world" operation that does nothing.

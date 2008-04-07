@@ -36,9 +36,9 @@
 // Address of nth element in the memory
 #define ADDRESS(n) ((n) * sizeof(Word))
 
-namespace SimpleWorld
+namespace simpleworld
 {
-namespace CPU
+namespace cpu
 {
 
 /**
@@ -123,7 +123,7 @@ CPU::CPU(Memory* registers, Memory* memory)
   // Function operations
   this->isa_.add_instruction(0x30, "call", 0, true, call);
   this->isa_.add_instruction(0x31, "int", 0, true,
-                             ::SimpleWorld::CPU::interrupt);
+                             ::simpleworld::cpu::interrupt);
   this->isa_.add_instruction(0x34, "ret", 0, false, ret);
   this->isa_.add_instruction(0x35, "reti", 0, false, reti);
 

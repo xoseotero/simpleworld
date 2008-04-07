@@ -36,7 +36,7 @@
 #include "types.hpp"
 #include "bug.hpp"
 
-namespace SimpleWorld
+namespace simpleworld
 {
 
 /**
@@ -45,13 +45,13 @@ namespace SimpleWorld
  * @param id id of the bug.
  * @exception DBException if there is a error in the database.
  */
-Bug::Bug(SimpleWorld* sw, DB::ID id)
-  : DB::Bug(sw, id), CPU(&this->cpu.registers, &this->code.code), world(sw)
+Bug::Bug(SimpleWorld* sw, db::ID id)
+  : db::Bug(sw, id), CPU(&this->cpu.registers, &this->code.code), world(sw)
 {
   this->isa_.add_interrupt(INTERRUPT_WORLDACTION, "InvalidWorldCommand", true);
   this->isa_.add_interrupt(INTERRUPT_WORLDEVENT, "WorldEvent", false);
 
-  this->isa_.add_instruction(0x38, "world", 0, true, ::SimpleWorld::world);
+  this->isa_.add_instruction(0x38, "world", 0, true, ::simpleworld::world);
 }
 
 

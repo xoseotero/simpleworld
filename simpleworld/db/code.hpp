@@ -33,9 +33,9 @@
 #include <simpleworld/db/table.hpp>
 #include <simpleworld/db/mutation.hpp>
 
-namespace SimpleWorld
+namespace simpleworld
 {
-namespace DB
+namespace db
 {
 /**
  * Code of a bug.

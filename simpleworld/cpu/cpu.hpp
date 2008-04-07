@@ -33,12 +33,12 @@
 #include <simpleworld/cpu/instruction.hpp>
 #include <simpleworld/cpu/isa.hpp>
 
-namespace SimpleWorld
+namespace simpleworld
 {
 /**
  * Namespace for Simple World CPU.
  */
-namespace CPU
+namespace cpu
 {
 
 /**

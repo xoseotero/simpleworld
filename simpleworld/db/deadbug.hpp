@@ -30,9 +30,9 @@
 #include <simpleworld/db/db.hpp>
 #include <simpleworld/db/bugelement.hpp>
 
-namespace SimpleWorld
+namespace simpleworld
 {
-namespace DB
+namespace db
 {
 
 /**

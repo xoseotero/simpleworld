@@ -24,9 +24,9 @@
 #include "types.hpp"
 #include "operations.hpp"
 
-namespace SimpleWorld
+namespace simpleworld
 {
-namespace CPU
+namespace cpu
 {
 
 /**

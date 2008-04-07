@@ -29,9 +29,9 @@
 #include <simpleworld/cpu/types.hpp>
 #include <simpleworld/cpu/isa.hpp>
 
-namespace SimpleWorld
+namespace simpleworld
 {
-namespace CPU
+namespace cpu
 {
 
 /**

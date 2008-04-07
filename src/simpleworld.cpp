@@ -47,9 +47,9 @@
 #include <simpleworld/db/bug.hpp>
 #include <simpleworld/db/deadbug.hpp>
 #include <simpleworld/db/food.hpp>
-namespace sw = SimpleWorld;
-namespace cpu = SimpleWorld::CPU;
-namespace db = SimpleWorld::DB;
+namespace sw = simpleworld;
+namespace cpu = simpleworld::cpu;
+namespace db = simpleworld::db;
 
 #include "printexc.hpp"
 

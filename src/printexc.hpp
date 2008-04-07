@@ -25,7 +25,7 @@
 #define PRINTEXC_HPP
 
 #include <simpleworld/exception.hpp>
-namespace sw = SimpleWorld;
+namespace sw = simpleworld;
 
 /**
  * Print a exception.

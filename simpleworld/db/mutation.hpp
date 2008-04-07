@@ -32,9 +32,9 @@
 #include <simpleworld/db/db.hpp>
 #include <simpleworld/db/table.hpp>
 
-namespace SimpleWorld
+namespace simpleworld
 {
-namespace DB
+namespace db
 {
 
 /**
@@ -104,9 +104,9 @@ public:
   } type;
 
   // If type is addition, then the value of original is garbage.
-  ::SimpleWorld::CPU::Word original;
+  cpu::Word original;
   // If type is deletion, then the value of mutated is garbage.
-  ::SimpleWorld::CPU::Word mutated;
+  cpu::Word mutated;
 
   ID bug_id;
 };

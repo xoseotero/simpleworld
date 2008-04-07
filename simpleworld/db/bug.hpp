@@ -29,9 +29,9 @@
 #include <simpleworld/db/alivebug.hpp>
 #include <simpleworld/db/cpu.hpp>
 
-namespace SimpleWorld
+namespace simpleworld
 {
-namespace DB
+namespace db
 {
 
 /**

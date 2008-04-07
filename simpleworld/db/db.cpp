@@ -29,9 +29,9 @@
 
 #define DATABASE_VERSION 2
 
-namespace SimpleWorld
+namespace simpleworld
 {
-namespace DB
+namespace db
 {
 
 /**

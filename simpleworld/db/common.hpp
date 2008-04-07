@@ -28,9 +28,9 @@
 
 #include <simpleworld/cpu/memory.hpp>
 
-namespace SimpleWorld
+namespace simpleworld
 {
-namespace DB
+namespace db
 {
 
 /**
@@ -39,8 +39,7 @@ namespace DB
  * @param index row where the BLOB is stored.
  * @return the block of memory.
  */
-::SimpleWorld::CPU::Memory get_memory(sqlite3x::sqlite3_cursor* cursor,
-                                      int index);
+cpu::Memory get_memory(sqlite3x::sqlite3_cursor* cursor, int index);
 
 /**
  * Bind a block of memory to a sqlite3_command.
@@ -49,7 +48,7 @@ namespace DB
  * @param memory the block of memory.
  */
 void bind_memory(sqlite3x::sqlite3_command* sql, int index,
-                 const ::SimpleWorld::CPU::Memory& memory);
+                 const cpu::Memory& memory);
 }
 }
 

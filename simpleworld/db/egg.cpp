@@ -29,9 +29,9 @@
 #include "cpu.hpp"
 #include "egg.hpp"
 
-namespace SimpleWorld
+namespace simpleworld
 {
-namespace DB
+namespace db
 {
 
 /**

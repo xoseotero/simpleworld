@@ -26,12 +26,12 @@
 
 #include <simpleworld/db/food.hpp>
 
-namespace SimpleWorld
+namespace simpleworld
 {
 
 class SimpleWorld;
 
-class Food: public DB::Food
+class Food: public db::Food
 {
 public:
   /**
@@ -40,7 +40,7 @@ public:
    * @param id id of the food.
    * @exception DBException if there is a error in the database.
    */
-  Food(SimpleWorld* sw, DB::ID id);
+  Food(SimpleWorld* sw, db::ID id);
 };
 
 }

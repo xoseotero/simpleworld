@@ -28,7 +28,7 @@
 #include "worlderror.hpp"
 #include "movement.hpp"
 
-namespace SimpleWorld
+namespace simpleworld
 {
 
 /**

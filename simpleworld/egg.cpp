@@ -25,7 +25,7 @@
 
 #include "egg.hpp"
 
-namespace SimpleWorld
+namespace simpleworld
 {
 
 /**
@@ -34,8 +34,8 @@ namespace SimpleWorld
  * @param id id of the egg.
  * @exception DBException if there is a error in the database.
  */
-Egg::Egg(SimpleWorld* sw, DB::ID id)
-  : DB::Egg(sw, id)
+Egg::Egg(SimpleWorld* sw, db::ID id)
+  : db::Egg(sw, id)
 {
 }
 

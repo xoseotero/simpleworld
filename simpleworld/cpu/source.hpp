@@ -33,9 +33,9 @@
 #include <simpleworld/cpu/isa.hpp>
 #include <simpleworld/cpu/file.hpp>
 
-namespace SimpleWorld
+namespace simpleworld
 {
-namespace CPU
+namespace cpu
 {
 
 /**

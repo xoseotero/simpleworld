@@ -30,9 +30,9 @@
 #include <simpleworld/db/table.hpp>
 #include <simpleworld/db/code.hpp>
 
-namespace SimpleWorld
+namespace simpleworld
 {
-namespace DB
+namespace db
 {
 
 /**

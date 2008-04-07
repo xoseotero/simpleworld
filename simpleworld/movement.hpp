@@ -26,7 +26,7 @@
 
 #include <simpleworld/types.hpp>
 
-namespace SimpleWorld
+namespace simpleworld
 {
 
 /**

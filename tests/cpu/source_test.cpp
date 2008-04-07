@@ -36,8 +36,8 @@
 #include <simpleworld/cpu/cpu.hpp>
 #include <simpleworld/cpu/file.hpp>
 #include <simpleworld/cpu/source.hpp>
-namespace sw = SimpleWorld;
-namespace cpu = SimpleWorld::CPU;
+namespace sw = simpleworld;
+namespace cpu = simpleworld::cpu;
 
 
 #define SOURCE (TESTDATA "source.swl")

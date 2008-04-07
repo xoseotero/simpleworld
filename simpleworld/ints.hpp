@@ -30,7 +30,7 @@
 /**
  * Namespace for Simple World.
  */
-namespace SimpleWorld
+namespace simpleworld
 {
 
 // Signed integers

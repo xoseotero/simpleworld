@@ -32,8 +32,8 @@
 #include <simpleworld/cpu/file.hpp>
 #include <simpleworld/cpu/source.hpp>
 #include <simpleworld/cpu/object.hpp>
-namespace sw = SimpleWorld;
-namespace cpu = SimpleWorld::CPU;
+namespace sw = simpleworld;
+namespace cpu = simpleworld::cpu;
 
 
 #define OBJECT (TESTDATA "object.swo")

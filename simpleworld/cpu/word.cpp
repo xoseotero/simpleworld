@@ -26,9 +26,9 @@
 #include "word.hpp"
 #include "exception.hpp"
 
-namespace SimpleWorld
+namespace simpleworld
 {
-namespace CPU
+namespace cpu
 {
 
 /**

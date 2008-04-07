@@ -31,10 +31,10 @@
 #include <simpleworld/worlderror.hpp>
 #include <simpleworld/element.hpp>
 #include <simpleworld/world.hpp>
-namespace sw = SimpleWorld;
+namespace sw = simpleworld;
 
 
-namespace SimpleWorld
+namespace simpleworld
 {
 
 /**

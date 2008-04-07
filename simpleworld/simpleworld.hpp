@@ -42,7 +42,7 @@
 #include <simpleworld/cpu/types.hpp>
 #include <simpleworld/cpu/memory.hpp>
 
-namespace SimpleWorld
+namespace simpleworld
 {
 
 /**
@@ -53,7 +53,7 @@ namespace SimpleWorld
  * world. The objective of the project is to observe the evolution of this
  * world and of these beings.
  */
-class SimpleWorld: public DB::DB
+class SimpleWorld: public db::DB
 {
 public:
   /**
@@ -70,7 +70,7 @@ public:
 
 
   const World& world() const { return *this->world_; }
-  const ::SimpleWorld::DB::Environment& env() const { return *this->env_; }
+  const db::Environment& env() const { return *this->env_; }
 
   /**
    * Add a egg to the World.
@@ -82,7 +82,7 @@ public:
    * @exception Exception if the position is used.
    */
   void add_egg(Energy energy, Position position, Orientation orientation,
-               const CPU::Memory& code);
+               const cpu::Memory& code);
 
   /**
    * Add food to the World.
@@ -116,7 +116,7 @@ public:
    * @return The information.
    * @exception ActionError if something fails.
    */
-  virtual CPU::Word myself(Bug* bug, Info info, CPU::Word* ypos);
+  virtual cpu::Word myself(Bug* bug, Info info, cpu::Word* ypos);
 
   /**
    * Get the type of element that is in front of the bug.
@@ -134,7 +134,7 @@ public:
    * @return The information.
    * @exception ActionError if something fails.
    */
-  virtual CPU::Word information(Bug* bug, Info info, CPU::Word* ypos);
+  virtual cpu::Word information(Bug* bug, Info info, cpu::Word* ypos);
 
   /**
    * Move a bug.
@@ -231,7 +231,7 @@ protected:
    * @param egg The egg.
    * @param killer_id Who killed it.
    */
-  void kill(Egg* egg, ::SimpleWorld::DB::ID killer_id);
+  void kill(Egg* egg, db::ID killer_id);
 
   /**
    * Kill the bug and convert it into food.
@@ -244,7 +244,7 @@ protected:
    * @param bug The bug.
    * @param killer_id Who killed it.
    */
-  void kill(Bug* bug, ::SimpleWorld::DB::ID killer_id);
+  void kill(Bug* bug, db::ID killer_id);
 
   /**
    * Execute a cycle in all the alive bugs.
@@ -257,7 +257,7 @@ protected:
   void update_db();
 
   World* world_;
-  ::SimpleWorld::DB::Environment* env_;
+  db::Environment* env_;
 
 private:
   std::list<Food*> foods_;

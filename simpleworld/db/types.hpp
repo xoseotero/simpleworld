@@ -26,9 +26,9 @@
 
 #include <sqlite3x.hpp>
 
-namespace SimpleWorld
+namespace simpleworld
 {
-namespace DB
+namespace db
 {
 
 typedef int64_t ID;
