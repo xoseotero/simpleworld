@@ -29,6 +29,7 @@
 #include <boost/regex.hpp>
 namespace fs = boost::filesystem;
 
+#include <simpleworld/ints.hpp>
 #include <simpleworld/ioerror.hpp>
 
 #include "word.hpp"
@@ -438,8 +439,8 @@ Label %2% already defined")
         this->labels_.begin();
       while (iter != this->labels_.end()) {
         std::string offset(boost::str(boost::format("0x%04X") %
-                                      ((*iter).second -
-                                       lines_code * sizeof(Word))));
+                                      static_cast<Uint16>(((*iter).second -
+                                                           lines_code * sizeof(Word)))));
         this->get_line(i) =
           boost::regex_replace(this->get_line(i),
                                boost::regex(std::string(BEGIN_WORD) +
