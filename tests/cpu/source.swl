@@ -5,8 +5,8 @@
 # Loop
 .label init
        # load the initial values
-       loadi r1 A
-       loadi r2 B
+       loadi r1 VALUE1
+       loadi r2 VALUE2
 
        # some operations
        add r0 r1 r2
