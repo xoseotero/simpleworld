@@ -19,7 +19,7 @@
        rri r0 r0 0x000F
 
        # restart the CPU
-       restart
+       RESTART
 
        b init		# loop
 

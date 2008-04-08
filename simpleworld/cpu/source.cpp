@@ -83,7 +83,7 @@ static const boost::regex re_define(BEGIN_LINE
                                     SPACE
                                     "(" KEYWORD ")"
                                     SPACE
-                                    "(" NUMBER16 ")"
+                                    "(" ANYTHING ")"
                                     OPTIONAL_SPACE
                                     OPTIONAL_COMMENT
                                     END_LINE);

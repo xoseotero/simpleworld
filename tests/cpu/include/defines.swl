@@ -1,2 +1,4 @@
 .define VALUE1 0x0001
 .define VALUE2 0x0002
+
+.define RESTART restart
