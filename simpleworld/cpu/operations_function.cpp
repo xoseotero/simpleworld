@@ -47,7 +47,8 @@ Update call(CPU& cpu, Instruction inst)
 
   // Save the frame pointer and the program counter in the top of the stack
   cpu.set_mem(cpu.get_reg(REGISTER_SP), cpu.get_reg(REGISTER_FP));
-  cpu.set_mem(cpu.get_reg(REGISTER_SP) + 4, cpu.get_reg(REGISTER_PC));
+  cpu.set_mem(cpu.get_reg(REGISTER_SP) + sizeof(Word),
+              cpu.get_reg(REGISTER_PC));
   // Update the stack pointer and the frame pointer
   cpu.set_reg(REGISTER_SP, cpu.get_reg(REGISTER_SP) + 8);
   cpu.set_reg(REGISTER_FP, cpu.get_reg(REGISTER_SP));
@@ -75,7 +76,8 @@ Update callr(CPU& cpu, Instruction inst)
 
   // Save the frame pointer and the program counter in the top of the stack
   cpu.set_mem(cpu.get_reg(REGISTER_SP), cpu.get_reg(REGISTER_FP));
-  cpu.set_mem(cpu.get_reg(REGISTER_SP) + 4, cpu.get_reg(REGISTER_PC));
+  cpu.set_mem(cpu.get_reg(REGISTER_SP) + sizeof(Word),
+              cpu.get_reg(REGISTER_PC));
   // Update the stack pointer and the frame pointer
   cpu.set_reg(REGISTER_SP, cpu.get_reg(REGISTER_SP) + 8);
   cpu.set_reg(REGISTER_FP, cpu.get_reg(REGISTER_SP));
@@ -112,7 +114,8 @@ Update ret(CPU& cpu, Instruction inst)
   // Update stack pointer
   cpu.set_reg(REGISTER_SP, cpu.get_reg(REGISTER_FP) - 8);
   // Restore the program counter and the frame pointer
-  cpu.set_reg(REGISTER_PC, cpu.get_mem(cpu.get_reg(REGISTER_SP) + 4));
+  cpu.set_reg(REGISTER_PC,
+              cpu.get_mem(cpu.get_reg(REGISTER_SP) + sizeof(Word)));
   cpu.set_reg(REGISTER_FP, cpu.get_mem(cpu.get_reg(REGISTER_SP)));
 
   return UpdatePC;

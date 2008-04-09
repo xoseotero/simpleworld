@@ -220,7 +220,7 @@ Update push(CPU& cpu, Instruction inst)
   // Save the register in the top of the stack
   cpu.set_mem(cpu.get_reg(REGISTER_SP), cpu.get_reg(inst.first));
   // Update stack pointer
-  cpu.set_reg(REGISTER_SP, cpu.get_reg(REGISTER_SP) + 4);
+  cpu.set_reg(REGISTER_SP, cpu.get_reg(REGISTER_SP) + sizeof(Word));
 
   return UpdatePC;
 }

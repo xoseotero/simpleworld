@@ -218,7 +218,7 @@ Instruction info:\tcode: 0x%02X, name: %s, nregs: %d, has_i: %d")
     case UpdatePC:
       // Update PC
       this->registers_->set_word(ADDRESS(REGISTER_PC),
-                                 this->registers_->get_word(ADDRESS(REGISTER_PC)) + 4);
+                                 this->registers_->get_word(ADDRESS(REGISTER_PC)) + sizeof(Word));
       break;
     case UpdateInterrupt:
       // Throw a interrupt
@@ -307,7 +307,7 @@ void CPU::interrupt(Uint8 code, Word r1, Word r2)
   // Update pc if the interrupt is thrown by a instruction.
   if (this->isa_.interrupt_info(code).thrown_by_inst)
     this->registers_->set_word(ADDRESS(REGISTER_PC),
-                               this->registers_->get_word(ADDRESS(REGISTER_PC)) + 4);
+                               this->registers_->get_word(ADDRESS(REGISTER_PC)) + sizeof(Word));
 
 
   if (not this->interrupt_enabled(code)) {
@@ -341,7 +341,7 @@ Interrupt thrown:\tcode: 0x%02X, name: %s")
                             this->registers_->get_word(ADDRESS(i)));
     // Update stack pointer
     this->registers_->set_word(ADDRESS(REGISTER_SP),
-                               this->registers_->get_word(ADDRESS(REGISTER_SP)) + 4);
+                               this->registers_->get_word(ADDRESS(REGISTER_SP)) + sizeof(Word));
   }
 
   // Update the frame pointer
