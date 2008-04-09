@@ -50,8 +50,7 @@ BOOST_AUTO_TEST_CASE(memory_exception)
 BOOST_AUTO_TEST_CASE(memory_is_zeroed)
 {
   cpu::Memory memory(16 * 4);
-  sw::Uint8 i;
-  for (i = 0; i < 16 * 4; i += 4)
+  for (sw::Uint8 i = 0; i < 16 * 4; i += 4)
     BOOST_CHECK_EQUAL(memory.get_word(i), 0);
 }
 
@@ -61,11 +60,10 @@ BOOST_AUTO_TEST_CASE(memory_is_zeroed)
 BOOST_AUTO_TEST_CASE(memory_checking_words)
 {
   cpu::Memory memory(16 * 4);
-  sw::Uint8 i;
-  for (i = 0; i < 16 * 4; i += 4)
+  for (sw::Uint8 i = 0; i < 16 * 4; i += 4)
     memory.set_word(i, i);
 
-  for (i = 0; i < 16 * 4; i += 4)
+  for (sw::Uint8 i = 0; i < 16 * 4; i += 4)
     BOOST_CHECK_EQUAL(memory.get_word(i), i);
 }
 
@@ -76,11 +74,10 @@ BOOST_AUTO_TEST_CASE(memory_checking_words)
 BOOST_AUTO_TEST_CASE(memory_set_big_endian)
 {
   cpu::Memory memory(16 * 4);
-  sw::Uint8 i;
-  for (i = 0; i < 16 * 4; i += 4)
+  for (sw::Uint8 i = 0; i < 16 * 4; i += 4)
     memory.set_word(i, cpu::change_byte_order(i), false);
 
-  for (i = 0; i < 16 * 4; i += 4)
+  for (sw::Uint8 i = 0; i < 16 * 4; i += 4)
     BOOST_CHECK_EQUAL(memory.get_word(i), i);
 }
 
@@ -90,11 +87,10 @@ BOOST_AUTO_TEST_CASE(memory_set_big_endian)
 BOOST_AUTO_TEST_CASE(memory_get_big_endian)
 {
   cpu::Memory memory(16 * 4);
-  sw::Uint8 i;
-  for (i = 0; i < 16 * 4; i += 4)
+  for (sw::Uint8 i = 0; i < 16 * 4; i += 4)
     memory.set_word(i, i);
 
-  for (i = 0; i < 16 * 4; i += 4)
+  for (sw::Uint8 i = 0; i < 16 * 4; i += 4)
     BOOST_CHECK_EQUAL(memory.get_word(i, false), cpu::change_byte_order(i));
 }
 #endif

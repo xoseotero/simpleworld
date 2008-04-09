@@ -594,24 +594,29 @@ void SimpleWorld::on_open()
 
   // Load the elements of the world
   std::vector< db::ID > ids;
-  std::vector< db::ID >::const_iterator iter;
 
   ids = this->food();
-  for (iter = ids.begin(); iter != ids.end(); ++iter) {
+  for (std::vector< db::ID >::const_iterator iter = ids.begin();
+       iter != ids.end();
+       ++iter) {
     Food* ptr = new Food(this, *iter);
     this->foods_.push_back(ptr);
     this->world_->add(ptr, ptr->position);
   }
 
   ids = this->eggs();
-  for (iter = ids.begin(); iter != ids.end(); ++iter) {
+  for (std::vector< db::ID >::const_iterator iter = ids.begin();
+       iter != ids.end();
+       ++iter) {
     Egg* ptr = new Egg(this, *iter);
     this->eggs_.push_back(ptr);
     this->world_->add(ptr, ptr->position);
   }
 
   ids = this->alive_bugs();
-  for (iter = ids.begin(); iter != ids.end(); ++iter) {
+  for (std::vector< db::ID >::const_iterator iter = ids.begin();
+       iter != ids.end();
+       ++iter) {
     Bug* ptr = new Bug(this, *iter);
     this->bugs_.push_back(ptr);
     this->world_->add(ptr, ptr->position);
@@ -637,8 +642,9 @@ void SimpleWorld::eggs_birth()
 {
   // check for the birthday of each egg
   std::list<Egg*> eggs = this->eggs_;
-  std::list<Egg*>::iterator egg;
-  for (egg = eggs.begin(); egg != eggs.end(); ++egg) {
+  for (std::list<Egg*>::iterator egg = eggs.begin();
+       egg != eggs.end();
+       ++egg) {
     if ((*egg)->birth <= this->env_->time) {
       // convert the egg to a bug
       Bug* bug = new Bug(this, (*egg)->be_born());
@@ -658,8 +664,7 @@ void SimpleWorld::eggs_birth()
 void SimpleWorld::bugs_timer()
 {
   // throw the Timer Interrupt in each bug
-  std::list<Bug*>::iterator current;
-  for (current = this->bugs_.begin();
+  for (std::list<Bug*>::iterator current = this->bugs_.begin();
        current != this->bugs_.end();
        ++current)
     // throw the interrupt
@@ -841,8 +846,9 @@ void SimpleWorld::bugs_run()
 {
   // execute a instruction in each bug
   std::list<Bug*> bugs = this->bugs_;
-  std::list<Bug*>::iterator bug;
-  for (bug = bugs.begin(); bug != bugs.end(); ++bug) {
+  for (std::list<Bug*>::iterator bug = bugs.begin();
+       bug != bugs.end();
+       ++bug) {
     // check if the bug is alive, a bug could have killed it
     if (std::find(this->bugs_.begin(), this->bugs_.end(), *bug) ==
         this->bugs_.end())
@@ -867,22 +873,19 @@ void SimpleWorld::bugs_run()
 void SimpleWorld::update_db()
 {
   // update the eggs
-  std::list<Food*>::iterator food;
-  for (food = this->foods_.begin();
+  for (std::list<Food*>::iterator food = this->foods_.begin();
        food != this->foods_.end();
        ++food)
     (*food)->update_db();
 
   // update the eggs
-  std::list<Egg*>::iterator egg;
-  for (egg = this->eggs_.begin();
+  for (std::list<Egg*>::iterator egg = this->eggs_.begin();
        egg != this->eggs_.end();
        ++egg)
     (*egg)->update_db();
 
   // update the bugs
-  std::list<Bug*>::iterator bug;
-  for (bug = this->bugs_.begin();
+  for (std::list<Bug*>::iterator bug = this->bugs_.begin();
        bug != this->bugs_.end();
        ++bug)
     (*bug)->update_db();

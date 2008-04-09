@@ -833,8 +833,7 @@ END;",
     // begin a transaction
     sqlite3x::sqlite3_transaction transaction(*this);
 
-    int i;
-    for (i = 0; sql_commands[i] != NULL; i++) {
+    for (int i = 0; sql_commands[i] != NULL; i++) {
       sql.prepare(sql_commands[i], -1);
       sql.executenonquery();
     }

@@ -104,8 +104,7 @@ Update reti(CPU& cpu, Instruction inst)
   cpu.set_reg(REGISTER_SP, cpu.get_reg(REGISTER_FP));
 
   // Restore all the registers
-  Sint8 i;
-  for (i = 15; i >= 0; i--) {
+  for (Sint8 i = 15; i >= 0; i--) {
     // Update stack pointer
     cpu.set_reg(REGISTER_SP, cpu.get_reg(REGISTER_SP) - 4);
     // Restore the register

@@ -47,8 +47,7 @@ Update stop(CPU& cpu, Instruction inst)
  */
 Update restart(CPU& cpu, Instruction inst)
 {
-  Uint8 i;
-  for (i = 0; i < 16; i++)
+  for (Uint8 i = 0; i < 16; i++)
     cpu.set_reg(i, 0);
 
   return UpdateNone;

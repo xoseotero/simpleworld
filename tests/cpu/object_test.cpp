@@ -52,8 +52,7 @@ bool compare_swl(const cpu::File& file1, const cpu::File& file2)
   if (file1.lines() != file2.lines())
     return false;
 
-  cpu::File::size_type i;
-  for (i = 0; i < file1.lines(); i++)
+  for (cpu::File::size_type i = 0; i < file1.lines(); i++)
     if (file1[i] != file2[i])
       return false;
 

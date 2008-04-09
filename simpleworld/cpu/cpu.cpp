@@ -339,8 +339,7 @@ Interrupt thrown:\tcode: 0x%02X, name: %s")
   Word handler = this->memory_->get_word(cs.itp + ADDRESS(code));
 
   // Save all the registers in the stack
-  Sint8 i;
-  for (i = 0; i < 16; i++) {
+  for (Sint8 i = 0; i < 16; i++) {
     // Store a register:
     // Save the register in the top of the stack
     this->memory_->set_word(this->registers_->get_word(ADDRESS(REGISTER_SP)),

@@ -48,8 +48,7 @@ cpu::Memory get_memory(sqlite3x::sqlite3_cursor* cursor, int index)
 
   memory.resize(static_cast<cpu::Address>(size));
 
-  cpu::Address i;
-  for (i = 0; i < size; i += sizeof(cpu::Word))
+  for (cpu::Address i = 0; i < size; i += sizeof(cpu::Word))
     memory.set_word(i, blob[i / sizeof(cpu::Word)], false);
 
   return memory;
@@ -68,8 +67,7 @@ void bind_memory(sqlite3x::sqlite3_command* sql, int index,
 
   boost::scoped_array<cpu::Word> blob(new cpu::Word[size / sizeof(cpu::Word)]);
 
-  cpu::Address i;
-  for (i = 0; i < size; i += sizeof(cpu::Word))
+  for (cpu::Address i = 0; i < size; i += sizeof(cpu::Word))
     blob[i / sizeof(cpu::Word)] = memory.get_word(i, false);
 
   sql->bind(index, blob.get(), size);

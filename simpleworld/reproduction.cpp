@@ -56,8 +56,7 @@ static int randint(int min, int max)
 static cpu::Word random_word()
 {
   cpu::Word word;
-  unsigned int i;
-  for (i = 0; i < sizeof(cpu::Word); i++)
+  for (unsigned int i = 0; i < sizeof(cpu::Word); i++)
     cpu::set_byte(&word, i, randint(0, 256));
 
   return word;

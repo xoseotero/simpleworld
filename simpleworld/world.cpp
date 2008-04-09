@@ -83,7 +83,6 @@ World::World(Coord width, Coord height)
   this->size_.y = height;
 
   Position i;
-
   for (i.x = 0; i.x < width; i.x++)
     for (i.y = 0; i.y < height; i.y++)
       this->terrain_[i.x][i.y] = NULL;
@@ -97,7 +96,6 @@ World::World(Position size)
   : size_(size), num_elements_(0), terrain_(boost::extents[size.x][size.y])
 {
   Position i;
-
   for (i.x = 0; i.x < size.x; i.x++)
     for (i.y = 0; i.y < size.y; i.y++)
       this->terrain_[i.x][i.y] = NULL;

@@ -293,8 +293,7 @@ void Source::compile(std::string filename)
 File %1% is not writable")
                                         % filename));
 
-  File::size_type i;
-  for (i = 0; i < this->lines(); i++) {
+  for (File::size_type i = 0; i < this->lines(); i++) {
     if (this->is_blank(i) or this->is_comment(i))
       continue;
 
@@ -317,8 +316,7 @@ Can't write in file %1%")
  */
 void Source::replace_includes()
 {
-  File::size_type i;
-  for (i = 0; i < this->lines(); i++)
+  for (File::size_type i = 0; i < this->lines(); i++)
     if (this->is_include(i)) {
       fs::path filename(find_file(this->include_path_, this->get_include(i)));
       if (filename.empty())
@@ -463,8 +461,7 @@ Label %2% already defined")
  */
 void Source::replace_blocks()
 {
-  File::size_type i;
-  for (i = 0; i < this->lines(); i++)
+  for (File::size_type i = 0; i < this->lines(); i++)
     if (this->is_block(i)) {
       Address size = this->get_block(i);
       if (size > 0) {

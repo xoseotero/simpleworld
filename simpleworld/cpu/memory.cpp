@@ -56,8 +56,7 @@ Memory::Memory(const Memory& memory)
 {
   this->resize(memory.size_);
 
-  Address i;
-  for (i = 0; i < this->size_; i++)
+  for (Address i = 0; i < this->size_; i++)
     this->memory_[i] = memory.memory_[i];
 }
 
@@ -82,14 +81,13 @@ void Memory::resize(Address size)
   if (size != 0)
     tmp = new Sint8[size];
 
-  Address i;
   Address limit = std::min(this->size_, size);
   // Copy old memory
-  for (i = 0; i < limit; i++)
+  for (Address i = 0; i < limit; i++)
     tmp[i] = this->memory_[i];
 
   // Zeroed new memory
-  for (i = limit; i < size; i++)
+  for (Address i = limit; i < size; i++)
     tmp[i] = 0;
 
   this->size_ = size;
@@ -173,8 +171,7 @@ Memory& Memory::assign(const Memory& memory)
 {
   this->resize(memory.size_);
 
-  Address i;
-  for (i = 0; i < this->size_; i++)
+  for (Address i = 0; i < this->size_; i++)
     this->memory_[i] = memory.memory_[i];
 
   return *this;

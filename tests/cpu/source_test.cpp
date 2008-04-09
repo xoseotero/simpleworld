@@ -58,8 +58,7 @@ bool compare_swl(const cpu::File& file1, const cpu::File& file2)
   if (file1.lines() != file2.lines())
     return false;
 
-  cpu::File::size_type i;
-  for (i = 0; i < file1.lines(); i++)
+  for (cpu::File::size_type i = 0; i < file1.lines(); i++)
     if (file1[i] != file2[i])
       return false;
 
@@ -84,8 +83,7 @@ bool compare_swo(const std::string& file1, const std::string& file2)
   if (memory1.size() != memory2.size())
     return false;
 
-  cpu::Address i;
-  for (i = 0; i < memory1.size(); i += sizeof(cpu::Word)) {
+  for (cpu::Address i = 0; i < memory1.size(); i += sizeof(cpu::Word)) {
     cpu::Instruction inst1(memory1.get_word(i, false));
     cpu::Instruction inst2(memory2.get_word(i, false));
 

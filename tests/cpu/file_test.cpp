@@ -180,8 +180,7 @@ BOOST_AUTO_TEST_CASE(file_save)
   cpu::File file2(FILE_SAVE);
 
   BOOST_CHECK_EQUAL(file1.lines(), file2.lines());
-  cpu::File::size_type i;
-  for (i = 0; i < file1.lines(); i++) {
+  for (cpu::File::size_type i = 0; i < file1.lines(); i++) {
     BOOST_CHECK_EQUAL(file1.get_line(i), file2.get_line(i));
   }
 }

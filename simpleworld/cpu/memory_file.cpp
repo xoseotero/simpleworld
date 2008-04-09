@@ -108,8 +108,7 @@ File %1% is not writable")
                                         % filename));
 
   Word instruction;
-  Address i;
-  for (i = 0; i < this->size(); i += sizeof(Word)) {
+  for (Address i = 0; i < this->size(); i += sizeof(Word)) {
 #ifdef IS_BIG_ENDIAN
     instruction = this->get_word(i);
 #else
