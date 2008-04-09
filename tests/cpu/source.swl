@@ -2,6 +2,9 @@
 
 .include "defines.swl"
 
+.ifndef VALUE2 0x0003
+.ifndef VALUE3 0x000F
+
 # Loop
 .label init
        # load the initial values
@@ -16,7 +19,7 @@
        push r0
        div r0 r1 r2
        pop r0
-       rri r0 r0 0x000F
+       rri r0 r0 VALUE3
 
        # restart the CPU
        RESTART

@@ -104,7 +104,7 @@ protected:
   void replace_includes();
 
   /**
-   * Replace the defines with its value.
+   * Replace the defines (and ifndefs) with its value.
    * @exception ParserError error found in the code.
    */
   void replace_defines();
@@ -154,6 +154,14 @@ protected:
    * @exception CPUException if line > lines of the file.
    */
   bool is_define(File::size_type line) const;
+
+  /**
+   * Check if a line is a ifndef.
+   * @param line Number of the line.
+   * @return the check result.
+   * @exception CPUException if line > lines of the file.
+   */
+  bool is_ifndef(File::size_type line) const;
 
   /**
    * Check if a line is a block of memory.
@@ -214,6 +222,17 @@ protected:
    * @exception CPUException if line > lines of the file.
    */
   std::vector<std::string> get_define(File::size_type line) const;
+
+  /**
+   * Return the components of a ifndef.
+   *
+   * If the line is not a define a empty vector is returned.
+   * The first position is the name and the second is the value.
+   * @param line Number of the line.
+   * @return the components of a ifndef.
+   * @exception CPUException if line > lines of the file.
+   */
+  std::vector<std::string> get_ifndef(File::size_type line) const;
 
   /**
    * Return the value of the block of memory.

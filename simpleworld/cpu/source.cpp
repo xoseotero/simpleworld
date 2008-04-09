@@ -88,6 +88,17 @@ static const boost::regex re_define(BEGIN_LINE
                                     OPTIONAL_SPACE
                                     OPTIONAL_COMMENT
                                     END_LINE);
+// A line with a ifndef
+static const boost::regex re_ifndef(BEGIN_LINE
+                                    OPTIONAL_SPACE
+                                    "\\.ifndef"
+                                    SPACE
+                                    "(" KEYWORD ")"
+                                    SPACE
+                                    "(" ANYTHING ")"
+                                    OPTIONAL_SPACE
+                                    OPTIONAL_COMMENT
+                                    END_LINE);
 // A line with a block of memory
 static const boost::regex re_block(BEGIN_LINE
                                    OPTIONAL_SPACE
@@ -339,7 +350,7 @@ File %2% already included")
 }
 
 /**
- * Replace the defines with its value.
+ * Replace the defines (and ifndefs) with its value.
  * @exception ParserError error found in the code.
  */
 void Source::replace_defines()
@@ -359,6 +370,13 @@ Constant %2% already defined")
       this->remove(i, 1);
       this->defines_.insert(std::pair<std::string,
                             std::string>(define[0], define[1]));
+    } else if (this->is_ifndef(i)) {
+      std::vector<std::string> ifndef(this->get_ifndef(i));
+      if (this->defines_.find(ifndef[0]) == this->defines_.end())
+        this->defines_.insert(std::pair<std::string,
+                              std::string>(ifndef[0], ifndef[1]));
+
+      this->remove(i, 1);
     } else
       i++;
 
@@ -576,6 +594,17 @@ bool Source::is_define(File::size_type line) const
 }
 
 /**
+ * Check if a line is a ifndef.
+ * @param line Number of the line.
+ * @return the check result.
+ * @exception CPUException if line > lines of the file.
+ */
+bool Source::is_ifndef(File::size_type line) const
+{
+  return boost::regex_match(this->get_line(line), re_ifndef);
+}
+
+/**
  * Check if a line is a block of memory.
  * @param line Number of the line.
  * @return the check result.
@@ -669,6 +698,26 @@ std::vector<std::string> Source::get_define(File::size_type line) const
 
   boost::smatch what;
   if (boost::regex_match(this->get_line(line), what, re_define))
+    result.insert(result.begin(), what.begin() + 1, what.end());
+
+  return result;
+}
+
+/**
+ * Return the components of a ifndef.
+ *
+ * If the line is not a define a empty vector is returned.
+ * The first position is the name and the second is the value.
+ * @param line Number of the line.
+ * @return the components of a ifndef.
+ * @exception CPUException if line > lines of the file.
+ */
+std::vector<std::string> Source::get_ifndef(File::size_type line) const
+{
+  std::vector<std::string> result;
+
+  boost::smatch what;
+  if (boost::regex_match(this->get_line(line), what, re_ifndef))
     result.insert(result.begin(), what.begin() + 1, what.end());
 
   return result;

@@ -5,6 +5,8 @@ Simple World 1.0b1:
 	* Convert the itp register to cs (control & status) register, which
 	  has 16 bits for the itp.
 	* Rename the stp register to sp.
+	* Add the directive .ifndef to define a identificator only if if it
+	  wasn't already defined.
 	* Allow the definitions to refer to anything: a number, a instruction,
 	  etc.
 	* Make the jumps of the branch and function operations relative to
