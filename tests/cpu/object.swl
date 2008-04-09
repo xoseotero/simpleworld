@@ -36,20 +36,14 @@ sub r0 r1 r2
 subi r2 r2 0x0001
 multl r0 r1 r2
 multli r0 r1 0x0001
-multlu r0 r1 r2
-multlui r0 r1 0x0001
 multh r0 r1 r2
 multhi r0 r1 0x0001
 multhu r0 r1 r2
 multhui r0 r1 0x0001
 div r0 r1 r2
 divi r0 r1 0x0001
-divu r0 r1 r2
-divui r0 r1 0x0001
 mod r0 r1 r2
 modi r0 r1 0x0001
-modu r0 r1 r2
-modui r0 r1 0x0001
 not r0 r0
 or r0 r1 r2
 ori r0 r2 0x0000

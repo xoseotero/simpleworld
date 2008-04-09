@@ -92,7 +92,7 @@ Update subi(CPU& cpu, Instruction inst)
 }
 
 /**
- * Low 32bits from multiply two signed registers.
+ * Low 32bits from multiply two registers.
  *
  * REGISTERS[FIRST] = REGISTERS[SECOND] * REGISTERS[ADDRESS]
  * @param cpu the CPU.
@@ -101,15 +101,14 @@ Update subi(CPU& cpu, Instruction inst)
  */
 Update multl(CPU& cpu, Instruction inst)
 {
-  Sint64 result = static_cast<Sint32>(cpu.get_reg(inst.second)) *
-    static_cast<Sint32>(cpu.get_reg(inst.data));
-  cpu.set_reg(inst.first, static_cast<Sint32>(result & LOWBITS_64BITS));
+  Sint64 result = cpu.get_reg(inst.second) * cpu.get_reg(inst.data);
+  cpu.set_reg(inst.first, result & LOWBITS_64BITS);
 
   return UpdatePC;
 }
 
 /**
- * Low 32bits from multiply a signed registers and the data (signed value).
+ * Low 32bits from multiply a registers and the data (signed value).
  *
  * REGISTERS[FIRST] = REGISTERS[SECOND] * ADDRESS
  * @param cpu the CPU.
@@ -118,41 +117,8 @@ Update multl(CPU& cpu, Instruction inst)
  */
 Update multli(CPU& cpu, Instruction inst)
 {
-  Sint64 result = static_cast<Sint32>(cpu.get_reg(inst.second)) *
-    static_cast<Sint32>(inst.data);
-  cpu.set_reg(inst.first, static_cast<Sint32>(result & LOWBITS_64BITS));
-
-  return UpdatePC;
-}
-
-/**
- * Low 32bits from multiply two unsigned registers.
- *
- * REGISTERS[FIRST] = REGISTERS[SECOND] * REGISTERS[ADDRESS]
- * @param cpu the CPU.
- * @param inst the instruction.
- * @return if the PC must be updated.
- */
-Update multlu(CPU& cpu, Instruction inst)
-{
-  Uint64 result = cpu.get_reg(inst.second) * cpu.get_reg(inst.data);
-  cpu.set_reg(inst.first, static_cast<Uint32>(result & LOWBITS_64BITS));
-
-  return UpdatePC;
-}
-
-/**
- * Low 32bits from multiply a unsigned registers and the data (unsigned value).
- *
- * REGISTERS[FIRST] = REGISTERS[SECOND] * ADDRESS
- * @param cpu the CPU.
- * @param inst the instruction.
- * @return if the PC must be updated.
- */
-Update multlui(CPU& cpu, Instruction inst)
-{
-  Uint64 result = cpu.get_reg(inst.second) * static_cast<Uint32>(inst.data);
-  cpu.set_reg(inst.first, static_cast<Uint32>(result & LOWBITS_64BITS));
+  Sint64 result = cpu.get_reg(inst.second) * inst.data;
+  cpu.set_reg(inst.first, result & LOWBITS_64BITS);
 
   return UpdatePC;
 }
@@ -225,7 +191,7 @@ Update multhui(CPU& cpu, Instruction inst)
 }
 
 /**
- * Divide two signed registers.
+ * Divide two registers.
  *
  * REGISTERS[FIRST] = REGISTERS[SECOND] / REGISTERS[ADDRESS]
  * @param cpu the CPU.
@@ -234,8 +200,8 @@ Update multhui(CPU& cpu, Instruction inst)
  */
 Update div(CPU& cpu, Instruction inst)
 {
-  Word dividend = static_cast<Sint32>(cpu.get_reg(inst.second));
-  Word divisor = static_cast<Sint32>(cpu.get_reg(inst.data));
+  Word dividend = cpu.get_reg(inst.second);
+  Word divisor = cpu.get_reg(inst.data);
   if (divisor == 0) {
     cpu.interrupt(INTERRUPT_DIVISION, cpu.get_reg(REGISTER_PC), dividend);
 
@@ -248,7 +214,7 @@ Update div(CPU& cpu, Instruction inst)
 }
 
 /**
- * Divide a signed register and the data (signed value).
+ * Divide a register and the data.
  *
  * REGISTERS[FIRST] = REGISTERS[SECOND] / ADDRESS
  * @param cpu the CPU.
@@ -257,52 +223,6 @@ Update div(CPU& cpu, Instruction inst)
  */
 Update divi(CPU& cpu, Instruction inst)
 {
-  Word dividend = static_cast<Sint32>(cpu.get_reg(inst.second));
-  Word divisor = static_cast<Sint32>(inst.data);
-  if (divisor == 0) {
-    cpu.interrupt(INTERRUPT_DIVISION, cpu.get_reg(REGISTER_PC), dividend);
-
-    return UpdateInterrupt;
-  } else {
-    cpu.set_reg(inst.first, dividend / divisor);
-
-    return UpdatePC;
-  }
-}
-
-/**
- * Divide two unsigned registers.
- *
- * REGISTERS[FIRST] = REGISTERS[SECOND] / REGISTERS[ADDRESS]
- * @param cpu the CPU.
- * @param inst the instruction.
- * @return if the PC must be updated.
- */
-Update divu(CPU& cpu, Instruction inst)
-{
-  Word dividend = cpu.get_reg(inst.second);
-  Word divisor = cpu.get_reg(inst.data);
-  if (divisor == 0) {
-    cpu.interrupt(INTERRUPT_DIVISION, cpu.get_reg(REGISTER_PC), dividend);
-
-    return UpdateInterrupt;
-  } else {
-    cpu.set_reg(inst.first, dividend / divisor);
-
-    return UpdatePC;
-  }
-}
-
-/**
- * Divide a unsigned register and a the data (unsigned value).
- *
- * REGISTERS[FIRST] = REGISTERS[SECOND] / ADDRESS
- * @param cpu the CPU.
- * @param inst the instruction.
- * @return if the PC must be updated.
- */
-Update divui(CPU& cpu, Instruction inst)
-{
   Word dividend = cpu.get_reg(inst.second);
   Word divisor = inst.data;
   if (divisor == 0) {
@@ -317,7 +237,7 @@ Update divui(CPU& cpu, Instruction inst)
 }
 
 /**
- * Module of two signed registers.
+ * Module of two registers.
  *
  * REGISTERS[FIRST] = REGISTERS[SECOND] % REGISTERS[ADDRESS]
  * @param cpu the CPU.
@@ -326,52 +246,6 @@ Update divui(CPU& cpu, Instruction inst)
  */
 Update mod(CPU& cpu, Instruction inst)
 {
-  Word dividend = static_cast<Sint32>(cpu.get_reg(inst.second));
-  Word divisor = static_cast<Sint32>(cpu.get_reg(inst.data));
-  if (divisor == 0) {
-    cpu.interrupt(INTERRUPT_DIVISION, cpu.get_reg(REGISTER_PC), dividend);
-
-    return UpdateInterrupt;
-  } else {
-    cpu.set_reg(inst.first, dividend % divisor);
-
-    return UpdatePC;
-  }
-}
-
-/**
- * Module of a signed register and the data (signed value).
- *
- * REGISTERS[FIRST] = REGISTERS[SECOND] % ADDRESS
- * @param cpu the CPU.
- * @param inst the instruction.
- * @return if the PC must be updated.
- */
-Update modi(CPU& cpu, Instruction inst)
-{
-  Word dividend = static_cast<Sint32>(cpu.get_reg(inst.second));
-  Word divisor = static_cast<Sint32>(inst.data);
-  if (divisor == 0) {
-    cpu.interrupt(INTERRUPT_DIVISION, cpu.get_reg(REGISTER_PC), dividend);
-
-    return UpdateInterrupt;
-  } else {
-    cpu.set_reg(inst.first, dividend % divisor);
-
-    return UpdatePC;
-  }
-}
-
-/**
- * Module of two unsigned registers.
- *
- * REGISTERS[FIRST] = REGISTERS[SECOND] % REGISTERS[ADDRESS]
- * @param cpu the CPU.
- * @param inst the instruction.
- * @return if the PC must be updated.
- */
-Update modu(CPU& cpu, Instruction inst)
-{
   Word dividend = cpu.get_reg(inst.second);
   Word divisor = cpu.get_reg(inst.data);
   if (divisor == 0) {
@@ -386,14 +260,14 @@ Update modu(CPU& cpu, Instruction inst)
 }
 
 /**
- * Module of a unsigned register and the data (unsigned value).
+ * Module of a register and the data.
  *
  * REGISTERS[FIRST] = REGISTERS[SECOND] % ADDRESS
  * @param cpu the CPU.
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update modui(CPU& cpu, Instruction inst)
+Update modi(CPU& cpu, Instruction inst)
 {
   Word dividend = cpu.get_reg(inst.second);
   Word divisor = inst.data;
@@ -402,7 +276,7 @@ Update modui(CPU& cpu, Instruction inst)
 
     return UpdateInterrupt;
   } else {
-    cpu.set_reg(inst.first, dividend % inst.data);
+    cpu.set_reg(inst.first, dividend % divisor);
 
     return UpdatePC;
   }

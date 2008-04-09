@@ -131,43 +131,37 @@ CPU::CPU(Memory* registers, Memory* memory)
   this->isa_.add_instruction(0x43, "subi", 2, true, subi);
   this->isa_.add_instruction(0x44, "multl", 3, false, multl);
   this->isa_.add_instruction(0x45, "multli", 2, true, multli);
-  this->isa_.add_instruction(0x46, "multlu", 3, false, multlu);
-  this->isa_.add_instruction(0x47, "multlui", 2, true, multlui);
-  this->isa_.add_instruction(0x48, "multh", 3, false, multh);
-  this->isa_.add_instruction(0x49, "multhi", 2, true, multhi);
-  this->isa_.add_instruction(0x4a, "multhu", 3, false, multhu);
-  this->isa_.add_instruction(0x4b, "multhui", 2, true, multhui);
-  this->isa_.add_instruction(0x4c, "div", 3, false, div);
-  this->isa_.add_instruction(0x4d, "divi", 2, true, divi);
-  this->isa_.add_instruction(0x4e, "divu", 3, false, divu);
-  this->isa_.add_instruction(0x4f, "divui", 2, true, divui);
-  this->isa_.add_instruction(0x50, "mod", 3, false, mod);
-  this->isa_.add_instruction(0x51, "modi", 2, true, modi);
-  this->isa_.add_instruction(0x52, "modu", 3, false, modu);
-  this->isa_.add_instruction(0x53, "modui", 2, true, modui);
+  this->isa_.add_instruction(0x46, "multh", 3, false, multh);
+  this->isa_.add_instruction(0x47, "multhi", 2, true, multhi);
+  this->isa_.add_instruction(0x48, "multhu", 3, false, multhu);
+  this->isa_.add_instruction(0x49, "multhui", 2, true, multhui);
+  this->isa_.add_instruction(0x4a, "div", 3, false, div);
+  this->isa_.add_instruction(0x4b, "divi", 2, true, divi);
+  this->isa_.add_instruction(0x4c, "mod", 3, false, mod);
+  this->isa_.add_instruction(0x4d, "modi", 2, true, modi);
 
   // Logic operations
-  this->isa_.add_instruction(0x60, "not", 2, false, lnot);
-  this->isa_.add_instruction(0x68, "or", 3, false, lor);
-  this->isa_.add_instruction(0x69, "ori", 2, true, lori);
-  this->isa_.add_instruction(0x6a, "and", 3, false, land);
-  this->isa_.add_instruction(0x6b, "andi", 2, true, landi);
-  this->isa_.add_instruction(0x6c, "xor", 3, false, lxor);
-  this->isa_.add_instruction(0x6d, "xori", 2, true, lxori);
+  this->isa_.add_instruction(0x50, "not", 2, false, lnot);
+  this->isa_.add_instruction(0x58, "or", 3, false, lor);
+  this->isa_.add_instruction(0x59, "ori", 2, true, lori);
+  this->isa_.add_instruction(0x5a, "and", 3, false, land);
+  this->isa_.add_instruction(0x5b, "andi", 2, true, landi);
+  this->isa_.add_instruction(0x5c, "xor", 3, false, lxor);
+  this->isa_.add_instruction(0x5d, "xori", 2, true, lxori);
 
   // Shift operations
-  this->isa_.add_instruction(0x70, "sll", 3, false, sll);
-  this->isa_.add_instruction(0x71, "slli", 2, true, slli);
-  this->isa_.add_instruction(0x72, "srl", 3, false, srl);
-  this->isa_.add_instruction(0x73, "srli", 2, true, srli);
-  this->isa_.add_instruction(0x74, "sla", 3, false, sla);
-  this->isa_.add_instruction(0x75, "slai", 2, true, slai);
-  this->isa_.add_instruction(0x76, "sra", 3, false, sra);
-  this->isa_.add_instruction(0x77, "srai", 2, true, srai);
-  this->isa_.add_instruction(0x78, "rl", 3, false, rl);
-  this->isa_.add_instruction(0x79, "rli", 2, true, rli);
-  this->isa_.add_instruction(0x7a, "rr", 3, false, rr);
-  this->isa_.add_instruction(0x7b, "rri", 2, true, rri);
+  this->isa_.add_instruction(0x60, "sll", 3, false, sll);
+  this->isa_.add_instruction(0x61, "slli", 2, true, slli);
+  this->isa_.add_instruction(0x62, "srl", 3, false, srl);
+  this->isa_.add_instruction(0x63, "srli", 2, true, srli);
+  this->isa_.add_instruction(0x64, "sla", 3, false, sla);
+  this->isa_.add_instruction(0x65, "slai", 2, true, slai);
+  this->isa_.add_instruction(0x66, "sra", 3, false, sra);
+  this->isa_.add_instruction(0x67, "srai", 2, true, srai);
+  this->isa_.add_instruction(0x68, "rl", 3, false, rl);
+  this->isa_.add_instruction(0x69, "rli", 2, true, rli);
+  this->isa_.add_instruction(0x6a, "rr", 3, false, rr);
+  this->isa_.add_instruction(0x6b, "rri", 2, true, rri);
 }
 
 

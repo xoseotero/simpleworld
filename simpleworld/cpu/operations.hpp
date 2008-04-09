@@ -401,7 +401,7 @@ Update sub(CPU& cpu, Instruction inst);
 Update subi(CPU& cpu, Instruction inst);
 
 /**
- * Low 32bits from multiply two signed registers.
+ * Low 32bits from multiply two registers.
  *
  * REGISTERS[FIRST] = REGISTERS[SECOND] * REGISTERS[ADDRESS]
  * @param cpu the CPU.
@@ -411,7 +411,7 @@ Update subi(CPU& cpu, Instruction inst);
 Update multl(CPU& cpu, Instruction inst);
 
 /**
- * Low 32bits from multiply a signed registers and the data (signed value).
+ * Low 32bits from multiply a registers and the data (signed value).
  *
  * REGISTERS[FIRST] = REGISTERS[SECOND] * ADDRESS
  * @param cpu the CPU.
@@ -419,26 +419,6 @@ Update multl(CPU& cpu, Instruction inst);
  * @return if the PC must be updated.
  */
 Update multli(CPU& cpu, Instruction inst);
-
-/**
- * Low 32bits from multiply two unsigned registers.
- *
- * REGISTERS[FIRST] = REGISTERS[SECOND] * REGISTERS[ADDRESS]
- * @param cpu the CPU.
- * @param inst the instruction.
- * @return if the PC must be updated.
- */
-Update multlu(CPU& cpu, Instruction inst);
-
-/**
- * Low 32bits from multiply a unsigned registers and the data (unsigned value).
- *
- * REGISTERS[FIRST] = REGISTERS[SECOND] * ADDRESS
- * @param cpu the CPU.
- * @param inst the instruction.
- * @return if the PC must be updated.
- */
-Update multlui(CPU& cpu, Instruction inst);
 
 /**
  * High 32bits from multiply two signed registers.
@@ -481,7 +461,7 @@ Update multhu(CPU& cpu, Instruction inst);
 Update multhui(CPU& cpu, Instruction inst);
 
 /**
- * Divide two signed registers.
+ * Divide two registers.
  *
  * REGISTERS[FIRST] = REGISTERS[SECOND] / REGISTERS[ADDRESS]
  * @param cpu the CPU.
@@ -491,7 +471,7 @@ Update multhui(CPU& cpu, Instruction inst);
 Update div(CPU& cpu, Instruction inst);
 
 /**
- * Divide a signed register and the data (signed value).
+ * Divide a register and the data.
  *
  * REGISTERS[FIRST] = REGISTERS[SECOND] / ADDRESS
  * @param cpu the CPU.
@@ -501,27 +481,7 @@ Update div(CPU& cpu, Instruction inst);
 Update divi(CPU& cpu, Instruction inst);
 
 /**
- * Divide two unsigned registers.
- *
- * REGISTERS[FIRST] = REGISTERS[SECOND] / REGISTERS[ADDRESS]
- * @param cpu the CPU.
- * @param inst the instruction.
- * @return if the PC must be updated.
- */
-Update divu(CPU& cpu, Instruction inst);
-
-/**
- * Divide a unsigned register and the data (unsigned value).
- *
- * REGISTERS[FIRST] = REGISTERS[SECOND] / ADDRESS
- * @param cpu the CPU.
- * @param inst the instruction.
- * @return if the PC must be updated.
- */
-Update divui(CPU& cpu, Instruction inst);
-
-/**
- * Module of two signed registers.
+ * Module of two registers.
  *
  * REGISTERS[FIRST] = REGISTERS[SECOND] % REGISTERS[ADDRESS]
  * @param cpu the CPU.
@@ -531,7 +491,7 @@ Update divui(CPU& cpu, Instruction inst);
 Update mod(CPU& cpu, Instruction inst);
 
 /**
- * Module of a signed register and the data (signed value).
+ * Module of a register and the data.
  *
  * REGISTERS[FIRST] = REGISTERS[SECOND] % ADDRESS
  * @param cpu the CPU.
@@ -539,27 +499,6 @@ Update mod(CPU& cpu, Instruction inst);
  * @return if the PC must be updated.
  */
 Update modi(CPU& cpu, Instruction inst);
-
-/**
- * Module of two unsigned registers.
- *
- * REGISTERS[FIRST] = REGISTERS[SECOND] % REGISTERS[ADDRESS]
- * @param cpu the CPU.
- * @param inst the instruction.
- * @return if the PC must be updated.
- */
-Update modu(CPU& cpu, Instruction inst);
-
-/**
- * Module of a unsigned register and the data (unsigned value).
- *
- * REGISTERS[FIRST] = REGISTERS[SECOND] % ADDRESS
- * @param cpu the CPU.
- * @param inst the instruction.
- * @return if the PC must be updated.
- */
-Update modui(CPU& cpu, Instruction inst);
-
 
 /* Logic operations: execute a logic operation. */
 /**
