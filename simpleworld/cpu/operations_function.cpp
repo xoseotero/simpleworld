@@ -58,6 +58,34 @@ Update call(CPU& cpu, Instruction inst)
 }
 
 /**
+ * Call a function using a register as address.
+ *
+ * PUSH(PC) and PC = REGISTER[FIRST]
+ * @param cpu the CPU.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
+ */
+Update callr(CPU& cpu, Instruction inst)
+{
+  // Check if the address is valid.
+  // If the address is out of range, a Invalid Memory location is raised
+  // giving this instruction as data.
+  Address address = cpu.get_reg(inst.first);
+  cpu.get_mem(address);
+
+  // Save the frame pointer and the program counter in the top of the stack
+  cpu.set_mem(cpu.get_reg(REGISTER_SP), cpu.get_reg(REGISTER_FP));
+  cpu.set_mem(cpu.get_reg(REGISTER_SP) + 4, cpu.get_reg(REGISTER_PC));
+  // Update the stack pointer and the frame pointer
+  cpu.set_reg(REGISTER_SP, cpu.get_reg(REGISTER_SP) + 8);
+  cpu.set_reg(REGISTER_FP, cpu.get_reg(REGISTER_SP));
+  // Execute the function
+  cpu.set_reg(REGISTER_PC, address);
+
+  return UpdateNone;
+}
+
+/**
  * Software interrupt.
  *
  * @param cpu the CPU.

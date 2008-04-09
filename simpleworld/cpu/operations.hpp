@@ -330,6 +330,16 @@ Update bgeu(CPU& cpu, Instruction inst);
 Update call(CPU& cpu, Instruction inst);
 
 /**
+ * Call a function using a register as address.
+ *
+ * PUSH(PC) and PC = REGISTER[FIRST]
+ * @param cpu the CPU.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
+ */
+Update callr(CPU& cpu, Instruction inst);
+
+/**
  * Software interrupt.
  *
  * @param cpu the CPU.

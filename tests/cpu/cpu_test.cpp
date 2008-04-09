@@ -511,7 +511,7 @@ BOOST_AUTO_TEST_CASE(cpu_branch)
 }
 
 /**
- * Execute the function operations call and ret.
+ * Execute the function operations call, callr and ret.
  */
 BOOST_AUTO_TEST_CASE(cpu_function)
 {
@@ -524,8 +524,11 @@ BOOST_AUTO_TEST_CASE(cpu_function)
   // Execute some functions
   source.insert(line++, "call func0");
   source.insert(line++, "call func1");
-  source.insert(line++, "call func2");
-  source.insert(line++, "call func3");
+
+  source.insert(line++, "loada r11 func2");
+  source.insert(line++, "callr r11");
+  source.insert(line++, "loada r11 func3");
+  source.insert(line++, "callr r11");
 
   // End of test
   source.insert(line++, "stop");

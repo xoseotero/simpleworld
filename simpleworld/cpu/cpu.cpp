@@ -119,7 +119,8 @@ CPU::CPU(Memory* registers, Memory* memory)
 
   // Function operations
   this->isa_.add_instruction(0x30, "call", 0, true, call);
-  this->isa_.add_instruction(0x31, "int", 0, true,
+  this->isa_.add_instruction(0x31, "callr", 1, false, callr);
+  this->isa_.add_instruction(0x32, "int", 0, true,
                              ::simpleworld::cpu::interrupt);
   this->isa_.add_instruction(0x34, "ret", 0, false, ret);
   this->isa_.add_instruction(0x35, "reti", 0, false, reti);
