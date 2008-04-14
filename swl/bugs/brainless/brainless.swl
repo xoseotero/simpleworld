@@ -56,7 +56,7 @@
 	b main_loop
 
 	.label main_detect	# the bug couldn't move
-	call do_detect
+	call detect
 	b main_loop
 
 
@@ -106,21 +106,21 @@
 
 
 # Attack until error
-.label do_attack
+.label attack
 	loadi r2 ACTION_OK
 
-	.label do_attack_loop		# do
+	.label attack_loop		# do
 	loadi r0 0x8
 	world ACTION_ATTACK
-	beq r0 r2 do_attack_loop	# while ATTACK == ACTION_OK
+	beq r0 r2 attack_loop		# while ATTACK == ACTION_OK
 
-	call do_detect
+	call detect
 
 	ret
 
 
 # Create a egg in front of the bug
-.label do_egg
+.label egg
 	world ACTION_EGG
 
 	# let the egg alone
@@ -131,47 +131,47 @@
 
 
 # Eat the element that is in front of the bug
-.label do_eat
+.label eat
 	world ACTION_EAT
 
 	world ACTION_MYSELF_ENERGY
 	loadi r0 ENERGY_TO_CREATE_EGG
-	bgt r1 r0 do_eat_egg
+	bgt r1 r0 eat_egg
 
-	.label do_eat_ret	# if MYSELF_ENERGY <= ENERGY_TO_CREATE_EGG
+	.label eat_ret	# if MYSELF_ENERGY <= ENERGY_TO_CREATE_EGG
 	ret
 
-	.label do_eat_egg	# else (MYSELF_ENERGY > ENERGY_TO_CREATE_EGG)
-	call do_egg
+	.label eat_egg	# else (MYSELF_ENERGY > ENERGY_TO_CREATE_EGG)
+	call egg
 	ret
 
 
 # Detect what is in front of the bug and:
 # a) eats it if the element is food or a egg
 # b) attacks it if the element is a bug
-.label do_detect
+.label detect
 	world ACTION_DETECT		# r1 = ELEMENT
 
 	loadi r0 ELEMENT_NOTHING
-	bne r1 r0 do_detect_something
-	.label do_detect_nothing	# if ELEMENT == NOTHING
+	bne r1 r0 detect_something
+	.label detect_nothing	# if ELEMENT == NOTHING
 	ret
 
-	.label do_detect_something	# else (ELEMENT != NOTHING)
+	.label detect_something	# else (ELEMENT != NOTHING)
 
 	loadi r0 ELEMENT_FOOD
-	beq r1 r0 do_detect_eat
+	beq r1 r0 detect_eat
 
-	.label do_detect_attack		# if ELEMENT != FOOD
-	call do_attack
+	.label detect_attack		# if ELEMENT != FOOD
+	call attack
 	ret
 
-	.label do_detect_eat		# else (ELEMENT == FOOD)
-	call do_eat
+	.label detect_eat		# else (ELEMENT == FOOD)
+	call eat
 	ret
 
 
 # The stack can't be calculate a priori because there are recursive calls
-# do_detect->do_attackt->do_detect->...
+# detect->attackt->detect->...
 .label stack
 .block 0x40	# 64
