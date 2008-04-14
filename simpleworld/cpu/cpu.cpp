@@ -230,11 +230,19 @@ Instruction info:\tcode: 0x%02X, name: %s, nregs: %d, has_i: %d")
       break;
     }
   } catch (const CodeError& exc) {
-    this->interrupt(INTERRUPT_INSTRUCTION,
-                    this->memory_->get_word(ADDRESS(REGISTER_PC)),
-                    instruction.code);
+    // The pc or the itp could be out of range
+    try {
+      this->interrupt(INTERRUPT_INSTRUCTION,
+                      this->memory_->get_word(ADDRESS(REGISTER_PC)),
+                      instruction.code);
+    } catch (const MemoryError& exc) {
+      // Set the instruction as 0.
+      // This is a value that can't raise a exception, because is a "stop",
+      // so the code can know that the pc or the itp was out of range.
+      this->interrupt(INTERRUPT_MEMORY, 0, instruction.data);
+    }
   } catch (const MemoryError& exc) {
-    // The pc could be out of range
+    // The pc or the itp could be out of range
     try {
       this->interrupt(INTERRUPT_MEMORY,
                       this->memory_->get_word(ADDRESS(REGISTER_PC)),
@@ -242,10 +250,8 @@ Instruction info:\tcode: 0x%02X, name: %s, nregs: %d, has_i: %d")
     } catch (const MemoryError& exc) {
       // Set the instruction as 0.
       // This is a value that can't raise a exception, because is a "stop",
-      // so the code can know that the pc was out of range.
-      this->interrupt(INTERRUPT_MEMORY,
-                      0,
-                      instruction.data);
+      // so the code can know that the pc or the itp was out of range.
+      this->interrupt(INTERRUPT_MEMORY, 0, instruction.data);
     }
   }
 }
@@ -301,6 +307,7 @@ void CPU::set_mem(Address addr, Word word, bool system_endian)
  * @param code the ode of the interrupt.
  * @param r1 the word stored in r1.
  * @param r2 the word stored in r2.
+ * @exception MemoryError if the itp is not valid.
  */
 void CPU::interrupt(Uint8 code, Word r1, Word r2)
 {
@@ -364,6 +371,7 @@ Interrupt thrown:\tcode: 0x%02X, name: %s")
 
 /**
  * Throw the Timer Interrupt.
+ * @exception MemoryError if the itp is not valid.
  */
 void CPU::timer_interrupt()
 {
@@ -393,6 +401,7 @@ Instruction CPU::fetch_instruction_() const
  * @param code Interrupt to check.
  * @return true if the interrupt is enabled, not if not.
  * @exception CPUexception if the interrupt is not found.
+ * @exception MemoryError if the itp is not valid.
  */
 bool CPU::interrupt_enabled(Uint8 code) const
 {

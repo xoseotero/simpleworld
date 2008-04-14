@@ -159,11 +159,13 @@ public:
    * @param code the ode of the interrupt.
    * @param r1 the word stored in r1.
    * @param r2 the word stored in r2.
+   * @exception MemoryError if the itp is not valid.
    */
   void interrupt(Uint8 code, Word r1 = 0, Word r2 = 0);
 
   /**
    * Throw the Timer Interrupt.
+   * @exception MemoryError if the itp is not valid.
    */
   void timer_interrupt();
 
@@ -188,6 +190,7 @@ protected:
    * @param code Interrupt to check.
    * @return true if the interrupt is enabled, not if not.
    * @exception CPUexception if the interrupt is not found.
+   * @exception MemoryError if the itp is not valid.
    */
   bool interrupt_enabled(Uint8 code) const;
 };
