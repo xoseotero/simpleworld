@@ -93,7 +93,6 @@ public:
   Time time;
   Position size;
 
-  Energy energy_developed;
   double mutations_probability;
   Time time_birth;
   double attack_multiplier;

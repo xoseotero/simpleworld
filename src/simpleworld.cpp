@@ -348,26 +348,24 @@ Size:\t%1% x %2%\n\
 Number of elements:\t%3%\n\
 Time:\t%4%\n\
 \n\
-Energy for developed eggs:\t%5%\n\
-Probability of mutations:\t%6%\n\
-Time needed to birth:\t%7%\n\
-Multiplier to the attack:\t%8%\n\
+Probability of mutations:\t%5%\n\
+Time needed to birth:\t%6%\n\
+Multiplier to the attack:\t%7%\n\
 \n\
-Energy used for doing action NOTHING:\t%9%\n\
-Energy used for doing action MYSELF:\t%10%\n\
-Energy used for doing action DETECT:\t%11%\n\
-Energy used for doing action INFO:\t%12%\n\
-Energy used for doing action MOVE:\t%13%\n\
-Energy used for doing action TURN:\t%14%\n\
-Energy used for doing action ATTACK:\t%15%\n\
-Energy used for doing action EAT:\t%16%\n\
-Energy used for doing action EGG:\t%17%")
+Energy used for doing action NOTHING:\t%8%\n\
+Energy used for doing action MYSELF:\t%9%\n\
+Energy used for doing action DETECT:\t%10%\n\
+Energy used for doing action INFO:\t%11%\n\
+Energy used for doing action MOVE:\t%12%\n\
+Energy used for doing action TURN:\t%13%\n\
+Energy used for doing action ATTACK:\t%14%\n\
+Energy used for doing action EAT:\t%15%\n\
+Energy used for doing action EGG:\t%16%")
     % environment.size.x
     % environment.size.y
     % world.num_elements()
     % environment.time
 
-    % environment.energy_developed
     % environment.mutations_probability
     % environment.time_birth
     % environment.attack_multiplier

@@ -11,7 +11,6 @@ CREATE TABLE Environment
   size_x INTEGER NOT NULL,
   size_y INTEGER NOT NULL,
 
-  energy_developed INTEGER NOT NULL,
   mutations_probability REAL NOT NULL,  -- Values from 0 to 1
   time_birth INTEGER NOT NULL,
   attack_multiplier REAL NOT NULL,
@@ -29,7 +28,6 @@ CREATE TABLE Environment
   PRIMARY KEY(id),
   CHECK(time >= 0),
   CHECK(size_x > 0 AND size_y > 0),
-  CHECK(energy_developed >= 0),
   CHECK(mutations_probability >= 0 AND mutations_probability <= 1),
   CHECK(time_birth >= 0),
   CHECK(energy_nothing >= 0 AND energy_myself >= 0 AND
@@ -82,7 +80,6 @@ ON Environment
 FOR EACH ROW
 WHEN OLD.size_x != NEW.size_x OR
      OLD.size_y != NEW.size_y OR
-     OLD.energy_developed != NEW.energy_developed OR
      OLD.mutations_probability != NEW.mutations_probability OR
      OLD.time_birth != NEW.time_birth OR
      OLD.attack_multiplier != NEW.attack_multiplier OR
