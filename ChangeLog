@@ -1,4 +1,4 @@
-Simple World 1.0b1:
+Simple World 1.0a4 (2008/04/14):
 	* Update to database version 2.
 	* Add the field attack_multiplier (a multiplier for the energy of a
 	  attack) to the Environment table.
