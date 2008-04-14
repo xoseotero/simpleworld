@@ -565,6 +565,9 @@ Position used (%1%, %2%)")
   Egg* ptr = new Egg(this, egg.id());
   this->eggs_.push_back(ptr);
   this->world_->add(ptr, ptr->position);
+
+  // Substracts the energy of the egg
+  this->substract_energy(bug, energy);
 }
 
 
