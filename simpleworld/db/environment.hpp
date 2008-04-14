@@ -90,22 +90,25 @@ public:
 
 
   // Data
-  Time time;
-  Position size;
+  Time time;                    /**< Cycles since the creation of the World. */
 
-  double mutations_probability;
-  Time time_birth;
-  double attack_multiplier;
+  Position size;                /**< Size of the World. */
 
-  Energy energy_nothing;
-  Energy energy_myself;
-  Energy energy_detect;
-  Energy energy_info;
-  Energy energy_move;
-  Energy energy_turn;
-  Energy energy_attack;
-  Energy energy_eat;
-  Energy energy_egg;
+  double mutations_probability; /**< Probability (0.0-1.0) that the code
+                                     mutates. */
+  Time time_birth;              /**< Cycles needed to convert a egg into a
+                                     bug. */
+  double attack_multiplier;     /**< Multiplier for the energy of a attack */
+
+  Energy energy_nothing;        /**< Energy needed to do action nothing. */
+  Energy energy_myself;         /**< Energy needed to do action myself. */
+  Energy energy_detect;         /**< Energy needed to do action detect. */
+  Energy energy_info;           /**< Energy needed to do action info. */
+  Energy energy_move;           /**< Energy needed to do action move. */
+  Energy energy_turn;           /**< Energy needed to do action turn. */
+  Energy energy_attack;         /**< Energy needed to do action attack. */
+  Energy energy_eat;            /**< Energy needed to do action eat. */
+  Energy energy_egg;            /**< Energy needed to do action egg. */
 };
 
 }
