@@ -32,7 +32,7 @@
 	beq r2 r3 _memory_set_end	# while r2 != 0
 
 	# do the copy
-	storerr r0 r4 r1
+	storerr r1 r0 r4
 
 	# update the number of words to copy and the offset
 	subi r2 r2 0x1
@@ -58,7 +58,7 @@
 
 	# do the copy
 	loadrr r5 r0 r4
-	storerr r1 r4 r5
+	storerr r5 r1 r4
 
 	# update the number of words to copy and the offset
 	subi r2 r2 0x1
