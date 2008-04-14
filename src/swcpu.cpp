@@ -33,7 +33,6 @@
 #include <simpleworld/ints.hpp>
 #include <simpleworld/exception.hpp>
 #include <simpleworld/cpu/types.hpp>
-#include <simpleworld/cpu/word.hpp>
 #include <simpleworld/cpu/memory.hpp>
 #include <simpleworld/cpu/memory_file.hpp>
 #include <simpleworld/cpu/instruction.hpp>
@@ -223,8 +222,7 @@ void CPU::next()
   while (reg != regs_codes.end()) {
     std::cout << boost::str(boost::format("%3s = 0x%08X")
                             % cpu::CPU::isa_.register_name(*reg)
-                            % cpu::change_byte_order(this->registers_[*reg *
-                              4]));
+                            % this->registers_[*reg * 4]);
     if (i % 4 == 0)
       std::cout << std::endl;
     else
