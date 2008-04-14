@@ -37,6 +37,7 @@
 #include <simpleworld/cpu/memory_file.hpp>
 #include <simpleworld/cpu/instruction.hpp>
 #include <simpleworld/cpu/object.hpp>
+#include <simpleworld/cpu/codeerror.hpp>
 namespace sw = simpleworld;
 namespace cpu = simpleworld::cpu;
 
@@ -209,10 +210,18 @@ CPU::CPU(const std::string& filename) throw ()
 
 void CPU::next()
 {
-  cpu::Instruction instruction = this->fetch_instruction_();
-  std::cout
-    << this->decompile(instruction.encode())
-    << std::endl;
+  try {
+    cpu::Instruction instruction = this->fetch_instruction_();
+    std::cout
+      << this->decompile(instruction.encode())
+      << std::endl;
+  } catch (const cpu::CPUException& e) {
+    std::cout << boost::str(boost::format("Instruction[0x%08X]: 0x%08X")
+                            % this->registers_[ADDRESS(REGISTER_PC)]
+                            % this->memory_[this->registers_[ADDRESS(REGISTER_PC)]])
+              << std::endl;
+  }
+
 
   FakeCPU::next();
 
