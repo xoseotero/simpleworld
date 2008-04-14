@@ -31,7 +31,7 @@
 	.label _memory_set_loop
 	beq r2 r3 _memory_set_end	# while r2 != 0
 
-	# do de copy
+	# do the copy
 	storerr r0 r4 r1
 
 	# update the number of words to copy and the offset
@@ -56,7 +56,7 @@
 	.label _memory_copy_loop
 	beq r2 r3 _memory_copy_end	# while r2 != 0
 
-	# do de copy
+	# do the copy
 	loadrr r5 r0 r4
 	storerr r1 r4 r5
 
@@ -97,7 +97,7 @@
 	.label _memory_cmp_loop
 	beq r2 r3 _memory_cmp_equal	# while r2 != 0
 
-	# do de comparation
+	# do the comparation
 	loadrr r5 r0 r4
 	loadrr r6 r1 r4
 
