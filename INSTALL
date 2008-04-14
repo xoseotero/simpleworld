@@ -7,7 +7,7 @@ Simple World has a few dependencies:
 *** Installation:
 1. Create a subdirectory and change the directory to it.
 (or use a shell script to do the job)
-1. admin/autogen.sh INSTALL_DIR
+1. admin/autogen.sh --debug INSTALL_DIR
 2. cmake ..
 (if cmake couldn't autodetect the dependencies, execute ccmake and modify
 the needed variables, press C -configure-, E -exit- and Q -quit-)
