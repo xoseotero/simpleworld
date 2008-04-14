@@ -1,0 +1,19 @@
+Simple World 1.0a3 (2008/01/28)
+This is the last alpha version of Simple World. With this version, all 
+the functionality of the specification 1.0 is working. This means, that:
+
+a) the bugs can be coded
+b) the bugs interact with the World
+c) the bugs can put eggs
+d) the code of the eggs can mutate
+
+Simple World 1.0a2 (2007/12/10)
+This version allows the first battles between the bugs. They can go for 
+all the World, get information about what they found in its path, attack 
+other bugs and eat food. The only bug present in this version, 
+brainless, can do all this.
+
+Simple World 1.0a1 (2007/11/12)
+This is the first release of Simple World, the first alpha of 1.0.
+The functionality of this release is not completed. The bugs can only 
+move and get information about the World.
