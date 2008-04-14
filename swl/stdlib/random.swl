@@ -26,21 +26,21 @@
 
 
 # Constants for calculate next random value
-.label random_a
+.label _random_a
 0x41c64e6d
-.label random_b
+.label _random_b
 0x3039
-.label random_c
+.label _random_c
 0x7fffffff
 
 # Seed zero by default
-.label random_seed1
+.label _random_seed1
 0x0
-.label random_seed2
+.label _random_seed2
 0xffffffff
 
 # Word with all the bits to 1 (to calculate the complement)
-.label random_complement
+.label _random_complement
 0xffffffff
 
 
@@ -48,11 +48,11 @@
 # IN:  r0 the new value for the seed
 .label random_seed
 	# the second word of the seed is the complement of the first one
-	load r1 random_complement
+	load r1 _random_complement
 	xor r1 r0 r1
 
-	store r0 random_seed1
-	store r1 random_seed2
+	store r0 _random_seed1
+	store r1 _random_seed2
 
 	ret
 
@@ -61,10 +61,10 @@
 # Update the seed with a iteration of the LCG algorithm
 # IN:  r0 the seed
 # OUT: r0 the new value of the seed
-.label random_lcg
-	load r1 random_a
-	load r2 random_b
-	load r3 random_c
+.label _random_lcg
+	load r1 _random_a
+	load r2 _random_b
+	load r3 _random_c
 
 	# LCG in the seed
 	multl r0 r0 r1
@@ -79,20 +79,20 @@
 # OUT: r0 the random value
 .label random_value
 	# LCG in the two seeds
-	load r0 random_seed1
-	call random_lcg
+	load r0 _random_seed1
+	call _random_lcg
 	push r0
 
-	load r0 random_seed2
-	call random_lcg
+	load r0 _random_seed2
+	call _random_lcg
 
 	# seed1 in r1
 	# seed2 in r0
 	pop r1
 
 	# Update seeds
-	store r1 random_seed1
-	store r0 random_seed2
+	store r1 _random_seed1
+	store r0 _random_seed2
 
 	# Calculate the new word using the most value bits of the words
 	# (the LCG algorith only returns 31 bits, the MLB = 0)

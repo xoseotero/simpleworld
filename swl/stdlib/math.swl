@@ -48,7 +48,6 @@
 	xor r0 r0 r1		# r0 = r0 ^ 0xFFFFFFFF
 	addi r0 r0 0x0001	# r0 += 1
 
-	ret
 
 
 # Add a number x times (signed numbers)
@@ -60,11 +59,11 @@
 	load r3 math_word_zero		# r3 = 0
 	loadi r0 0x0000			# r0 = 0
 
-	.label math_pow_continue
-	beq r1 r3 math_pow_return	# if r1 == 0, then return
+	.label _math_pow_continue
+	beq r1 r3 _math_pow_return	# if r1 == 0, then return
 	add r0 r0 r2			# r0 = r0 + r2
 	subi r1 r1 0x0001		# r1 = r1 - 1
-	b pow_continue
+	b _math_pow_continue
 
-	.label math_pow_return
+	.label _math_pow_return
 	ret

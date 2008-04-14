@@ -28,8 +28,8 @@
 	# r4 is used as the register offset
 	loadi r4 0x0
 
-	.label memory_set_loop
-	beq r2 r3 memory_set_end	# while r2 != 0
+	.label _memory_set_loop
+	beq r2 r3 _memory_set_end	# while r2 != 0
 
 	# do de copy
 	storerr r0 r4 r1
@@ -38,9 +38,9 @@
 	subi r2 r2 0x1
 	addi r4 r4 0x4
 
-	b memory_set_loop
+	b _memory_set_loop
 
-	.label memory_set_end		# r2 == 0
+	.label _memory_set_end		# r2 == 0
 	ret
 
 
@@ -53,8 +53,8 @@
 	# r4 is used as the register offset
 	loadi r4 0x0
 
-	.label memory_copy_loop
-	beq r2 r3 memory_copy_end	# while r2 != 0
+	.label _memory_copy_loop
+	beq r2 r3 _memory_copy_end	# while r2 != 0
 
 	# do de copy
 	loadrr r5 r0 r4
@@ -64,9 +64,9 @@
 	subi r2 r2 0x1
 	addi r4 r4 0x4
 
-	b memory_copy_loop
+	b _memory_copy_loop
 
-	.label memory_copy_end		# r2 == 0
+	.label _memory_copy_end		# r2 == 0
 	ret
 
 
@@ -94,25 +94,25 @@
 	# r4 is used as the register offset
 	loadi r4 0x0
 
-	.label memory_cmp_loop
-	beq r2 r3 memory_cmp_equal	# while r2 != 0
+	.label _memory_cmp_loop
+	beq r2 r3 _memory_cmp_equal	# while r2 != 0
 
 	# do de comparation
 	loadrr r5 r0 r4
 	loadrr r6 r1 r4
 
-	bne r5 r6 memory_cmp_diff	# if mem[r0 + r4] == mem[r1 + r4]
+	bne r5 r6 _memory_cmp_diff	# if mem[r0 + r4] == mem[r1 + r4]
 
 	# update the number of words to copy and the offset
 	subi r2 r2 0x1
 	addi r4 r4 0x4
 
-	b memory_cmp_loop
+	b _memory_cmp_loop
 
-	.label memory_cmp_equal		# r2 == 0
+	.label _memory_cmp_equal	# r2 == 0
 	loadi r0 0x0
 	ret
 
-	.label memory_cmp_diff		# else (mem[r0 + r4] != mem[r1 + r4])
+	.label _memory_cmp_diff		# else (mem[r0 + r4] != mem[r1 + r4])
 	sub r0 r5 r6
 	ret

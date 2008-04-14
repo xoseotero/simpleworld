@@ -53,26 +53,26 @@
 	# 2.2) The result hase different sign -> overflow
 
 	# Get the sign of the operand and result
-	srl r0 r0 0x001f		# r0 = has sign?
-	srl r1 r1 0x001f		# r1 = has sign?
-	srl r2 r2 0x001f		# r2 = has sign?
+	srl r0 r0 0x001f			# r0 = has sign?
+	srl r1 r1 0x001f			# r1 = has sign?
+	srl r2 r2 0x001f			# r2 = has sign?
 
-	add r3 r1 r2			# r3 = sign(r1) + sign(r2)
-	loadi r4 0x0001			# r4 = 1
-	bne r3 r4 status_overflow_false	# Option 1) No overflow
+	add r3 r1 r2				# r3 = sign(r1) + sign(r2)
+	loadi r4 0x0001				# r4 = 1
+	bne r3 r4 _status_overflow_false	# Option 1) No overflow
 
-	add r3 r3 r0			# r3 = sign(r1) + sign(r2) + sign(r0)
-	loadi r4 0x0000			# r4 = 0
-	beq r3 r4 status_overflow_false	# Option 2.1) All three with no sign
-	loadi r4 0x0003			# r4 = 3
-	beq r3 r4 status_overflow_false	# Option 2.2) All three with sign
+	add r3 r3 r0				# r3 = sign(r1) + sign(r2) + sign(r0)
+	loadi r4 0x0000				# r4 = 0
+	beq r3 r4 _status_overflow_false	# Option 2.1) All three with no sign
+	loadi r4 0x0003				# r4 = 3
+	beq r3 r4 _status_overflow_false	# Option 2.2) All three with sign
 
 	# Overflow didn't happen
 	loadi r0 0x0001
 	ret
 
 	# Overflow happened
-	.label status_overflow_false
+	.label _status_overflow_false
 	loadi r0 0x0000
 	ret
 
@@ -87,15 +87,15 @@
 # OUT: r0 1 if a overlow is detected, 0 if not
 .label status_overflowu
 	# Overflow happens if (r0 < r1) or (r0 < r1)
-	bltu r0 r1 status_overflowu_true	# r0 < r1
-	bltu r0 r2 status_overflowu_true	# r0 < r2
+	bltu r0 r1 _status_overflowu_true	# r0 < r1
+	bltu r0 r2 _status_overflowu_true	# r0 < r2
 
 	# Overflow didn't happen
 	loadi r0 0x0001
 	ret
 
 	# Overflow happened
-	.label status_overflowu_true
+	.label _status_overflowu_true
 	loadi r0 0x0001
 	ret
 
@@ -109,16 +109,16 @@
 	loadi r2 0x001f			# r2 = 31
 	loadi r3 0x0000			# r3 = 0
 
-	.label status_parity_continue
-	beq r2 r3 status_parity_return	# if r2 == 0, then goto
-					# status_parity_return
+	.label _status_parity_continue
+	beq r2 r3 _status_parity_return	# if r2 == 0, then goto
+					# _status_parity_return
 	srl r0 r0 0x0001		# r1 = r1 + ((r0 >> 1) & 0x001)
 	andi r4 r0 0x0001
 	add r1 r1 r4
 
 	subi r2 r2 0x0001		# r2 = r2 - 1
-	b status_parity_continue
+	b _status_parity_continue
 
-	.label status_parity_return
+	.label _status_parity_return
 	modi r0 r0 0x0010		# r0 = ro % 2
 	 ret
