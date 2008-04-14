@@ -78,8 +78,8 @@ public:
    * @param position Position of the egg.
    * @param orientation Orientation of the egg.
    * @param code Code of the egg.
-   * @exception Exception if the position is out of the limits.
-   * @exception Exception if the position is used.
+   * @exception WorldError if the position is out of the limits.
+   * @exception WorldError if the position is used.
    */
   void add_egg(Energy energy, Position position, Orientation orientation,
                const cpu::Memory& code);
@@ -88,8 +88,8 @@ public:
    * Add food to the World.
    * @param position Position of the food.
    * @param size Size of the food.
-   * @exception Exception if the position is out of the limits.
-   * @exception Exception if the position is used.
+   * @exception WorldError if the position is out of the limits.
+   * @exception WorldError if the position is used.
    */
   void add_food(Position position, Energy size);
 

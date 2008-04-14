@@ -41,12 +41,13 @@
 #include <simpleworld/cpu/types.hpp>
 #include <simpleworld/cpu/exception.hpp>
 #include <simpleworld/db/types.hpp>
+#include <simpleworld/db/exception.hpp>
 #include <simpleworld/db/food.hpp>
 #include <simpleworld/db/egg.hpp>
 #include <simpleworld/db/bug.hpp>
 
 #include "simpleworld.hpp"
-#include "exception.hpp"
+#include "worlderror.hpp"
 #include "actionerror.hpp"
 #include "bugdeath.hpp"
 #include "movement.hpp"
@@ -121,8 +122,8 @@ SimpleWorld::~SimpleWorld()
  * @param position Position of the egg.
  * @param orientation Orientation of the egg.
  * @param code Code of the egg.
- * @exception Exception if the position is out of the limits.
- * @exception Exception if the position is used.
+ * @exception WorldError if the position is out of the limits.
+ * @exception WorldError if the position is used.
  */
 void SimpleWorld::add_egg(Energy energy,
                           Position position, Orientation orientation,
@@ -132,14 +133,18 @@ void SimpleWorld::add_egg(Energy energy,
   sqlite3x::sqlite3_transaction transaction(*this);
 
   db::Egg egg(this);
-  egg.position = position;
-  egg.orientation = orientation;
-  egg.birth = this->env_->time + this->env_->time_birth;
-  egg.add_null("father_id");
-  egg.energy = energy;
-  egg.code.size = code.size();
-  egg.code.code = code;
-  egg.insert();
+  try {
+    egg.position = position;
+    egg.orientation = orientation;
+    egg.birth = this->env_->time + this->env_->time_birth;
+    egg.add_null("father_id");
+    egg.energy = energy;
+    egg.code.size = code.size();
+    egg.code.code = code;
+    egg.insert();
+  } catch (const db::DBException& e) {
+    throw EXCEPTION(WorldError, e.what);
+  }
 
   Egg* ptr = new Egg(this, egg.id());
   this->eggs_.push_back(ptr);
@@ -161,9 +166,13 @@ void SimpleWorld::add_food(Position position, Energy size)
   sqlite3x::sqlite3_transaction transaction(*this);
 
   db::Food food(this);
-  food.position = position;
-  food.size = size;
-  food.insert();
+  try {
+    food.position = position;
+    food.size = size;
+    food.insert();
+  } catch (const db::DBException& e) {
+    throw EXCEPTION(WorldError, e.what);
+  }
 
   Food* ptr = new Food(this, food.id());
   this->foods_.push_back(ptr);
