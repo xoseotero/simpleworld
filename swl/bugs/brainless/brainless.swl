@@ -45,16 +45,14 @@
 	call random_value
 	modi r0 r0 0x2		# r0 = random_value % 2
 
-	loadi r1 0x0
-	beq r0 r1 main_move
+	bz r0 main_move
 	.label main_turn	# if random_value != 0
 	call random_turn
 	b main_loop
 	.label main_move	# else (random_value == 0)
 	call random_move
 
-	loadi r1 0x1
-	beq r0 r1 main_detect
+	bnz r0 main_detect
 	b main_loop
 
 	.label main_detect	# the bug couldn't move
@@ -81,8 +79,7 @@
 	call random_value
 	modi r0 r0 0x2
 
-	loadi r1 0x0
-	beq r0 r1 random_move_forward
+	bz r0 random_move_forward
 	.label random_move_backward	# if random_value != 0
 	world ACTION_MOVE_BACKWARD
 	loadi r0 0x0
@@ -99,8 +96,7 @@
 	call random_value
 	modi r0 r0 0x2
 
-	loadi r1 0x0
-	beq r0 r1 random_turn_left
+	bz r0 random_turn_left
 	.label random_turn_right	# if random_value != 0
 	world ACTION_TURN_RIGHT
 	ret
