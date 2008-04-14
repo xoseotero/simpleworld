@@ -241,6 +241,22 @@ void CPU::next()
     i++;
   }
 
+  // Show the stack (the data between the fp and the sp).
+  // If the sp is 0, then (suppose) the stack is not initialized.
+  // If the fp is 0, then (suppose) the code is not in a function.
+  if (this->registers_[REGISTER_SP * sizeof(cpu::Word)] != 0 and
+      this->registers_[REGISTER_FP * sizeof(cpu::Word)] != 0 and
+      this->registers_[REGISTER_SP * sizeof(cpu::Word)] !=
+      this->registers_[REGISTER_FP * sizeof(cpu::Word)]) {
+    std::cout << "Stack:" << std::endl;
+    for (cpu::Address addr = this->registers_[REGISTER_SP * sizeof(cpu::Word)];
+         addr > this->registers_[REGISTER_FP * sizeof(cpu::Word)];
+         addr -= sizeof(cpu::Word))
+      std::cout << boost::str(boost::format("0x%08X") %
+                              this->memory_[addr - 4])
+                << std::endl;
+  }
+
   std::cout << std::endl;
 }
 
