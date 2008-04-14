@@ -1,0 +1,19 @@
+*** Dependencies:
+Simple World has a few dependencies:
+ - C++ compiler, for example GNU Compiler Collection (http://gcc.gnu.org/)
+ - cmake (http://cmake.org/) to build the source code
+ - library boost (http://boost.org/)
+
+*** Installation:
+1. Create a subdirectory and change the directory to it.
+(or use a shell script to do the job)
+1. admin/autogen.sh INSTALL_DIR
+2. cmake ..
+(if cmake couldn't autodetect the dependencies, execute ccmake and modify
+the needed variables, press C -configure-, E -exit- and Q -quit-)
+3. ccmake .
+4. make && make test && make install
+
+*** Problems:
+If you found problems with these instructions or the compilation send a
+mail to the mailing list: simpleworld-list@lists.sourceforge.net
