@@ -1,0 +1,12 @@
+Simple World is the simulation of a world and the bugs that live on it. 
+Simple World tries to reproduce the basic elements that define a simple 
+world. The objective of the project is to observe the evolution of this 
+world and of these bugs.
+
+To know about Simple World visit http://simpleworld.sourceforge.net/ or
+read the specification located in de doc/ directory.
+
+To know how to install Simple World read the INSTALL file.
+
+If you have any questions, comments, etc,  write a e-mail to the mailing
+list: simpleworld-list@lists.sourceforge.net
