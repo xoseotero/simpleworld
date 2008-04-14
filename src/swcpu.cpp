@@ -221,7 +221,7 @@ void CPU::next()
   std::vector<sw::Uint8> regs_codes = cpu::CPU::isa_.register_codes();
   std::vector<sw::Uint8>::const_iterator reg = regs_codes.begin();
   while (reg != regs_codes.end()) {
-    std::cout << boost::str(boost::format("%3s = %8X")
+    std::cout << boost::str(boost::format("%3s = 0x%08X")
                             % cpu::CPU::isa_.register_name(*reg)
                             % cpu::change_byte_order(this->registers_[*reg *
                               4]));
