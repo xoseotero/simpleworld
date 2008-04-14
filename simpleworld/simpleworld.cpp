@@ -157,8 +157,8 @@ void SimpleWorld::add_egg(Energy energy,
  * Add food to the World.
  * @param position Position of the food.
  * @param size Size of the food.
- * @exception Exception if the position is out of the limits.
- * @exception Exception if the position is used.
+ * @exception WorldError if the position is out of the limits.
+ * @exception WorldError if the position is used.
  */
 void SimpleWorld::add_food(Position position, Energy size)
 {
