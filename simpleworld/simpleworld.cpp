@@ -30,6 +30,7 @@
 #include <iostream>
 #endif // DEBUG
 
+#include <algorithm>
 #include <vector>
 #include <list>
 #include <cassert>
@@ -558,8 +559,10 @@ Position used (%1%, %2%)")
                                         TurnLeft);
   egg.birth = this->env_->time + this->env_->time_birth;
   egg.father_id = bug->id();
-  egg.energy = energy;
+  egg.energy = std::min(bug->energy, energy);
   egg.code = copy_code(bug->code, this->env_->mutations_probability);
+  // Substracts the size of the egg
+  this->substract_energy(bug, egg.code.size);
   egg.insert();
 
   Egg* ptr = new Egg(this, egg.id());
