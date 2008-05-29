@@ -1,4 +1,4 @@
-SUBDIRS(
+subdirs(
   cpu
   db
   simpleworld)

@@ -1,8 +1,8 @@
-SUBDIRS(cpu
+subdirs(cpu
   db)
 
 
-SET(SIMPLEWORLD_SRCS
+set(SIMPLEWORLD_SRCS
   element.cpp
   movement.cpp
   world.cpp
@@ -13,9 +13,9 @@ SET(SIMPLEWORLD_SRCS
   reproduction.cpp
   simpleworld.cpp)
 
-ADD_LIBRARY(simpleworld STATIC ${SIMPLEWORLD_SRCS})
+add_library(simpleworld STATIC ${SIMPLEWORLD_SRCS})
 
-INSTALL(TARGETS simpleworld
+install(TARGETS simpleworld
   RUNTIME DESTINATION bin
   LIBRARY DESTINATION lib
   ARCHIVE DESTINATION lib/static)

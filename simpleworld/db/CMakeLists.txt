@@ -1,4 +1,4 @@
-SET(DB_SRCS
+set(DB_SRCS
   common.cpp
   memory.cpp
   table.cpp
@@ -13,9 +13,9 @@ SET(DB_SRCS
   egg.cpp
   deadbug.cpp
   db.cpp)
-ADD_LIBRARY(simpleworld_db SHARED ${DB_SRCS})
+add_library(simpleworld_db SHARED ${DB_SRCS})
 
-INSTALL(TARGETS simpleworld_db
+install(TARGETS simpleworld_db
   RUNTIME DESTINATION bin
   LIBRARY DESTINATION lib
   ARCHIVE DESTINATION lib/static)

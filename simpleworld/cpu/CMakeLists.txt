@@ -1,4 +1,4 @@
-SET(CPU_SRCS
+set(CPU_SRCS
   word.cpp
   memory.cpp memory_file.cpp
   operations_management.cpp operations_move.cpp operations_branch.cpp
@@ -8,9 +8,9 @@ SET(CPU_SRCS
   cpu.cpp
   file.cpp source.cpp
   object.cpp)
-ADD_LIBRARY(simpleworld_cpu SHARED ${CPU_SRCS})
+add_library(simpleworld_cpu SHARED ${CPU_SRCS})
 
-INSTALL(TARGETS simpleworld_cpu
+install(TARGETS simpleworld_cpu
   RUNTIME DESTINATION bin
   LIBRARY DESTINATION lib
   ARCHIVE DESTINATION lib/static)

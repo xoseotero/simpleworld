@@ -11,14 +11,14 @@
 #
 # The second option was used
 
-SET(common_SRCS
+set(common_SRCS
   printexc.cpp
   fakecpu.cpp)
-ADD_LIBRARY(common STATIC ${common_SRCS})
+add_library(common STATIC ${common_SRCS})
 
 
-ADD_EXECUTABLE(simpleworld_exe simpleworld.cpp)
-TARGET_LINK_LIBRARIES(simpleworld_exe
+add_executable(simpleworld_exe simpleworld.cpp)
+target_link_libraries(simpleworld_exe
   simpleworld_cpu
   simpleworld_db
   simpleworld
@@ -28,45 +28,45 @@ TARGET_LINK_LIBRARIES(simpleworld_exe
   ${Boost_regex_LIBRARY}
   ${SQLite3x_LIB}
   ${SQLite3_LIB})
-SET_TARGET_PROPERTIES(simpleworld_exe PROPERTIES
+set_target_properties(simpleworld_exe PROPERTIES
   OUTPUT_NAME simpleworld
   INSTALL_RPATH_USE_LINK_PATH ON
   INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
 
-ADD_EXECUTABLE(swlc swlc.cpp)
-TARGET_LINK_LIBRARIES(swlc
+add_executable(swlc swlc.cpp)
+target_link_libraries(swlc
   simpleworld_cpu
   common
   ${getopt_LIB}
   ${Boost_program_options_LIBRARY} ${Boost_filesystem_LIBRARY}
   ${Boost_regex_LIBRARY})
-SET_TARGET_PROPERTIES(swlc PROPERTIES
+set_target_properties(swlc PROPERTIES
   INSTALL_RPATH_USE_LINK_PATH ON
   INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
 
-ADD_EXECUTABLE(swld swld.cpp)
-TARGET_LINK_LIBRARIES(swld
+add_executable(swld swld.cpp)
+target_link_libraries(swld
   simpleworld_cpu
   common
   ${getopt_LIB}
   ${Boost_program_options_LIBRARY} ${Boost_filesystem_LIBRARY} ${Boost_regex_LIBRARY})
-SET_TARGET_PROPERTIES(swld PROPERTIES
+set_target_properties(swld PROPERTIES
   INSTALL_RPATH_USE_LINK_PATH ON
   INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
 
-ADD_EXECUTABLE(swcpu swcpu.cpp)
-TARGET_LINK_LIBRARIES(swcpu
+add_executable(swcpu swcpu.cpp)
+target_link_libraries(swcpu
   simpleworld_cpu
   common
   ${getopt_LIB}
   ${Boost_program_options_LIBRARY} ${Boost_filesystem_LIBRARY}
   ${Boost_regex_LIBRARY})
-SET_TARGET_PROPERTIES(swcpu PROPERTIES
+set_target_properties(swcpu PROPERTIES
   INSTALL_RPATH_USE_LINK_PATH ON
   INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
 
 
-INSTALL(TARGETS simpleworld_exe swlc swld swcpu
+install(TARGETS simpleworld_exe swlc swld swcpu
   RUNTIME DESTINATION bin
   LIBRARY DESTINATION lib
   ARCHIVE DESTINATION lib/static)

@@ -1,6 +1,6 @@
 # Use extern SQLite3 library if found
-IF(SQLite3_USE_INTERNAL)
-  SET(SQLite3_SRCS
+if(SQLite3_USE_INTERNAL)
+  set(SQLite3_SRCS
     alter.c
     analyze.c
     attach.c
@@ -58,12 +58,12 @@ IF(SQLite3_USE_INTERNAL)
     vdbemem.c
     vtab.c
     where.c)
-  ADD_LIBRARY(sqlite3 STATIC ${SQLite3_SRCS})
+  add_library(sqlite3 STATIC ${SQLite3_SRCS})
 
   # Simple World doesn't use extensions
-  ADD_DEFINITIONS(-DSQLITE_OMIT_LOAD_EXTENSION)
+  add_definitions(-DSQLITE_OMIT_LOAD_EXTENSION)
 
   # Simple World doesn't use threads
   # If threads are needed, there should be added pthread support for UNIXes.
-  ADD_DEFINITIONS(-DSQLITE_THREADSAFE=0)
-ENDIF(SQLite3_USE_INTERNAL)
+  add_definitions(-DSQLITE_THREADSAFE=0)
+endif(SQLite3_USE_INTERNAL)
