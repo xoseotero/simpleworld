@@ -47,7 +47,7 @@ check_include_file_cxx("cxxabi.h" HAVE_CXXABI_H)
 
 
 # Boost is needed
-set(Boost_USE_STATIC_LIBS ON)
+set(Boost_USE_STATIC_LIBS OFF)
 set(Boost_USE_MULTITHREAD OFF)
 find_package(Boost COMPONENTS
   program_options filesystem regex unit_test_framework)
