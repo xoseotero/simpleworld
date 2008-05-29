@@ -1,5 +1,7 @@
 PROJECT(SimpleWorld)
 
+CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
+
 SUBDIRS(getopt
   sqlite3
   sqlite3x
