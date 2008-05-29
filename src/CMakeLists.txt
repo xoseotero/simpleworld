@@ -4,10 +4,10 @@
 #
 # By default, cmake disallow the use of two targets with the same name, so,
 # there are two possible solutions:
-# 1) set a explicit LIBRARY in the TARGET_LINK_LIBRARIES
-# TARGET_LINK_LIBRARIES(simpleworld LIBRARY simpleworld)
+# 1) set a explicit LIBRARY in the target_link_libraries
+# target_link_libraries(simpleworld LIBRARY simpleworld)
 # 2) use different names and rename the output
-# SET_TARGET_PROPERTIES(simpleworld_exe OUTPUT_NAME simpleworld)
+# set_target_properties(simpleworld_exe OUTPUT_NAME simpleworld)
 #
 # The second option was used
 
