@@ -54,9 +54,10 @@ CHECK_INCLUDE_FILE_CXX("cxxabi.h" HAVE_CXXABI_H)
 
 
 # Boost is needed
-SET(Boost_LIB_TYPE "st")
-#SET(Boost_LIB_SUFFIX "gcc42-mt-1_34")
-FIND_PACKAGE(Boost REQUIRED filesystem regex unit_test_framework)
+SET(Boost_USE_STATIC_LIBS ON)
+SET(Boost_USE_MULTITHREAD OFF)
+FIND_PACKAGE(Boost COMPONENTS
+  program_options filesystem regex unit_test_framework)
 IF(NOT Boost_FOUND)
   MESSAGE(FATAL_ERROR "\tBoost not found")
 ENDIF(NOT Boost_FOUND)
