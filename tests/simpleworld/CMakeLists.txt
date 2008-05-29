@@ -1,5 +1,5 @@
-ADD_DEFINITIONS("-DTESTDATA=\\\"${CMAKE_SOURCE_DIR}/tests/simpleworld/\\\"")
-ADD_DEFINITIONS("-DTESTOUTPUT=\\\"${CMAKE_BINARY_DIR}/tests/simpleworld/\\\"")
+ADD_DEFINITIONS("-DTESTDATA=\"${CMAKE_SOURCE_DIR}/tests/simpleworld/\"")
+ADD_DEFINITIONS("-DTESTOUTPUT=\"${CMAKE_BINARY_DIR}/tests/simpleworld/\"")
 
 # Only if UNIT_TESTS is set
 IF(UNIT_TESTS)
