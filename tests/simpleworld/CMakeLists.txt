@@ -5,15 +5,15 @@ add_definitions("-DTESTOUTPUT=\"${CMAKE_BINARY_DIR}/tests/simpleworld/\"")
 if(UNIT_TESTS)
   add_executable(world_test world_test.cpp)
   target_link_libraries(world_test simpleworld_cpu simpleworld_db simpleworld
-    ${Boost_program_options_LIBRARY} ${Boost_filesystem_LIBRARY}
-    ${Boost_regex_LIBRARY} ${Boost_unit_test_framework_LIBRARY}
+    ${Boost_PROGRAM_OPTIONS_LIBRARY} ${Boost_FILESYSTEM_LIBRARY}
+    ${Boost_REGEX_LIBRARY} ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY}
     ${SQLite3x_LIB} ${SQLite3_LIB})
 
   add_executable(movement_test movement_test.cpp)
   target_link_libraries(movement_test simpleworld_cpu simpleworld_db
     simpleworld
-    ${Boost_program_options_LIBRARY} ${Boost_filesystem_LIBRARY}
-    ${Boost_regex_LIBRARY} ${Boost_unit_test_framework_LIBRARY}
+    ${BOOST_PROGRAM_OPTIONS_LIBRARY} ${Boost_FILESYSTEM_LIBRARY}
+    ${Boost_REGEX_LIBRARY} ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY}
     ${SQLite3x_LIB} ${SQLite3_LIB})
 
   add_test("World" world_test)

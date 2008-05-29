@@ -5,8 +5,8 @@ add_definitions("-DTESTOUTPUT=\"${CMAKE_BINARY_DIR}/tests/db/\"")
 if(UNIT_TESTS)
   add_executable(db_test db_test.cpp)
   target_link_libraries(db_test simpleworld_cpu simpleworld_db simpleworld
-    ${Boost_program_options_LIBRARY} ${Boost_filesystem_LIBRARY}
-    ${Boost_regex_LIBRARY} ${Boost_unit_test_framework_LIBRARY}
+    ${Boost_PROGRAM_OPTIONS_LIBRARY} ${Boost_FILESYSTEM_LIBRARY}
+    ${Boost_REGEX_LIBRARY} ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY}
     ${SQLite3x_LIB} ${SQLite3_LIB})
 
   add_test("db::DB" db_test)

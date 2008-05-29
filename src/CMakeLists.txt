@@ -24,8 +24,8 @@ target_link_libraries(simpleworld_exe
   simpleworld
   common
   ${getopt_LIB}
-  ${Boost_filesystem_LIBRARY}
-  ${Boost_regex_LIBRARY}
+  ${Boost_FILESYSTEM_LIBRARY}
+  ${Boost_REGEX_LIBRARY}
   ${SQLite3x_LIB}
   ${SQLite3_LIB})
 set_target_properties(simpleworld_exe PROPERTIES
@@ -38,8 +38,8 @@ target_link_libraries(swlc
   simpleworld_cpu
   common
   ${getopt_LIB}
-  ${Boost_program_options_LIBRARY} ${Boost_filesystem_LIBRARY}
-  ${Boost_regex_LIBRARY})
+  ${Boost_PROGRAM_OPTIONS_LIBRARY} ${Boost_FILESYSTEM_LIBRARY}
+  ${Boost_REGEX_LIBRARY})
 set_target_properties(swlc PROPERTIES
   INSTALL_RPATH_USE_LINK_PATH ON
   INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
@@ -49,7 +49,8 @@ target_link_libraries(swld
   simpleworld_cpu
   common
   ${getopt_LIB}
-  ${Boost_program_options_LIBRARY} ${Boost_filesystem_LIBRARY} ${Boost_regex_LIBRARY})
+  ${Boost_PROGRAM_OPTIONS_LIBRARY} ${Boost_FILESYSTEM_LIBRARY}
+  ${Boost_REGEX_LIBRARY})
 set_target_properties(swld PROPERTIES
   INSTALL_RPATH_USE_LINK_PATH ON
   INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
@@ -59,8 +60,8 @@ target_link_libraries(swcpu
   simpleworld_cpu
   common
   ${getopt_LIB}
-  ${Boost_program_options_LIBRARY} ${Boost_filesystem_LIBRARY}
-  ${Boost_regex_LIBRARY})
+  ${Boost_PROGRAM_OPTIONS_LIBRARY} ${Boost_FILESYSTEM_LIBRARY}
+  ${Boost_REGEX_LIBRARY})
 set_target_properties(swcpu PROPERTIES
   INSTALL_RPATH_USE_LINK_PATH ON
   INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
