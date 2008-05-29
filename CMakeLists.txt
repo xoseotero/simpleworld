@@ -2,13 +2,6 @@ project(SimpleWorld)
 
 cmake_minimum_required(VERSION 2.6)
 
-subdirs(getopt
-  sqlite3
-  sqlite3x
-  simpleworld
-  src
-  tests)
-
 include_directories("${CMAKE_SOURCE_DIR}")
 
 
@@ -175,3 +168,11 @@ if(SQLite3x_USE_INTERNAL)
 else(SQLite3x_USE_INTERNAL)
   message("\tSQLite3x:\texternal library used")
 endif(SQLite3x_USE_INTERNAL)
+
+
+add_subdirectory(getopt)
+add_subdirectory(sqlite3)
+add_subdirectory(sqlite3x)
+add_subdirectory(simpleworld)
+add_subdirectory(src)
+add_subdirectory(tests)

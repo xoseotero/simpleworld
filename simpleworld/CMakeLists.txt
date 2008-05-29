@@ -1,7 +1,3 @@
-subdirs(cpu
-  db)
-
-
 set(SIMPLEWORLD_SRCS
   element.cpp
   movement.cpp
@@ -19,3 +15,7 @@ install(TARGETS simpleworld
   RUNTIME DESTINATION bin
   LIBRARY DESTINATION lib
   ARCHIVE DESTINATION lib/static)
+
+
+add_subdirectory(cpu)
+add_subdirectory(db)
