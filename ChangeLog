@@ -1,5 +1,7 @@
 Simple World 1.0b1:
 	* Substract the size of the eggs to the fathers.
+	* The CPU is less resistant to errors when treating with interrupts
+	  that can't be handled.
 
 Simple World 1.0a4 (2008/04/14):
 	* Update to database version 2.
