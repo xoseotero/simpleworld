@@ -69,10 +69,23 @@ cpu::Update world(cpu::CPU& cpu, cpu::Instruction inst)
 {
   Bug* bug = dynamic_cast<Bug*>(&cpu);
   const db::Environment& env = bug->world->env();
-  assert(bug->is_null("action_time") or bug->action_time >= env.time);
 
   // a action is not done in 1 cycle, it takes ACTION_TIME cycles to be
   // finished
+  // if action_time is NULL, then there is not a action in proccess
+  // if action_time > time, then the action will be finished in the next cycles
+  // if action_time == time, then the action will be finished in this cycle
+  // if action_time < time, then a action was cancelled
+  // a action can be cancelled if the code was mutated during the wait or if a
+  // interrupt was thrown
+
+  // return action-time to the normally
+  if (bug->action_time < env.time) {
+    bug->add_null("action_time");
+    bug->changed = true;
+  }
+
+  // check the state of the action
   if (bug->is_null("action_time")) {
     // the action begins in this cycle
     // after ACTION_TIME cycles, the action can be finished

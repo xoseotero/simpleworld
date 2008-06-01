@@ -681,11 +681,18 @@ void SimpleWorld::eggs_birth()
 void SimpleWorld::bugs_timer()
 {
   // throw the Timer Interrupt in each bug
-  for (std::list<Bug*>::iterator current = this->bugs_.begin();
-       current != this->bugs_.end();
-       ++current)
-    // throw the interrupt
-    (*current)->timer_interrupt();
+  std::list<Bug*> bugs = this->bugs_;
+  for (std::list<Bug*>::iterator bug = bugs.begin();
+       bug != bugs.end();
+       ++bug) {
+    try {
+      // throw the interrupt
+      (*bug)->timer_interrupt();
+    } catch (const cpu::CPUException& e) {
+      // some critical error
+      this->kill(*bug);
+    }
+  }
 }
 
 /**

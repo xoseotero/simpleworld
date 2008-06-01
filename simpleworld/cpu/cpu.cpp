@@ -230,29 +230,17 @@ Instruction info:\tcode: 0x%02X, name: %s, nregs: %d, has_i: %d")
       break;
     }
   } catch (const CodeError& exc) {
-    // The pc or the itp could be out of range
-    try {
-      this->interrupt(INTERRUPT_INSTRUCTION,
-                      this->memory_->get_word(ADDRESS(REGISTER_PC)),
-                      instruction.code);
-    } catch (const MemoryError& exc) {
-      // Set the instruction as 0.
-      // This is a value that can't raise a exception, because is a "stop",
-      // so the code can know that the pc or the itp was out of range.
-      this->interrupt(INTERRUPT_MEMORY, 0, instruction.data);
-    }
+    // If the pc or the itp are out of range, the error is critical and
+    // the CPU must be stopped
+    this->interrupt(INTERRUPT_INSTRUCTION,
+                    this->memory_->get_word(ADDRESS(REGISTER_PC)),
+                    instruction.code);
   } catch (const MemoryError& exc) {
-    // The pc or the itp could be out of range
-    try {
-      this->interrupt(INTERRUPT_MEMORY,
-                      this->memory_->get_word(ADDRESS(REGISTER_PC)),
-                      instruction.data);
-    } catch (const MemoryError& exc) {
-      // Set the instruction as 0.
-      // This is a value that can't raise a exception, because is a "stop",
-      // so the code can know that the pc or the itp was out of range.
-      this->interrupt(INTERRUPT_MEMORY, 0, instruction.data);
-    }
+    // If the pc or the itp are out of range, then the error is critical and
+    // the CPU must be stopped
+    this->interrupt(INTERRUPT_MEMORY,
+                    this->memory_->get_word(ADDRESS(REGISTER_PC)),
+                    instruction.data);
   }
 }
 
@@ -311,6 +299,11 @@ void CPU::set_mem(Address addr, Word word, bool system_endian)
  */
 void CPU::interrupt(Uint8 code, Word r1, Word r2)
 {
+  // If there isn't enough space in the stack to store all the registers,
+  // then a MemoryError exception is thrown.
+  // This error is critical because no more interrupts can be thrown, so
+  // the CPU must be stopped.
+
   // Update pc if the interrupt is thrown by a instruction.
   if (this->isa_.interrupt_info(code).thrown_by_inst)
     this->registers_->set_word(ADDRESS(REGISTER_PC),
@@ -405,6 +398,11 @@ Instruction CPU::fetch_instruction_() const
  */
 bool CPU::interrupt_enabled(Uint8 code) const
 {
+  // If the itp or the region pointed by the itp is not valid, then
+  // a MemoryError exception is thrown.
+  // This error is critical because no more interrupts can be thrown, so
+  // the CPU must be stopped.
+
   CS cs(this->registers_->get_word(ADDRESS(REGISTER_CS), false));
   Word handler = this->memory_->get_word(cs.itp + ADDRESS(code));
   return (cs.enable and cs.max_interrupts > 0 and handler != 0);
