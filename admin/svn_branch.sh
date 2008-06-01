@@ -146,6 +146,7 @@ remove_branch()
 
 parse_cmd $*
 check_root
+${SVN} update
 if [ $remove == 0 ]; then
     create_branch "${branch_name}"
 else
