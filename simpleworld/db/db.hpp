@@ -24,6 +24,7 @@
 #ifndef SIMPLEWORLD_DB_DB_HPP
 #define SIMPLEWORLD_DB_DB_HPP
 
+#include <string>
 #include <vector>
 
 #include <sqlite3x.hpp>
