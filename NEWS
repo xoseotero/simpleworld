@@ -1,3 +1,10 @@
+Simple World 1.0b1
+The CPU is less resistant to errors than in the previous versions. Now,
+when the code causes a interrupt if the interrupt is supposed to be
+handled but some error happens, the bug is killed. Until now, in the
+previous case, the CPU tries to send a new interrupt, but sometimes this
+is impossible.
+
 Simple World 1.0a4 (2008/04/14)
 This was supposed to be the first beta of Simple World, but there are
 more changes than previously thought. Some of these changes were
