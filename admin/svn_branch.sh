@@ -79,7 +79,7 @@ create_branch()
     ${SVN} copy trunk/ branches/${name} && \
     ${SVN} ci -m "Create branch ${name}" branches/${name} && \
     ${CD} branches/${name} && \
-    ${SVNMERGE} init && \
+    ${SVNMERGE} init ../../trunk && \
     ${SVN} ci -F svnmerge-commit-message.txt && \
     ${RM} -f svnmerge-commit-message.txt
 
