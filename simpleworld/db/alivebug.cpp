@@ -23,6 +23,7 @@
 
 #include <sqlite3x.hpp>
 
+#include <simpleworld/types.hpp>
 #include "exception.hpp"
 #include "food.hpp"
 #include "deadbug.hpp"
@@ -66,6 +67,8 @@ AliveBug::AliveBug(DB* db, ElementType type)
  */
 ID AliveBug::die(Time dead)
 {
+  Energy energy = this->energy;
+
   this->energy = 0;
   this->update_db(true);
 
@@ -77,7 +80,7 @@ ID AliveBug::die(Time dead)
   // Create the food in the position of the dead bug
   Food food(this->db_);
   food.position = this->position;
-  food.size = this->code.size;
+  food.size = this->code.size + energy;
   food.insert();
 
   return food.id();
@@ -91,6 +94,8 @@ ID AliveBug::die(Time dead)
  */
 ID AliveBug::die(Time dead, ID killer_id)
 {
+  Energy energy = this->energy;
+
   this->energy = 0;
   this->update_db(true);
 
@@ -104,7 +109,7 @@ ID AliveBug::die(Time dead, ID killer_id)
   // Create the food in the position of the dead bug
   Food food(this->db_);
   food.position = this->position;
-  food.size = this->code.size;
+  food.size = this->code.size + energy;
   food.insert();
 
   return food.id();
