@@ -25,6 +25,15 @@ Options:
     exit $1
 }
 
+confirm()
+{
+    echo -n "$1 [y/N] "
+    read answer
+    if [ "$answer" != "y" -a "$answer" != "Y" ]; then
+	exit 1
+    fi
+}
+
 parse_cmd()
 {
     if [ "$1" == "--help" ]; then
@@ -69,6 +78,22 @@ check_modifications()
     fi
 }
 
+check_nomerge()
+{
+    trunk=$1
+    branch=$2
+
+    pwd=`pwd`
+
+    ${CD} "${trunk}"
+    avail=`${SVNMERGE} avail -S ../../trunk | ${WC} -l`
+    if [ $avail -ne 0 ]; then
+	confirm "There are changes not merged, do you want to continue?"
+    fi
+
+    ${CD} "${pwd}"
+}
+
 create_branch()
 {
     name=$1
@@ -98,6 +123,7 @@ remove_branch()
 
     check_modifications "trunk"
     check_modifications "branches/${name}"
+    check_nomerge "trunk" "branches/${name}"
 
     # trunk
     ${CD} trunk/ && \
