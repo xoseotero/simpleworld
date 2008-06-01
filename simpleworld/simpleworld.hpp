@@ -198,6 +198,11 @@ protected:
   void eggs_birth();
 
   /**
+   * Mutate the code of the old bugs.
+   */
+  void bugs_mutate();
+
+  /**
    * Throw the Timer Interrupt in all the alive bugs.
    */
   void bugs_timer();

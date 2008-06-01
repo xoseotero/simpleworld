@@ -55,6 +55,11 @@ public:
    */
   virtual void attacked();
 
+  /**
+   * The code of the bug has been mutated.
+   */
+  virtual void mutated();
+
 
   SimpleWorld* world;
 };

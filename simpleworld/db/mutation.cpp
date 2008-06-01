@@ -52,7 +52,7 @@ Mutation::Mutation(DB* db, ID bug_id)
  * @exception DBException if there is a error in the database.
  */
 Mutation::Mutation(DB* db)
-  : Table(db, this->id_)
+  : Table(db)
 {
 }
 
@@ -69,7 +69,7 @@ void Mutation::update()
 
   try {
     sql.prepare("\
-SELECT position, original, mutated, bug_id\n\
+SELECT time, position, original, mutated, bug_id\n\
 FROM Mutation\n\
 WHERE id = ?;");
     sql.bind(1, this->id_);
@@ -80,13 +80,14 @@ WHERE id = ?;");
 id %1% not found in table Mutation")
                                               % this->id_));
 
-    this->position = cursor.getint(0);
-    this->original = cursor.getint(1);
-    this->mutated = cursor.getint(2);
-    if (cursor.isnull(1)) {
+    this->time = cursor.getint(0);
+    this->position = cursor.getint(1);
+    this->original = cursor.getint(2);
+    this->mutated = cursor.getint(3);
+    if (cursor.isnull(2)) {
       this->add_null("original");
       this->type = Mutation::addition;
-    } else if (cursor.isnull(2)) {
+    } else if (cursor.isnull(3)) {
       this->add_null("mutated");
       this->type = Mutation::deletion;
     } else
@@ -115,19 +116,20 @@ void Mutation::update_db(bool force)
     try {
       sql.prepare("\
 UPDATE Mutation\n\
-SET position = ?, original = ?, mutated = ?, bug_id = ?\n\
+SET time = ?, position = ?, original = ?, mutated = ?, bug_id = ?\n\
 WHERE id = ?;");
-      sql.bind(1, static_cast<int>(this->position));
+      sql.bind(1, static_cast<int>(this->time));
+      sql.bind(2, static_cast<int>(this->position));
       if (this->type == Mutation::addition)
-        sql.bind(2);
-      else
-        sql.bind(2, static_cast<int>(this->original));
-      if (this->type == Mutation::deletion)
         sql.bind(3);
       else
-        sql.bind(3, static_cast<int>(this->mutated));
-      sql.bind(4, static_cast<int>(this->bug_id));
-      sql.bind(5, this->id_);
+        sql.bind(3, static_cast<int>(this->original));
+      if (this->type == Mutation::deletion)
+        sql.bind(4);
+      else
+        sql.bind(4, static_cast<int>(this->mutated));
+      sql.bind(5, static_cast<int>(this->bug_id));
+      sql.bind(6, this->id_);
 
       sql.executenonquery();
     } catch (const sqlite3x::database_error& e) {
@@ -153,18 +155,19 @@ void Mutation::insert(ID bug_id)
 
   try {
     sql.prepare("\
-INSERT INTO Mutation(position, original, mutated, bug_id)\n\
-VALUES(?, ?, ?, ?);");
-    sql.bind(1, static_cast<int>(this->position));
+INSERT INTO Mutation(time, position, original, mutated, bug_id)\n\
+VALUES(?, ?, ?, ?, ?);");
+    sql.bind(1, static_cast<int>(this->time));
+    sql.bind(2, static_cast<int>(this->position));
     if (this->type == Mutation::addition)
-      sql.bind(2);
-    else
-      sql.bind(2, static_cast<int>(this->original));
-    if (this->type == Mutation::deletion)
       sql.bind(3);
     else
-      sql.bind(3, static_cast<int>(this->mutated));
-    sql.bind(4, bug_id);
+      sql.bind(3, static_cast<int>(this->original));
+    if (this->type == Mutation::deletion)
+      sql.bind(4);
+    else
+      sql.bind(4, static_cast<int>(this->mutated));
+    sql.bind(5, bug_id);
 
     sql.executenonquery();
     this->id_ = this->db_->insertid();

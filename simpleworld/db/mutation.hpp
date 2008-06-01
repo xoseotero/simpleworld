@@ -26,6 +26,7 @@
 
 #include <vector>
 
+#include <simpleworld/types.hpp>
 #include <simpleworld/ints.hpp>
 #include <simpleworld/cpu/types.hpp>
 #include <simpleworld/db/types.hpp>
@@ -95,6 +96,7 @@ public:
 
 
   // Data
+  Time time;
   Uint16 position;
 
   enum {

@@ -45,11 +45,12 @@ Table::Table(DB* db, ID id)
  * Constructor to insert data.
  * insert(id) must be called before any call to update(), update_db() or
  * remove().
+ * inserted is set to false.
  * @param db database.
  * @exception DBException if there is a error in the database.
  */
 Table::Table(DB* db)
-  : db_(db)
+  : db_(db), inserted(false)
 {
 }
 
@@ -63,12 +64,14 @@ Table::~Table()
 
 /**
  * Update the data of the class with the database.
+ * inserted is set to true.
  * changed is set to false.
  * @exception DBException if there is a error in the database.
  * @exception DBException if the ID is not found in the table.
  */
 void Table::update()
 {
+  this->inserted = true;
   this->changed = false;
 }
 
@@ -87,17 +90,20 @@ void Table::update_db(bool force)
 /**
  * Insert the data in the database.
  * The ID is updated.
+ * inserted is set to true.
  * changed is set to false.
  * @exception DBException if there is an error in the database.
  */
 void Table::insert()
 {
+  this->inserted = true;
   this->changed = false;
 }
 
 /**
  * Insert the data in the database with a specific id.
  * The ID is updated.
+ * inserted is set to true.
  * changed is set to false.
  * @param id id of the row.
  * @exception DBException if there is an error in the database.
@@ -106,16 +112,19 @@ void Table::insert(ID id)
 {
   this->id_ = id;
 
+  this->inserted = true;
   this->changed = false;
 }
 
 /**
  * Remove the data from the database.
+ * inserted is set to false.
  * changed is set to false.
  * @exception DBException if there is an error in the database.
  */
 void Table::remove()
 {
+  this->inserted = false;
   this->changed = false;
 }
 

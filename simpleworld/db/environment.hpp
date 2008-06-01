@@ -98,6 +98,8 @@ public:
                                      mutates. */
   Time time_birth;              /**< Cycles needed to convert a egg into a
                                      bug. */
+  Time time_mutate;             /**< Cycles needed to mutate the code of a
+                                     old bug. */
   double attack_multiplier;     /**< Multiplier for the energy of a attack */
 
   Energy energy_nothing;        /**< Energy needed to do action nothing. */

@@ -4,6 +4,10 @@ when the code causes a interrupt if the interrupt is supposed to be
 handled but some error happens, the bug is killed. Until now, in the
 previous case, the CPU tries to send a new interrupt, but sometimes this
 is impossible.
+This version has incompatibles changes in the database too. The database 
+version is still 1 because this is the first beta version and the 
+previous was alpha ones. But, from now, every incompatible change in the 
+database will change the database version.
 
 Simple World 1.0a4 (2008/04/14)
 This was supposed to be the first beta of Simple World, but there are

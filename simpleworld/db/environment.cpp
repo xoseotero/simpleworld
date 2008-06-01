@@ -70,7 +70,7 @@ void Environment::update()
   try {
     sql.prepare("\
 SELECT time, size_x, size_y,\n\
-       mutations_probability, time_birth, attack_multiplier,\n\
+       mutations_probability, time_birth, time_mutate, attack_multiplier,\n\
        energy_nothing, energy_myself, energy_detect, energy_info,\n\
        energy_move, energy_turn, energy_attack, energy_eat, energy_egg\n\
 FROM Environment\n\
@@ -88,16 +88,17 @@ time %1% not found in table Environment")
     this->size.y = cursor.getint(2);
     this->mutations_probability = cursor.getdouble(3);
     this->time_birth = cursor.getint(4);
-    this->attack_multiplier = cursor.getdouble(5);
-    this->energy_nothing = cursor.getint(6);
-    this->energy_myself = cursor.getint(7);
-    this->energy_detect = cursor.getint(8);
-    this->energy_info = cursor.getint(9);
-    this->energy_move = cursor.getint(10);
-    this->energy_turn = cursor.getint(11);
-    this->energy_attack = cursor.getint(12);
-    this->energy_eat = cursor.getint(13);
-    this->energy_egg = cursor.getint(14);
+    this->time_mutate = cursor.getint(5);
+    this->attack_multiplier = cursor.getdouble(6);
+    this->energy_nothing = cursor.getint(7);
+    this->energy_myself = cursor.getint(8);
+    this->energy_detect = cursor.getint(9);
+    this->energy_info = cursor.getint(10);
+    this->energy_move = cursor.getint(11);
+    this->energy_turn = cursor.getint(12);
+    this->energy_attack = cursor.getint(13);
+    this->energy_eat = cursor.getint(14);
+    this->energy_egg = cursor.getint(15);
   } catch (const sqlite3x::database_error& e) {
     throw EXCEPTION(DBException, std::string(e.what()) +
                     " (" + this->db()->errormsg() + ")");
@@ -123,7 +124,8 @@ void Environment::update_db(bool force)
       sql.prepare("\
 UPDATE Environment\n\
 SET time = ?, size_x = ?, size_y = ?,\n\
-    mutations_probability = ?, time_birth = ?, attack_multiplier = ?,\n\
+    mutations_probability = ?, time_birth = ?, time_mutate = ?,\n\
+    attack_multiplier = ?,\n\
     energy_nothing = ?, energy_myself = ?, energy_detect = ?,\n\
     energy_info = ?, energy_move = ?, energy_turn = ?,\n\
     energy_attack = ?, energy_eat = ?, energy_egg = ?\n\
@@ -133,17 +135,18 @@ WHERE id = ?;");
       sql.bind(3, static_cast<int>(this->size.y));
       sql.bind(4, this->mutations_probability);
       sql.bind(5, static_cast<int>(this->time_birth));
-      sql.bind(6, this->attack_multiplier);
-      sql.bind(7, static_cast<int>(this->energy_nothing));
-      sql.bind(8, static_cast<int>(this->energy_myself));
-      sql.bind(9, static_cast<int>(this->energy_detect));
-      sql.bind(10, static_cast<int>(this->energy_info));
-      sql.bind(11, static_cast<int>(this->energy_move));
-      sql.bind(12, static_cast<int>(this->energy_turn));
-      sql.bind(13, static_cast<int>(this->energy_attack));
-      sql.bind(14, static_cast<int>(this->energy_eat));
-      sql.bind(15, static_cast<int>(this->energy_egg));
-      sql.bind(16, this->id_);
+      sql.bind(6, static_cast<int>(this->time_mutate));
+      sql.bind(7, this->attack_multiplier);
+      sql.bind(8, static_cast<int>(this->energy_nothing));
+      sql.bind(9, static_cast<int>(this->energy_myself));
+      sql.bind(10, static_cast<int>(this->energy_detect));
+      sql.bind(11, static_cast<int>(this->energy_info));
+      sql.bind(12, static_cast<int>(this->energy_move));
+      sql.bind(13, static_cast<int>(this->energy_turn));
+      sql.bind(14, static_cast<int>(this->energy_attack));
+      sql.bind(15, static_cast<int>(this->energy_eat));
+      sql.bind(16, static_cast<int>(this->energy_egg));
+      sql.bind(17, this->id_);
 
       sql.executenonquery();
     } catch (const sqlite3x::database_error& e) {
@@ -169,26 +172,28 @@ void Environment::insert()
   try {
     sql.prepare("\
 INSERT INTO Environment(time, size_x, size_y,\n\
-                        mutations_probability, time_birth, attack_multiplier,\n\
+                        mutations_probability, time_birth, time_mutate,\n\
+                        attack_multiplier,\n\
                         energy_nothing, energy_myself, energy_detect,\n\
                         energy_info, energy_move, energy_turn,\n\
                         energy_attack, energy_eat, energy_egg)\n\
-VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
+VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
     sql.bind(1, static_cast<int>(this->time));
     sql.bind(2, static_cast<int>(this->size.x));
     sql.bind(3, static_cast<int>(this->size.y));
     sql.bind(4, this->mutations_probability);
     sql.bind(5, static_cast<int>(this->time_birth));
-    sql.bind(6, this->attack_multiplier);
-    sql.bind(7, static_cast<int>(this->energy_nothing));
-    sql.bind(8, static_cast<int>(this->energy_myself));
-    sql.bind(9, static_cast<int>(this->energy_detect));
-    sql.bind(10, static_cast<int>(this->energy_info));
-    sql.bind(11, static_cast<int>(this->energy_move));
-    sql.bind(12, static_cast<int>(this->energy_turn));
-    sql.bind(13, static_cast<int>(this->energy_attack));
-    sql.bind(14, static_cast<int>(this->energy_eat));
-    sql.bind(15, static_cast<int>(this->energy_egg));
+    sql.bind(6, static_cast<int>(this->time_mutate));
+    sql.bind(7, this->attack_multiplier);
+    sql.bind(8, static_cast<int>(this->energy_nothing));
+    sql.bind(9, static_cast<int>(this->energy_myself));
+    sql.bind(10, static_cast<int>(this->energy_detect));
+    sql.bind(11, static_cast<int>(this->energy_info));
+    sql.bind(12, static_cast<int>(this->energy_move));
+    sql.bind(13, static_cast<int>(this->energy_turn));
+    sql.bind(14, static_cast<int>(this->energy_attack));
+    sql.bind(15, static_cast<int>(this->energy_eat));
+    sql.bind(16, static_cast<int>(this->energy_egg));
 
     sql.executenonquery();
     this->id_ = this->db_->insertid();

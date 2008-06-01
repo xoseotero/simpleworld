@@ -58,6 +58,7 @@
 #define DEFAULT_SIZE (Position) {16, 16}
 #define DEFAULT_MUTATIONS_PROBABILITY 0.001
 #define DEFAULT_TIME_BIRTH 32
+#define DEFAULT_TIME_MUTATE (16 * 1024)
 #define DEFAULT_ATTACK_MULTIPLIER 2.5
 #define DEFAULT_ENERGY_NOTHING 0
 #define DEFAULT_ENERGY_MYSELF 1
@@ -195,6 +196,7 @@ void SimpleWorld::run(Time cycles)
     // execute each cycle in a transaction
     sqlite3x::sqlite3_transaction transaction(*this);
 
+    this->bugs_mutate();
     if (this->env_->time % 64 == 0)
       this->bugs_timer();
     this->bugs_run();
@@ -560,7 +562,10 @@ Position used (%1%, %2%)")
   egg.birth = this->env_->time + this->env_->time_birth;
   egg.father_id = bug->id();
   egg.energy = std::min(bug->energy, energy);
-  egg.code = copy_code(bug->code, this->env_->mutations_probability);
+  egg.code = copy_code(bug->code,
+                       this->env_->mutations_probability,
+                       true,
+                       this->env_->time);
   // Substracts the size of the egg
   this->substract_energy(bug, egg.code.size);
   egg.insert();
@@ -590,6 +595,7 @@ void SimpleWorld::on_open()
     this->env_->size = DEFAULT_SIZE;
     this->env_->mutations_probability = DEFAULT_MUTATIONS_PROBABILITY;
     this->env_->time_birth = DEFAULT_TIME_BIRTH;
+    this->env_->time_mutate = DEFAULT_TIME_MUTATE;
     this->env_->attack_multiplier = DEFAULT_ATTACK_MULTIPLIER;
     this->env_->energy_nothing = DEFAULT_ENERGY_NOTHING;
     this->env_->energy_myself = DEFAULT_ENERGY_MYSELF;
@@ -671,6 +677,42 @@ void SimpleWorld::eggs_birth()
       this->bugs_.push_back(bug);
       this->eggs_.remove(*egg);
       delete (*egg);
+    }
+  }
+}
+
+/**
+ * Mutate the code of the old bugs.
+ */
+void SimpleWorld::bugs_mutate()
+{
+  // check that time_mutate is not zero to prevent a float point exception
+  if (this->env_->time_mutate == 0)
+    return;
+
+  // check if the bug is old enough
+  for (std::list<Bug*>::iterator bug = this->bugs_.begin();
+       bug != this->bugs_.end();
+       ++bug) {
+    Time age = this->env_->time - (*bug)->birth;
+    if ((age > 0) and (age % this->env_->time_mutate == 0)) {
+      int mutations = (*bug)->code.mutations.size();
+
+      (*bug)->code = copy_code((*bug)->code,
+                               this->env_->mutations_probability,
+                               false,
+                               this->env_->time);
+      if (mutations != (*bug)->code.mutations.size()) {
+        (*bug)->mutated();
+        (*bug)->code.changed = true;
+      }
+
+#ifdef DEBUG
+  std::cout << boost::format("The code of bug %1% has been mutated %2% words")
+    % (*bug)->id()
+    % ((*bug)->code.mutations.size() - mutations)
+    << std::endl;
+#endif // DEBUG
     }
   }
 }

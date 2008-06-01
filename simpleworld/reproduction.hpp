@@ -24,6 +24,7 @@
 #ifndef SIMPLEWORLD_REPRODUCTION_HPP
 #define SIMPLEWORLD_REPRODUCTION_HPP
 
+#include <simpleworld/types.hpp>
 #include <simpleworld/db/code.hpp>
 
 namespace simpleworld
@@ -32,9 +33,13 @@ namespace simpleworld
 /**
  * Get a copy of the code but with occasional mutations.
  * @param code the original code.
+ * @param probability probability to happen a mutation.
+ * @param egg true if it's a egg, false if it's a bug.
+ * @param time the current time.
  * @return the copy of the code.
  */
-db::Code copy_code(const db::Code& code, float mutations_probability);
+db::Code copy_code(const db::Code& code, float probability,
+                   bool egg, Time time);
 
 }
 

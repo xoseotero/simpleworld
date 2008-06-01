@@ -55,6 +55,7 @@ public:
    * Constructor to insert data.
    * insert(id) must be called before any call to update(), update_db() or
    * remove().
+   * inserted is set to false.
    * @param db database.
    * @exception DBException if there is a error in the database.
    */
@@ -81,6 +82,7 @@ public:
 
   /**
    * Update the data of the class with the database.
+   * inserted is set to true.
    * changed is set to false.
    * @exception DBException if there is a error in the database.
    * @exception DBException if the ID is not found in the table.
@@ -99,6 +101,7 @@ public:
   /**
    * Insert the data in the database.
    * The ID is updated.
+   * inserted is set to true.
    * changed is set to false.
    * @exception DBException if there is an error in the database.
    */
@@ -107,6 +110,7 @@ public:
   /**
    * Insert the data in the database with a specific id.
    * The ID is updated.
+   * inserted is set to true.
    * changed is set to false.
    * @param id id of the row.
    * @exception DBException if there is an error in the database.
@@ -115,6 +119,7 @@ public:
 
   /**
    * Remove the data from the database.
+   * inserted is set to false.
    * changed is set to false.
    * @exception DBException if there is an error in the database.
    */
@@ -161,7 +166,12 @@ public:
   std::vector<std::string> null;
 
   /**
-   * If the table has changed.
+   * If the data is/was in the database.
+   */
+  bool inserted;
+
+  /**
+   * If the data has changed.
    */
   bool changed;
 

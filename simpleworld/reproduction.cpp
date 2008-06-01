@@ -67,9 +67,11 @@ static cpu::Word random_word()
  * @param copy where to add the word.
  * @param copy_pos position of the new word.
  * @param code original code.
+ * @param time the current time.
  */
 static void add_word(db::Code* copy, cpu::Address copy_pos,
-                     const db::Code& code)
+                     const db::Code& code,
+                     Time time)
 {
 #ifdef DEBUG
   std::cout << boost::format("Addition of a random word")
@@ -80,6 +82,7 @@ static void add_word(db::Code* copy, cpu::Address copy_pos,
   copy->code.set_word(copy_pos, random_word());
 
   db::Mutation mutation(code.db());
+  mutation.time = time;
   mutation.position = copy_pos;
   mutation.type = db::Mutation::addition;
   mutation.mutated = copy->code[copy_pos];
@@ -93,9 +96,11 @@ static void add_word(db::Code* copy, cpu::Address copy_pos,
  * @param copy_pos position of the new word.
  * @param code original code.
  * @param code_pos position of the original word.
+ * @param time the current time.
  */
 static void eliminate_word(db::Code* copy, cpu::Address copy_pos,
-                           const db::Code& code, cpu::Address code_pos)
+                           const db::Code& code, cpu::Address code_pos,
+                           Time time)
 {
 #ifdef DEBUG
   std::cout << boost::format("Deletion of a word")
@@ -105,6 +110,7 @@ static void eliminate_word(db::Code* copy, cpu::Address copy_pos,
   copy->code.resize(copy->code.size() - sizeof(cpu::Word));
 
   db::Mutation mutation(code.db());
+  mutation.time = time;
   mutation.position = copy_pos;
   mutation.type = db::Mutation::deletion;
   mutation.original = code.code[code_pos];
@@ -118,9 +124,11 @@ static void eliminate_word(db::Code* copy, cpu::Address copy_pos,
  * @param copy_pos position of the new word.
  * @param code original code.
  * @param code_pos position of the original word.
+ * @param time the current time.
  */
 static void change_word(db::Code* copy, cpu::Address copy_pos,
-                        const db::Code& code, cpu::Address code_pos)
+                        const db::Code& code, cpu::Address code_pos,
+                        Time time)
 {
 #ifdef DEBUG
   std::cout << boost::format("Change of a word")
@@ -135,6 +143,7 @@ static void change_word(db::Code* copy, cpu::Address copy_pos,
   if (copy->code[copy_pos] != code.code[code_pos]) {
     // this is a mutation
     db::Mutation mutation(code.db());
+    mutation.time = time;
     mutation.position = copy_pos;
     mutation.type = db::Mutation::mutation;
     mutation.original = code.code[code_pos];
@@ -147,37 +156,41 @@ static void change_word(db::Code* copy, cpu::Address copy_pos,
 /**
  * Get a copy of the code but with occasional mutations.
  * @param code the original code.
+ * @param probability probability to happen a mutation.
+ * @param egg true if it's a egg, false if it's a bug.
+ * @param time the current time.
  * @return the copy of the code.
  */
-db::Code copy_code(const db::Code& code,
-                                  float mutations_probability)
+db::Code copy_code(const db::Code& code, float probability,
+                   bool egg, Time time)
 {
-  db::Code copy(code.db());
-  copy.code.resize(code.code.size());
+  db::Code copy(code.db(), code.id());
+  if (egg)
+    copy.mutations.clear();
 
   cpu::Address code_pos = 0, copy_pos = 0;
   while (code_pos < code.code.size()) {
     // check if the word will be mutated
-    if (randint(0, 1 / mutations_probability) == 0) {
+    if (randint(0, 1 / probability) == 0) {
       // mutation
       switch (randint(0, 3)) {
       case 0:
         // addition of a random word
-        add_word(&copy, copy_pos, code);
+        add_word(&copy, copy_pos, code, time);
         copy_pos += sizeof(cpu::Word);
 
         break;
 
       case 1:
         // elimination of a word
-        eliminate_word(&copy, copy_pos, code, code_pos);
+        eliminate_word(&copy, copy_pos, code, code_pos, time);
         code_pos += sizeof(cpu::Word);
 
         break;
 
       case 2:
         // change the word by a random one
-        change_word(&copy, copy_pos, code, code_pos);
+        change_word(&copy, copy_pos, code, code_pos, time);
         code_pos += sizeof(cpu::Word);
         copy_pos += sizeof(cpu::Word);
 
@@ -193,8 +206,8 @@ db::Code copy_code(const db::Code& code,
   }
 
   // addition of a random word at the end of the code
-  if (randint(0, 1 / mutations_probability) == 0)
-    add_word(&copy, copy_pos, code);
+  if (randint(0, 1 / probability) == 0)
+    add_word(&copy, copy_pos, code, time);
 
   copy.size = copy.code.size();
 

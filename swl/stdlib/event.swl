@@ -21,3 +21,6 @@
 
 # Attack to the bug
 .define EVENT_ATTACK		0x0
+
+# Mutation of the code
+.define EVENT_MUTATION		0x1

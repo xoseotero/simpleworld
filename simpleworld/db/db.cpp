@@ -270,6 +270,7 @@ CREATE TABLE Environment\n\
 \n\
   mutations_probability REAL NOT NULL,  -- Values from 0 to 1\n\
   time_birth INTEGER NOT NULL,\n\
+  time_mutate INTEGER NOT NULL,\n\
   attack_multiplier REAL NOT NULL,\n\
 \n\
   energy_nothing INTEGER NOT NULL,\n\
@@ -287,6 +288,7 @@ CREATE TABLE Environment\n\
   CHECK(size_x > 0 AND size_y > 0),\n\
   CHECK(mutations_probability >= 0 AND mutations_probability <= 1),\n\
   CHECK(time_birth >= 0),\n\
+  CHECK(time_mutate >= 0),\n\
   CHECK(energy_nothing >= 0 AND energy_myself >= 0 AND\n\
         energy_detect >= 0 AND energy_info >= 0 AND\n\
         energy_move >= 0 AND energy_turn >= 0 AND\n\
@@ -344,6 +346,7 @@ WHEN OLD.size_x != NEW.size_x OR\n\
      OLD.size_y != NEW.size_y OR\n\
      OLD.mutations_probability != NEW.mutations_probability OR\n\
      OLD.time_birth != NEW.time_birth OR\n\
+     OLD.time_mutate != NEW.time_mutate OR\n\
      OLD.attack_multiplier != NEW.attack_multiplier OR\n\
      OLD.energy_nothing != NEW.energy_nothing OR\n\
      OLD.energy_myself != NEW.energy_myself OR\n\
@@ -743,6 +746,7 @@ CREATE TABLE Mutation\n\
 (\n\
   id INTEGER NOT NULL,\n\
 \n\
+  time INTEGER NOT NULL,\n\
   position INTEGER NOT NULL,\n\
   /* original and mutated can't be NULL at same time */\n\
   original INTEGER,                     -- NULL if new code was added\n\
@@ -752,6 +756,7 @@ CREATE TABLE Mutation\n\
 \n\
   PRIMARY KEY(id),\n\
   FOREIGN KEY(bug_id) REFERENCES Bug(id),\n\
+  CHECK(time >= 0),\n\
   CHECK(position >= 0),\n\
   CHECK((original IS NOT NULL) or (mutated IS NOT NULL))\n\
 );",

@@ -108,14 +108,19 @@ static void update_mutations(std::vector<Mutation>* mutations)
 }
 
 /**
- * Propagate the update_db() to all the mutations.
+ * Propagate the update_db() to all the mutations and insert the mutations
+ * not inserted.
  * @param mutations pointer to the mutations.
+ * @param bug_id ID of the bug.
  */
-static void update_db_mutations(std::vector<Mutation>* mutations)
+static void update_db_mutations(std::vector<Mutation>* mutations, ID bug_id)
 {
   std::vector<Mutation>::iterator iter = mutations->begin();
   while (iter != mutations->end()) {
-    (*iter).update_db();
+    if ((*iter).inserted)
+      (*iter).update_db();
+    else
+      (*iter).insert(bug_id);
     ++iter;
   }
 }
@@ -229,7 +234,7 @@ WHERE bug_id = ?;");
   }
 
 
-  update_db_mutations(&this->mutations);
+  update_db_mutations(&this->mutations, this->id_);
 
   Table::update_db(force);
 }

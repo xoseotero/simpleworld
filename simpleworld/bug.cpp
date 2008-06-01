@@ -70,4 +70,19 @@ Bug[%1%] attacked")
   this->interrupt(INTERRUPT_WORLDEVENT, EventAttack);
 }
 
+/**
+ * The code of the bug has been mutated.
+ */
+void Bug::mutated()
+{
+#ifdef DEBUG
+  std::cout << boost::str(boost::format("\
+Bug[%1%] mutated")
+                         % this->id_)
+    << std::endl;
+#endif // DEBUG
+
+  this->interrupt(INTERRUPT_WORLDEVENT, EventMutation);
+}
+
 }
