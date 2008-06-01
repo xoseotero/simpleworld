@@ -100,6 +100,11 @@ public:
                                      bug. */
   Time time_mutate;             /**< Cycles needed to mutate the code of a
                                      old bug. */
+
+  Time time_laziness;           /**< Time needed without doing a action to
+                                     be considered lazy. */
+  Energy energy_laziness;       /**< Energy substracted for laziness. */
+
   double attack_multiplier;     /**< Multiplier for the energy of a attack */
 
   Energy energy_nothing;        /**< Energy needed to do action nothing. */

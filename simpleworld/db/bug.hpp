@@ -97,7 +97,10 @@ public:
 
 
   // Data
-  Time action_time;
+  Time time_last_action;        /**< When was done the last action. */
+  Time action_time;             /**< When will be finished the current
+                                     action. */
+
 
   CPU cpu;
 };

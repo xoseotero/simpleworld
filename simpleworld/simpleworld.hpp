@@ -257,6 +257,11 @@ protected:
   void bugs_run();
 
   /**
+   * Penalize the bugs that don't do any action.
+   */
+  void bugs_laziness();
+
+  /**
    * Update the elements of the World in the database.
    */
   void update_db();

@@ -56,10 +56,16 @@
 
 // Default values for the environment
 #define DEFAULT_SIZE (Position) {16, 16}
+
 #define DEFAULT_MUTATIONS_PROBABILITY 0.001
 #define DEFAULT_TIME_BIRTH 32
 #define DEFAULT_TIME_MUTATE (16 * 1024)
+
+#define DEFAULT_TIME_LAZINESS 1024
+#define DEFAULT_ENERGY_LAZINESS 16
+
 #define DEFAULT_ATTACK_MULTIPLIER 2.5
+
 #define DEFAULT_ENERGY_NOTHING 0
 #define DEFAULT_ENERGY_MYSELF 1
 #define DEFAULT_ENERGY_DETECT 1
@@ -191,19 +197,19 @@ void SimpleWorld::add_food(Position position, Energy size)
 void SimpleWorld::run(Time cycles)
 {
   for (; cycles > 0; cycles--) {
-    this->env_->time++;
-
     // execute each cycle in a transaction
     sqlite3x::sqlite3_transaction transaction(*this);
+
+    // update the time of the environment
+    this->env_->time++;
+    this->env_->update_db(true);
 
     this->bugs_mutate();
     if (this->env_->time % 64 == 0)
       this->bugs_timer();
     this->bugs_run();
+    this->bugs_laziness();
     this->eggs_birth();
-
-    // update the time of the environment
-    this->env_->update_db(true);
 
     // update the database
     this->update_db();
@@ -593,10 +599,16 @@ void SimpleWorld::on_open()
     this->env_ = new db::Environment(this);
     this->env_->time = 0;
     this->env_->size = DEFAULT_SIZE;
+
     this->env_->mutations_probability = DEFAULT_MUTATIONS_PROBABILITY;
     this->env_->time_birth = DEFAULT_TIME_BIRTH;
     this->env_->time_mutate = DEFAULT_TIME_MUTATE;
+
+    this->env_->time_laziness = DEFAULT_TIME_LAZINESS;
+    this->env_->energy_laziness = DEFAULT_ENERGY_LAZINESS;
+
     this->env_->attack_multiplier = DEFAULT_ATTACK_MULTIPLIER;
+
     this->env_->energy_nothing = DEFAULT_ENERGY_NOTHING;
     this->env_->energy_myself = DEFAULT_ENERGY_MYSELF;
     this->env_->energy_detect = DEFAULT_ENERGY_DETECT;
@@ -929,6 +941,41 @@ void SimpleWorld::bugs_run()
     } catch (const BugDeath& e) {
       // the bug is death
       this->kill(*bug);
+    }
+  }
+}
+
+/**
+ * Penalize the bugs that don't do any action.
+ */
+void SimpleWorld::bugs_laziness()
+{
+  // check the laziness of each bug
+  std::list<Bug*> bugs = this->bugs_;
+  for (std::list<Bug*>::iterator bug = bugs.begin();
+       bug != bugs.end();
+       ++bug) {
+    // calculate the time since the last action
+    Time time;
+    if ((*bug)->is_null("time_last_action"))
+      time = this->env_->time - (*bug)->birth;
+    else
+      time = this->env_->time - (*bug)->time_last_action;
+
+    if (time > 0 and time % this->env_->time_laziness == 0) {
+#ifdef DEBUG
+  std::cout << boost::format("Bug %1% is lazy")
+    % (*bug)->id()
+    << std::endl;
+#endif // DEBUG
+
+      try {
+        this->substract_energy((*bug), this->env_->energy_laziness);
+        (*bug)->changed = true;
+      } catch (const BugDeath& e) {
+        // the bug is death
+        this->kill(*bug);
+      }
     }
   }
 }

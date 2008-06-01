@@ -93,7 +93,8 @@ void Bug::update()
   try{
     sql.prepare("\
 SELECT energy, position_x, position_y, orientation,\n\
-       action_time, birth, father_id\n\
+       time_last_action, action_time,\n\
+       birth, father_id\n\
 FROM Bug\n\
 WHERE id = ?;");
     sql.bind(1, this->id_);
@@ -108,11 +109,14 @@ id %1% not found in table Bug")
     this->position.x = cursor.getint(1);
     this->position.y = cursor.getint(2);
     this->orientation = static_cast<Orientation>(cursor.getint(3));
-    this->action_time = cursor.getint(4);
-    this->birth = cursor.getint(5);
-    this->father_id = cursor.getint64(6);
+    this->time_last_action = cursor.getint(4);
+    this->action_time = cursor.getint(5);
+    this->birth = cursor.getint(6);
+    this->father_id = cursor.getint64(7);
 
     if (cursor.isnull(4))
+      this->add_null("time_last_action");
+    if (cursor.isnull(5))
       this->add_null("action_time");
     if (cursor.isnull(6))
       this->add_null("father_id");
@@ -146,22 +150,27 @@ void Bug::update_db(bool force)
       sql.prepare("\
 UPDATE Bug\n\
 SET energy = ?, position_x = ?, position_y = ?, orientation = ?,\n\
-    action_time = ?, birth = ?, father_id = ?\n\
+    time_last_action = ?, action_time = ?,\n\
+    birth = ?, father_id = ?\n\
 WHERE id = ?;");
       sql.bind(1, static_cast<int>(this->energy));
       sql.bind(2, static_cast<int>(this->position.x));
       sql.bind(3, static_cast<int>(this->position.y));
       sql.bind(4, static_cast<int>(this->orientation));
-      if (this->is_null("action_time"))
+      if (this->is_null("time_last_action"))
         sql.bind(5);
       else
-        sql.bind(5, static_cast<int>(this->action_time));
-      sql.bind(6, static_cast<int>(this->birth));
-      if (this->is_null("father_id"))
-        sql.bind(7);
+        sql.bind(5, static_cast<int>(this->time_last_action));
+      if (this->is_null("action_time"))
+        sql.bind(6);
       else
-        sql.bind(7, static_cast<sqlite3x::int64_t>(this->father_id));
-      sql.bind(8, this->id_);
+        sql.bind(6, static_cast<int>(this->action_time));
+      sql.bind(7, static_cast<int>(this->birth));
+      if (this->is_null("father_id"))
+        sql.bind(8);
+      else
+        sql.bind(8, static_cast<sqlite3x::int64_t>(this->father_id));
+      sql.bind(9, this->id_);
 
       sql.executenonquery();
     } catch (const sqlite3x::database_error& e) {

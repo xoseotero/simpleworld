@@ -222,6 +222,9 @@ cpu::Update world(cpu::CPU& cpu, cpu::Instruction inst)
 
 
     // the action is finished
+    if (bug->is_null("time_last_action"))
+        bug->remove_null("time_last_action");
+    bug->time_last_action = env.time;
     bug->add_null("action_time");
     bug->changed = true;
 

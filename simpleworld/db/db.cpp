@@ -271,6 +271,10 @@ CREATE TABLE Environment\n\
   mutations_probability REAL NOT NULL,  -- Values from 0 to 1\n\
   time_birth INTEGER NOT NULL,\n\
   time_mutate INTEGER NOT NULL,\n\
+\n\
+  time_laziness INTEGER NOT NULL,\n\
+  energy_laziness INTEGER NOT NULL,\n\
+\n\
   attack_multiplier REAL NOT NULL,\n\
 \n\
   energy_nothing INTEGER NOT NULL,\n\
@@ -289,6 +293,8 @@ CREATE TABLE Environment\n\
   CHECK(mutations_probability >= 0 AND mutations_probability <= 1),\n\
   CHECK(time_birth >= 0),\n\
   CHECK(time_mutate >= 0),\n\
+  CHECK(time_laziness >= 0),\n\
+  CHECK(energy_laziness >= 0),\n\
   CHECK(energy_nothing >= 0 AND energy_myself >= 0 AND\n\
         energy_detect >= 0 AND energy_info >= 0 AND\n\
         energy_move >= 0 AND energy_turn >= 0 AND\n\
@@ -347,6 +353,8 @@ WHEN OLD.size_x != NEW.size_x OR\n\
      OLD.mutations_probability != NEW.mutations_probability OR\n\
      OLD.time_birth != NEW.time_birth OR\n\
      OLD.time_mutate != NEW.time_mutate OR\n\
+     OLD.time_laziness != NEW.time_laziness OR\n\
+     OLD.energy_laziness != NEW.energy_laziness OR\n\
      OLD.attack_multiplier != NEW.attack_multiplier OR\n\
      OLD.energy_nothing != NEW.energy_nothing OR\n\
      OLD.energy_myself != NEW.energy_myself OR\n\
@@ -376,6 +384,7 @@ CREATE TABLE Bug\n\
   position_y INTEGER NOT NULL,\n\
   orientation INTEGER NOT NULL,\n\
 \n\
+  time_last_action INTEGER,             -- NULL if no action was done yet\n\
   action_time INTEGER,                  -- NULL if the bug is not doing a\n\
                                         -- action\n\
 \n\
@@ -390,6 +399,7 @@ CREATE TABLE Bug\n\
   FOREIGN KEY(father_id) REFERENCES Bug(id),\n\
   CHECK(position_x >= 0 AND position_y >= 0),\n\
   CHECK(orientation >= 0 AND orientation <= 3), -- 4 possible orientations\n\
+  CHECK(time_last_action IS NULL OR time_last_action >= 0),\n\
   CHECK(action_time IS NULL OR action_time > 0),\n\
   CHECK(birth >= 0),\n\
   CHECK(dead IS NULL OR (birth <= dead)), -- If dead IS NOT NULL\n\
@@ -527,6 +537,31 @@ BEGIN\n\
         IS NOT NULL;\n\
 END;",
 
+    /* Check that the time_last_action isn't in the future */
+    "\
+CREATE TRIGGER Bug_insert_time_last_action_trigger\n\
+BEFORE INSERT\n\
+ON Bug\n\
+FOR EACH ROW BEGIN\n\
+  SELECT RAISE(ROLLBACK, 'The time_last_action is in the future')\n\
+  WHERE (SELECT max(time)\n\
+         FROM Environment)\n\
+        < NEW.time_last_action;\n\
+END;",
+
+    "\
+CREATE TRIGGER Bug_update_time_last_action_trigger\n\
+BEFORE UPDATE\n\
+ON Bug\n\
+FOR EACH ROW\n\
+WHEN OLD.time_last_action != NEW.time_last_action\n\
+BEGIN\n\
+  SELECT RAISE(ROLLBACK, 'The time_last_action is in the future')\n\
+  WHERE (SELECT max(time)\n\
+         FROM Environment)\n\
+	      < NEW.time_last_action;\n\
+END;",
+
     /* Check that the action_time isn't in the past */
     "\
 CREATE TRIGGER Bug_insert_action_time_trigger\n\
@@ -549,7 +584,7 @@ BEGIN\n\
   SELECT RAISE(ROLLBACK, 'The action_time is in the past')\n\
   WHERE (SELECT max(time)\n\
          FROM Environment)\n\
-	> NEW.action_time;\n\
+        > NEW.action_time;\n\
 END;",
 
     /* Propagate the dead */

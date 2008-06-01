@@ -5,6 +5,8 @@ Simple World 1.0b1:
 	* The code of the old bugs can be mutated.
 	* Added event "mutation" that is sent when the code of the bug is
 	  mutated.
+	* The bugs that don't do any action in the last cycles can be
+	  penalized with the substraction of some energy.
 
 Simple World 1.0a4 (2008/04/14):
 	* Update to database version 2.
