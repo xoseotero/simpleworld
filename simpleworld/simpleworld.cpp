@@ -568,10 +568,10 @@ Position used (%1%, %2%)")
   egg.birth = this->env_->time + this->env_->time_birth;
   egg.father_id = bug->id();
   egg.energy = std::min(bug->energy, energy);
-  egg.code = copy_code(bug->code,
-                       this->env_->mutations_probability,
-                       true,
-                       this->env_->time);
+  egg.code = mutate(bug->code,
+                    this->env_->mutations_probability,
+                    true,
+                    this->env_->time);
   // Substracts the size of the egg
   this->substract_energy(bug, egg.code.size);
   egg.insert();
@@ -710,10 +710,10 @@ void SimpleWorld::bugs_mutate()
     if ((age > 0) and (age % this->env_->time_mutate == 0)) {
       int mutations = (*bug)->code.mutations.size();
 
-      (*bug)->code = copy_code((*bug)->code,
-                               this->env_->mutations_probability,
-                               false,
-                               this->env_->time);
+      (*bug)->code = mutate((*bug)->code,
+                            this->env_->mutations_probability,
+                            false,
+                            this->env_->time);
       if (mutations != (*bug)->code.mutations.size()) {
         (*bug)->mutated();
         (*bug)->code.changed = true;

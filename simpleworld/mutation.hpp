@@ -38,8 +38,7 @@ namespace simpleworld
  * @param time the current time.
  * @return the copy of the code.
  */
-db::Code copy_code(const db::Code& code, float probability,
-                   bool egg, Time time);
+db::Code mutate(const db::Code& code, float probability, bool egg, Time time);
 
 }
 
