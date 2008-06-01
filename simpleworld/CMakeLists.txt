@@ -6,7 +6,7 @@ set(SIMPLEWORLD_SRCS
   bug.cpp
   egg.cpp
   food.cpp
-  reproduction.cpp
+  mutation.cpp
   simpleworld.cpp)
 
 add_library(simpleworld STATIC ${SIMPLEWORLD_SRCS})

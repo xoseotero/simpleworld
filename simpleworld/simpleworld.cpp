@@ -52,7 +52,7 @@
 #include "actionerror.hpp"
 #include "bugdeath.hpp"
 #include "movement.hpp"
-#include "reproduction.hpp"
+#include "mutation.hpp"
 
 // Default values for the environment
 #define DEFAULT_SIZE (Position) {16, 16}

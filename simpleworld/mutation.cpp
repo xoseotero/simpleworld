@@ -1,6 +1,6 @@
 /**
- * @file simpleworld/reproduction.cpp
- * Reproduction of bugs.
+ * @file simpleworld/mutation.cpp
+ * Mutation of bugs.
  *
  * begin:     Sun, 27 Jan 2008 05:57:39 +0100
  * last:      $Date$
@@ -28,7 +28,7 @@
 #include <simpleworld/db/code.hpp>
 #include <simpleworld/db/mutation.hpp>
 
-#include "reproduction.hpp"
+#include "mutation.hpp"
 
 #ifdef DEBUG
 #include <iostream>
