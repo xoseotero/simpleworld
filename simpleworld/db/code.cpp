@@ -21,6 +21,8 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <string>
+
 #include <boost/format.hpp>
 
 #include <simpleworld/config.hpp>
@@ -87,7 +89,8 @@ WHERE bug_id = ?;");
     while (cursor.step())
       mutations->push_back(Mutation(db, cursor.getint64(0)));
   } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(DBException, e.what());
+    throw EXCEPTION(DBException, std::string(e.what()) +
+                    " (" + db->errormsg() + ")");
   }
 }
 
@@ -183,7 +186,8 @@ WHERE bug_id = ?;");
       this->mutations.push_back(Mutation(this->db_,
                                          cursor_mutations.getint64(0)));
   } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(DBException, e.what());
+    throw EXCEPTION(DBException, std::string(e.what()) +
+                    " (" + this->db()->errormsg() + ")");
   }
 
 
@@ -219,7 +223,8 @@ WHERE bug_id = ?;");
 
       sql.executenonquery();
     } catch (const sqlite3x::database_error& e) {
-      throw EXCEPTION(DBException, e.what());
+      throw EXCEPTION(DBException, std::string(e.what()) +
+                      " (" + this->db()->errormsg() + ")");
     }
   }
 
@@ -251,7 +256,8 @@ VALUES(?, ?, ?);");
 
     sql.executenonquery();
   } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(DBException, e.what());
+    throw EXCEPTION(DBException, std::string(e.what()) +
+                    " (" + this->db()->errormsg() + ")");
   }
 
 
@@ -278,7 +284,8 @@ WHERE id = ?;");
 
     sql.executenonquery();
   } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(DBException, e.what());
+    throw EXCEPTION(DBException, std::string(e.what()) +
+                    " (" + this->db()->errormsg() + ")");
   }
 
 

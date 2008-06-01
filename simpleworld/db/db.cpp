@@ -47,7 +47,8 @@ DB::DB(std::string filename)
   try {
     this->open(filename);
   } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(DBException, e.what());
+    throw EXCEPTION(DBException, std::string(e.what()) +
+                    " (" + this->errormsg() + ")");
   }
 
   this->setbusytimeout(60000);
@@ -73,7 +74,8 @@ ORDER BY time;");
     while (cursor.step())
       ids.push_back(cursor.getint(0));
   } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(DBException, e.what());
+    throw EXCEPTION(DBException, std::string(e.what()) +
+                    " (" + this->errormsg() + ")");
   }
 
   return ids;
@@ -103,7 +105,8 @@ LIMIT 1;");
     else
       throw EXCEPTION(DBException, "Table Environment is empty");
   } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(DBException, e.what());
+    throw EXCEPTION(DBException, std::string(e.what()) +
+                    " (" + this->errormsg() + ")");
   }
 }
 
@@ -127,7 +130,8 @@ ORDER BY birth, id;");
     while (cursor.step())
       ids.push_back(cursor.getint64(0));
   } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(DBException, e.what());
+    throw EXCEPTION(DBException, std::string(e.what()) +
+                    " (" + this->errormsg() + ")");
   }
 
   return ids;
@@ -152,7 +156,8 @@ ORDER BY birth, id;");
     while (cursor.step())
       ids.push_back(cursor.getint64(0));
   } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(DBException, e.what());
+    throw EXCEPTION(DBException, std::string(e.what()) +
+                    " (" + this->errormsg() + ")");
   }
 
   return ids;
@@ -177,7 +182,8 @@ ORDER BY birth, id;");
     while (cursor.step())
       ids.push_back(cursor.getint64(0));
   } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(DBException, e.what());
+    throw EXCEPTION(DBException, std::string(e.what()) +
+                    " (" + this->errormsg() + ")");
   }
 
   return ids;
@@ -203,7 +209,8 @@ ORDER BY id;");
     while (cursor.step())
       ids.push_back(cursor.getint64(0));
   } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(DBException, e.what());
+    throw EXCEPTION(DBException, std::string(e.what()) +
+                    " (" + this->errormsg() + ")");
   }
 
   return ids;
@@ -837,7 +844,8 @@ END;",
 
     transaction.commit();
   } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(DBException, e.what());
+    throw EXCEPTION(DBException, std::string(e.what()) +
+                    " (" + this->errormsg() + ")");
   }
 }
 

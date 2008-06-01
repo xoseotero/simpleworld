@@ -21,6 +21,8 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <string>
+
 #include <boost/format.hpp>
 
 #include <sqlite3x.hpp>
@@ -106,7 +108,8 @@ id %1% not found in table Bug")
     if (cursor.isnull(5))
       this->add_null("father_id");
   } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(DBException, e.what());
+    throw EXCEPTION(DBException, std::string(e.what()) +
+                    " (" + this->db()->errormsg() + ")");
   }
 
 
@@ -144,7 +147,8 @@ WHERE id = ?;");
 
       sql.executenonquery();
     } catch (const sqlite3x::database_error& e) {
-      throw EXCEPTION(DBException, e.what());
+      throw EXCEPTION(DBException, std::string(e.what()) +
+                      " (" + this->db()->errormsg() + ")");
     }
   }
 
@@ -180,7 +184,8 @@ VALUES(?, ?, ?, ?, ?, ?);");
     sql.executenonquery();
     this->id_ = this->db_->insertid();
   } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(DBException, e.what());
+    throw EXCEPTION(DBException, std::string(e.what()) +
+                    " (" + this->db()->errormsg() + ")");
   }
 
 
@@ -204,7 +209,8 @@ WHERE id = ?;");
 
     sql.executenonquery();
   } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(DBException, e.what());
+    throw EXCEPTION(DBException, std::string(e.what()) +
+                    " (" + this->db()->errormsg() + ")");
   }
 
 

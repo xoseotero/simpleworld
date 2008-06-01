@@ -21,6 +21,8 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <string>
+
 #include <boost/format.hpp>
 
 #include "exception.hpp"
@@ -81,7 +83,8 @@ bug_id %1% not found in table CPU")
 
     this->registers = get_memory(&cursor, 0);
   } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(DBException, e.what());
+    throw EXCEPTION(DBException, std::string(e.what()) +
+                    " (" + this->db()->errormsg() + ")");
   }
 
 
@@ -110,7 +113,8 @@ WHERE bug_id = ?;");
 
       sql.executenonquery();
     } catch (const sqlite3x::database_error& e) {
-      throw EXCEPTION(DBException, e.what());
+      throw EXCEPTION(DBException, std::string(e.what()) +
+                      " (" + this->db()->errormsg() + ")");
     }
   }
 
@@ -138,7 +142,8 @@ VALUES(?, ?);");
 
     sql.executenonquery();
   } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(DBException, e.what());
+    throw EXCEPTION(DBException, std::string(e.what()) +
+                    " (" + this->db()->errormsg() + ")");
   }
 
 
@@ -162,7 +167,8 @@ WHERE bug_id = ?;");
 
     sql.executenonquery();
   } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(DBException, e.what());
+    throw EXCEPTION(DBException, std::string(e.what()) +
+                    " (" + this->db()->errormsg() + ")");
   }
 
 

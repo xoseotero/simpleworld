@@ -21,6 +21,8 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <string>
+
 #include <boost/format.hpp>
 
 #include "exception.hpp"
@@ -90,7 +92,8 @@ id %1% not found in table Mutation")
     } else
       this->type = Mutation::mutation;
   } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(DBException, e.what());
+    throw EXCEPTION(DBException, std::string(e.what()) +
+                    " (" + this->db()->errormsg() + ")");
   }
 
 
@@ -128,7 +131,8 @@ WHERE id = ?;");
 
       sql.executenonquery();
     } catch (const sqlite3x::database_error& e) {
-      throw EXCEPTION(DBException, e.what());
+      throw EXCEPTION(DBException, std::string(e.what()) +
+                      " (" + this->db()->errormsg() + ")");
     }
   }
 
@@ -166,7 +170,8 @@ VALUES(?, ?, ?, ?);");
     this->id_ = this->db_->insertid();
     this->bug_id = bug_id;
   } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(DBException, e.what());
+    throw EXCEPTION(DBException, std::string(e.what()) +
+                    " (" + this->db()->errormsg() + ")");
   }
 
 
@@ -190,7 +195,8 @@ WHERE id = ?;");
 
     sql.executenonquery();
   } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(DBException, e.what());
+    throw EXCEPTION(DBException, std::string(e.what()) +
+                    " (" + this->db()->errormsg() + ")");
   }
 
 
