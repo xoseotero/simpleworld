@@ -92,7 +92,7 @@ remove_branch()
 
     # branch
     ${CD} branches/${name} && \
-    ${SVNMERGE} uninit && \
+    ${SVNMERGE} uninit -S ../../trunk && \
     ${SVN} ci -F svnmerge-commit-message.txt && \
     ${RM} -f svnmerge-commit-message.txt && \
     ${CD} ../.. && \
