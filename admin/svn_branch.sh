@@ -6,6 +6,7 @@ SVN="svn"
 SVNMERGE="svnmerge"
 CD="cd"
 RM="rm"
+WC="wc"
 
 remove=0
 branch_name=""
@@ -57,9 +58,22 @@ check_root()
     fi
 }
 
+check_modifications()
+{
+    directory=$1
+
+    diff=`${SVN} diff ${directory} | ${WC} -l`
+    if [ $diff -ne 0 ]; then
+	echo "Directory ${directory} has changes."
+	exit 1
+    fi
+}
+
 create_branch()
 {
     name=$1
+
+    check_modifications "trunk"
 
     # branch
     ${SVN} copy trunk/ branches/${name} && \
@@ -81,6 +95,9 @@ create_branch()
 remove_branch()
 {
     name=$1
+
+    check_modifications "trunk"
+    check_modifications "branches/${name}"
 
     # trunk
     ${CD} trunk/ && \
