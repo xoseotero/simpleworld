@@ -101,7 +101,14 @@ BOOST_AUTO_TEST_CASE(cpu_reg)
 
   BOOST_CHECK_EQUAL(cpu.get_reg(0), 0x0123ABCD);
   BOOST_CHECK_EQUAL(cpu.get_reg(0, true), 0x0123ABCD);
+#if defined(IS_BIG_ENDIAN)
+  BOOST_CHECK_EQUAL(cpu.get_reg(0, false),
+                    cpu.get_reg(0, true));
+#elif defined(IS_LITTLE_ENDIAN)
   BOOST_CHECK_EQUAL(cpu.get_reg(0, false), 0xCDAB2301);
+#else
+#error endianness not defined
+#endif
   BOOST_CHECK_EQUAL(cpu.get_reg(15), 0x01100110);
 }
 
@@ -119,7 +126,14 @@ BOOST_AUTO_TEST_CASE(cpu_mem)
 
   BOOST_CHECK_EQUAL(cpu.get_mem(0), 0x0123ABCD);
   BOOST_CHECK_EQUAL(cpu.get_mem(0, true), 0x0123ABCD);
+#if defined(IS_BIG_ENDIAN)
+  BOOST_CHECK_EQUAL(cpu.get_mem(0, false),
+		    cpu.get_mem(0, true));
+#elif defined(IS_LITTLE_ENDIAN)
   BOOST_CHECK_EQUAL(cpu.get_mem(0, false), 0xCDAB2301);
+#else
+#error endianness not defined
+#endif
   BOOST_CHECK_EQUAL(cpu.get_mem(15), 0x01100110);
 }
 
