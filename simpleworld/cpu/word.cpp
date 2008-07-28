@@ -23,6 +23,8 @@
 
 #include <boost/format.hpp>
 
+#include <simpleworld/config.hpp>
+
 #include "word.hpp"
 #include "exception.hpp"
 
@@ -75,8 +77,15 @@ Byte 0x%02X is out of range")
  */
 Word change_byte_order(Word word)
 {
+#if defined(IS_BIG_ENDIAN)
+  return get_byte(word, 0) | get_byte(word, 1) << 8 |
+    get_byte(word, 2) << 16 | get_byte(word, 3) << 24;
+#elif defined(IS_LITTLE_ENDIAN)
   return get_byte(word, 0) << 24 | get_byte(word, 1) << 16 |
     get_byte(word, 2) << 8 | get_byte(word, 3);
+#else
+#error endianness not specified
+#endif
 }
 
 /**
@@ -87,8 +96,15 @@ Word change_byte_order(Word word)
  */
 Word change_byte_order_middle(Word word)
 {
-  return get_byte(word, 0) << 8 | get_byte(word, 1) | get_byte(word, 2) << 24 |
-    get_byte(word, 3) << 16;
+#if defined(IS_BIG_ENDIAN)
+  return get_byte(word, 0) << 16 | get_byte(word, 1) << 24 |
+    get_byte(word, 2) | get_byte(word, 3) << 8;
+#elif defined(IS_LITTLE_ENDIAN)
+  return get_byte(word, 0) << 8 | get_byte(word, 1) |
+    get_byte(word, 2) << 24 | get_byte(word, 3) << 16;
+#else
+#error endianness not specified
+#endif
 }
 
 }
