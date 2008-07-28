@@ -31,9 +31,6 @@
 #cmakedefine UNIX
 #cmakedefine WIN32
 
-#cmakedefine HAVE_LONG_LONG
-#cmakedefine HAVE__INT64
-
 #cmakedefine HAVE_CXXABI_H
 
 #endif // SIMPLEWORLD_CONFIG_H

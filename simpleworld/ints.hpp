@@ -1,13 +1,11 @@
 /**
  * @file simpleworld/ints.hpp
  * Definition of the integer types used in Simple World.
- * @todo In C99 there is the stdint.h where is defined intX_t and uintX_t, but
- * are not used.
  *
  * begin:     Sat, 11 Dec 2004 11:45:52 +0100
  * last:      $Date$
  *
- *  Copyright (C) 2004, 2006-2007  Xosé Otero <xoseotero@users.sourceforge.net>
+ *  Copyright (C) 2004, 2006-2008  Xosé Otero <xoseotero@users.sourceforge.net>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -25,7 +23,14 @@
 #ifndef SIMPLEWORLD_INTS_HPP
 #define SIMPLEWORLD_INTS_HPP
 
-#include <simpleworld/config.hpp>
+// __STDC_CONSTANT_MACROS must be defined to get INT64_C and UINT64_C defined
+#define __STDC_CONSTANT_MACROS
+#include <boost/cstdint.hpp>
+
+#ifdef BOOST_NO_INT64_T
+#error 64 bits integers not found
+#endif
+
 
 /**
  * Namespace for Simple World.
@@ -34,32 +39,21 @@ namespace simpleworld
 {
 
 // Signed integers
-typedef signed char Sint8;      /**< Signed integer with 8 bits long */
-typedef short Sint16;           /**< Signed integer with 16 bits long */
-typedef long Sint32;            /**< Signed integer with 32 bits long */
-#ifdef HAVE_LONG_LONG
-typedef long long Sint64;       /**< Signed integer with 64 bits long */
-#define SINT64(number) (number ## LL)
-#else
-# ifdef HAVE__INT64
-typedef __int64 Sint64;         /**< Signed integer with 64 bits long */
-#define SINT64(number) (number ## i64)
-# endif // HAVE__INT64
-#endif // HAVE_LONG_LONG
+typedef boost::int8_t Sint8;    /**< Signed integer with 8 bits long */
+typedef boost::int16_t Sint16;  /**< Signed integer with 16 bits long */
+typedef boost::int32_t Sint32;  /**< Signed integer with 32 bits long */
+typedef boost::int64_t Sint64;  /**< Signed integer with 64 bits long */
 
 // Unsigned integers
-typedef unsigned char Uint8;    /**< Unsigned integer with 8 bits long */
-typedef unsigned short Uint16;  /**< Unsigned integer with 16 bits long */
-typedef unsigned long Uint32;   /**< Unsigned integer with 32 bits long */
-#ifdef HAVE_LONG_LONG
-typedef unsigned long long Uint64; /**< Unsigned integer with 64 bits long */
-#define UINT64(number) (number ## ULL)
-#else
-# ifdef HAVE__INT64
-typedef unsigned __int64 Uint64; /**< Signed integer with 64 bits long */
-#define UINT64(number) (number ## ui64)
-# endif // HAVE__INT64
-#endif // HAVE_LONG_LONG
+typedef boost::uint8_t Uint8;   /**< Unsigned integer with 8 bits long */
+typedef boost::uint16_t Uint16; /**< Unsigned integer with 16 bits long */
+typedef boost::uint32_t Uint32; /**< Unsigned integer with 32 bits long */
+typedef boost::uint64_t Uint64; /**< Unsigned integer with 64 bits long */
+
+
+// Macros to convert a value to 64bits
+#define SINT64(number) INT64_C(number)
+#define UINT64(number) UINT64_C(number)
 
 }
 

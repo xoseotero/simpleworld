@@ -25,16 +25,6 @@ else(BIG_ENDIAN)
 endif(BIG_ENDIAN)
 
 
-# long long is a C99 64bits type not present in the C++ 98 standard
-# g++ has long long
-check_type_size("long long" LONG_LONG)
-# MSVC has __int64
-check_type_size("__int64" _INT64)
-if(NOT HAVE__INT64 AND NOT HAVE_LONG_LONG)
-  message(FATAL_ERROR "64bits integer not found")
-endif(NOT HAVE__INT64 AND NOT HAVE_LONG_LONG)
-
-
 # Test for standard C++ features in the compiler
 if(CMAKE_NO_ANSI_STREAM_HEADERS OR CMAKE_NO_STD_NAMESPACE)
   message(FATAL_ERROR "The compiler not support standard C++ features")
