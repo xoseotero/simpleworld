@@ -85,12 +85,14 @@ The size of %1% (%2%) is not a multiple of 32bits")
     } catch (const CodeError& e) {
       // If a unknown instruction or register is found suppose that the value
       // is data.
-#ifdef IS_BIG_ENDIAN
+#if defined(IS_BIG_ENDIAN)
       std::string data(boost::str(boost::format("0x%08X") % instruction));
-#else
+#elif defined(IS_LITTLE_ENDIAN)
       std::string data(boost::str(boost::format("0x%08X") %
                                   change_byte_order(instruction)));
-#endif // IS_BIG_ENDIAN
+#else
+#error endianness not specified
+#endif
       file.insert(i, data);
     }
 

@@ -67,7 +67,7 @@ BOOST_AUTO_TEST_CASE(memory_checking_words)
     BOOST_CHECK_EQUAL(memory.get_word(i), i);
 }
 
-#ifdef IS_LITTLE_ENDIAN
+#if defined(IS_LITTLE_ENDIAN)
 /**
  * Setting big endian words.
  */
@@ -93,7 +93,7 @@ BOOST_AUTO_TEST_CASE(memory_get_big_endian)
   for (sw::Uint8 i = 0; i < 16 * 4; i += 4)
     BOOST_CHECK_EQUAL(memory.get_word(i, false), cpu::change_byte_order(i));
 }
-#endif
+#endif // defined(IS_LITTLE_ENDIAN)
 
 /**
  * Getting a non aligned word.

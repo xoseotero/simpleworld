@@ -43,10 +43,12 @@ BOOST_AUTO_TEST_CASE(cs_encode)
   cs.interrupt = false;
   cs.max_interrupts = 0x5;
 
-#ifdef IS_BIG_ENDIAN
+#if defined(IS_BIG_ENDIAN)
   BOOST_CHECK_EQUAL(cs.encode(), 0xABCD0000 | ENABLE_FLAG | 0x00000005);
-#else
+#elif defined(IS_LITTLE_ENDIAN)
   BOOST_CHECK_EQUAL(cs.encode(), 0x0000CDAB | ENABLE_FLAG | 0x05000000);
+#else
+#error endianness not defined
 #endif
 
 
@@ -55,10 +57,12 @@ BOOST_AUTO_TEST_CASE(cs_encode)
   cs.interrupt = true;
   cs.max_interrupts = 0xf;
 
-#ifdef IS_BIG_ENDIAN
+#if defined(IS_BIG_ENDIAN)
   BOOST_CHECK_EQUAL(cs.encode(), 0x01100000 | INTERRUPT_FLAG | 0x0000000F);
-#else
+#elif defined(IS_LITTLE_ENDIAN)
   BOOST_CHECK_EQUAL(cs.encode(), 0x00001001 | INTERRUPT_FLAG | 0x0F000000);
+#else
+#error endianness not defined
 #endif
 }
 
@@ -67,10 +71,12 @@ BOOST_AUTO_TEST_CASE(cs_encode)
  */
 BOOST_AUTO_TEST_CASE(cs_decode)
 {
-#ifdef IS_BIG_ENDIAN
+#if defined(IS_BIG_ENDIAN)
   sw::Uint32 cs_coded = 0xABCD0000 | ENABLE_FLAG | 0x00000005;
-#else
+#elif defined(IS_LITTLE_ENDIAN)
   sw::Uint32 cs_coded = 0x0000CDAB | ENABLE_FLAG | 0x05000000;
+#else
+#error endianness not defined
 #endif
   cpu::CS cs(cs_coded);
 
@@ -80,10 +86,12 @@ BOOST_AUTO_TEST_CASE(cs_decode)
   BOOST_CHECK_EQUAL(cs.max_interrupts, 0x5);
 
 
-#ifdef IS_BIG_ENDIAN
+#if defined(IS_BIG_ENDIAN)
   cs_coded = 0x01100000 | INTERRUPT_FLAG | 0x0000000F;
-#else
+#elif defined(IS_LITTLE_ENDIAN)
   cs_coded = 0x00001001 | INTERRUPT_FLAG | 0x0F000000;
+#else
+#error endianness not defined
 #endif
   cs.decode(cs_coded);
 

@@ -59,12 +59,14 @@ Word Instruction::encode() const
   set_byte(&word, 0, this->code);
   set_byte(&word, 1, static_cast<Uint8>(this->first << 4 | this->second));
 
-#ifdef IS_BIG_ENDIAN
+#if defined(IS_BIG_ENDIAN)
   set_byte(&word, 2, get_byte(static_cast<Word>(this->data), 2));
   set_byte(&word, 3, get_byte(static_cast<Word>(this->data), 3));
-#else
+#elif defined(IS_LITTLE_ENDIAN)
   set_byte(&word, 2, get_byte(static_cast<Word>(this->data), 1));
   set_byte(&word, 3, get_byte(static_cast<Word>(this->data), 0));
+#else
+#error endianness not specified
 #endif
 
   return word;
@@ -81,12 +83,14 @@ void Instruction::decode(Word word)
   this->second = get_byte(word, 1) & 0x0f;
 
   Word data = static_cast<Word>(this->data);
-#ifdef IS_BIG_ENDIAN
+#if defined(IS_BIG_ENDIAN)
   set_byte(&data, 2, get_byte(word, 2));
   set_byte(&data, 3, get_byte(word, 3));
-#else
+#elif defined(IS_LITTLE_ENDIAN)
   set_byte(&data, 0, get_byte(word, 3));
   set_byte(&data, 1, get_byte(word, 2));
+#else
+#error endianness not specified
 #endif
   this->data = data;
 }

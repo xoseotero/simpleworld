@@ -29,15 +29,17 @@
 #include <simpleworld/cpu/types.hpp>
 
 // flags for specific bits
-#ifdef IS_BIG_ENDIAN
+#if defined(IS_BIG_ENDIAN)
 #define ENABLE_FLAG    0x00000080
 #define INTERRUPT_FLAG 0x00000040
 #define MAXINTS_MASK   0x0000000F
-#else // IS_BIG_ENDIAN
+#elif defined(IS_LITTLE_ENDIAN)
 #define ENABLE_FLAG    0x80000000
 #define INTERRUPT_FLAG 0x40000000
 #define MAXINTS_MASK   0x0F000000
-#endif // IS_BIG_ENDIAN
+#else
+#error endianness not specified
+#endif
 
 namespace simpleworld
 {

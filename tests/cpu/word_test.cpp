@@ -46,16 +46,18 @@ namespace cpu = simpleworld::cpu;
 BOOST_AUTO_TEST_CASE(word_get_bytes)
 {
   sw::Uint32 value = 0xaabbccdd;
-#ifdef IS_BIG_ENDIAN
+#if defined(IS_BIG_ENDIAN)
   BOOST_CHECK_EQUAL(cpu::get_byte(value, 0), 0xaa);
   BOOST_CHECK_EQUAL(cpu::get_byte(value, 1), 0xbb);
   BOOST_CHECK_EQUAL(cpu::get_byte(value, 2), 0xcc);
   BOOST_CHECK_EQUAL(cpu::get_byte(value, 3), 0xdd);
-#else
+#elif defined(IS_LITTLE_ENDIAN)
   BOOST_CHECK_EQUAL(cpu::get_byte(value, 0), 0xdd);
   BOOST_CHECK_EQUAL(cpu::get_byte(value, 1), 0xcc);
   BOOST_CHECK_EQUAL(cpu::get_byte(value, 2), 0xbb);
   BOOST_CHECK_EQUAL(cpu::get_byte(value, 3), 0xaa);
+#else
+#error endianness not defined
 #endif
 }
 
@@ -65,16 +67,18 @@ BOOST_AUTO_TEST_CASE(word_get_bytes)
 BOOST_AUTO_TEST_CASE(word_set_bytes)
 {
   sw::Uint32 value = 0;
-#ifdef IS_BIG_ENDIAN
+#if defined(IS_BIG_ENDIAN)
   cpu::set_byte(&value, 0, 0xaa);
   cpu::set_byte(&value, 1, 0xbb);
   cpu::set_byte(&value, 2, 0xcc);
   cpu::set_byte(&value, 3, 0xdd);
-#else
+#elif defined(IS_LITTLE_ENDIAN)
   cpu::set_byte(&value, 0, 0xdd);
   cpu::set_byte(&value, 1, 0xcc);
   cpu::set_byte(&value, 2, 0xbb);
   cpu::set_byte(&value, 3, 0xaa);
+#else
+#error endianness not defined
 #endif
 
   BOOST_CHECK_EQUAL(value, 0xaabbccdd);

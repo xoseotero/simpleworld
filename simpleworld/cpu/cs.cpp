@@ -57,22 +57,26 @@ Word CS::encode() const
 {
   Word word = 0;
 
-#ifdef IS_BIG_ENDIAN
+#if defined(IS_BIG_ENDIAN)
   set_byte(&word, 0, get_byte(static_cast<Word>(this->itp), 2));
   set_byte(&word, 1, get_byte(static_cast<Word>(this->itp), 3));
-#else
+#elif defined(IS_LITTLE_ENDIAN)
   set_byte(&word, 0, get_byte(static_cast<Word>(this->itp), 1));
   set_byte(&word, 1, get_byte(static_cast<Word>(this->itp), 0));
+#else
+#error endianness not specified
 #endif
 
   if (this->enable)
     word |= ENABLE_FLAG;
   if (this->interrupt)
     word |= INTERRUPT_FLAG;
-#ifdef IS_BIG_ENDIAN
+#if defined(IS_BIG_ENDIAN)
   word |= this->max_interrupts;
-#else
+#elif defined(IS_LITTLE_ENDIAN)
   word |= this->max_interrupts << 24;
+#else
+#error endianness not specified
 #endif
 
   return word;
@@ -85,21 +89,25 @@ Word CS::encode() const
 void CS::decode(Word word)
 {
   Word itp = static_cast<Word>(this->itp);
-#ifdef IS_BIG_ENDIAN
+#if defined(IS_BIG_ENDIAN)
   set_byte(&itp, 2, get_byte(word, 0));
   set_byte(&itp, 3, get_byte(word, 1));
-#else
+#elif defined(IS_LITTLE_ENDIAN)
   set_byte(&itp, 0, get_byte(word, 1));
   set_byte(&itp, 1, get_byte(word, 0));
+#else
+#error endianness not specified
 #endif
   this->itp = itp;
 
   this->enable = word & ENABLE_FLAG;
   this->interrupt = word & INTERRUPT_FLAG;
-#ifdef IS_BIG_ENDIAN
+#if defined(IS_BIG_ENDIAN)
   this->max_interrupts = word & MAXINTS_MASK;
-#else
+#elif defined(IS_LITTLE_ENDIAN)
   this->max_interrupts = (word & MAXINTS_MASK) >> 24;
+#else
+#error endianness not specified
 #endif
 }
 

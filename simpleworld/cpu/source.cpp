@@ -504,10 +504,12 @@ void Source::replace_blocks()
 Word Source::compile(File::size_type line) const
 {
   if (this->is_data(line)) {
-#ifdef IS_BIG_ENDIAN
+#if defined(IS_BIG_ENDIAN)
     return this->get_data(line);
-#else
+#elif defined(IS_LITTLE_ENDIAN)
     return change_byte_order(this->get_data(line));
+#else
+#error endianness not specified
 #endif
   }
 

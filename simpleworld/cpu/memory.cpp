@@ -26,6 +26,7 @@
 #include <boost/format.hpp>
 
 #include <simpleworld/config.hpp>
+
 #include "word.hpp"
 #include "memory.hpp"
 #include "memoryerror.hpp"
@@ -114,9 +115,9 @@ Word Memory::get_word(Address address, bool system_endian) const
 Address 0x%08X is out of range")
                                             % address));
 
-#ifdef IS_BIG_ENDIAN
+#if defined(IS_BIG_ENDIAN)
   return *(reinterpret_cast<Word*>(&this->memory_[address]));
-#else
+#elif defined(IS_LITTLE_ENDIAN)
   if (system_endian)
     if (address % 2 == 0)
       return change_byte_order(*(reinterpret_cast<Word*>(&this->memory_[address])));
@@ -124,6 +125,8 @@ Address 0x%08X is out of range")
       return change_byte_order_middle(*(reinterpret_cast<Word*>(&this->memory_[address])));
   else
     return *(reinterpret_cast<Word*>(&this->memory_[address]));
+#else
+#error endianness not specified
 #endif
 }
 
@@ -146,9 +149,9 @@ Address 0x%08X is out of range")
                                             % address));
 
 
-#ifdef IS_BIG_ENDIAN
+#if defined(IS_BIG_ENDIAN)
   *(reinterpret_cast<Uint32*>(&this->memory_[address])) = value;
-#else
+#elif defined(IS_LITTLE_ENDIAN)
   if (system_endian)
     if (address % 2 == 0)
       *(reinterpret_cast<Uint32*>(&this->memory_[address])) =
@@ -158,6 +161,8 @@ Address 0x%08X is out of range")
         change_byte_order_middle(value);
   else
     *(reinterpret_cast<Uint32*>(&this->memory_[address])) = value;
+#else
+#error endianness not specified
 #endif
 }
 

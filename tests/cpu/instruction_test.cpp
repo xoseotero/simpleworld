@@ -44,10 +44,12 @@ BOOST_AUTO_TEST_CASE(instruction_encode)
   inst.first = 0x3;
   inst.second = 0x4;
   inst.data = 0x5678;
-#ifdef IS_BIG_ENDIAN
+#if defined(IS_BIG_ENDIAN)
   BOOST_CHECK_EQUAL(inst.encode(), 0x12345678);
-#else
+#elif defined(IS_LITTLE_ENDIAN)
   BOOST_CHECK_EQUAL(inst.encode(), 0x78563412);
+#else
+#error endianness not defined
 #endif
 }
 
@@ -56,10 +58,12 @@ BOOST_AUTO_TEST_CASE(instruction_encode)
  */
 BOOST_AUTO_TEST_CASE(instruction_decode)
 {
-#ifdef IS_BIG_ENDIAN
+#if defined(IS_BIG_ENDIAN)
   sw::Uint32 inst_coded = 0x12345678;
-#else
+#elif defined(IS_LITTLE_ENDIAN)
   sw::Uint32 inst_coded = 0x78563412;
+#else
+#error endianness not defined
 #endif
   cpu::Instruction inst(inst_coded);
 

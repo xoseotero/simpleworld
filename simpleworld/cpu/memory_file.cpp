@@ -85,10 +85,12 @@ The size of %1% (%2%) is not a multiple of 32bits")
   Word instruction;
   Address i = 0;
   while (is.read(reinterpret_cast<char*>(&instruction), sizeof(Word))) {
-#ifdef IS_BIG_ENDIAN
+#if defined(IS_BIG_ENDIAN)
     this->set_word(i * sizeof(Word), instruction);
-#else
+#elif defined(IS_LITTLE_ENDIAN)
     this->set_word(i * sizeof(Word), instruction, false);
+#else
+#error endianness not specified
 #endif
 
     i++;
@@ -110,10 +112,12 @@ File %1% is not writable")
 
   Word instruction;
   for (Address i = 0; i < this->size(); i += sizeof(Word)) {
-#ifdef IS_BIG_ENDIAN
+#if defined(IS_BIG_ENDIAN)
     instruction = this->get_word(i);
-#else
+#elif defined(IS_LITTLE_ENDIAN)
     instruction = this->get_word(i, false);
+#else
+#error endianness not specified
 #endif
 
     os.write(reinterpret_cast<char*>(&instruction), sizeof(Word));
