@@ -50,7 +50,7 @@ Table::Table(DB* db, ID id)
  * @exception DBException if there is a error in the database.
  */
 Table::Table(DB* db)
-  : db_(db), inserted(false)
+  : inserted(false), db_(db)
 {
 }
 
