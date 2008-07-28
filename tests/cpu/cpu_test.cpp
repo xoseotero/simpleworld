@@ -28,6 +28,7 @@
 #define BOOST_TEST_DYN_LINK
 #include <boost/test/unit_test.hpp>
 
+#include <simpleworld/config.hpp>
 #include <simpleworld/ints.hpp>
 #include <simpleworld/cpu/types.hpp>
 #include <simpleworld/cpu/memory.hpp>

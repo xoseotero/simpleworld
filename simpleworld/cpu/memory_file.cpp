@@ -27,6 +27,7 @@
 #include <boost/format.hpp>
 namespace fs = boost::filesystem;
 
+#include <simpleworld/config.hpp>
 #include <simpleworld/ioerror.hpp>
 
 #include "memory_file.hpp"

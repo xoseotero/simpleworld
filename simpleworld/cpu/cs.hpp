@@ -24,6 +24,7 @@
 #ifndef SIMPLEWORLD_CPU_CS_HPP
 #define SIMPLEWORLD_CPU_CS_HPP
 
+#include <simpleworld/config.hpp>
 #include <simpleworld/ints.hpp>
 #include <simpleworld/cpu/types.hpp>
 

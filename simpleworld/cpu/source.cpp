@@ -29,6 +29,7 @@
 #include <boost/regex.hpp>
 namespace fs = boost::filesystem;
 
+#include <simpleworld/config.hpp>
 #include <simpleworld/ints.hpp>
 #include <simpleworld/ioerror.hpp>
 
