@@ -31,7 +31,7 @@ namespace simpleworld
 namespace db
 {
 
-typedef int64_t ID;
+typedef sqlite3x::int64_t ID;
 
 }
 }
