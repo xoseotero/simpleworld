@@ -1,6 +1,6 @@
 /**
  * @file simpleworld/cpu/word.cpp
- * Word class for accessing its bytes.
+ * Access bytes in a word and change the byte ordering.
  *
  * begin:     Sat, 11 Dec 2004 22:06:28 +0100
  * last:      $Date$
