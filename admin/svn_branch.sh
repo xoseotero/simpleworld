@@ -8,6 +8,7 @@ CD="cd"
 RM="rm"
 WC="wc"
 
+message=""
 remove=0
 branch_name=""
 
@@ -19,6 +20,7 @@ Use: svn_branch.sh [OPTIONS] BRANCH_NAME
 Create (or remove) a new branch named BRANCH_NAME from the trunk.
 
 Options:
+  --message DESCRIPTION      description of the new branch
   --remove                   remove a branch
   --help                     show this text"
 
@@ -38,10 +40,17 @@ parse_cmd()
 {
     if [ "$1" == "--help" ]; then
 	usage 0
+    elif [ "$1" == "--message" ]; then
+	message=$2
+	echo "1 = $1, 2 = $2"
+	shift
+	shift
+	echo "1 = $1, 2 = $2"
+	parse_cmd "$@"
     elif [ "$1" == "--remove" ]; then
 	remove=1
 	shift
-	parse_cmd $*
+	parse_cmd "$@"
     elif [ "$1" != "" ]; then
 	branch_name=$1
     else
@@ -98,8 +107,15 @@ create_branch()
     check_modifications "trunk"
 
     # branch
+    text="Create branch ${name}"
+    if [ "${message}" ]; then
+	text="\
+${text}
+${message}"
+    fi
+
     ${SVN} copy trunk/ branches/${name} && \
-    ${SVN} ci -m "Create branch ${name}" branches/${name} && \
+    ${SVN} ci -m "${text}" branches/${name} && \
     ${CD} branches/${name} && \
     ${SVNMERGE} init ../../trunk && \
     ${SVN} ci -F svnmerge-commit-message.txt && \
@@ -131,17 +147,24 @@ remove_branch()
     ${CD} ..
 
     # branch
+    text="Close branch ${name}"
+    if [ "${message}" ]; then
+	text="\
+${text}
+${message}"
+    fi
+
     ${CD} branches/${name} && \
     ${SVNMERGE} uninit -S ../../trunk && \
     ${SVN} ci -F svnmerge-commit-message.txt && \
     ${RM} -f svnmerge-commit-message.txt && \
     ${CD} ../.. && \
     ${SVN} remove --force branches/${name} && \
-    ${SVN} ci -m "branch is now closed" branches/${name}
+    ${SVN} ci -m "${text}" branches/${name}
 }
 
 
-parse_cmd $*
+parse_cmd "$@"
 check_root
 ${SVN} update
 if [ $remove == 0 ]; then
