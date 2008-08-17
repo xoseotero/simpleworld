@@ -37,7 +37,6 @@ confirm()
 parse_cmd()
 {
     if [ "$1" == "--help" ]; then
-	echo 1
 	usage 0
     elif [ "$1" == "--remove" ]; then
 	remove=1
@@ -46,13 +45,11 @@ parse_cmd()
     elif [ "$1" != "" ]; then
 	branch_name=$1
     else
-	echo 2
 	usage 1
     fi
 
     if [ $# -gt 1 ]; then
 	echo "Too many or wrong parameters."
-	echo 3
 	usage 1
     fi
 }
