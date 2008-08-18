@@ -32,7 +32,6 @@
 
             <!-- Store operations -->
             <item> store </item>
-	    <item> storei </item>
             <item> storerr </item>
             <item> storeri </item>
 
@@ -53,6 +52,7 @@
 
             <!-- Function operations -->
             <item> call </item>
+            <item> callr </item>
             <item> int </item>
             <item> ret </item>
             <item> reti </item>
