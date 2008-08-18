@@ -61,14 +61,6 @@ void set_byte(Word* word, Uint8 byte, Uint8 value);
  */
 Word change_byte_order(Word word);
 
-/**
- * Change the order of the bytes in a word.
- * If the normal order of the byte is A B C D, the new order is B A D C.
- * @param word Word to change.
- * @return the word with the order changed.
- */
-Word change_byte_order_middle(Word word);
-
 }
 }
 

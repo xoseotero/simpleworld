@@ -119,10 +119,7 @@ Address 0x%08X is out of range")
   return *(reinterpret_cast<Word*>(&this->memory_[address]));
 #elif defined(IS_LITTLE_ENDIAN)
   if (system_endian)
-    if (address % 2 == 0)
-      return change_byte_order(*(reinterpret_cast<Word*>(&this->memory_[address])));
-    else
-      return change_byte_order_middle(*(reinterpret_cast<Word*>(&this->memory_[address])));
+    return change_byte_order(*(reinterpret_cast<Word*>(&this->memory_[address])));
   else
     return *(reinterpret_cast<Word*>(&this->memory_[address]));
 #else
@@ -153,12 +150,8 @@ Address 0x%08X is out of range")
   *(reinterpret_cast<Uint32*>(&this->memory_[address])) = value;
 #elif defined(IS_LITTLE_ENDIAN)
   if (system_endian)
-    if (address % 2 == 0)
-      *(reinterpret_cast<Uint32*>(&this->memory_[address])) =
-        change_byte_order(value);
-    else
-      *(reinterpret_cast<Uint32*>(&this->memory_[address])) =
-        change_byte_order_middle(value);
+    *(reinterpret_cast<Uint32*>(&this->memory_[address])) =
+      change_byte_order(value);
   else
     *(reinterpret_cast<Uint32*>(&this->memory_[address])) = value;
 #else

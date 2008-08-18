@@ -88,24 +88,5 @@ Word change_byte_order(Word word)
 #endif
 }
 
-/**
- * Change the order of the bytes in a word.
- * If the normal order of the byte is A B C D, the new order is B A D C.
- * @param word Word to change.
- * @return the word with the order changed.
- */
-Word change_byte_order_middle(Word word)
-{
-#if defined(IS_BIG_ENDIAN)
-  return get_byte(word, 0) << 16 | get_byte(word, 1) << 24 |
-    get_byte(word, 2) | get_byte(word, 3) << 8;
-#elif defined(IS_LITTLE_ENDIAN)
-  return get_byte(word, 0) << 8 | get_byte(word, 1) |
-    get_byte(word, 2) << 24 | get_byte(word, 3) << 16;
-#else
-#error endianness not specified
-#endif
-}
-
 }
 }

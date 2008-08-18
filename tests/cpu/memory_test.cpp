@@ -105,16 +105,19 @@ BOOST_AUTO_TEST_CASE(memory_get_non_aligned)
   memory.set_word(4, 0x89abcdef);
 
   BOOST_CHECK_EQUAL(memory.get_word(2), 0x456789ab);
+  BOOST_CHECK_EQUAL(memory.get_word(3), 0x6789abcd);
 }
 
 /**
  * Setting a non aligned word.
  */
-BOOST_AUTO_TEST_CASE(memory_Set_non_aligned)
+BOOST_AUTO_TEST_CASE(memory_set_non_aligned)
 {
   cpu::Memory memory(2 * 4);
   memory.set_word(0, 0x01234567);
   memory.set_word(2, 0xaabbccdd);
+  memory.set_word(3, 0xeeff0000);
 
-  BOOST_CHECK_EQUAL(memory.get_word(2), 0xaabbccdd);
+  BOOST_CHECK_EQUAL(memory.get_word(0), 0x0123aaee);
+  BOOST_CHECK_EQUAL(memory.get_word(4), 0xff000000);
 }

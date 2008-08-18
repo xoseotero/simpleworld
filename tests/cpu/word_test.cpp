@@ -91,11 +91,3 @@ BOOST_AUTO_TEST_CASE(word_change_endianness)
 {
   BOOST_CHECK_EQUAL(0x01234567, cpu::change_byte_order(0x67452301));
 }
-
-/**
- * Changing byte order (middle).
- */
-BOOST_AUTO_TEST_CASE(word_change_endianness_middle)
-{
-  BOOST_CHECK_EQUAL(0x01234567, cpu::change_byte_order_middle(0x23016745));
-}
