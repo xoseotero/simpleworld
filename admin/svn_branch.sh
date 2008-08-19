@@ -92,7 +92,7 @@ check_nomerge()
     pwd=`pwd`
 
     ${CD} "${trunk}"
-    avail=`${SVNMERGE} avail -S ../../trunk | ${WC} -l`
+    avail=`${SVNMERGE} avail -S "../branches/${branch}" | ${WC} -l`
     if [ $avail -ne 0 ]; then
 	confirm "There are changes not merged, do you want to continue?"
     fi
