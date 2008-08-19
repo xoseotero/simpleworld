@@ -24,16 +24,28 @@
 
             <!-- Load operations -->
             <item> load </item>
+            <item> loadrr </item>
+            <item> loadri </item>
+            <item> loadh </item>
+            <item> loadhrr </item>
+            <item> loadhri </item>
+            <item> loadq </item>
+            <item> loadqrr </item>
+            <item> loadqri </item>
             <item> loadi </item>
             <item> loadhi </item>
             <item> loada </item>
-            <item> loadrr </item>
-            <item> loadri </item>
 
             <!-- Store operations -->
             <item> store </item>
             <item> storerr </item>
             <item> storeri </item>
+            <item> storeh </item>
+            <item> storehrr </item>
+            <item> storehri </item>
+            <item> storeq </item>
+            <item> storeqrr </item>
+            <item> storeqri </item>
 
             <!-- Branch operations -->
             <item> b </item>
@@ -79,6 +91,10 @@
             <item> modi </item>
             <item> modu </item>
             <item> modui </item>
+
+            <!-- Sign operations -->
+            <item> signh </item>
+            <item> signq </item>
 
             <!-- Logic operations -->
             <item> not </item>

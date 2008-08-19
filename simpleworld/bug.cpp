@@ -51,7 +51,7 @@ Bug::Bug(SimpleWorld* sw, db::ID id)
   this->isa_.add_interrupt(INTERRUPT_WORLDACTION, "InvalidWorldCommand", true);
   this->isa_.add_interrupt(INTERRUPT_WORLDEVENT, "WorldEvent", false);
 
-  this->isa_.add_instruction(0x38, "world", 0, true, ::simpleworld::world);
+  this->isa_.add_instruction(0x58, "world", 0, true, ::simpleworld::world);
 }
 
 

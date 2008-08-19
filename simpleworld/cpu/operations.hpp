@@ -83,6 +83,86 @@ Update swap(CPU& cpu, Instruction inst);
 Update load(CPU& cpu, Instruction inst);
 
 /**
+ * Load a word from memory using two base registers.
+ *
+ * REGISTERS[FIRST] = MEMORY[REGISTERS[SECOND] + REGISTERS[DATA]]
+ * @param cpu the CPU.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
+ */
+Update loadrr(CPU& cpu, Instruction inst);
+
+/**
+ * Load a word from memory using a base register and a offset.
+ *
+ * REGISTERS[FIRST] = MEMORY[REGISTERS[SECOND] + OFFSET]
+ * @param cpu the CPU.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
+ */
+Update loadri(CPU& cpu, Instruction inst);
+
+/**
+ * Load a half word (16 bits) from memory.
+ *
+ * REGISTERS[FIRST] = MEMORY[PC + OFFSET]
+ * @param cpu the CPU.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
+ */
+Update loadh(CPU& cpu, Instruction inst);
+
+/**
+ * Load a half word (16 bits) from memory using two base registers.
+ *
+ * REGISTERS[FIRST] = MEMORY[REGISTERS[SECOND] + REGISTERS[DATA]]
+ * @param cpu the CPU.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
+ */
+Update loadhrr(CPU& cpu, Instruction inst);
+
+/**
+ * Load a half word (16 bits) from memory using a base register and a offset.
+ *
+ * REGISTERS[FIRST] = MEMORY[REGISTERS[SECOND] + OFFSET]
+ * @param cpu the CPU.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
+ */
+Update loadhri(CPU& cpu, Instruction inst);
+
+/**
+ * Load a quarter word (16 bits) from memory.
+ *
+ * REGISTERS[FIRST] = MEMORY[PC + OFFSET]
+ * @param cpu the CPU.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
+ */
+Update loadq(CPU& cpu, Instruction inst);
+
+/**
+ * Load a quarter word (16 bits) from memory using two base registers.
+ *
+ * REGISTERS[FIRST] = MEMORY[REGISTERS[SECOND] + REGISTERS[DATA]]
+ * @param cpu the CPU.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
+ */
+Update loadqrr(CPU& cpu, Instruction inst);
+
+/**
+ * Load a quarter word (16 bits) from memory using a base register and a offset.
+ *
+ * REGISTERS[FIRST] = MEMORY[REGISTERS[SECOND] + OFFSET]
+ * @param cpu the CPU.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
+ */
+Update loadqri(CPU& cpu, Instruction inst);
+
+/**
  * Load the data.
  * The higher 16 bits are set to 0.
  *
@@ -113,26 +193,6 @@ Update loadhi(CPU& cpu, Instruction inst);
  * @return if the PC must be updated.
  */
 Update loada(CPU& cpu, Instruction inst);
-
-/**
- * Load a word from memory using two base registers.
- *
- * REGISTERS[FIRST] = MEMORY[REGISTERS[SECOND] + REGISTERS[DATA]]
- * @param cpu the CPU.
- * @param inst the instruction.
- * @return if the PC must be updated.
- */
-Update loadrr(CPU& cpu, Instruction inst);
-
-/**
- * Load a word from memory using a base register and a offset.
- *
- * REGISTERS[FIRST] = MEMORY[REGISTERS[SECOND] + OFFSET]
- * @param cpu the CPU.
- * @param inst the instruction.
- * @return if the PC must be updated.
- */
-Update loadri(CPU& cpu, Instruction inst);
 
 
 /* Store operations: Move data from a register to memory. */
@@ -165,6 +225,66 @@ Update storerr(CPU& cpu, Instruction inst);
  * @return if the PC must be updated.
  */
 Update storeri(CPU& cpu, Instruction inst);
+
+/**
+ * Store a half word (16 bits) to memory.
+ *
+ * MEMORY[PC + OFFSET] = REGISTERS[FIRST]
+ * @param cpu the CPU.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
+ */
+Update storeh(CPU& cpu, Instruction inst);
+
+/**
+ * Store a half word (16 bits) to memory using two base registers.
+ *
+ * MEMORY[REGISTERS[FIRST] + REGISTERS[DATA]] = REGISTERS[SECOND]
+ * @param cpu the CPU.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
+ */
+Update storehrr(CPU& cpu, Instruction inst);
+
+/**
+ * Store a half word (16 bits) to memory using a base register and a offset.
+ *
+ * MEMORY[REGISTERS[FIRST] + OFFSET] = REGISTERS[SECOND]
+ * @param cpu the CPU.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
+ */
+Update storehri(CPU& cpu, Instruction inst);
+
+/**
+ * Store a quarter word (16 bits) to memory.
+ *
+ * MEMORY[PC + OFFSET] = REGISTERS[FIRST]
+ * @param cpu the CPU.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
+ */
+Update storeq(CPU& cpu, Instruction inst);
+
+/**
+ * Store a quarter word (16 bits) to memory using two base registers.
+ *
+ * MEMORY[REGISTERS[FIRST] + REGISTERS[DATA]] = REGISTERS[SECOND]
+ * @param cpu the CPU.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
+ */
+Update storeqrr(CPU& cpu, Instruction inst);
+
+/**
+ * Store a quarter word (16 bits) to memory using a base register and a offset.
+ *
+ * MEMORY[REGISTERS[FIRST] + OFFSET] = REGISTERS[SECOND]
+ * @param cpu the CPU.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
+ */
+Update storeqri(CPU& cpu, Instruction inst);
 
 
 /* Stack operations: Push and pop in the stack. */
@@ -509,6 +629,24 @@ Update mod(CPU& cpu, Instruction inst);
  * @return if the PC must be updated.
  */
 Update modi(CPU& cpu, Instruction inst);
+
+/* Sign extension operations: extend the sing to the whole word. */
+/**
+ * Extend the sign of a half word (16 bits) to the whole word.
+ * @param cpu the CPU.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
+ */
+Update signh(CPU& cpu, Instruction inst);
+
+/**
+ * Extend the sign of a quarter word (16 bits) to the whole word.
+ * @param cpu the CPU.
+ * @param inst the instruction.
+ * @return if the PC must be updated.
+ */
+Update signq(CPU& cpu, Instruction inst);
+
 
 /* Logic operations: execute a logic operation. */
 /**

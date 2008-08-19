@@ -194,10 +194,55 @@ BOOST_AUTO_TEST_CASE(cpu_management_restart)
 }
 
 /**
- * Execute the load operations.
- * Operations: load, loadi, loada, loadrr, loadri
+ * Execute the load operations (special).
+ * Operations: loadi, loadhi, loada
  */
-BOOST_AUTO_TEST_CASE(cpu_load)
+BOOST_AUTO_TEST_CASE(cpu_load_special)
+{
+  cpu::File source;
+  cpu::Source::size_type line = 0;
+
+  // Load the address
+  source.insert(line++, "loada r0 data");
+
+  // Load inmediate values
+  source.insert(line++, "loadi r1 0x0");
+  source.insert(line++, "loadi r2 0x4");
+  source.insert(line++, "loadi r3 0x8");
+  source.insert(line++, "loadi r4 0xc");
+
+  // Load inmediate values in the higher 16 bits
+  source.insert(line++, "loadhi r1 0xc");
+  source.insert(line++, "loadhi r2 0x8");
+  source.insert(line++, "loadhi r3 0x4");
+  source.insert(line++, "loadhi r4 0x0");
+
+  // Data
+  sw::Uint8 data = line;
+  source.insert(line++, ".label data");
+  source.insert(line++, "0x1234abcd");
+
+  compile(source);
+
+
+  cpu::Memory registers;
+  cpu::MemoryFile memory(CPU_SAVE);
+  cpu::CPU cpu(&registers, &memory);
+  cpu.execute(data);
+
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r0")],
+                    memory.size() - sizeof(cpu::Word));
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r1")], 0xc0000);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r2")], 0x80004);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r3")], 0x40008);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r4")], 0xc);
+}
+
+/**
+ * Execute the load operations (32 bits).
+ * Operations: load, loadrr, loadri
+ */
+BOOST_AUTO_TEST_CASE(cpu_load_word)
 {
   cpu::File source;
   cpu::Source::size_type line = 0;
@@ -264,10 +309,126 @@ BOOST_AUTO_TEST_CASE(cpu_load)
 }
 
 /**
- * Execute the store operations.
+ * Execute the load operations (16 bits).
+ * Operations: loadh, loadhrr, loadhri
+ */
+BOOST_AUTO_TEST_CASE(cpu_load_haldword)
+{
+  cpu::File source;
+  cpu::Source::size_type line = 0;
+
+  // Load a inmediate value
+  source.insert(line++, "loada r0 data");
+  source.insert(line++, "loadi r1 0x0");
+  source.insert(line++, "loadi r2 0x4");
+  source.insert(line++, "loadi r3 0x8");
+  source.insert(line++, "loadi r4 0xc");
+
+  // Load data with a pointer
+  source.insert(line++, "loadh r5 data");
+
+  // Load data with a offset (register)
+  source.insert(line++, "loadhrr r6 r0 r1");
+  source.insert(line++, "loadhrr r7 r0 r2");
+  source.insert(line++, "loadhrr r8 r0 r3");
+  source.insert(line++, "loadhrr r9 r0 r4");
+
+  // Load data with a offset (inmediate)
+  source.insert(line++, "loadhri r10 r0 0x0");
+  source.insert(line++, "loadhri r11 r0 0x4");
+  source.insert(line++, "loadhri cs r0 0x8");
+
+  // Data to be loaded into the registers
+  sw::Uint8 data = line;
+  source.insert(line++, ".label data");
+  source.insert(line++, "0x1234abcd");
+  source.insert(line++, "0xef567890");
+  source.insert(line++, "0x77777757");
+  source.insert(line++, "0x01010101");
+
+  compile(source);
+
+
+  cpu::Memory registers;
+  cpu::MemoryFile memory(CPU_SAVE);
+  cpu::CPU cpu(&registers, &memory);
+  cpu.execute(data);
+
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r5")], 0xabcd);
+
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r6")], 0xabcd);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r7")], 0x7890);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r8")], 0x7757);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r9")], 0x0101);
+
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r10")], 0xabcd);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r11")], 0x7890);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "cs")], 0x7757);
+}
+
+/**
+ * Execute the load operations (8 bits).
+ * Operations: loadq, loadqrr, loadqri
+ */
+BOOST_AUTO_TEST_CASE(cpu_load_quarterword)
+{
+  cpu::File source;
+  cpu::Source::size_type line = 0;
+
+  // Load a inmediate value
+  source.insert(line++, "loada r0 data");
+  source.insert(line++, "loadi r1 0x0");
+  source.insert(line++, "loadi r2 0x4");
+  source.insert(line++, "loadi r3 0x8");
+  source.insert(line++, "loadi r4 0xc");
+
+  // Load data with a pointer
+  source.insert(line++, "loadq r5 data");
+
+  // Load data with a offset (register)
+  source.insert(line++, "loadqrr r6 r0 r1");
+  source.insert(line++, "loadqrr r7 r0 r2");
+  source.insert(line++, "loadqrr r8 r0 r3");
+  source.insert(line++, "loadqrr r9 r0 r4");
+
+  // Load data with a offset (inmediate)
+  source.insert(line++, "loadqri r10 r0 0x0");
+  source.insert(line++, "loadqri r11 r0 0x4");
+  source.insert(line++, "loadqri cs r0 0x8");
+
+  // Data to be loaded into the registers
+  sw::Uint8 data = line;
+  source.insert(line++, ".label data");
+  source.insert(line++, "0x1234abcd");
+  source.insert(line++, "0xef567890");
+  source.insert(line++, "0x77777757");
+  source.insert(line++, "0x01010101");
+
+  compile(source);
+
+
+  cpu::Memory registers;
+  cpu::MemoryFile memory(CPU_SAVE);
+  cpu::CPU cpu(&registers, &memory);
+  cpu.execute(data);
+
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r5")], 0xcd);
+
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r6")], 0xcd);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r7")], 0x90);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r8")], 0x57);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r9")], 0x01);
+
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r10")], 0xcd);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r11")], 0x90);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "cs")], 0x57);
+}
+
+/**
+ * Execute the store operations (32 bits).
  * Operations: store, storerr, storeri
  */
-BOOST_AUTO_TEST_CASE(cpu_store)
+BOOST_AUTO_TEST_CASE(cpu_store_word)
 {
   cpu::File source;
   cpu::Source::size_type line = 0;
@@ -280,9 +441,13 @@ BOOST_AUTO_TEST_CASE(cpu_store)
   source.insert(line++, "loadi r4 0xc");
 
   source.insert(line++, "loadi r5 0x1010");
+  source.insert(line++, "loadhi r5 0x1010");
   source.insert(line++, "loadi r6 0x0f0f");
+  source.insert(line++, "loadhi r6 0x0f0f");
   source.insert(line++, "loadi r7 0x7777");
+  source.insert(line++, "loadhi r7 0x7777");
   source.insert(line++, "loadi r8 0xffff");
+  source.insert(line++, "loadhi r8 0xffff");
 
   // Store data with a pointer
   source.insert(line++, "store r5 data");
@@ -298,7 +463,10 @@ BOOST_AUTO_TEST_CASE(cpu_store)
   // Space to store 4 words of data
   sw::Uint8 data = line;
   source.insert(line++, ".label data");
-  source.insert(line++, ".block 0x10");
+  source.insert(line++, "0x08080808");
+  source.insert(line++, "0x08080808");
+  source.insert(line++, "0x08080808");
+  source.insert(line++, "0x08080808");
 
   compile(source);
 
@@ -308,10 +476,126 @@ BOOST_AUTO_TEST_CASE(cpu_store)
   cpu::CPU cpu(&registers, &memory);
   cpu.execute(data);
 
-  BOOST_CHECK_EQUAL(memory[ADDRESS(data)], 0x1010);
-  BOOST_CHECK_EQUAL(memory[ADDRESS(data) + 0x4], 0x0f0f);
-  BOOST_CHECK_EQUAL(memory[ADDRESS(data) + 0x8], 0x7777);
-  BOOST_CHECK_EQUAL(memory[ADDRESS(data) + 0xc], 0xffff);
+  BOOST_CHECK_EQUAL(memory[ADDRESS(data)], 0x10101010);
+  BOOST_CHECK_EQUAL(memory[ADDRESS(data) + 0x4], 0x0f0f0f0f);
+  BOOST_CHECK_EQUAL(memory[ADDRESS(data) + 0x8], 0x77777777);
+  BOOST_CHECK_EQUAL(memory[ADDRESS(data) + 0xc], 0xffffffff);
+}
+
+/**
+ * Execute the store operations (16 bits).
+ * Operations: storeh, storehrr, storehri
+ */
+BOOST_AUTO_TEST_CASE(cpu_store_halfword)
+{
+  cpu::File source;
+  cpu::Source::size_type line = 0;
+
+  // Load into the registers the data to be stored in the memory
+  source.insert(line++, "loada r0 data");
+  source.insert(line++, "loadi r1 0x0");
+  source.insert(line++, "loadi r2 0x4");
+  source.insert(line++, "loadi r3 0x8");
+  source.insert(line++, "loadi r4 0xc");
+
+  source.insert(line++, "loadi r5 0x1010");
+  source.insert(line++, "loadhi r5 0x1010");
+  source.insert(line++, "loadi r6 0x0f0f");
+  source.insert(line++, "loadhi r6 0x0f0f");
+  source.insert(line++, "loadi r7 0x7777");
+  source.insert(line++, "loadhi r7 0x7777");
+  source.insert(line++, "loadi r8 0xffff");
+  source.insert(line++, "loadhi r8 0xffff");
+
+  // Store data with a pointer
+  source.insert(line++, "storeh r5 data");
+
+  // Store data with a offset (register)
+  source.insert(line++, "storehrr r6 r0 r2");
+
+  // Store data with a offset (inmediate)
+  source.insert(line++, "storehri r7 r0 0x8");
+  source.insert(line++, "storehri r8 r0 0xc");
+  // The code ends here
+
+  // Space to store 4 words of data
+  sw::Uint8 data = line;
+  source.insert(line++, ".label data");
+  source.insert(line++, "0x08080808");
+  source.insert(line++, "0x08080808");
+  source.insert(line++, "0x08080808");
+  source.insert(line++, "0x08080808");
+
+  compile(source);
+
+
+  cpu::Memory registers;
+  cpu::MemoryFile memory(CPU_SAVE);
+  cpu::CPU cpu(&registers, &memory);
+  cpu.execute(data);
+
+  BOOST_CHECK_EQUAL(memory[ADDRESS(data)], 0x10100808);
+  BOOST_CHECK_EQUAL(memory[ADDRESS(data) + 0x4], 0x0f0f0808);
+  BOOST_CHECK_EQUAL(memory[ADDRESS(data) + 0x8], 0x77770808);
+  BOOST_CHECK_EQUAL(memory[ADDRESS(data) + 0xc], 0xffff0808);
+}
+
+/**
+ * Execute the store operations (8 bits).
+ * Operations: storeq, storeqrr, storeqri
+ */
+BOOST_AUTO_TEST_CASE(cpu_store_quarterword)
+{
+  cpu::File source;
+  cpu::Source::size_type line = 0;
+
+  // Load into the registers the data to be stored in the memory
+  source.insert(line++, "loada r0 data");
+  source.insert(line++, "loadi r1 0x0");
+  source.insert(line++, "loadi r2 0x4");
+  source.insert(line++, "loadi r3 0x8");
+  source.insert(line++, "loadi r4 0xc");
+
+  source.insert(line++, "loadi r5 0x1010");
+  source.insert(line++, "loadhi r5 0x1010");
+  source.insert(line++, "loadi r6 0x0f0f");
+  source.insert(line++, "loadhi r6 0x0f0f");
+  source.insert(line++, "loadi r7 0x7777");
+  source.insert(line++, "loadhi r7 0x7777");
+  source.insert(line++, "loadi r8 0xffff");
+  source.insert(line++, "loadhi r8 0xffff");
+
+  // Store data with a pointer
+  source.insert(line++, "storeq r5 data");
+
+  // Store data with a offset (register)
+  source.insert(line++, "storeqrr r6 r0 r2");
+
+  // Store data with a offset (inmediate)
+  source.insert(line++, "storeqri r7 r0 0x8");
+  source.insert(line++, "storeqri r8 r0 0xc");
+  // The code ends here
+
+  // Space to store 4 words of data
+  sw::Uint8 data = line;
+  source.insert(line++, ".label data");
+  source.insert(line++, "0x08080808");
+  source.insert(line++, "0x08080808");
+  source.insert(line++, "0x08080808");
+  source.insert(line++, "0x08080808");
+
+  compile(source);
+
+
+  cpu::Memory registers;
+  cpu::MemoryFile memory(CPU_SAVE);
+  cpu::CPU cpu(&registers, &memory);
+  cpu.execute(data);
+
+  BOOST_CHECK_EQUAL(memory[ADDRESS(data)], 0x10080808);       // 0x10000008 != 0x10080808
+  BOOST_CHECK_EQUAL(memory[ADDRESS(data) + 0x4], 0x0f080808); // 0x0f000008 != 0x0f080808
+  BOOST_CHECK_EQUAL(memory[ADDRESS(data) + 0x8], 0x77080808); // 0x77000008 != 0x77080808
+  BOOST_CHECK_EQUAL(memory[ADDRESS(data) + 0xc], 0xff080808); // 0xff000008 != 0xff080808
 }
 
 /**
@@ -1067,6 +1351,51 @@ BOOST_AUTO_TEST_CASE(cpu_arithmetic_div)
   BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r8")], 0xffff);
   BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r9")], 0xf);
   BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r10")], 0x7);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r11")], 0x0);
+}
+
+/**
+ * Execute the sign extension operations.
+ * Operations: signh, signq
+ */
+BOOST_AUTO_TEST_CASE(cpu_sign_halfword)
+{
+  cpu::File source;
+  cpu::Source::size_type line = 0;
+
+  source.insert(line++, "loadi r0 0x0080");
+  source.insert(line++, "loadi r1 0x007f");
+  source.insert(line++, "loadi r2 0x8000");
+  source.insert(line++, "loadhi r2 0xffff");
+  source.insert(line++, "loadi r3 0x7f00");
+  source.insert(line++, "loadhi r3 0xffff");
+
+  source.insert(line++, "signh r4 r0");
+  source.insert(line++, "signh r5 r1");
+  source.insert(line++, "signh r6 r2");
+  source.insert(line++, "signh r7 r3");
+
+  source.insert(line++, "signq r8 r0");
+  source.insert(line++, "signq r9 r1");
+  source.insert(line++, "signq r10 r2");
+  source.insert(line++, "signq r11 r3");
+
+  compile(source);
+
+
+  cpu::Memory registers;
+  cpu::MemoryFile memory(CPU_SAVE);
+  cpu::CPU cpu(&registers, &memory);
+  cpu.execute(line);
+
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r4")], 0x80);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r5")], 0x7f);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r6")], 0xffff8000);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r7")], 0x7f00);
+
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r8")], 0xffffff80);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r9")], 0x7f);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r10")], 0x0);
   BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r11")], 0x0);
 }
 

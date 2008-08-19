@@ -82,87 +82,103 @@ CPU::CPU(Memory* registers, Memory* memory)
   this->isa_.add_instruction(0x01, "restart", 0, false, restart);
 
   // Move operations
-  this->isa_.add_instruction(0x08, "move", 2, false, move);
-  this->isa_.add_instruction(0x0a, "swap", 2, false, swap);
+  this->isa_.add_instruction(0x10, "move", 2, false, move);
+  this->isa_.add_instruction(0x12, "swap", 2, false, swap);
 
   // Stack operations
-  this->isa_.add_instruction(0x0c, "push", 1, false, push);
-  this->isa_.add_instruction(0x0e, "pop", 1, false, pop);
+  this->isa_.add_instruction(0x18, "push", 1, false, push);
+  this->isa_.add_instruction(0x1a, "pop", 1, false, pop);
 
   // Load operations
-  this->isa_.add_instruction(0x10, "load", 1, true, load);
-  this->isa_.add_instruction(0x11, "loadi", 1, true, loadi);
-  this->isa_.add_instruction(0x12, "loadhi", 1, true, loadhi);
-  this->isa_.add_instruction(0x13, "loada", 1, true, loada);
-  this->isa_.add_instruction(0x14, "loadrr", 3, false, loadrr);
-  this->isa_.add_instruction(0x15, "loadri", 2, true, loadri);
+  this->isa_.add_instruction(0x20, "load", 1, true, load);
+  this->isa_.add_instruction(0x22, "loadrr", 3, false, loadrr);
+  this->isa_.add_instruction(0x23, "loadri", 2, true, loadri);
+  this->isa_.add_instruction(0x24, "loadh", 1, true, loadh);
+  this->isa_.add_instruction(0x26, "loadhrr", 3, false, loadhrr);
+  this->isa_.add_instruction(0x27, "loadhri", 2, true, loadhri);
+  this->isa_.add_instruction(0x28, "loadq", 1, true, loadq);
+  this->isa_.add_instruction(0x2a, "loadqrr", 3, false, loadqrr);
+  this->isa_.add_instruction(0x2b, "loadqri", 2, true, loadqri);
+  this->isa_.add_instruction(0x2c, "loadi", 1, true, loadi);
+  this->isa_.add_instruction(0x2d, "loadhi", 1, true, loadhi);
+  this->isa_.add_instruction(0x2e, "loada", 1, true, loada);
 
   // Store operations
-  this->isa_.add_instruction(0x18, "store", 1, true, store);
-  this->isa_.add_instruction(0x1c, "storerr", 3, false, storerr);
-  this->isa_.add_instruction(0x1d, "storeri", 2, true, storeri);
+  this->isa_.add_instruction(0x30, "store", 1, true, store);
+  this->isa_.add_instruction(0x32, "storerr", 3, false, storerr);
+  this->isa_.add_instruction(0x33, "storeri", 2, true, storeri);
+  this->isa_.add_instruction(0x34, "storeh", 1, true, storeh);
+  this->isa_.add_instruction(0x36, "storehrr", 3, false, storehrr);
+  this->isa_.add_instruction(0x37, "storehri", 2, true, storehri);
+  this->isa_.add_instruction(0x38, "storeq", 1, true, storeq);
+  this->isa_.add_instruction(0x3a, "storeqrr", 3, false, storeqrr);
+  this->isa_.add_instruction(0x3b, "storeqri", 2, true, storeqri);
 
   // Branch operations
-  this->isa_.add_instruction(0x20, "b", 0, true, b);
-  this->isa_.add_instruction(0x22, "bz", 1, true, bz);
-  this->isa_.add_instruction(0x23, "bnz", 1, true, bnz);
-  this->isa_.add_instruction(0x24, "beq", 2, true, beq);
-  this->isa_.add_instruction(0x25, "bne", 2, true, bne);
-  this->isa_.add_instruction(0x26, "blt", 2, true, blt);
-  this->isa_.add_instruction(0x27, "bltu", 2, true, bltu);
-  this->isa_.add_instruction(0x28, "bgt", 2, true, bgt);
-  this->isa_.add_instruction(0x29, "bgtu", 2, true, bgtu);
-  this->isa_.add_instruction(0x2a, "ble", 2, true, ble);
-  this->isa_.add_instruction(0x2b, "bleu", 2, true, bleu);
-  this->isa_.add_instruction(0x2c, "bge", 2, true, bge);
-  this->isa_.add_instruction(0x2d, "bgeu", 2, true, bgeu);
+  this->isa_.add_instruction(0x40, "b", 0, true, b);
+  this->isa_.add_instruction(0x42, "bz", 1, true, bz);
+  this->isa_.add_instruction(0x43, "bnz", 1, true, bnz);
+  this->isa_.add_instruction(0x44, "beq", 2, true, beq);
+  this->isa_.add_instruction(0x45, "bne", 2, true, bne);
+  this->isa_.add_instruction(0x46, "blt", 2, true, blt);
+  this->isa_.add_instruction(0x47, "bltu", 2, true, bltu);
+  this->isa_.add_instruction(0x48, "bgt", 2, true, bgt);
+  this->isa_.add_instruction(0x49, "bgtu", 2, true, bgtu);
+  this->isa_.add_instruction(0x4a, "ble", 2, true, ble);
+  this->isa_.add_instruction(0x4b, "bleu", 2, true, bleu);
+  this->isa_.add_instruction(0x4c, "bge", 2, true, bge);
+  this->isa_.add_instruction(0x4d, "bgeu", 2, true, bgeu);
 
   // Function operations
-  this->isa_.add_instruction(0x30, "call", 0, true, call);
-  this->isa_.add_instruction(0x31, "callr", 1, false, callr);
-  this->isa_.add_instruction(0x32, "int", 0, true,
+  this->isa_.add_instruction(0x50, "call", 0, true, call);
+  this->isa_.add_instruction(0x51, "callr", 1, false, callr);
+  this->isa_.add_instruction(0x52, "int", 0, true,
                              ::simpleworld::cpu::interrupt);
-  this->isa_.add_instruction(0x34, "ret", 0, false, ret);
-  this->isa_.add_instruction(0x35, "reti", 0, false, reti);
+  this->isa_.add_instruction(0x54, "ret", 0, false, ret);
+  this->isa_.add_instruction(0x55, "reti", 0, false, reti);
 
   // Arithmetic operations
-  this->isa_.add_instruction(0x40, "add", 3, false, add);
-  this->isa_.add_instruction(0x41, "addi", 2, true, addi);
-  this->isa_.add_instruction(0x42, "sub", 3, false, sub);
-  this->isa_.add_instruction(0x43, "subi", 2, true, subi);
-  this->isa_.add_instruction(0x44, "multl", 3, false, multl);
-  this->isa_.add_instruction(0x45, "multli", 2, true, multli);
-  this->isa_.add_instruction(0x46, "multh", 3, false, multh);
-  this->isa_.add_instruction(0x47, "multhi", 2, true, multhi);
-  this->isa_.add_instruction(0x48, "multhu", 3, false, multhu);
-  this->isa_.add_instruction(0x49, "multhui", 2, true, multhui);
-  this->isa_.add_instruction(0x4a, "div", 3, false, div);
-  this->isa_.add_instruction(0x4b, "divi", 2, true, divi);
-  this->isa_.add_instruction(0x4c, "mod", 3, false, mod);
-  this->isa_.add_instruction(0x4d, "modi", 2, true, modi);
+  this->isa_.add_instruction(0x60, "add", 3, false, add);
+  this->isa_.add_instruction(0x61, "addi", 2, true, addi);
+  this->isa_.add_instruction(0x62, "sub", 3, false, sub);
+  this->isa_.add_instruction(0x63, "subi", 2, true, subi);
+  this->isa_.add_instruction(0x64, "multl", 3, false, multl);
+  this->isa_.add_instruction(0x65, "multli", 2, true, multli);
+  this->isa_.add_instruction(0x66, "multh", 3, false, multh);
+  this->isa_.add_instruction(0x67, "multhi", 2, true, multhi);
+  this->isa_.add_instruction(0x68, "multhu", 3, false, multhu);
+  this->isa_.add_instruction(0x69, "multhui", 2, true, multhui);
+  this->isa_.add_instruction(0x6a, "div", 3, false, div);
+  this->isa_.add_instruction(0x6b, "divi", 2, true, divi);
+  this->isa_.add_instruction(0x6c, "mod", 3, false, mod);
+  this->isa_.add_instruction(0x6d, "modi", 2, true, modi);
+
+  // Sign extension operations
+  this->isa_.add_instruction(0x70, "signh", 2, false, signh);
+  this->isa_.add_instruction(0x71, "signq", 2, false, signq);
 
   // Logic operations
-  this->isa_.add_instruction(0x50, "not", 2, false, lnot);
-  this->isa_.add_instruction(0x58, "or", 3, false, lor);
-  this->isa_.add_instruction(0x59, "ori", 2, true, lori);
-  this->isa_.add_instruction(0x5a, "and", 3, false, land);
-  this->isa_.add_instruction(0x5b, "andi", 2, true, landi);
-  this->isa_.add_instruction(0x5c, "xor", 3, false, lxor);
-  this->isa_.add_instruction(0x5d, "xori", 2, true, lxori);
+  this->isa_.add_instruction(0x80, "not", 2, false, lnot);
+  this->isa_.add_instruction(0x88, "or", 3, false, lor);
+  this->isa_.add_instruction(0x89, "ori", 2, true, lori);
+  this->isa_.add_instruction(0x8a, "and", 3, false, land);
+  this->isa_.add_instruction(0x8b, "andi", 2, true, landi);
+  this->isa_.add_instruction(0x8c, "xor", 3, false, lxor);
+  this->isa_.add_instruction(0x8d, "xori", 2, true, lxori);
 
   // Shift operations
-  this->isa_.add_instruction(0x60, "sll", 3, false, sll);
-  this->isa_.add_instruction(0x61, "slli", 2, true, slli);
-  this->isa_.add_instruction(0x62, "srl", 3, false, srl);
-  this->isa_.add_instruction(0x63, "srli", 2, true, srli);
-  this->isa_.add_instruction(0x64, "sla", 3, false, sla);
-  this->isa_.add_instruction(0x65, "slai", 2, true, slai);
-  this->isa_.add_instruction(0x66, "sra", 3, false, sra);
-  this->isa_.add_instruction(0x67, "srai", 2, true, srai);
-  this->isa_.add_instruction(0x68, "rl", 3, false, rl);
-  this->isa_.add_instruction(0x69, "rli", 2, true, rli);
-  this->isa_.add_instruction(0x6a, "rr", 3, false, rr);
-  this->isa_.add_instruction(0x6b, "rri", 2, true, rri);
+  this->isa_.add_instruction(0x90, "sll", 3, false, sll);
+  this->isa_.add_instruction(0x91, "slli", 2, true, slli);
+  this->isa_.add_instruction(0x92, "srl", 3, false, srl);
+  this->isa_.add_instruction(0x93, "srli", 2, true, srli);
+  this->isa_.add_instruction(0x94, "sla", 3, false, sla);
+  this->isa_.add_instruction(0x95, "slai", 2, true, slai);
+  this->isa_.add_instruction(0x96, "sra", 3, false, sra);
+  this->isa_.add_instruction(0x97, "srai", 2, true, srai);
+  this->isa_.add_instruction(0x98, "rl", 3, false, rl);
+  this->isa_.add_instruction(0x99, "rli", 2, true, rli);
+  this->isa_.add_instruction(0x9a, "rr", 3, false, rr);
+  this->isa_.add_instruction(0x9b, "rri", 2, true, rri);
 }
 
 

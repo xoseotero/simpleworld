@@ -5,14 +5,26 @@ swap r2 r3
 push r4
 pop r5
 load r6 0x1ADC
+loadrr r10 r9 r10
+loadri r11 r11 0x0001
+loadh r6 0x1ADC
+loadhrr r10 r9 r10
+loadhri r11 r11 0x0001
+loadq r6 0x1ADC
+loadqrr r10 r9 r10
+loadqri r11 r11 0x0001
 loadi r7 0x1ADC
 loadhi r8 0xDC1A
 loada r9 0x0000
-loadrr r10 r9 r10
-loadri r11 r11 0x0001
 store pc 0xAFFF
 storerr pc sp r0
 storeri fp cs 0x0001
+storeh pc 0xAFFF
+storehrr pc sp r0
+storehri fp cs 0x0001
+storeq pc 0xAFFF
+storeqrr pc sp r0
+storeqri fp cs 0x0001
 b 0xFFFF
 bz r0 0x0000
 bnz r0 0x0000
@@ -27,6 +39,7 @@ bleu r0 r1 0x0000
 bge r0 r1 0x0000
 bgeu r0 r1 0x0000
 call 0x0000
+callr r0
 int 0x0005
 ret
 reti
@@ -44,6 +57,8 @@ div r0 r1 r2
 divi r0 r1 0x0001
 mod r0 r1 r2
 modi r0 r1 0x0001
+signh r0 r1
+signq r0 r1
 not r0 r0
 or r0 r1 r2
 ori r0 r2 0x0000
@@ -63,6 +78,5 @@ rl r5 r6 r8
 rli r5 r6 0x0005
 rr r5 r6 r7
 rri r5 r6 0x0006
-loada r3 0xABCD
 0xABCD0123
 0x1EF56789

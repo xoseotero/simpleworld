@@ -10,7 +10,12 @@ Simple World should be more portable now. It was tested (under
 emulation) in big endian and little endian architectures, in 32 bits and 
 64 bits architectures and in several UNIXes.
 
-This version has incompatibles changes in the database too. The database 
+This version has incompatibles changes in the code of the bugs. Several 
+new instructions have been added to access half and quarter words and 
+these instructions caused that the code of some old instructions changed 
+its value.
+
+This version has incompatible changes in the database too. The database 
 version is still 1 because this is the first beta version and the 
 previous was alpha ones. But, from now, every incompatible change in the 
 database will change the database version.
