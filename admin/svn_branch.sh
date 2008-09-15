@@ -42,10 +42,8 @@ parse_cmd()
 	usage 0
     elif [ "$1" == "--message" ]; then
 	message=$2
-	echo "1 = $1, 2 = $2"
 	shift
 	shift
-	echo "1 = $1, 2 = $2"
 	parse_cmd "$@"
     elif [ "$1" == "--remove" ]; then
 	remove=1
