@@ -75,6 +75,7 @@ ID AliveBug::die(Time dead)
   // Convert the alive bug to a dead bug
   DeadBug deadbug(this->db_, this->id_);
   deadbug.dead = dead;
+  deadbug.add_null("killer_id");
   deadbug.update_db(true);
 
   // Create the food in the position of the dead bug
