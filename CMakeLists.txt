@@ -39,8 +39,7 @@ check_include_file_cxx("cxxabi.h" HAVE_CXXABI_H)
 # Boost is needed
 set(Boost_USE_STATIC_LIBS OFF)
 set(Boost_USE_MULTITHREAD OFF)
-find_package(Boost COMPONENTS
-  program_options filesystem regex unit_test_framework)
+find_package(Boost COMPONENTS filesystem regex unit_test_framework)
 if(NOT Boost_FOUND)
   message(FATAL_ERROR "\tBoost not found")
 endif(NOT Boost_FOUND)

@@ -1,8 +1,8 @@
 /**
- * @file src/swldc.cpp
- * Simple World Language decompiler
+ * @file src/simpleworld/simpleworld.cpp
+ * Simple World.
  *
- * begin:     Sun, 19 Nov 2006 17:58:49 +0100
+ * begin:     Tue, 02 Oct 2007 08:03:37 +0200
  * last:      $Date$
  *
  *  Copyright (C) 2006-2008  Xosé Otero <xoseotero@users.sourceforge.net>
@@ -24,25 +24,23 @@
 #include <iostream>
 #include <string>
 #include <cstdlib>
+#include <ctime>
+#include <cstring>
 
 #include <getopt.h>
 
 #include <boost/format.hpp>
 
-#include <simpleworld/config.hpp>
 #include <simpleworld/exception.hpp>
-#include <simpleworld/cpu/memory.hpp>
-#include <simpleworld/cpu/object.hpp>
 namespace sw = simpleworld;
-namespace cpu = simpleworld::cpu;
 
-#include "printexc.hpp"
-#include "fakecpu.hpp"
+#include "simpleworld.hpp"
+#include "../printexc.hpp"
 
-#define DEFAULT_OUTPUT "out.swl"
 
-const char* program_short_name = "swld";
-const char* program_name = "Simple World Language decompiler";
+// information about the program.
+const char* program_short_name = "simpleworld";
+const char* program_name = "Simple World";
 const char* program_version = "1.0b1-svn";
 const char* program_years = "2006-2008";
 const char* program_author = "Xosé Otero";
@@ -54,7 +52,7 @@ const char* program_mailbugs = "simpleworld-list@lists.sourceforge.net";
  * Show the usage of the program.
  * @param error a text to show as error.
  */
-void usage(std::string error)
+static void usage(std::string error)
 {
   std::cerr << boost::format(\
 "%1%: %2%\n\
@@ -69,33 +67,38 @@ Try `%1% --help' for more information.")
 /**
  * Show the help of the program.
  */
-void help()
+static void help()
 {
   std::cout << boost::format(\
-"Usage: %1% [OPTION]... [FILE]\n\
-Simple World Language decompiler.\n\
+"Usage: %1% [COMMAND] [OPTION]... [DATABASE]\n\
+The simulation of a world and the bugs that live on it.\n\
 \n\
 Mandatory arguments to long options are mandatory for short options too.\n\
-  -o, --output=FILE          place the output into FILE\n\
-                               the default value is %2%\n\
-\n\
   -h, --help                 display this help and exit\n\
   -v, --version              output version information and exit\n\
 \n\
+Available commands:\n\
+  create                     create a new World\n\
+  run                        execute some cycles\n\
+  vacuum                     remove not used space from the database\n\
+  info                       get information\n\
+  env                        set the environment\n\
+  egg                        add a new egg\n\
+  food                       add a new food\n\
+\n\
 Exit status is 0 if OK, 1 if minor problems, 2 if serious trouble.\n\
 \n\
-Report bugs to <%3%>.")
+Report bugs to <%2%>.")
     % program_short_name
-    % DEFAULT_OUTPUT
     % program_mailbugs
     << std::endl;
-  std::exit(0);
+  std::exit(EXIT_SUCCESS);
 }
 
 /**
  * Show the version of the program.
  */
-void version()
+static void version()
 {
   std::cout << boost::format(\
 "%1% (%2%) %3%\n\
@@ -112,59 +115,43 @@ There is NO WARRANTY, to the extent permitted by law.")
     % program_author_email
     << std::endl;
 
-  std::exit(0);
+  std::exit(EXIT_SUCCESS);
 }
 
-
-// information from the command line
-static std::string input;
-static std::string output(DEFAULT_OUTPUT);
 
 /**
  * Parse the command line.
  * @param argc number of parameters.
  * @param argv parameters.
  */
-void parse_cmd(int argc, char* argv[])
+static void parse_cmd(int argc, char* argv[])
 {
   struct option long_options[] = {
-    {"output", required_argument, NULL, 'o'},
-
     {"version", no_argument, NULL, 'v'},
     {"help", no_argument, NULL, 'h'},
 
     {NULL, 0, NULL, 0}
   };
 
+  // start the scan from the begining
+  optind = 0;
   // avoid that getopt prints any message
   opterr = 0;
-
   while (true) {
     /* getopt_long stores the option index here. */
     int option_index = 0;
-
-    int c = getopt_long(argc, argv, "o:vh", long_options,
-                        &option_index);
-
+    int c = getopt_long(argc, argv, "vh", long_options, &option_index);
     /* Detect the end of the options. */
     if (c == -1)
       break;
-
     switch (c)
     {
-    case 'o':
-      output = optarg;
-
-      break;
-
     case 'v':
       version();
-
       break;
 
     case 'h':
       help();
-
       break;
 
     case '?':
@@ -172,32 +159,41 @@ void parse_cmd(int argc, char* argv[])
         optind++;
       usage(boost::str(boost::format("unrecognized option `%1%'")
                        % argv[optind - 1]));
-
       break;
 
     default:
       abort();
     }
   }
-
-  if (argc == optind)
-    usage("a object file is needed");
-  else if ((optind + 1) < argc)
-    usage("too many object files");
-
-  input = argv[optind];
 }
 
 
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 try {
-  parse_cmd(argc, argv);
+  std::srand(std::time(NULL));
 
-
-  // This CPU doesn't need memory because only the instruction set is needed
-  cpu::Memory registers;
-  FakeCPU cpu(&registers, NULL);
-  cpu::Object(cpu.isa(), input).decompile(output);
+  if (argc < 2)
+    usage("no command specified");
+  else
+    if (std::strcmp(argv[1], "create") == 0)
+      sw_create(argc - 1, argv + 1);
+    else if (std::strcmp(argv[1], "run") == 0)
+      sw_run(argc - 1, argv + 1);
+    else if (std::strcmp(argv[1], "vacuum") == 0)
+      sw_vacuum(argc - 1, argv + 1);
+    else if (std::strcmp(argv[1], "info") == 0)
+      sw_info(argc - 1, argv + 1);
+    else if (std::strcmp(argv[1], "env") == 0)
+      sw_env(argc - 1, argv + 1);
+    else if (std::strcmp(argv[1], "egg") == 0)
+      sw_egg(argc - 1, argv + 1);
+    else if (std::strcmp(argv[1], "food") == 0)
+      sw_food(argc - 1, argv + 1);
+    else if (std::strlen(argv[1]) >= 1 and argv[1][0] != '-')
+      usage(boost::str(boost::format("unrecognized command `%1%'")
+                       % argv[1]));
+    else
+      parse_cmd(argc, argv);
 
   std::exit(EXIT_SUCCESS);
 }

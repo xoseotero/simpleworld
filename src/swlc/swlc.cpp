@@ -1,5 +1,5 @@
 /**
- * @file src/swlc.cpp
+ * @file src/swlc/swlc.cpp
  * Simple World Language compiler
  *
  * begin:     Sat, 18 Nov 2006 12:26:31 +0100
@@ -37,8 +37,8 @@
 namespace sw = simpleworld;
 namespace cpu = simpleworld::cpu;
 
-#include "printexc.hpp"
-#include "fakecpu.hpp"
+#include "../printexc.hpp"
+#include "../fakecpu.hpp"
 
 #define DEFAULT_OUTPUT "out.swo"
 

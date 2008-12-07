@@ -1,5 +1,5 @@
 /**
- * @file src/swlcpu.cpp
+ * @file src/swcpu/swlcpu.cpp
  * Simple World CPU
  *
  * begin:     Tue, 21 Nov 2006 08:40:54 +0100
@@ -41,8 +41,8 @@
 namespace sw = simpleworld;
 namespace cpu = simpleworld::cpu;
 
-#include "printexc.hpp"
-#include "fakecpu.hpp"
+#include "../printexc.hpp"
+#include "../fakecpu.hpp"
 
 const char* program_short_name = "swcpu";
 const char* program_name = "Simple World CPU";
