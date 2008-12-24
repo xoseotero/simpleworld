@@ -132,9 +132,9 @@
             <item> r9 </item>
             <item> r10 </item>
             <item> r11 </item>
-            <item> r12 </item>
             <item> pc </item>
             <item> sp </item>
+            <item> fp </item>
             <item> cs </item>
         </list>
         <contexts>
