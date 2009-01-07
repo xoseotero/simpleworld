@@ -81,7 +81,6 @@ public:
   /**
    * Preprocess the source code.
    * @exception IOError if a file can't be found.
-   * @exception ParserError file included two times.
    */
   void preprocess();
 
@@ -99,7 +98,6 @@ protected:
   /**
    * Replace the .include lines with the file contents.
    * @exception IOError if a file can't be found.
-   * @exception ParserError file included two times.
    */
   void replace_includes();
 

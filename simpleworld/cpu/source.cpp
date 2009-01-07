@@ -278,7 +278,6 @@ void Source::load(std::string filename)
 /**
  * Preprocess the source code.
  * @exception IOError if a file can't be found.
- * @exception ParserError file included two times.
  */
 void Source::preprocess()
 {
@@ -324,7 +323,6 @@ Can't write in file %1%")
 /**
  * Replace the .include lines with the file contents.
  * @exception IOError if a file can't be found.
- * @exception ParserError file included two times.
  */
 void Source::replace_includes()
 {
@@ -336,15 +334,14 @@ void Source::replace_includes()
 File %1% not found")
                                             % this->get_include(i)));
 
+      this->remove(i, 1);
+
+      // don't include the file more than once
       std::string
         abs_path(fs::complete(filename).normalize().string());
       if (this->includes_.find(abs_path) != this->includes_.end())
-        throw EXCEPTION(ParserError, boost::str(boost::format("\
-Line: %1%\n\
-File %2% already included")
-                                                % this->get_line(i)
-                                                % abs_path));
-      this->remove(i, 1);
+        continue;
+
       this->insert(i, File(abs_path));
       this->includes_.insert(abs_path);
     }
