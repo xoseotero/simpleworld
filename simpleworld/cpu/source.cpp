@@ -326,7 +326,8 @@ Can't write in file %1%")
  */
 void Source::replace_includes()
 {
-  for (File::size_type i = 0; i < this->lines(); i++)
+  File::size_type i = 0;
+  while (i < this->lines()) {
     if (this->is_include(i)) {
       fs::path filename(find_file(this->include_path_, this->get_include(i)));
       if (filename.empty())
@@ -337,14 +338,16 @@ File %1% not found")
       this->remove(i, 1);
 
       // don't include the file more than once
-      std::string
-        abs_path(fs::complete(filename).normalize().string());
+      std::string abs_path(fs::complete(filename).normalize().string());
       if (this->includes_.find(abs_path) != this->includes_.end())
         continue;
 
       this->insert(i, File(abs_path));
       this->includes_.insert(abs_path);
     }
+
+    i++;
+  }
 }
 
 /**
