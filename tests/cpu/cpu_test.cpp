@@ -453,11 +453,11 @@ BOOST_AUTO_TEST_CASE(cpu_store_word)
   source.insert(line++, "store r5 data");
 
   // Store data with a offset (register)
-  source.insert(line++, "storerr r6 r0 r2");
+  source.insert(line++, "storerr r0 r6 r2");
 
   // Store data with a offset (inmediate)
-  source.insert(line++, "storeri r7 r0 0x8");
-  source.insert(line++, "storeri r8 r0 0xc");
+  source.insert(line++, "storeri r0 r7 0x8");
+  source.insert(line++, "storeri r0 r8 0xc");
   // The code ends here
 
   // Space to store 4 words of data
@@ -511,11 +511,11 @@ BOOST_AUTO_TEST_CASE(cpu_store_halfword)
   source.insert(line++, "storeh r5 data");
 
   // Store data with a offset (register)
-  source.insert(line++, "storehrr r6 r0 r2");
+  source.insert(line++, "storehrr r0 r6 r2");
 
   // Store data with a offset (inmediate)
-  source.insert(line++, "storehri r7 r0 0x8");
-  source.insert(line++, "storehri r8 r0 0xc");
+  source.insert(line++, "storehri r0 r7 0x8");
+  source.insert(line++, "storehri r0 r8 0xc");
   // The code ends here
 
   // Space to store 4 words of data
@@ -569,11 +569,11 @@ BOOST_AUTO_TEST_CASE(cpu_store_quarterword)
   source.insert(line++, "storeq r5 data");
 
   // Store data with a offset (register)
-  source.insert(line++, "storeqrr r6 r0 r2");
+  source.insert(line++, "storeqrr r0 r6 r2");
 
   // Store data with a offset (inmediate)
-  source.insert(line++, "storeqri r7 r0 0x8");
-  source.insert(line++, "storeqri r8 r0 0xc");
+  source.insert(line++, "storeqri r0 r7 0x8");
+  source.insert(line++, "storeqri r0 r8 0xc");
   // The code ends here
 
   // Space to store 4 words of data
@@ -704,78 +704,78 @@ BOOST_AUTO_TEST_CASE(cpu_branch)
 
   // If r3 == r4
   source.insert(line++, ".label branch_always");
-  source.insert(line++, "storeri r1 r0 0x0");
+  source.insert(line++, "storeri r0 r1 0x0");
   source.insert(line++, "beq r3 r4 branch_zero");
   source.insert(line++, "stop");
 
   // If r2 == 0
   source.insert(line++, ".label branch_zero");
-  source.insert(line++, "storeri r1 r0 0x4");
+  source.insert(line++, "storeri r0 r1 0x4");
   source.insert(line++, "bz r2 branch_nonzero");
   source.insert(line++, "stop");
 
   // If r3 != 0
   source.insert(line++, ".label branch_nonzero");
-  source.insert(line++, "storeri r1 r0 0x8");
+  source.insert(line++, "storeri r0 r1 0x8");
   source.insert(line++, "bnz r3 branch_equal");
   source.insert(line++, "stop");
 
   // If r2 != r3
   source.insert(line++, ".label branch_equal");
-  source.insert(line++, "storeri r1 r0 0xc");
+  source.insert(line++, "storeri r0 r1 0xc");
   source.insert(line++, "bne r2 r3 branch_notequal");
   source.insert(line++, "stop");
 
   // If r5 < r4
   source.insert(line++, ".label branch_notequal");
-  source.insert(line++, "storeri r1 r0 0x10");
+  source.insert(line++, "storeri r0 r1 0x10");
   source.insert(line++, "blt r5 r4 branch_less");
   source.insert(line++, "stop");
 
   // If r4 < r5
   source.insert(line++, ".label branch_less");
-  source.insert(line++, "storeri r1 r0 0x14");
+  source.insert(line++, "storeri r0 r1 0x14");
   source.insert(line++, "bltu r4 r5 branch_lessu");
   source.insert(line++, "stop");
 
   // If r3 > r5
   source.insert(line++, ".label branch_lessu");
-  source.insert(line++, "storeri r1 r0 0x18");
+  source.insert(line++, "storeri r0 r1 0x18");
   source.insert(line++, "bgt r3 r5 branch_greater");
   source.insert(line++, "stop");
 
   // If r5 > r3
   source.insert(line++, ".label branch_greater");
-  source.insert(line++, "storeri r1 r0 0x1c");
+  source.insert(line++, "storeri r0 r1 0x1c");
   source.insert(line++, "bgtu r5 r3 branch_greateru");
   source.insert(line++, "stop");
 
   // If r2 <= r3
   source.insert(line++, ".label branch_greateru");
-  source.insert(line++, "storeri r1 r0 0x20");
+  source.insert(line++, "storeri r0 r1 0x20");
   source.insert(line++, "ble r2 r3 branch_lessequal");
   source.insert(line++, "stop");
 
   // If r2 <= r3
   source.insert(line++, ".label branch_lessequal");
-  source.insert(line++, "storeri r1 r0 0x24");
+  source.insert(line++, "storeri r0 r1 0x24");
   source.insert(line++, "bleu r2 r3 branch_lessequalu");
   source.insert(line++, "stop");
 
   // If r3 >= r4
   source.insert(line++, ".label branch_lessequalu");
-  source.insert(line++, "storeri r1 r0 0x28");
+  source.insert(line++, "storeri r0 r1 0x28");
   source.insert(line++, "bge r3 r4 branch_greaterequal");
   source.insert(line++, "stop");
 
   // If r5 >= r4
   source.insert(line++, ".label branch_greaterequal");
-  source.insert(line++, "storeri r1 r0 0x2c");
+  source.insert(line++, "storeri r0 r1 0x2c");
   source.insert(line++, "bgeu r5 r4 branch_greaterequalu");
   source.insert(line++, "stop");
 
   source.insert(line++, ".label branch_greaterequalu");
-  source.insert(line++, "storeri r1 r0 0x30");
+  source.insert(line++, "storeri r0 r1 0x30");
 
   // End of test
   source.insert(line++, "stop");
@@ -894,7 +894,7 @@ BOOST_AUTO_TEST_CASE(cpu_interrupt)
   // Disable the sotware interrupt
   source.insert(line++, "loadi r0 0x0");
   source.insert(line++, "loada r1 interrupts_table");
-  source.insert(line++, "storeri r0 r1 0x4");
+  source.insert(line++, "storeri r1 r0 0x4");
 
   source.insert(line++, "int 0x7777");
 
@@ -916,14 +916,14 @@ BOOST_AUTO_TEST_CASE(cpu_interrupt)
   source.insert(line++, ".label handler_int");
   source.insert(line++, "multli r1 r0 0x4");
   source.insert(line++, "loada r2 data");
-  source.insert(line++, "storerr r0 r1 r2");
+  source.insert(line++, "storerr r1 r0 r2");
   source.insert(line++, "reti");
 
   // Software interrupt handler
   // Store the data of the software interrupt in data + 4
   source.insert(line++, ".label handler_soft");
   source.insert(line++, "loada r0 data");
-  source.insert(line++, "storeri r1 r0 0x4");
+  source.insert(line++, "storeri r0 r1 0x4");
   source.insert(line++, "reti");
 
   // Space to store 5 words of data
@@ -999,7 +999,7 @@ BOOST_AUTO_TEST_CASE(cpu_frame_pointer)
   // Store 0x1 in data
   source.insert(line++, "loada r0 data");
   source.insert(line++, "loadi r1 0x1");
-  source.insert(line++, "storeri r1 r0 0x0");
+  source.insert(line++, "storeri r0 r1 0x0");
   source.insert(line++, "ret");
 
   // Interrupt that allocates space for 64 words in the stack
@@ -1008,7 +1008,7 @@ BOOST_AUTO_TEST_CASE(cpu_frame_pointer)
   // Store 0x1 in data + 4
   source.insert(line++, "loada r0 data");
   source.insert(line++, "loadi r1 0x2");
-  source.insert(line++, "storeri r1 r0 0x4");
+  source.insert(line++, "storeri r0 r1 0x4");
   source.insert(line++, "reti");
 
   // Space to store 2 words of data
@@ -1076,7 +1076,7 @@ BOOST_AUTO_TEST_CASE(cpu_frame_pointer2)
   source.insert(line++, "loadri r0 fp 0xFFF0");
   source.insert(line++, "loadri r1 fp 0xFFF4");
   // Store the second parameter in the address pointed by the first one
-  source.insert(line++, "storeri r1 r0 0x0");
+  source.insert(line++, "storeri r0 r1 0x0");
   source.insert(line++, "ret");
 
   // Space to store 2 words of data

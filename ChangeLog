@@ -1,4 +1,6 @@
 Simple World 1.0b1:
+	* Revert the change in Alpha 2 about the order of the parameters in
+	  the store instructions.
 	* Make Simple World portable between different architectures:
 	  big/little endian, 32/64 bits and several UNIXes.
 	* Add instructions to access a half word (16 bits) and a quarter word

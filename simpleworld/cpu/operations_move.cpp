@@ -295,8 +295,8 @@ Update store(CPU& cpu, Instruction inst)
  */
 Update storerr(CPU& cpu, Instruction inst)
 {
-  cpu.set_mem(cpu.get_reg(inst.second) + cpu.get_reg(inst.data),
-              cpu.get_reg(inst.first));
+  cpu.set_mem(cpu.get_reg(inst.first) + cpu.get_reg(inst.data),
+              cpu.get_reg(inst.second));
 
   return UpdatePC;
 }
@@ -311,7 +311,7 @@ Update storerr(CPU& cpu, Instruction inst)
  */
 Update storeri(CPU& cpu, Instruction inst)
 {
-  cpu.set_mem(cpu.get_reg(inst.second) + inst.offset, cpu.get_reg(inst.first));
+  cpu.set_mem(cpu.get_reg(inst.first) + inst.offset, cpu.get_reg(inst.second));
 
   return UpdatePC;
 }
@@ -353,8 +353,8 @@ Update storeh(CPU& cpu, Instruction inst)
  */
 Update storehrr(CPU& cpu, Instruction inst)
 {
-  Word dst = cpu.get_mem(cpu.get_reg(inst.second) + cpu.get_reg(inst.data));
-  Word src = cpu.get_reg(inst.first);
+  Word dst = cpu.get_mem(cpu.get_reg(inst.first) + cpu.get_reg(inst.data));
+  Word src = cpu.get_reg(inst.second);
 #if defined(IS_BIG_ENDIAN)
   set_byte(&dst, 0, get_byte(src, 2));
   set_byte(&dst, 1, get_byte(src, 3));
@@ -365,7 +365,7 @@ Update storehrr(CPU& cpu, Instruction inst)
 #error endianness not specified
 #endif
 
-  cpu.set_mem(cpu.get_reg(inst.second) + cpu.get_reg(inst.data), dst);
+  cpu.set_mem(cpu.get_reg(inst.first) + cpu.get_reg(inst.data), dst);
 
   return UpdatePC;
 }
@@ -380,8 +380,8 @@ Update storehrr(CPU& cpu, Instruction inst)
  */
 Update storehri(CPU& cpu, Instruction inst)
 {
-  Word dst = cpu.get_mem(cpu.get_reg(inst.second) + inst.offset);
-  Word src = cpu.get_reg(inst.first);
+  Word dst = cpu.get_mem(cpu.get_reg(inst.first) + inst.offset);
+  Word src = cpu.get_reg(inst.second);
 #if defined(IS_BIG_ENDIAN)
   set_byte(&dst, 0, get_byte(src, 2));
   set_byte(&dst, 1, get_byte(src, 3));
@@ -392,7 +392,7 @@ Update storehri(CPU& cpu, Instruction inst)
 #error endianness not specified
 #endif
 
-  cpu.set_mem(cpu.get_reg(inst.second) + inst.offset, dst);
+  cpu.set_mem(cpu.get_reg(inst.first) + inst.offset, dst);
 
   return UpdatePC;
 }
@@ -432,8 +432,8 @@ Update storeq(CPU& cpu, Instruction inst)
  */
 Update storeqrr(CPU& cpu, Instruction inst)
 {
-  Word dst = cpu.get_mem(cpu.get_reg(inst.second) + cpu.get_reg(inst.data));
-  Word src = cpu.get_reg(inst.first);
+  Word dst = cpu.get_mem(cpu.get_reg(inst.first) + cpu.get_reg(inst.data));
+  Word src = cpu.get_reg(inst.second);
 #if defined(IS_BIG_ENDIAN)
   set_byte(&dst, 0, get_byte(src, 3));
 #elif defined(IS_LITTLE_ENDIAN)
@@ -442,7 +442,7 @@ Update storeqrr(CPU& cpu, Instruction inst)
 #error endianness not specified
 #endif
 
-  cpu.set_mem(cpu.get_reg(inst.second) + cpu.get_reg(inst.data), dst);
+  cpu.set_mem(cpu.get_reg(inst.first) + cpu.get_reg(inst.data), dst);
 
   return UpdatePC;
 }
@@ -457,8 +457,8 @@ Update storeqrr(CPU& cpu, Instruction inst)
  */
 Update storeqri(CPU& cpu, Instruction inst)
 {
-  Word dst = cpu.get_mem(cpu.get_reg(inst.second) + inst.offset);
-  Word src = cpu.get_reg(inst.first);
+  Word dst = cpu.get_mem(cpu.get_reg(inst.first) + inst.offset);
+  Word src = cpu.get_reg(inst.second);
 #if defined(IS_BIG_ENDIAN)
   set_byte(&dst, 0, get_byte(src, 3));
 #elif defined(IS_LITTLE_ENDIAN)
@@ -467,7 +467,7 @@ Update storeqri(CPU& cpu, Instruction inst)
 #error endianness not specified
 #endif
 
-  cpu.set_mem(cpu.get_reg(inst.second) + inst.offset, dst);
+  cpu.set_mem(cpu.get_reg(inst.first) + inst.offset, dst);
 
   return UpdatePC;
 }
