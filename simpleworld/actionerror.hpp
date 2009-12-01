@@ -2,9 +2,6 @@
  * @file simpleworld/actionerror.hpp
  * Class thrown when a error about a action is found.
  *
- * begin:     Sun, 18 Nov 2007 12:19:00 +0100
- * last:      $Date$
- *
  *  Copyright (C) 2007  Xosé Otero <xoseotero@users.sourceforge.net>
  *
  *  This program is free software: you can redistribute it and/or modify

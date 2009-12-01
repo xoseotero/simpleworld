@@ -2,9 +2,6 @@
  * @file simpleworld/db/table.cpp
  * Base class for the tables.
  *
- * begin:     Tue, 13 Feb 2007 11:20:17 +0100
- * last:      $Date$
- *
  *  Copyright (C) 2007  Xosé Otero <xoseotero@users.sourceforge.net>
  *
  *  This program is free software: you can redistribute it and/or modify

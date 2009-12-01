@@ -6,9 +6,6 @@
 # is a bug, the bug attacks it. After eating, if it has enough energy, the bug
 # creates a egg.
 #
-# begin:     Fri, 07 Sep 2007 21:11:53 +0200
-# last:      $Date$
-#
 #  Copyright (C) 2007-2008  Xosé Otero <xoseotero@gmail.com>
 #
 #  This program is free software: you can redistribute it and/or modify

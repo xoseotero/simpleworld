@@ -7,9 +7,6 @@
  * world. The objective of the project is to observe the evolution of this
  * world and of these bugs.
  *
- * begin:     Wed, 22 Aug 2007 14:59:02 +0200
- * last:      $Date$
- *
  *  Copyright (C) 2007-2008  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify

@@ -2,9 +2,6 @@
  * @file simpleworld/operations.hpp
  * World operation of the Simple CPU.
  *
- * begin:     Mon, 27 Aug 2007 22:37:53 +0200
- * last:      $Date$
- *
  *  Copyright (C) 2007  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify

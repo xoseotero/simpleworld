@@ -2,9 +2,6 @@
  * @file src/simpleworld/vacuum.cpp
  * Command vacuum of Simple World.
  *
- * begin:     Fri, 20 Jun 2008 10:00:26 +0200
- * last:      $Date$
- *
  *  Copyright (C) 2008  Xosé Otero <xoseotero@users.sourceforge.net>
  *
  *  This program is free software: you can redistribute it and/or modify

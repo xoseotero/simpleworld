@@ -2,9 +2,6 @@
  * @file simpleworld/egg.cpp
  * A egg in Simple World.
  *
- * begin:     Sun, 15 Jul 2007 07:48:51 +0200
- * last:      $Date$
- *
  *  Copyright (C) 2007  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify

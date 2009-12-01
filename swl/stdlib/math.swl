@@ -1,9 +1,6 @@
 # @file stdlib/math.swl
 # Math functions.
 #
-# begin:     Tue, 28 Nov 2006 03:59:15 +0100
-# last:      $Date$
-#
 #  Copyright (C) 2006-2007  Xosé Otero <xoseotero@users.sourceforge.net>
 #
 #  This program is free software: you can redistribute it and/or modify

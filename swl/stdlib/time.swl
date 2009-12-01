@@ -1,9 +1,6 @@
 # @file stdlib/time.swl
 # Management of the Timer Interrupt to calculate the cycles of the World.
 #
-# begin:     Wed, 22 Nov 2006 20:04:17 +0100
-# last:      $Date$
-#
 #  Copyright (C) 2006-2007  Xosé Otero <xoseotero@users.sourceforge.net>
 #
 #  This program is free software: you can redistribute it and/or modify

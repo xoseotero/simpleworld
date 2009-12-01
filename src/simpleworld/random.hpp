@@ -2,9 +2,6 @@
  * @file src/simpleworld/common.cpp
  * Common code for the parts of Simple World.
  *
- * begin:     Thu, 05 Jun 2008 21:35:27 +0200
- * last:      $Date$
- *
  *  Copyright (C) 2008  Xosé Otero <xoseotero@users.sourceforge.net>
  *
  *  This program is free software: you can redistribute it and/or modify

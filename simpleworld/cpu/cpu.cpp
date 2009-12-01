@@ -3,9 +3,6 @@
  * Central Processing Unit big endian with 16 registers of 32bits and 16bits of
  * address space.
  *
- * begin:     Mon, 06 Nov 2006 13:39:29 +0100
- * last:      $Date$
- *
  *  Copyright (C) 2006-2008  Xosé Otero <xoseotero@users.sourceforge.net>
  *
  *  This program is free software: you can redistribute it and/or modify

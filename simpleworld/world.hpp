@@ -2,9 +2,6 @@
  * @file simpleworld/world.hpp
  * Simple World World.
  *
- * begin:     Wed, 27 Dec 2006 18:00:22 +0100
- * last:      $Date$
- *
  *  Copyright (C) 2006-2007  Xosé Otero <xoseotero@users.sourceforge.net>
  *
  *  This program is free software: you can redistribute it and/or modify

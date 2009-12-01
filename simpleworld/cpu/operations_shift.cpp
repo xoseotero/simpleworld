@@ -2,9 +2,6 @@
  * @file simpleworld/cpu/operations_shift.cpp
  * Shift operations of the Simple CPU.
  *
- * begin:     Sat, 11 Nov 2006 19:15:19 +0100
- * last:      $Date$
- *
  *  Copyright (C) 2006-2008  Xosé Otero <xoseotero@users.sourceforge.net>
  *
  *  This program is free software: you can redistribute it and/or modify

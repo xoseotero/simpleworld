@@ -2,9 +2,6 @@
  * @file src/printexc.cpp
  * Print a exception.
  *
- * begin:     Thu, 22 Nov 2007 06:03:01 +0100
- * last:      $Date$
- *
  *  Copyright (C) 2007  Xosé Otero <xoseotero@users.sourceforge.net>
  *
  *  This program is free software: you can redistribute it and/or modify

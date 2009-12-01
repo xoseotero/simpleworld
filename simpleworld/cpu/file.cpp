@@ -2,9 +2,6 @@
  * @file simpleworld/cpu/file.cpp
  * Arithmetic logic unit
  *
- * begin:     Fri, 10 Nov 2006 08:27:00 +0100
- * last:      $Date$
- *
  *  Copyright (C) 2006-2007  Xosé Otero <xoseotero@users.sourceforge.net>
  *
  *  This program is free software: you can redistribute it and/or modify

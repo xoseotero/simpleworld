@@ -2,9 +2,6 @@
  * @file tests/simpleworld/ints_test.cpp
  * Unit test for ints.hpp.
  *
- * begin:     Sat, 26 Jul 2008 05:07:34 +0200
- * last:      $Date$
- *
  *  Copyright (C) 2008  Xosé Otero <xoseotero@users.sourceforge.net>
  *
  *  This program is free software: you can redistribute it and/or modify

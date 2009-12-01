@@ -2,9 +2,6 @@
  * @file src/simpleworld/create.cpp
  * Command create of Simple World.
  *
- * begin:     Mon, 09 Jun 2008 22:51:03 +0200
- * last:      $Date$
- *
  *  Copyright (C) 2008  Xosé Otero <xoseotero@users.sourceforge.net>
  *
  *  This program is free software: you can redistribute it and/or modify

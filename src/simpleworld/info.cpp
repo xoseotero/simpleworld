@@ -2,9 +2,6 @@
  * @file src/simpleworld/info.cpp
  * Command info of Simple World.
  *
- * begin:     Sun, 15 Jun 2008 08:53:32 +0200
- * last:      $Date$
- *
  *  Copyright (C) 2008  Xosé Otero <xoseotero@users.sourceforge.net>
  *
  *  This program is free software: you can redistribute it and/or modify

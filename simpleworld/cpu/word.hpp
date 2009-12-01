@@ -2,9 +2,6 @@
  * @file simpleworld/cpu/word.hpp
  * Access bytes in a word and change the byte ordering.
  *
- * begin:     Sat, 11 Dec 2004 22:06:28 +0100
- * last:      $Date$
- *
  *  Copyright (C) 2004, 2006-2007  Xosé Otero <xoseotero@users.sourceforge.net>
  *
  *  This program is free software: you can redistribute it and/or modify

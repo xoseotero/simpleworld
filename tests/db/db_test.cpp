@@ -2,9 +2,6 @@
  * @file tests/db/db_test.cpp
  * Unit test for DB::DB.
  *
- * begin:     Tue, 04 Dec 2007 05:33:07 +0100
- * last:      $Date$
- *
  *  Copyright (C) 2007  Xosé Otero <xoseotero@users.sourceforge.net>
  *
  *  This program is free software: you can redistribute it and/or modify

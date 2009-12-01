@@ -2,9 +2,6 @@
  * @file tests/simpleworld/world_test.cpp
  * Unit test for World.
  *
- * begin:     Sat, 08 Dec 2007 17:15:32 +0100
- * last:      $Date$
- *
  *  Copyright (C) 2007  Xosé Otero <xoseotero@users.sourceforge.net>
  *
  *  This program is free software: you can redistribute it and/or modify

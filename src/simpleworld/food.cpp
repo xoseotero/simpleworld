@@ -2,9 +2,6 @@
  * @file src/simpleworld/food.cpp
  * Command food of Simple World.
  *
- * begin:     Tue, 10 Jun 2008 07:51:57 +0200
- * last:      $Date$
- *
  *  Copyright (C) 2008  Xosé Otero <xoseotero@users.sourceforge.net>
  *
  *  This program is free software: you can redistribute it and/or modify

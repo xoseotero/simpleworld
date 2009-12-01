@@ -2,9 +2,6 @@
  * @file simpleworld/db/bug.cpp
  * Information about a bug.
  *
- * begin:     Sat, 24 Feb 2007 13:32:56 +0100
- * last:      $Date$
- *
  *  Copyright (C) 2007-2008  Xosé Otero <xoseotero@users.sourceforge.net>
  *
  *  This program is free software: you can redistribute it and/or modify

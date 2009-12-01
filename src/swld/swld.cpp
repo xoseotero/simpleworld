@@ -2,9 +2,6 @@
  * @file src/swld/swld.cpp
  * Simple World Language decompiler
  *
- * begin:     Sun, 19 Nov 2006 17:58:49 +0100
- * last:      $Date$
- *
  *  Copyright (C) 2006-2008  Xosé Otero <xoseotero@users.sourceforge.net>
  *
  *  This program is free software: you can redistribute it and/or modify

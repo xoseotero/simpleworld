@@ -2,9 +2,6 @@
  * @file tests/cpu/source_test.cpp
  * Unit test for CPU::Source.
  *
- * begin:     Fri, 30 Nov 2007 18:22:46 +0100
- * last:      $Date$
- *
  *  Copyright (C) 2007  Xosé Otero <xoseotero@users.sourceforge.net>
  *
  *  This program is free software: you can redistribute it and/or modify

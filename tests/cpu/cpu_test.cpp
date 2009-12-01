@@ -2,9 +2,6 @@
  * @file tests/cpu/cpu_test.cpp
  * Unit test for CPU::CPU.
  *
- * begin:     Fri, 30 Nov 2007 18:23:33 +0100
- * last:      $Date$
- *
  *  Copyright (C) 2007-2008  Xosé Otero <xoseotero@users.sourceforge.net>
  *
  *  This program is free software: you can redistribute it and/or modify

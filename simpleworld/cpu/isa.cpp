@@ -2,9 +2,6 @@
  * @file simpleworld/cpu/instruction.cpp
  * Instruction set architecture.
  *
- * begin:     Wed, 08 Nov 2006 16:29:51 +0100
- * last:      $Date$
- *
  *  Copyright (C) 2006-2007  Xosé Otero <xoseotero@users.sourceforge.net>
  *
  *  This program is free software: you can redistribute it and/or modify

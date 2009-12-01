@@ -2,9 +2,6 @@
  * @file src/fakecpu.hpp
  * Fake CPU that add a "world" operation that does nothing.
  *
- * begin:     Sun, 04 Nov 2007 20:26:14 +0100
- * last:      $Date$
- *
  *  Copyright (C) 2007  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify

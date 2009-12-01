@@ -2,9 +2,6 @@
  * @file simpleworld/cpu/memory.hpp
  * Accessing words from memory.
  *
- * begin:     Sun, 05 Nov 2006 16:33:13 +0100
- * last:      $Date$
- *
  *  Copyright (C) 2006-2007  Xosé Otero <xoseotero@users.sourceforge.net>
  *
  *  This program is free software: you can redistribute it and/or modify

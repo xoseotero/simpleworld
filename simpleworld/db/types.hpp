@@ -2,9 +2,6 @@
  * @file simpleworld/db/types.hpp
  * Definition of the types used in the database.
  *
- * begin:     Sat, 13 Jan 2007 00:46:33 +0100
- * last:      $Date$
- *
  *  Copyright (C) 2007  Xosé Otero <xoseotero@users.sourceforge.net>
  *
  *  This program is free software: you can redistribute it and/or modify

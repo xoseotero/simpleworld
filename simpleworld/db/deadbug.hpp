@@ -2,9 +2,6 @@
  * @file simpleworld/db/deadbug.hpp
  * Information about a dead bug.
  *
- * begin:     Wed, 15 Aug 2007 13:49:28 +0200
- * last:      $Date$
- *
  *  Copyright (C) 2007  Xosé Otero <xoseotero@users.sourceforge.net>
  *
  *  This program is free software: you can redistribute it and/or modify

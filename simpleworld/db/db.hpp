@@ -2,9 +2,6 @@
  * @file simpleworld/db/db.hpp
  * Simple World Database management.
  *
- * begin:     Wed, 24 Jan 2007 17:13:02 +0100
- * last:      $Date$
- *
  *  Copyright (C) 2007  Xosé Otero <xoseotero@users.sourceforge.net>
  *
  *  This program is free software: you can redistribute it and/or modify

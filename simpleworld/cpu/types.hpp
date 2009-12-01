@@ -2,9 +2,6 @@
  * @file simpleworld/cpu/types.hpp
  * Definition of the types used in the CPU.
  *
- * begin:     Thu, 01 Mar 2007 18:42:48 +0100
- * last:      $Date$
- *
  *  Copyright (C) 2007  Xosé Otero <xoseotero@users.sourceforge.net>
  *
  *  This program is free software: you can redistribute it and/or modify

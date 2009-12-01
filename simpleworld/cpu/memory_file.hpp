@@ -2,9 +2,6 @@
  * @file simpleworld/cpu/memory_file.hpp
  * Memory that loads its content from a file.
  *
- * begin:     Sat, 13 Oct 2007 12:10:20 +0200
- * last:      $Date$
- *
  *  Copyright (C) 2007  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify

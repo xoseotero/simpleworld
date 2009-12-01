@@ -2,9 +2,6 @@
  * @file simpleworld/db/alivebug.cpp
  * Information about a alive bug.
  *
- * begin:     Wed, 15 Aug 2007 13:56:46 +0200
- * last:      $Date$
- *
  *  Copyright (C) 2007-2008  Xosé Otero <xoseotero@users.sourceforge.net>
  *
  *  This program is free software: you can redistribute it and/or modify

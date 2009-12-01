@@ -2,9 +2,6 @@
  * @file simpleworld/db/environment.hpp
  * Information about the environment of the world.
  *
- * begin:     Thu, 25 Jan 2007 03:53:57 +0100
- * last:      $Date$
- *
  *  Copyright (C) 2007-2008  Xosé Otero <xoseotero@users.sourceforge.net>
  *
  *  This program is free software: you can redistribute it and/or modify

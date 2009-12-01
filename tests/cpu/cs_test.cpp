@@ -2,9 +2,6 @@
  * @file tests/cpu/cs_test.cpp
  * Unit test for CPU::CS.
  *
- * begin:     Tue, 18 Mar 2008 01:41:43 +0100
- * last:      $Date$
- *
  *  Copyright (C) 2008  Xosé Otero <xoseotero@users.sourceforge.net>
  *
  *  This program is free software: you can redistribute it and/or modify

@@ -2,9 +2,6 @@
  * @file simpleworld/cpu/cs.cpp
  * Control & Status register.
  *
- * begin:     Mon, 17 Mar 2008 10:23:31 +0100
- * last:      $Date$
- *
  *  Copyright (C) 2006-2007  Xosé Otero <xoseotero@users.sourceforge.net>
  *
  *  This program is free software: you can redistribute it and/or modify

@@ -2,9 +2,6 @@
  * @file simpleworld/db/bugelement.cpp
  * A bug on the World.
  *
- * begin:     Thu, 06 Sep 2007 04:42:47 +0200
- * last:      $Date$
- *
  *  Copyright (C) 2007  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify

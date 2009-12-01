@@ -2,9 +2,6 @@
  * @file simpleworld/db/common.cpp
  * Common functionality for the DB namespace.
  *
- * begin:     Wed, 19 Sep 2007 19:51:45 +0200
- * last:      $Date$
- *
  *  Copyright (C) 2007  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify

@@ -2,9 +2,6 @@
  * @file src/swcpu/swlcpu.cpp
  * Simple World CPU
  *
- * begin:     Tue, 21 Nov 2006 08:40:54 +0100
- * last:      $Date$
- *
  *  Copyright (C) 2006-2008  Xosé Otero <xoseotero@users.sourceforge.net>
  *
  *  This program is free software: you can redistribute it and/or modify

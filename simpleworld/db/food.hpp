@@ -2,9 +2,6 @@
  * @file simpleworld/db/food.hpp
  * Information about the food
  *
- * begin:     Sun, 29 Jul 2007 19:31:31 +0200
- * last:      $Date$
- *
  *  Copyright (C) 2007  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify

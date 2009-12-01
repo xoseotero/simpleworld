@@ -2,9 +2,6 @@
  * @file simpleworld/db/bug.hpp
  * Information about a Bug.
  *
- * begin:     Mon, 01 Jan 2007 08:41:25 +0100
- * last:      $Date$
- *
  *  Copyright (C) 2007-2008  Xosé Otero <xoseotero@users.sourceforge.net>
  *
  *  This program is free software: you can redistribute it and/or modify

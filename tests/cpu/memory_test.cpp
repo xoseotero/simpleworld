@@ -2,9 +2,6 @@
  * @file tests/cpu/memory_test.cpp
  * Unit test for CPU::Memory.
  *
- * begin:     Fri, 30 Nov 2007 18:20:04 +0100
- * last:      $Date$
- *
  *  Copyright (C) 2007  Xosé Otero <xoseotero@users.sourceforge.net>
  *
  *  This program is free software: you can redistribute it and/or modify

@@ -2,9 +2,6 @@
  * @file tests/simpleworld/movement_test.cpp
  * Unit test for movement.hpp.
  *
- * begin:     Sun, 09 Dec 2007 08:35:04 +0100
- * last:      $Date$
- *
  *  Copyright (C) 2007  Xosé Otero <xoseotero@users.sourceforge.net>
  *
  *  This program is free software: you can redistribute it and/or modify

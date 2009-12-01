@@ -2,9 +2,6 @@
  * @file simpleworld/element.cpp
  * A element on the World
  *
- * begin:     Thu, 19 Jul 2007 08:47:15 +0200
- * last:      $Date$
- *
  *  Copyright (C) 2007  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify

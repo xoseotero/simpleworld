@@ -2,9 +2,6 @@
  * @file src/simpleworld/table.cpp
  * Show a SQL query as a table.
  *
- * begin:     Fri, 20 Jun 2008 10:00:02 +0200
- * last:      $Date$
- *
  *  Copyright (C) 2008  Xosé Otero <xoseotero@users.sourceforge.net>
  *
  *  This program is free software: you can redistribute it and/or modify

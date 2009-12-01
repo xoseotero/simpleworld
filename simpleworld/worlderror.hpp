@@ -2,9 +2,6 @@
  * @file simpleworld/worlderror.hpp
  * Class thrown when a error in the World is found.
  *
- * begin:     Wed, 21 Nov 2007 18:17:12 +0100
- * last:      $Date$
- *
  *  Copyright (C) 2007  Xosé Otero <xoseotero@users.sourceforge.net>
  *
  *  This program is free software: you can redistribute it and/or modify

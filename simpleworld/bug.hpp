@@ -2,9 +2,6 @@
  * @file simpleworld/bug.hpp
  * A bug in Simple World.
  *
- * begin:     Sat, 21 Jul 2007 12:01:19 +0200
- * last:      $Date$
- *
  *  Copyright (C) 2007  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify

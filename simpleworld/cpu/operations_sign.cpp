@@ -2,9 +2,6 @@
  * @file simpleworld/cpu/operations_sign.cpp
  * Sign extension operations of the Simple CPU.
  *
- * begin:     Sun, 17 Aug 2008 05:20:05 +0200
- * last:      $Date$
- *
  *  Copyright (C) 2008  Xosé Otero <xoseotero@users.sourceforge.net>
  *
  *  This program is free software: you can redistribute it and/or modify

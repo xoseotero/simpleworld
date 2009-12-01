@@ -2,9 +2,6 @@
  * @file src/simpleworld/egg.cpp
  * Command egg of Simple World.
  *
- * begin:     Tue, 10 Jun 2008 08:04:50 +0200
- * last:      $Date$
- *
  *  Copyright (C) 2008  Xosé Otero <xoseotero@users.sourceforge.net>
  *
  *  This program is free software: you can redistribute it and/or modify

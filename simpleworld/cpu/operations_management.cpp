@@ -2,9 +2,6 @@
  * @file simpleworld/cpu/operations_management.cpp
  * Stop/restart operations of the Simple CPU.
  *
- * begin:     Xov Nov 30 2006
- * last:      $Date$
- *
  *  Copyright (C) 2006-2008  Xosé Otero <xoseotero@users.sourceforge.net>
  *
  *  This program is free software: you can redistribute it and/or modify

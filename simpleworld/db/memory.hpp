@@ -2,9 +2,6 @@
  * @file simpleworld/db/memory.hpp
  * Accessing words from memory advising when a change was made.
  *
- * begin:     Fri, 28 Sep 2007 22:23:52 +0200
- * last:      $Date$
- *
  *  Copyright (C) 2007  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify

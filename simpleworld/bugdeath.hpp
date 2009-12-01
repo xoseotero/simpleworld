@@ -2,9 +2,6 @@
  * @file simpleworld/bugdeath.hpp
  * Class thrown when a bug die.
  *
- * begin:     Thu, 06 Dec 2007 23:50:19 +0100
- * last:      $Date$
- *
  *  Copyright (C) 2007  Xosé Otero <xoseotero@users.sourceforge.net>
  *
  *  This program is free software: you can redistribute it and/or modify

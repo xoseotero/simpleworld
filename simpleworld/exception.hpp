@@ -2,9 +2,6 @@
  * @file simpleworld/exception.hpp
  * Exception base class father of the rest of Simple World exceptions.
  *
- * begin:     Sat, 11 Dec 2004 23:28:42 +0100
- * last:      $Date$
- *
  *  Copyright (C) 2004, 2006-2007  Xosé Otero <xoseotero@users.sourceforge.net>
  *
  *  This program is free software: you can redistribute it and/or modify

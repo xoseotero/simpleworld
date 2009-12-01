@@ -2,9 +2,6 @@
  * @file simpleworld/db/egg.cpp
  * Information about a egg.
  *
- * begin:     Wed, 15 Aug 2007 14:58:35 +0200
- * last:      $Date$
- *
  *  Copyright (C) 2007  Xosé Otero <xoseotero@users.sourceforge.net>
  *
  *  This program is free software: you can redistribute it and/or modify
