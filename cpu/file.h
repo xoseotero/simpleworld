@@ -199,15 +199,15 @@ public:
    * Load lines.
    *
    * Before the load, all the lines of the File are removed.
-   * @param is Where to print the file
-   * @param file File to print
-   * @return Reference to where to print
+   * @param is From where to get the file
+   * @param file Where to load the lines
+   * @return Reference to where to get the file
    */
   friend std::istream& operator >>(std::istream& is, File& file);
 
   /**
    * Print the lines.
-   * @param os From where to get the file
+   * @param os Where to print the file
    * @param file File to print
    * @return Reference to where to print
    */
