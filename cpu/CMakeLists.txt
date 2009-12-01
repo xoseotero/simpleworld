@@ -8,9 +8,9 @@ SET(CPU_SRCS
   cpu.cpp cpu_file.cpp
   file.cpp source.cpp
   object.cpp)
-ADD_LIBRARY(cpu SHARED ${CPU_SRCS})
+ADD_LIBRARY(sw_cpu SHARED ${CPU_SRCS})
 
-INSTALL(TARGETS cpu
+INSTALL(TARGETS sw_cpu
   RUNTIME DESTINATION bin
   LIBRARY DESTINATION lib
   ARCHIVE DESTINATION lib/static)
