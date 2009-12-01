@@ -7,4 +7,4 @@ else
 	prefix=""
 fi
 
-rm -rf build/ && ./autogen.sh ${prefix} && cd build/ && make && make tests && make install
+rm -rf build/ && admin/autogen.sh ${prefix} && cd build/ && make && make tests && make install
