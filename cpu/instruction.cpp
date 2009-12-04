@@ -1,6 +1,6 @@
 /**
  * @file cpu/instruction.cpp
- * $DESCRIPTION$
+ * Instruction set.
  *
  * begin:     Wed, 08 Nov 2006 16:29:51 +0100
  * last:      $Date$ by $Author$

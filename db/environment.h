@@ -34,7 +34,7 @@ namespace SimpleWorld
 namespace DB
 {
 
-/*
+/**
  * Information about the environment of the world.
  */
 class Environment: public Table

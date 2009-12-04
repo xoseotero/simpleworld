@@ -1,6 +1,6 @@
 /**
- * @file $FILE$
- * $DESCRIPTION$
+ * @file cpu/operations_management.cpp
+ * Stop/restart operations of the Simple CPU.
  *
  * begin:     Xov Nov 30 2006
  * last:      $Date$ by $Author$

@@ -1,5 +1,5 @@
 /**
- * @file db/bug.cpp
+ * @file db/hierarchy.cpp
  * Hierarchy of a bug.
  *
  * begin:     Sat, 24 Feb 2007 17:05:27 +0100

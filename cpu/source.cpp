@@ -1,6 +1,6 @@
 /**
  * @file cpu/source.cpp
- * $DESCRIPTION$
+ * Simple World Language source file.
  *
  * begin:     Wed, 15 Nov 2006 21:31:26 +0100
  * last:      $Date$ by $Author$

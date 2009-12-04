@@ -1,5 +1,5 @@
 /**
- * @file $FILE$
+ * @file cpu/cpu_file.cpp
  * Central Processing Unit big endian with 16 registers of 32bits and 16bits of
  * address space that load the code from a file.
  *
