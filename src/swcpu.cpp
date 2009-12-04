@@ -32,14 +32,16 @@ namespace po = boost::program_options;
 #include <simple/config.hpp>
 #include <simple/types.hpp>
 #include <simple/exception.hpp>
+#include <cpu/types.hpp>
 #include <cpu/word.hpp>
 #include <cpu/memory.hpp>
 #include <cpu/memory_file.hpp>
 #include <cpu/instruction.hpp>
-#include <cpu/cpu.hpp>
 #include <cpu/object.hpp>
 namespace sw = SimpleWorld;
 namespace cpu = SimpleWorld::CPU;
+
+#include "fakecpu.hpp"
 
 const char* program_short_name = "swcpu";
 const char* program_name = "Simple World CPU";
@@ -48,8 +50,7 @@ const char* program_years = "2006, 2007";
 const char* program_author = "Xosé Otero";
 const char* program_author_email = "xoseotero@users.sourceforge.net";
 
-
-class CPU: public cpu::CPU, cpu::Object
+class CPU: public FakeCPU, cpu::Object
 {
 public:
   /**
@@ -71,7 +72,7 @@ protected:
 };
 
 CPU::CPU(const std::string& filename) throw ()
-  : cpu::CPU(&this->registers_, &this->memory_),
+  : FakeCPU(&this->registers_, &this->memory_),
     cpu::Object(cpu::CPU::set_, filename),
     registers_(sizeof(cpu::Word) * 16), memory_(filename)
 {
@@ -84,7 +85,7 @@ void CPU::next() throw (cpu::CPUStopped)
     << this->decompile(cpu::InstructionSet::encode(instruction))
     << std::endl;
 
-  cpu::CPU::next();
+  FakeCPU::next();
 
   sw::Uint8 i = 1;
   std::vector<sw::Uint8> regs_codes = cpu::CPU::set_.register_codes();
@@ -161,6 +162,7 @@ There is NO WARRANTY, to the extent permitted by law.")
     std::cout << cmdline_options << std::endl;
     return 1;
   }
+
 
   CPU cpu(input);
   cpu.execute();

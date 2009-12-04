@@ -31,11 +31,12 @@ namespace po = boost::program_options;
 
 #include <simple/config.hpp>
 #include <simple/exception.hpp>
-#include <cpu/cpu.hpp>
 #include <cpu/memory.hpp>
 #include <cpu/object.hpp>
 namespace sw = SimpleWorld;
 namespace cpu = SimpleWorld::CPU;
+
+#include "fakecpu.hpp"
 
 const char* program_short_name = "swld";
 const char* program_name = "Simple World Language decompiler";
@@ -101,9 +102,10 @@ There is NO WARRANTY, to the extent permitted by law.")
     return 1;
   }
 
+
   // This CPU doesn't need memory because only the instruction set is needed
   cpu::Memory registers;
-  cpu::CPU cpu(&registers, NULL);
+  FakeCPU cpu(&registers, NULL);
   cpu::Object(cpu.instruction_set(), input).decompile(output);
 
   std::exit(EXIT_SUCCESS);

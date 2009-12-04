@@ -36,6 +36,8 @@ namespace po = boost::program_options;
 namespace sw = SimpleWorld;
 namespace cpu = SimpleWorld::CPU;
 
+#include "fakecpu.hpp"
+
 const char* program_short_name = "swlc";
 const char* program_name = "Simple World Language compiler";
 const char* program_version = "0.1";
@@ -104,9 +106,10 @@ There is NO WARRANTY, to the extent permitted by law.")
     return 1;
   }
 
+
   // This CPU doesn't need memory because only the instruction set is needed
   cpu::Memory registers;
-  cpu::CPU cpu(&registers, NULL);
+  FakeCPU cpu(&registers, NULL);
   cpu::Source source(cpu.instruction_set(), include_path, input);
   if (vm.count("preprocess")) {
     source.replace_includes();
