@@ -91,14 +91,12 @@ public:
 
   // Data
   Time time;
-
   Position size;
 
   Energy energy_developed;
-
   double mutations_probability;
-
   Time time_birth;
+  double attack_multiplier;
 
   Energy energy_nothing;
   Energy energy_myself;

@@ -58,6 +58,7 @@
 #define DEFAULT_ENERGY_DEVELOPED 64
 #define DEFAULT_MUTATIONS_PROBABILITY 0.001
 #define DEFAULT_TIME_BIRTH 32
+#define DEFAULT_ATTACK_MULTIPLIER 2.5
 #define DEFAULT_ENERGY_NOTHING 0
 #define DEFAULT_ENERGY_MYSELF 1
 #define DEFAULT_ENERGY_DETECT 1
@@ -451,7 +452,8 @@ There is not a egg/bug in (%1%, %2%)")
   if (target->type == ElementBug) {
     Bug* bug_target = dynamic_cast<Bug*>(target);
     try {
-      this->substract_energy(bug_target, energy);
+      this->substract_energy(bug_target,
+                             energy * this->env_->attack_multiplier);
       bug_target->attacked();
       bug_target->changed = true;
     } catch (const BugDeath& e) {
@@ -461,7 +463,8 @@ There is not a egg/bug in (%1%, %2%)")
   } else {
     Egg* egg_target = dynamic_cast<Egg*>(target);
     try {
-      this->substract_energy(egg_target, energy);
+      this->substract_energy(egg_target,
+                             energy * this->env_->attack_multiplier);
       egg_target->changed = true;
     } catch (const BugDeath& e) {
       // the egg is death
@@ -583,6 +586,7 @@ void SimpleWorld::on_open()
     this->env_->energy_developed = DEFAULT_ENERGY_DEVELOPED;
     this->env_->mutations_probability = DEFAULT_MUTATIONS_PROBABILITY;
     this->env_->time_birth = DEFAULT_TIME_BIRTH;
+    this->env_->attack_multiplier = DEFAULT_ATTACK_MULTIPLIER;
     this->env_->energy_nothing = DEFAULT_ENERGY_NOTHING;
     this->env_->energy_myself = DEFAULT_ENERGY_MYSELF;
     this->env_->energy_detect = DEFAULT_ENERGY_DETECT;

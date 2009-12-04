@@ -12,10 +12,9 @@ CREATE TABLE Environment
   size_y INTEGER NOT NULL,
 
   energy_developed INTEGER NOT NULL,
-
   mutations_probability REAL NOT NULL,  -- Values from 0 to 1
-
   time_birth INTEGER NOT NULL,
+  attack_multiplier REAL NOT NULL,
 
   energy_nothing INTEGER NOT NULL,
   energy_myself INTEGER NOT NULL,
@@ -86,6 +85,7 @@ WHEN OLD.size_x != NEW.size_x OR
      OLD.energy_developed != NEW.energy_developed OR
      OLD.mutations_probability != NEW.mutations_probability OR
      OLD.time_birth != NEW.time_birth OR
+     OLD.attack_multiplier != NEW.attack_multiplier OR
      OLD.energy_nothing != NEW.energy_nothing OR
      OLD.energy_myself != NEW.energy_myself OR
      OLD.energy_detect != NEW.energy_detect OR

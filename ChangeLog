@@ -1,5 +1,7 @@
 Simple World 1.0b1:
 	* Update to database version 2.
+	* Add the field attack_multiplier (a multiplier for the energy of a
+	  attack) to the Environment table.
 	* Add fp (frame pointer) register to help the programmer to use local
 	  variables.
 	* Convert the itp register to cs (control & status) register, which

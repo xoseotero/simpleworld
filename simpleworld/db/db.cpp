@@ -267,6 +267,8 @@ CREATE TABLE Environment\n\
 \n\
   time_birth INTEGER NOT NULL,\n\
 \n\
+  attack_multiplier REAL NOT NULL,\n\
+\n\
   energy_nothing INTEGER NOT NULL,\n\
   energy_myself INTEGER NOT NULL,\n\
   energy_detect INTEGER NOT NULL,\n\
@@ -341,6 +343,7 @@ WHEN OLD.size_x != NEW.size_x OR\n\
      OLD.energy_developed != NEW.energy_developed OR\n\
      OLD.mutations_probability != NEW.mutations_probability OR\n\
      OLD.time_birth != NEW.time_birth OR\n\
+     OLD.attack_multiplier != NEW.attack_multiplier OR\n\
      OLD.energy_nothing != NEW.energy_nothing OR\n\
      OLD.energy_myself != NEW.energy_myself OR\n\
      OLD.energy_detect != NEW.energy_detect OR\n\
