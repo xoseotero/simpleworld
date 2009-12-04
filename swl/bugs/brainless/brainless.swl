@@ -156,16 +156,14 @@
 
 	.label do_detect_something	# else (ELEMENT != NOTHING)
 
-	loadi r0 ELEMENT_EGG
-	beq r1 r0 do_detect_eat
 	loadi r0 ELEMENT_FOOD
 	beq r1 r0 do_detect_eat
 
-	.label do_detect_attack		# if ELEMENT != EGG and ELEMENT != FOOD
+	.label do_detect_attack		# if ELEMENT != FOOD
 	call do_attack
 	ret
 
-	.label do_detect_eat	# else (DETECT == EGG or DETECT == FOOD)
+	.label do_detect_eat		# else (DETECT == FOOD)
 	call do_eat
 	ret
 
