@@ -279,8 +279,8 @@ void Source::load(std::string filename)
 void Source::preprocess()
 {
   this->replace_includes();
-  this->replace_blocks();
   this->replace_defines();
+  this->replace_blocks();
   this->replace_labels();
 }
 
