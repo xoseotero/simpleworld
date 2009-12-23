@@ -33,8 +33,8 @@
 namespace sw = simpleworld;
 namespace cpu = simpleworld::cpu;
 
-#include "../printexc.hpp"
-#include "../fakecpu.hpp"
+#include "../common/printexc.hpp"
+#include "../common/fakecpu.hpp"
 
 #define DEFAULT_OUTPUT "out.swl"
 

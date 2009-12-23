@@ -38,8 +38,8 @@
 namespace sw = simpleworld;
 namespace cpu = simpleworld::cpu;
 
-#include "../printexc.hpp"
-#include "../fakecpu.hpp"
+#include "../common/printexc.hpp"
+#include "../common/fakecpu.hpp"
 
 const char* program_short_name = "swcpu";
 const char* program_name = "Simple World CPU";

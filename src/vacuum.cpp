@@ -1,5 +1,5 @@
 /**
- * @file src/simpleworld/vacuum.cpp
+ * @file src/vacuum.cpp
  * Command vacuum of Simple World.
  *
  *  Copyright (C) 2008  Xosé Otero <xoseotero@users.sourceforge.net>

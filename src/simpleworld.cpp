@@ -1,5 +1,5 @@
 /**
- * @file src/simpleworld/simpleworld.cpp
+ * @file src/simpleworld.cpp
  * Simple World.
  *
  *  Copyright (C) 2006-2008  Xosé Otero <xoseotero@users.sourceforge.net>
@@ -32,7 +32,7 @@
 namespace sw = simpleworld;
 
 #include "simpleworld.hpp"
-#include "../printexc.hpp"
+#include "common/printexc.hpp"
 
 
 // information about the program.

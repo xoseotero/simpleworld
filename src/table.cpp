@@ -1,5 +1,5 @@
 /**
- * @file src/simpleworld/table.cpp
+ * @file src/table.cpp
  * Show a SQL query as a table.
  *
  *  Copyright (C) 2008  Xosé Otero <xoseotero@users.sourceforge.net>

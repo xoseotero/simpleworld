@@ -1,5 +1,5 @@
 /**
- * @file src/simpleworld/info.cpp
+ * @file src/info.cpp
  * Command info of Simple World.
  *
  *  Copyright (C) 2008  Xosé Otero <xoseotero@users.sourceforge.net>

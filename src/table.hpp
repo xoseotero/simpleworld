@@ -1,5 +1,5 @@
 /**
- * @file src/simpleworld/table.hpp
+ * @file src/table.hpp
  * Show a SQL query as a table.
  *
  *  Copyright (C) 2008  Xosé Otero <xoseotero@users.sourceforge.net>
@@ -17,6 +17,9 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
+#ifndef SRC_TABLE_HPP
+#define SRC_TABLE_HPP
 
 #include <string>
 
@@ -38,3 +41,5 @@ void show_query_column(bool showHeader, int colWidth, std::string nullvalue,
  */
 void show_query_line(bool showHeader, std::string nullvalue,
                      sqlite3x::sqlite3_cursor cursor);
+
+#endif // SRC_TABLE_HPP

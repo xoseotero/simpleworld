@@ -1,5 +1,5 @@
 /**
- * @file src/simpleworld/simpleworld.hpp
+ * @file src/simpleworld.hpp
  * Simple World.
  *
  *  Copyright (C) 2008  Xosé Otero <xoseotero@users.sourceforge.net>
@@ -18,8 +18,8 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef SRC_SIMPLEWORLD_SIMPLEWORLD_HPP
-#define SRC_SIMPLEWORLD_SIMPLEWORLD_HPP
+#ifndef SRC_SIMPLEWORLD_HPP
+#define SRC_SIMPLEWORLD_HPP
 
 // information about the program.
 extern const char* program_short_name;
@@ -80,4 +80,4 @@ void sw_egg(int argc, char* argv[]);
  */
 void sw_food(int argc, char* argv[]);
 
-#endif // SRC_SIMPLEWORLD_SIMPLEWORLD_HPP
+#endif // SRC_SIMPLEWORLD_HPP

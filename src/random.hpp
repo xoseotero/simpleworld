@@ -1,8 +1,8 @@
 /**
- * @file src/fakecpu.hpp
- * Fake CPU that add a "world" operation that does nothing.
+ * @file src/random.hpp
+ * Calculate random positions and orientations.
  *
- *  Copyright (C) 2007  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2008  Xosé Otero <xoseotero@users.sourceforge.net>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -18,26 +18,23 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef FAKECPU_HPP
-#define FAKECPU_HPP
+#ifndef SRC_RANDOM_HPP
+#define SRC_RANDOM_HPP
 
-#include <simpleworld/cpu/cpu.hpp>
+#include <simpleworld/types.hpp>
 namespace sw = simpleworld;
-namespace cpu = simpleworld::cpu;
 
 /**
- * Fake CPU that add a "world" operation that does nothing.
+ * Calculate a random position.
+ * @param max maximum position.
+ * @return the random position.
  */
-class FakeCPU: public cpu::CPU
-{
-public:
-  /**
-   * Constructor.
-   * The registers size can change to allow at least 16 registers.
-   * @param registers registers of the CPU.
-   * @param memory memory of the CPU.
-   */
-  FakeCPU(cpu::Memory* registers, cpu::Memory* memory);
-};
+sw::Position random_position(const sw::Position& max);
 
-#endif // FAKECPU_HPP
+/**
+ * Calculate a random orientation.
+ * @return the random orientation.
+ */
+sw::Orientation random_orientation();
+
+#endif // SRC_RANDOM_HPP

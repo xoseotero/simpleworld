@@ -1,5 +1,5 @@
 /**
- * @file src/fakecpu.cpp
+ * @file src/common/fakecpu.cpp
  * Fake CPU that add a "world" operation that does nothing.
  *
  *  Copyright (C) 2007-2008  Xosé Otero <xoseotero@gmail.com>

@@ -1,6 +1,6 @@
 /**
- * @file src/simpleworld/run.cpp
- * Command run of Simple World.
+ * @file src/food.cpp
+ * Command food of Simple World.
  *
  *  Copyright (C) 2008  Xosé Otero <xoseotero@users.sourceforge.net>
  *
@@ -30,11 +30,11 @@
 namespace sw = simpleworld;
 
 #include "simpleworld.hpp"
+#include "random.hpp"
 
 
 // Default values
-#define DEFAULT_CYCLES 1024
-#define DEFAULT_VERBOSE 0
+#define DEFAULT_SIZE 64
 
 
 /**
@@ -44,8 +44,8 @@ namespace sw = simpleworld;
 static void usage(std::string error)
 {
   std::cerr << boost::format(\
-"%1% run: %2%\n\
-Try `%1% run --help' for more information.")
+"%1% food: %2%\n\
+Try `%1% food --help' for more information.")
     % program_short_name
     % error
     << std::endl;
@@ -59,12 +59,12 @@ Try `%1% run --help' for more information.")
 static void help()
 {
   std::cout << boost::format(\
-"Usage: %1% run [OPTION]... [DATABASE]\n\
-Execute some cycles in the World.\n\
-If the number of cycles are not specified, the default are 1024 cycles.\n\
+"Usage: %1% food [OPTION]... [DATABASE]\n\
+Add food to the World.\n\
 \n\
 Mandatory arguments to long options are mandatory for short options too.\n\
-      --cycles=CYCLES        cycles to run\n\
+      --position=X,Y         position of the food\n\
+      --size=SIZE            size of the food\n\
 \n\
   -h, --help                 display this help and exit\n\
 \n\
@@ -81,7 +81,8 @@ Report bugs to <%2%>.")
 // information from the command line
 static std::string database_path;
 
-static sw::Time cycles = DEFAULT_CYCLES;
+static sw::Position position;
+static sw::Energy size = DEFAULT_SIZE;
 
 /**
  * Parse the command line.
@@ -91,7 +92,8 @@ static sw::Time cycles = DEFAULT_CYCLES;
 static void parse_cmd(int argc, char* argv[])
 {
   struct option long_options[] = {
-    {"cycles", required_argument, NULL, 'c'},
+    {"position", required_argument, NULL, 'p'},
+    {"size", required_argument, NULL, 's'},
 
     {"help", no_argument, NULL, 'h'},
 
@@ -111,9 +113,14 @@ static void parse_cmd(int argc, char* argv[])
       break;
     switch (c)
     {
-    case 'c': // cycles
-      if (sscanf(optarg, "%d", &cycles) != 1)
-        usage(boost::str(boost::format("Invalid value for --cycles (%1%)")
+    case 'p': // position
+      if (sscanf(optarg, "%u,%u", &position.x, &position.y) != 2)
+        usage(boost::str(boost::format("Invalid value for --position (%1%)")
+                         % optarg));
+      break;
+    case 's': // size
+      if (sscanf(optarg, "%d", &size) != 1)
+        usage(boost::str(boost::format("Invalid value for --size (%1%)")
                          % optarg));
       break;
 
@@ -143,14 +150,17 @@ static void parse_cmd(int argc, char* argv[])
 
 
 /**
- * Simple World run command.
+ * Simple World food command.
  * @param argc number of parameters.
  * @param argv array of parameters.
  */
-void sw_run(int argc, char* argv[])
+void sw_food(int argc, char* argv[])
 {
+  // set a random position as the default
   parse_cmd(argc, argv);
-
   sw::SimpleWorld simpleworld(database_path);
-  simpleworld.run(cycles);
+  position = random_position(simpleworld.world().size());
+
+  parse_cmd(argc, argv);
+  simpleworld.add_food(position, size);
 }

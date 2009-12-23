@@ -1,6 +1,6 @@
 /**
- * @file src/simpleworld/env.cpp
- * Command env of Simple World.
+ * @file src/create.cpp
+ * Command create of Simple World.
  *
  *  Copyright (C) 2008  Xosé Otero <xoseotero@users.sourceforge.net>
  *
@@ -34,6 +34,25 @@ namespace db = simpleworld::db;
 #include "simpleworld.hpp"
 
 
+// Default values
+#define DEFAULT_SIZE {16, 16}
+#define DEFAULT_MUTATIONS 0.01
+#define DEFAULT_BIRTH 32
+#define DEFAULT_OLD 16 * 1024
+#define DEFAULT_LAZINESS 1024
+#define DEFAULT_ELAZINESS 64
+#define DEFAULT_MULTIPLIER 2.5
+#define DEFAULT_NOTHING 0
+#define DEFAULT_MYSELF 1
+#define DEFAULT_DETECT 1
+#define DEFAULT_INFO 1
+#define DEFAULT_MOVE 2
+#define DEFAULT_TURN 1
+#define DEFAULT_ATTACK 3
+#define DEFAULT_EAT 3
+#define DEFAULT_EGG 4
+
+
 /**
  * Show the usage of the command.
  * @param error a text to show as error.
@@ -41,8 +60,8 @@ namespace db = simpleworld::db;
 static void usage(std::string error)
 {
   std::cerr << boost::format(\
-"%1% env: %2%\n\
-Try `%1% env --help' for more information.")
+"%1% create: %2%\n\
+Try `%1% create --help' for more information.")
     % program_short_name
     % error
     << std::endl;
@@ -56,12 +75,13 @@ Try `%1% env --help' for more information.")
 static void help()
 {
   std::cout << boost::format(\
-"Usage: %1% env [OPTION]... [DATABASE]\n\
-Set the environment of the World.\n\
-The parameters not set are filled with the values of the last environment.\n\
-The size of the World can change.\n\
+"Usage: %1% create [OPTION]... [DATABASE]\n\
+Create a void World.\n\
+The parameters not set are filled with the default values.\n\
 \n\
 Mandatory arguments to long options are mandatory for short options too.\n\
+      --size=X,Y             size of the World\n\
+\n\
       --mutations=PROB       probability for a mutation\n\
 \n\
       --birth=CYCLES         cycles needed for a egg to get born\n\
@@ -96,21 +116,22 @@ Report bugs to <%2%>.")
 // information from the command line
 static std::string database_path;
 
-static double mutations;
-static sw::Time birth;
-static sw::Time old;
-static sw::Time laziness;
-static sw::Energy elaziness;
-static double multiplier;
-static sw::Energy nothing;
-static sw::Energy myself;
-static sw::Energy detect;
-static sw::Energy info;
-static sw::Energy move;
-static sw::Energy turn;
-static sw::Energy attack;
-static sw::Energy eat;
-static sw::Energy egg;
+static sw::Position size = DEFAULT_SIZE;
+static double mutations = DEFAULT_MUTATIONS;
+static sw::Time birth = DEFAULT_BIRTH;
+static sw::Time old = DEFAULT_OLD;
+static sw::Time laziness = DEFAULT_LAZINESS;
+static sw::Energy elaziness = DEFAULT_ELAZINESS;
+static double multiplier = DEFAULT_MULTIPLIER;
+static sw::Energy nothing = DEFAULT_NOTHING;
+static sw::Energy myself = DEFAULT_MYSELF;
+static sw::Energy detect = DEFAULT_DETECT;
+static sw::Energy info = DEFAULT_INFO;
+static sw::Energy move = DEFAULT_MOVE;
+static sw::Energy turn = DEFAULT_TURN;
+static sw::Energy attack = DEFAULT_ATTACK;
+static sw::Energy eat = DEFAULT_EAT;
+static sw::Energy egg = DEFAULT_EGG;
 
 /**
  * Parse the command line.
@@ -120,6 +141,8 @@ static sw::Energy egg;
 static void parse_cmd(int argc, char* argv[])
 {
   struct option long_options[] = {
+    {"size", required_argument, NULL, 's'},
+
     {"mutations", required_argument, NULL, 'm'},
 
     {"birth", required_argument, NULL, 'b'},
@@ -157,6 +180,12 @@ static void parse_cmd(int argc, char* argv[])
       break;
     switch (c)
     {
+    case 's': // size
+      if (sscanf(optarg, "%u,%u", &size.x, &size.y) != 2)
+        usage(boost::str(boost::format("Invalid value for --size (%1%)")
+                         % optarg));
+      break;
+
     case 'm': // mutations
       if (sscanf(optarg, "%lf", &mutations) != 1)
         usage(boost::str(boost::format("Invalid value for --mutations (%1%)")
@@ -262,39 +291,18 @@ static void parse_cmd(int argc, char* argv[])
 
 
 /**
- * Simple World env command.
+ * Simple World create command.
  * @param argc number of parameters.
  * @param argv array of parameters.
  */
-void sw_env(int argc, char* argv[])
+void sw_create(int argc, char* argv[])
 {
-  // take the actual environment
   parse_cmd(argc, argv);
 
   sw::SimpleWorld simpleworld(database_path);
-  const db::Environment& old_env = simpleworld.env();
-  mutations = old_env.mutations_probability;
-  birth = old_env.time_birth;
-  old = old_env.time_mutate;
-  laziness = old_env.time_laziness;
-  elaziness = old_env.energy_laziness;
-  multiplier = old_env.attack_multiplier;
-  nothing = old_env.energy_nothing;
-  myself = old_env.energy_myself;
-  detect = old_env.energy_detect;
-  info = old_env.energy_info;
-  move = old_env.energy_move;
-  turn = old_env.energy_turn;
-  attack = old_env.energy_attack;
-  eat = old_env.energy_eat;
-  egg = old_env.energy_egg;
-
-  // update the environment
-  parse_cmd(argc, argv);
-
   db::Environment env(&simpleworld);
-  env.time = old_env.time;
-  env.size = old_env.size;
+  env.time = 0;
+  env.size = size;
   env.mutations_probability = mutations;
   env.time_birth = birth;
   env.time_mutate = old;

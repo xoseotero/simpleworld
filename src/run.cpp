@@ -1,6 +1,6 @@
 /**
- * @file src/simpleworld/egg.cpp
- * Command egg of Simple World.
+ * @file src/run.cpp
+ * Command run of Simple World.
  *
  *  Copyright (C) 2008  Xosé Otero <xoseotero@users.sourceforge.net>
  *
@@ -27,16 +27,14 @@
 
 #include <simpleworld/types.hpp>
 #include <simpleworld/simpleworld.hpp>
-#include <simpleworld/cpu/memory_file.hpp>
 namespace sw = simpleworld;
-namespace cpu = simpleworld::cpu;
 
 #include "simpleworld.hpp"
-#include "random.hpp"
 
 
 // Default values
-#define DEFAULT_ENERGY 128
+#define DEFAULT_CYCLES 1024
+#define DEFAULT_VERBOSE 0
 
 
 /**
@@ -46,8 +44,8 @@ namespace cpu = simpleworld::cpu;
 static void usage(std::string error)
 {
   std::cerr << boost::format(\
-"%1% egg: %2%\n\
-Try `%1% egg --help' for more information.")
+"%1% run: %2%\n\
+Try `%1% run --help' for more information.")
     % program_short_name
     % error
     << std::endl;
@@ -61,15 +59,12 @@ Try `%1% egg --help' for more information.")
 static void help()
 {
   std::cout << boost::format(\
-"Usage: %1% egg [OPTION]... [DATABASE]\n\
-Add a egg to the World.\n\
-The path to the code is needed.\n\
+"Usage: %1% run [OPTION]... [DATABASE]\n\
+Execute some cycles in the World.\n\
+If the number of cycles are not specified, the default are 1024 cycles.\n\
 \n\
 Mandatory arguments to long options are mandatory for short options too.\n\
-      --position=X,Y         position of the egg\n\
-      --orientation=ORIENT   orientation of the egg (from 0 to 3)\n\
-      --energy=ENERGY        energy of the egg\n\
-      --code=PATH            path to the code of the egg\n\
+      --cycles=CYCLES        cycles to run\n\
 \n\
   -h, --help                 display this help and exit\n\
 \n\
@@ -86,10 +81,7 @@ Report bugs to <%2%>.")
 // information from the command line
 static std::string database_path;
 
-static sw::Position position;
-static sw::Orientation orientation;
-static sw::Energy energy = DEFAULT_ENERGY;
-static std::string code_path;
+static sw::Time cycles = DEFAULT_CYCLES;
 
 /**
  * Parse the command line.
@@ -99,10 +91,7 @@ static std::string code_path;
 static void parse_cmd(int argc, char* argv[])
 {
   struct option long_options[] = {
-    {"position", required_argument, NULL, 'p'},
-    {"orientation", required_argument, NULL, 'o'},
-    {"energy", required_argument, NULL, 'e'},
-    {"code", required_argument, NULL, 'c'},
+    {"cycles", required_argument, NULL, 'c'},
 
     {"help", no_argument, NULL, 'h'},
 
@@ -122,23 +111,10 @@ static void parse_cmd(int argc, char* argv[])
       break;
     switch (c)
     {
-    case 'p': // position
-      if (sscanf(optarg, "%u,%u", &position.x, &position.y) != 2)
-        usage(boost::str(boost::format("Invalid value for --position (%1%)")
+    case 'c': // cycles
+      if (sscanf(optarg, "%d", &cycles) != 1)
+        usage(boost::str(boost::format("Invalid value for --cycles (%1%)")
                          % optarg));
-      break;
-    case 'o': // orientation
-      if (sscanf(optarg, "%d", &orientation) != 1)
-        usage(boost::str(boost::format("Invalid value for --orientation (%1%)")
-                         % optarg));
-      break;
-    case 'e': // energy
-      if (sscanf(optarg, "%d", &energy) != 1)
-        usage(boost::str(boost::format("Invalid value for --energy (%1%)")
-                         % optarg));
-      break;
-    case 'c': // code
-      code_path = optarg;
       break;
 
     case 'h':
@@ -157,9 +133,6 @@ static void parse_cmd(int argc, char* argv[])
     }
   }
 
-  if (code_path.empty())
-    usage("the path to the code must be set");
-
   if (argc == optind)
     usage("a database file is needed");
   else if ((optind + 1) < argc)
@@ -170,19 +143,14 @@ static void parse_cmd(int argc, char* argv[])
 
 
 /**
- * Simple World egg command.
+ * Simple World run command.
  * @param argc number of parameters.
  * @param argv array of parameters.
  */
-void sw_egg(int argc, char* argv[])
+void sw_run(int argc, char* argv[])
 {
-  // set a random position and orientation as the default
   parse_cmd(argc, argv);
-  sw::SimpleWorld simpleworld(database_path);
-  position = random_position(simpleworld.world().size());
-  orientation = random_orientation();
 
-  parse_cmd(argc, argv);
-  simpleworld.add_egg(energy, position, orientation,
-                      cpu::MemoryFile(code_path));
+  sw::SimpleWorld simpleworld(database_path);
+  simpleworld.run(cycles);
 }

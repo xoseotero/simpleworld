@@ -1,5 +1,5 @@
 /**
- * @file src/printexc.cpp
+ * @file src/common/printexc.cpp
  * Print a exception.
  *
  *  Copyright (C) 2007  Xosé Otero <xoseotero@users.sourceforge.net>
@@ -18,18 +18,40 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef PRINTEXC_HPP
-#define PRINTEXC_HPP
+#include <iostream>
+#include <typeinfo>
 
-#include <simpleworld/exception.hpp>
-namespace sw = simpleworld;
+#include <simpleworld/config.hpp>
 
-/**
- * Print a exception.
- * @param os Where to print.
- * @param exc Exception to print.
- * @return A reference to os.
- */
-std::ostream& operator <<(std::ostream& os, const sw::Exception& exc);
+#ifdef HAVE_CXXABI_H
+#include <cxxabi.h>
+#endif // HAVE_CXXABI_H
 
-#endif // PRINTEXC_HPP
+#include <boost/format.hpp>
+
+#include "printexc.hpp"
+
+std::ostream& operator <<(std::ostream& os, const sw::Exception& exc)
+{
+  const char* class_name = typeid(exc).name();
+
+#ifdef HAVE_CXXABI_H
+  int status;
+  const char* demangled = abi::__cxa_demangle(class_name, NULL, NULL, &status);
+  if (status == 0)
+    class_name = demangled;
+#endif // HAVE_CXXABI_H
+
+  return os << boost::format("\
+Exception %1% thrown:\n\
+\tin file:\t%2%\n\
+\tin function:\t%3%\n\
+\tin line:\t%4%\n\
+\twhy:\t%5%")
+    % class_name
+    % exc.file
+    % exc.function
+    % exc.line
+    % exc.what
+    << std::endl;
+}

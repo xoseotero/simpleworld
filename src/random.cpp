@@ -1,6 +1,6 @@
 /**
- * @file src/simpleworld/common.cpp
- * Common code for the parts of Simple World.
+ * @file src/random.cpp
+ * Calculate random positions and orientations.
  *
  *  Copyright (C) 2008  Xosé Otero <xoseotero@users.sourceforge.net>
  *
