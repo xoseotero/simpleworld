@@ -2,7 +2,7 @@
  * @file simpleworld/cpu/types.hpp
  * Definition of the types used in the CPU.
  *
- *  Copyright (C) 2007  Xosé Otero <xoseotero@users.sourceforge.net>
+ *  Copyright (C) 2007-2010  Xosé Otero <xoseotero@users.sourceforge.net>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -29,6 +29,8 @@ namespace cpu
 {
 
 typedef Uint32 Word;
+typedef Uint16 HalfWord;
+typedef Uint8 QuarterWord;
 
 typedef Uint32 Address;
 typedef Sint16 Offset;

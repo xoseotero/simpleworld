@@ -3,7 +3,7 @@
  * Central Processing Unit big endian with 16 registers of 32bits and 16bits of
  * address space.
  *
- *  Copyright (C) 2006-2008  Xosé Otero <xoseotero@users.sourceforge.net>
+ *  Copyright (C) 2006-2010  Xosé Otero <xoseotero@users.sourceforge.net>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -292,6 +292,27 @@ Word CPU::get_mem(Address addr, bool system_endian) const
 }
 
 /**
+ * Get the value of a address of memory.
+ * @param addr the address of the memory.
+ * @param system_endian if the address must be in the system endianness
+ * @return the value of the address of memory.
+ */
+HalfWord CPU::get_halfmem(Address addr, bool system_endian) const
+{
+  return this->memory_->get_halfword(addr, system_endian);
+}
+
+/**
+ * Get the value of a address of memory.
+ * @param addr the address of the memory.
+ * @return the value of the address of memory.
+ */
+QuarterWord CPU::get_quartermem(Address addr) const
+{
+  return this->memory_->get_quarterword(addr);
+}
+
+/**
  * Set the value of a address of memory.
  * @param addr the address of the memory.
  * @param word the new value.
@@ -300,6 +321,27 @@ Word CPU::get_mem(Address addr, bool system_endian) const
 void CPU::set_mem(Address addr, Word word, bool system_endian)
 {
   this->memory_->set_word(addr, word, system_endian);
+}
+
+/**
+ * Set the value of a address of memory.
+ * @param addr the address of the memory.
+ * @param word the new value.
+ * @param system_endian if the address must be in the system endianness
+ */
+void CPU::set_halfmem(Address addr, HalfWord word, bool system_endian)
+{
+  this->memory_->set_halfword(addr, word, system_endian);
+}
+
+/**
+ * Set the value of a address of memory.
+ * @param addr the address of the memory.
+ * @param word the new value.
+ */
+void CPU::set_quartermem(Address addr, QuarterWord word)
+{
+  this->memory_->set_quarterword(addr, word);
 }
 
 

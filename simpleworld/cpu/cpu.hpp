@@ -3,7 +3,7 @@
  * Central Processing Unit big endian with 16 registers of 32bits and 16bits of
  * address space.
  *
- *  Copyright (C) 2006-2008  Xosé Otero <xoseotero@users.sourceforge.net>
+ *  Copyright (C) 2006-2010  Xosé Otero <xoseotero@users.sourceforge.net>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -143,12 +143,42 @@ public:
   Word get_mem(Address addr, bool system_endian = true) const;
 
   /**
+   * Get the value of a address of memory.
+   * @param addr the address of the memory.
+   * @param system_endian if the address must be in the system endianness
+   * @return the value of the address of memory.
+   */
+  HalfWord get_halfmem(Address addr, bool system_endian = true) const;
+
+  /**
+   * Get the value of a address of memory.
+   * @param addr the address of the memory.
+   * @return the value of the address of memory.
+   */
+  QuarterWord get_quartermem(Address addr) const;
+
+  /**
    * Set the value of a address of memory.
    * @param addr the address of the memory.
    * @param word the new value.
    * @param system_endian if the address must be in the system endianness
    */
   void set_mem(Address addr, Word word, bool system_endian = true);
+
+  /**
+   * Set the value of a address of memory.
+   * @param addr the address of the memory.
+   * @param word the new value.
+   * @param system_endian if the address must be in the system endianness
+   */
+  void set_halfmem(Address addr, HalfWord word, bool system_endian = true);
+
+  /**
+   * Set the value of a address of memory.
+   * @param addr the address of the memory.
+   * @param word the new value.
+   */
+  void set_quartermem(Address addr, QuarterWord word);
 
 
   /**

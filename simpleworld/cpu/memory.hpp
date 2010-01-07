@@ -2,7 +2,7 @@
  * @file simpleworld/cpu/memory.hpp
  * Accessing words from memory.
  *
- *  Copyright (C) 2006-2007  Xosé Otero <xoseotero@users.sourceforge.net>
+ *  Copyright (C) 2006-2010  Xosé Otero <xoseotero@users.sourceforge.net>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -76,11 +76,32 @@ public:
    * In little endian systems the word is returned in little endian if
    * system_endian is true and in big endian if system_endian is false.
    * @param address address of the word
-   * @param system_endian if the address must be in the system endianness
+   * @param system_endian if the word must be in the system endianness
    * @return the word
-   * @exception MemoryError if address > (size - 3)
+   * @exception MemoryError if address > (size - 4)
    */
   virtual Word get_word(Address address, bool system_endian = true) const;
+
+  /**
+   * Get a half word.
+   * In big endian systems the system_endian parameter does nothing.
+   * In little endian systems the word is returned in little endian if
+   * system_endian is true and in big endian if system_endian is false.
+   * @param address address of the half word
+   * @param system_endian if the half word must be in the system endianness
+   * @return the half word
+   * @exception MemoryError if address > (size - 2)
+   */
+  virtual HalfWord get_halfword(Address address,
+                                bool system_endian = true) const;
+
+  /**
+   * Get a quarter word.
+   * @param address address of the word
+   * @return the quarter word
+   * @exception MemoryError if address > (size - 1)
+   */
+  virtual QuarterWord get_quarterword(Address address) const;
 
   /**
    * Set the value of a word.
@@ -90,9 +111,30 @@ public:
    * @param address address of the word
    * @param value value of the word
    * @param system_endian if the word is in the systen endianness
-   * @exception MemoryError if address > (size - 3)
+   * @exception MemoryError if address > (size - 4)
    */
   virtual void set_word(Address address, Word value, bool system_endian = true);
+
+  /**
+   * Set the value of a half word.
+   * In big endian systems the system_endian parameter does nothing.
+   * In little endian systems the word is supposed to be in little endian if
+   * system_endian is true and in big endian if system_endian is false.
+   * @param address address of the half word
+   * @param value value of the half word
+   * @param system_endian if the half word is in the systen endianness
+   * @exception MemoryError if address > (size - 2)
+   */
+  virtual void set_halfword(Address address, HalfWord value,
+                            bool system_endian = true);
+
+  /**
+   * Set the value of a quarter word.
+   * @param address address of the quarter word
+   * @param value value of the quarter word
+   * @exception MemoryError if address > (size - 1)
+   */
+  virtual void set_quarterword(Address address, QuarterWord value);
 
 
   /**

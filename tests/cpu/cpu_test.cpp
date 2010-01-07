@@ -2,7 +2,7 @@
  * @file tests/cpu/cpu_test.cpp
  * Unit test for CPU::CPU.
  *
- *  Copyright (C) 2007-2008  Xosé Otero <xoseotero@users.sourceforge.net>
+ *  Copyright (C) 2007-2010  Xosé Otero <xoseotero@users.sourceforge.net>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -110,9 +110,9 @@ BOOST_AUTO_TEST_CASE(cpu_reg)
 }
 
 /**
- * Check the getters/setters of the memory.
+ * Check the getters/setters of the memory (words).
  */
-BOOST_AUTO_TEST_CASE(cpu_mem)
+BOOST_AUTO_TEST_CASE(cpu_mem_word)
 {
   cpu::Memory registers;
   cpu::Memory memory(16 * sizeof(cpu::Word));
@@ -125,13 +125,62 @@ BOOST_AUTO_TEST_CASE(cpu_mem)
   BOOST_CHECK_EQUAL(cpu.get_mem(0, true), 0x0123ABCD);
 #if defined(IS_BIG_ENDIAN)
   BOOST_CHECK_EQUAL(cpu.get_mem(0, false),
-		    cpu.get_mem(0, true));
+                    cpu.get_mem(0, true));
 #elif defined(IS_LITTLE_ENDIAN)
   BOOST_CHECK_EQUAL(cpu.get_mem(0, false), 0xCDAB2301);
 #else
 #error endianness not defined
 #endif
   BOOST_CHECK_EQUAL(cpu.get_mem(15), 0x01100110);
+}
+
+/**
+ * Check the getters/setters of the memory (half words).
+ */
+BOOST_AUTO_TEST_CASE(cpu_mem_halfword)
+{
+  cpu::Memory registers;
+  cpu::Memory memory(16 * sizeof(cpu::Word));
+  cpu::CPU cpu(&registers, &memory);
+
+  cpu.set_halfmem(4, 0x0123);
+  cpu.set_halfmem(6, 0xABCD);
+
+  BOOST_CHECK_EQUAL(cpu.get_halfmem(4), 0x0123);
+  BOOST_CHECK_EQUAL(cpu.get_halfmem(4, true), 0x0123);
+#if defined(IS_BIG_ENDIAN)
+  BOOST_CHECK_EQUAL(cpu.get_halfmem(4, false),
+                    cpu.get_halfmem(4, true));
+#elif defined(IS_LITTLE_ENDIAN)
+  BOOST_CHECK_EQUAL(cpu.get_halfmem(4, false), 0x2301);
+#else
+#error endianness not defined
+#endif
+  BOOST_CHECK_EQUAL(cpu.get_halfmem(6), 0xABCD);
+
+  BOOST_CHECK_EQUAL(cpu.get_mem(4), 0x0123ABCD);
+}
+
+/**
+ * Check the getters/setters of the memory (quarter words).
+ */
+BOOST_AUTO_TEST_CASE(cpu_mem_quarterword)
+{
+  cpu::Memory registers;
+  cpu::Memory memory(16 * sizeof(cpu::Word));
+  cpu::CPU cpu(&registers, &memory);
+
+  cpu.set_quartermem(8, 0x01);
+  cpu.set_quartermem(9, 0x23);
+  cpu.set_quartermem(10, 0xAB);
+  cpu.set_quartermem(11, 0xCD);
+
+  BOOST_CHECK_EQUAL(cpu.get_quartermem(8), 0x01);
+  BOOST_CHECK_EQUAL(cpu.get_quartermem(9), 0x23);
+  BOOST_CHECK_EQUAL(cpu.get_quartermem(10), 0xAB);
+  BOOST_CHECK_EQUAL(cpu.get_quartermem(11), 0xCD);
+
+  BOOST_CHECK_EQUAL(cpu.get_mem(8), 0x0123ABCD);
 }
 
 /**
@@ -317,9 +366,9 @@ BOOST_AUTO_TEST_CASE(cpu_load_haldword)
   // Load a inmediate value
   source.insert(line++, "loada r0 data");
   source.insert(line++, "loadi r1 0x0");
-  source.insert(line++, "loadi r2 0x4");
-  source.insert(line++, "loadi r3 0x8");
-  source.insert(line++, "loadi r4 0xc");
+  source.insert(line++, "loadi r2 0x2");
+  source.insert(line++, "loadi r3 0x4");
+  source.insert(line++, "loadi r4 0x6");
 
   // Load data with a pointer
   source.insert(line++, "loadh r5 data");
@@ -351,16 +400,16 @@ BOOST_AUTO_TEST_CASE(cpu_load_haldword)
   cpu::CPU cpu(&registers, &memory);
   cpu.execute(data);
 
-  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r5")], 0xabcd);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r5")], 0x1234);
 
-  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r6")], 0xabcd);
-  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r7")], 0x7890);
-  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r8")], 0x7757);
-  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r9")], 0x0101);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r6")], 0x1234);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r7")], 0xabcd);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r8")], 0xef56);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r9")], 0x7890);
 
-  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r10")], 0xabcd);
-  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r11")], 0x7890);
-  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "cs")], 0x7757);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r10")], 0x1234);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r11")], 0xef56);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "cs")], 0x7777);
 }
 
 /**
@@ -375,9 +424,9 @@ BOOST_AUTO_TEST_CASE(cpu_load_quarterword)
   // Load a inmediate value
   source.insert(line++, "loada r0 data");
   source.insert(line++, "loadi r1 0x0");
-  source.insert(line++, "loadi r2 0x4");
-  source.insert(line++, "loadi r3 0x8");
-  source.insert(line++, "loadi r4 0xc");
+  source.insert(line++, "loadi r2 0x1");
+  source.insert(line++, "loadi r3 0x2");
+  source.insert(line++, "loadi r4 0x3");
 
   // Load data with a pointer
   source.insert(line++, "loadq r5 data");
@@ -409,16 +458,16 @@ BOOST_AUTO_TEST_CASE(cpu_load_quarterword)
   cpu::CPU cpu(&registers, &memory);
   cpu.execute(data);
 
-  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r5")], 0xcd);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r5")], 0x12);
 
-  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r6")], 0xcd);
-  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r7")], 0x90);
-  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r8")], 0x57);
-  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r9")], 0x01);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r6")], 0x12);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r7")], 0x34);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r8")], 0xab);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r9")], 0xcd);
 
-  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r10")], 0xcd);
-  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r11")], 0x90);
-  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "cs")], 0x57);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r10")], 0x12);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r11")], 0xef);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "cs")], 0x77);
 }
 
 /**
@@ -491,18 +540,14 @@ BOOST_AUTO_TEST_CASE(cpu_store_halfword)
   // Load into the registers the data to be stored in the memory
   source.insert(line++, "loada r0 data");
   source.insert(line++, "loadi r1 0x0");
-  source.insert(line++, "loadi r2 0x4");
-  source.insert(line++, "loadi r3 0x8");
-  source.insert(line++, "loadi r4 0xc");
+  source.insert(line++, "loadi r2 0x2");
+  source.insert(line++, "loadi r3 0x4");
+  source.insert(line++, "loadi r4 0x6");
 
   source.insert(line++, "loadi r5 0x1010");
-  source.insert(line++, "loadhi r5 0x1010");
   source.insert(line++, "loadi r6 0x0f0f");
-  source.insert(line++, "loadhi r6 0x0f0f");
   source.insert(line++, "loadi r7 0x7777");
-  source.insert(line++, "loadhi r7 0x7777");
   source.insert(line++, "loadi r8 0xffff");
-  source.insert(line++, "loadhi r8 0xffff");
 
   // Store data with a pointer
   source.insert(line++, "storeh r5 data");
@@ -511,15 +556,13 @@ BOOST_AUTO_TEST_CASE(cpu_store_halfword)
   source.insert(line++, "storehrr r0 r6 r2");
 
   // Store data with a offset (inmediate)
-  source.insert(line++, "storehri r0 r7 0x8");
-  source.insert(line++, "storehri r0 r8 0xc");
+  source.insert(line++, "storehri r0 r7 0x4");
+  source.insert(line++, "storehri r0 r8 0x6");
   // The code ends here
 
   // Space to store 4 words of data
   sw::Uint8 data = line;
   source.insert(line++, ".label data");
-  source.insert(line++, "0x08080808");
-  source.insert(line++, "0x08080808");
   source.insert(line++, "0x08080808");
   source.insert(line++, "0x08080808");
 
@@ -531,10 +574,8 @@ BOOST_AUTO_TEST_CASE(cpu_store_halfword)
   cpu::CPU cpu(&registers, &memory);
   cpu.execute(data);
 
-  BOOST_CHECK_EQUAL(memory[ADDRESS(data)], 0x10100808);
-  BOOST_CHECK_EQUAL(memory[ADDRESS(data) + 0x4], 0x0f0f0808);
-  BOOST_CHECK_EQUAL(memory[ADDRESS(data) + 0x8], 0x77770808);
-  BOOST_CHECK_EQUAL(memory[ADDRESS(data) + 0xc], 0xffff0808);
+  BOOST_CHECK_EQUAL(memory[ADDRESS(data)], 0x10100f0f);
+  BOOST_CHECK_EQUAL(memory[ADDRESS(data) + 0x4], 0x7777ffff);
 }
 
 /**
@@ -549,18 +590,14 @@ BOOST_AUTO_TEST_CASE(cpu_store_quarterword)
   // Load into the registers the data to be stored in the memory
   source.insert(line++, "loada r0 data");
   source.insert(line++, "loadi r1 0x0");
-  source.insert(line++, "loadi r2 0x4");
-  source.insert(line++, "loadi r3 0x8");
-  source.insert(line++, "loadi r4 0xc");
+  source.insert(line++, "loadi r2 0x1");
+  source.insert(line++, "loadi r3 0x2");
+  source.insert(line++, "loadi r4 0x3");
 
-  source.insert(line++, "loadi r5 0x1010");
-  source.insert(line++, "loadhi r5 0x1010");
-  source.insert(line++, "loadi r6 0x0f0f");
-  source.insert(line++, "loadhi r6 0x0f0f");
-  source.insert(line++, "loadi r7 0x7777");
-  source.insert(line++, "loadhi r7 0x7777");
-  source.insert(line++, "loadi r8 0xffff");
-  source.insert(line++, "loadhi r8 0xffff");
+  source.insert(line++, "loadi r5 0x10");
+  source.insert(line++, "loadi r6 0x0f");
+  source.insert(line++, "loadi r7 0x77");
+  source.insert(line++, "loadi r8 0xff");
 
   // Store data with a pointer
   source.insert(line++, "storeq r5 data");
@@ -569,16 +606,13 @@ BOOST_AUTO_TEST_CASE(cpu_store_quarterword)
   source.insert(line++, "storeqrr r0 r6 r2");
 
   // Store data with a offset (inmediate)
-  source.insert(line++, "storeqri r0 r7 0x8");
-  source.insert(line++, "storeqri r0 r8 0xc");
+  source.insert(line++, "storeqri r0 r7 0x2");
+  source.insert(line++, "storeqri r0 r8 0x3");
   // The code ends here
 
   // Space to store 4 words of data
   sw::Uint8 data = line;
   source.insert(line++, ".label data");
-  source.insert(line++, "0x08080808");
-  source.insert(line++, "0x08080808");
-  source.insert(line++, "0x08080808");
   source.insert(line++, "0x08080808");
 
   compile(source);
@@ -589,10 +623,7 @@ BOOST_AUTO_TEST_CASE(cpu_store_quarterword)
   cpu::CPU cpu(&registers, &memory);
   cpu.execute(data);
 
-  BOOST_CHECK_EQUAL(memory[ADDRESS(data)], 0x10080808);       // 0x10000008 != 0x10080808
-  BOOST_CHECK_EQUAL(memory[ADDRESS(data) + 0x4], 0x0f080808); // 0x0f000008 != 0x0f080808
-  BOOST_CHECK_EQUAL(memory[ADDRESS(data) + 0x8], 0x77080808); // 0x77000008 != 0x77080808
-  BOOST_CHECK_EQUAL(memory[ADDRESS(data) + 0xc], 0xff080808); // 0xff000008 != 0xff080808
+  BOOST_CHECK_EQUAL(memory[ADDRESS(data)], 0x100f77ff);
 }
 
 /**

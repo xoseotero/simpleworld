@@ -1,8 +1,8 @@
 /**
  * @file simpleworld/cpu/word.hpp
- * Access bytes in a word and change the byte ordering.
+ * Access bytes in a half word/word and change the byte ordering.
  *
- *  Copyright (C) 2004, 2006-2007  Xosé Otero <xoseotero@users.sourceforge.net>
+ *  Copyright (C) 2004-2010  Xosé Otero <xoseotero@users.sourceforge.net>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -37,7 +37,17 @@ namespace cpu
  * @return the byte value.
  * @exception CPUException if byte > 3
  */
-Uint8 get_byte(Word word, Uint8 byte);
+QuarterWord get_byte(Word word, Uint8 byte);
+
+/**
+ * Return the value of a byte in a half word.
+ * @param hword Half word.
+ * @param byte number of byte to get.
+ * @return the byte value.
+ * @exception CPUException if byte > 1
+ */
+QuarterWord get_byte(HalfWord hword, Uint8 byte);
+
 
 /**
  * Set the value of a byte in a word.
@@ -47,7 +57,17 @@ Uint8 get_byte(Word word, Uint8 byte);
  * @return the byte value.
  * @exception CPUException if byte > 3
  */
-void set_byte(Word* word, Uint8 byte, Uint8 value);
+void set_byte(Word* word, Uint8 byte, QuarterWord value);
+
+/**
+ * Set the value of a byte in a half word.
+ * @param hword Half word.
+ * @param byte Number of byte to change.
+ * @param value New value for the byte.
+ * @return the byte value.
+ * @exception CPUException if byte > 1
+ */
+void set_byte(HalfWord* word, Uint8 byte, QuarterWord value);
 
 
 /**
@@ -57,6 +77,14 @@ void set_byte(Word* word, Uint8 byte, Uint8 value);
  * @return the word with the order changed.
  */
 Word change_byte_order(Word word);
+
+/**
+ * Change the byte order of a half word.
+ * Big Endian <-> Little Endian.
+ * @param hword Half word to change.
+ * @return the half word with the order changed.
+ */
+HalfWord change_byte_order(HalfWord hword);
 
 }
 }

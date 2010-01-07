@@ -2,7 +2,7 @@
  * @file simpleworld/cpu/operations_move.cpp
  * Load/store/move/stack operations of the Simple CPU.
  *
- *  Copyright (C) 2006-2008  Xosé Otero <xoseotero@users.sourceforge.net>
+ *  Copyright (C) 2006-2010  Xosé Otero <xoseotero@users.sourceforge.net>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -23,9 +23,6 @@
 #include "types.hpp"
 #include "word.hpp"
 #include "operations.hpp"
-
-#define HALFWORD_MASK 0x0000ffff
-#define QUARTERWORD_MASK 0x000000ff
 
 namespace simpleworld
 {
@@ -123,8 +120,7 @@ Update loadri(CPU& cpu, Instruction inst)
 Update loadh(CPU& cpu, Instruction inst)
 {
   cpu.set_reg(inst.first,
-              cpu.get_mem(cpu.get_reg(REGISTER_PC) + inst.offset) &
-              HALFWORD_MASK);
+              cpu.get_halfmem(cpu.get_reg(REGISTER_PC) + inst.offset));
 
   return UpdatePC;
 }
@@ -140,8 +136,8 @@ Update loadh(CPU& cpu, Instruction inst)
 Update loadhrr(CPU& cpu, Instruction inst)
 {
   cpu.set_reg(inst.first,
-              cpu.get_mem(cpu.get_reg(inst.second) + cpu.get_reg(inst.data)) &
-              HALFWORD_MASK);
+              cpu.get_halfmem(cpu.get_reg(inst.second) +
+                              cpu.get_reg(inst.data)));
 
   return UpdatePC;
 }
@@ -157,14 +153,13 @@ Update loadhrr(CPU& cpu, Instruction inst)
 Update loadhri(CPU& cpu, Instruction inst)
 {
   cpu.set_reg(inst.first,
-              cpu.get_mem(cpu.get_reg(inst.second) + inst.offset) &
-              HALFWORD_MASK);
+              cpu.get_halfmem(cpu.get_reg(inst.second) + inst.offset));
 
   return UpdatePC;
 }
 
 /**
- * Load a quarter word (16 bits) from memory.
+ * Load a quarter word (8 bits) from memory.
  *
  * REGISTERS[FIRST] = MEMORY[PC + OFFSET]
  * @param cpu the CPU.
@@ -174,14 +169,13 @@ Update loadhri(CPU& cpu, Instruction inst)
 Update loadq(CPU& cpu, Instruction inst)
 {
   cpu.set_reg(inst.first,
-              cpu.get_mem(cpu.get_reg(REGISTER_PC) + inst.offset) &
-              QUARTERWORD_MASK);
+              cpu.get_quartermem(cpu.get_reg(REGISTER_PC) + inst.offset));
 
   return UpdatePC;
 }
 
 /**
- * Load a quarter word (16 bits) from memory using two base registers.
+ * Load a quarter word (8 bits) from memory using two base registers.
  *
  * REGISTERS[FIRST] = MEMORY[REGISTERS[SECOND] + REGISTERS[DATA]]
  * @param cpu the CPU.
@@ -191,14 +185,14 @@ Update loadq(CPU& cpu, Instruction inst)
 Update loadqrr(CPU& cpu, Instruction inst)
 {
   cpu.set_reg(inst.first,
-              cpu.get_mem(cpu.get_reg(inst.second) + cpu.get_reg(inst.data)) &
-              QUARTERWORD_MASK);
+              cpu.get_quartermem(cpu.get_reg(inst.second) +
+                                 cpu.get_reg(inst.data)));
 
   return UpdatePC;
 }
 
 /**
- * Load a quarter word (16 bits) from memory using a base register and a offset.
+ * Load a quarter word (8 bits) from memory using a base register and a offset.
  *
  * REGISTERS[FIRST] = MEMORY[REGISTERS[SECOND] + OFFSET]
  * @param cpu the CPU.
@@ -208,8 +202,7 @@ Update loadqrr(CPU& cpu, Instruction inst)
 Update loadqri(CPU& cpu, Instruction inst)
 {
   cpu.set_reg(inst.first,
-              cpu.get_mem(cpu.get_reg(inst.second) + inst.offset) &
-              QUARTERWORD_MASK);
+              cpu.get_quartermem(cpu.get_reg(inst.second) + inst.offset));
 
   return UpdatePC;
 }
@@ -323,19 +316,8 @@ Update storeri(CPU& cpu, Instruction inst)
  */
 Update storeh(CPU& cpu, Instruction inst)
 {
-  Word dst = cpu.get_mem(cpu.get_reg(REGISTER_PC) + inst.offset);
-  Word src = cpu.get_reg(inst.first);
-#if defined(IS_BIG_ENDIAN)
-  set_byte(&dst, 0, get_byte(src, 2));
-  set_byte(&dst, 1, get_byte(src, 3));
-#elif defined(IS_LITTLE_ENDIAN)
-  set_byte(&dst, 2, get_byte(src, 0));
-  set_byte(&dst, 3, get_byte(src, 1));
-#else
-#error endianness not specified
-#endif
-
-  cpu.set_mem(cpu.get_reg(REGISTER_PC) + inst.offset, dst);
+  cpu.set_halfmem(cpu.get_reg(REGISTER_PC) + inst.offset,
+                  static_cast<HalfWord>(cpu.get_reg(inst.first)));
 
   return UpdatePC;
 }
@@ -350,19 +332,8 @@ Update storeh(CPU& cpu, Instruction inst)
  */
 Update storehrr(CPU& cpu, Instruction inst)
 {
-  Word dst = cpu.get_mem(cpu.get_reg(inst.first) + cpu.get_reg(inst.data));
-  Word src = cpu.get_reg(inst.second);
-#if defined(IS_BIG_ENDIAN)
-  set_byte(&dst, 0, get_byte(src, 2));
-  set_byte(&dst, 1, get_byte(src, 3));
-#elif defined(IS_LITTLE_ENDIAN)
-  set_byte(&dst, 2, get_byte(src, 0));
-  set_byte(&dst, 3, get_byte(src, 1));
-#else
-#error endianness not specified
-#endif
-
-  cpu.set_mem(cpu.get_reg(inst.first) + cpu.get_reg(inst.data), dst);
+  cpu.set_halfmem(cpu.get_reg(inst.first) + cpu.get_reg(inst.data),
+                  static_cast<HalfWord>(cpu.get_reg(inst.second)));
 
   return UpdatePC;
 }
@@ -377,19 +348,8 @@ Update storehrr(CPU& cpu, Instruction inst)
  */
 Update storehri(CPU& cpu, Instruction inst)
 {
-  Word dst = cpu.get_mem(cpu.get_reg(inst.first) + inst.offset);
-  Word src = cpu.get_reg(inst.second);
-#if defined(IS_BIG_ENDIAN)
-  set_byte(&dst, 0, get_byte(src, 2));
-  set_byte(&dst, 1, get_byte(src, 3));
-#elif defined(IS_LITTLE_ENDIAN)
-  set_byte(&dst, 2, get_byte(src, 0));
-  set_byte(&dst, 3, get_byte(src, 1));
-#else
-#error endianness not specified
-#endif
-
-  cpu.set_mem(cpu.get_reg(inst.first) + inst.offset, dst);
+  cpu.set_halfmem(cpu.get_reg(inst.first) + inst.offset,
+                  static_cast<HalfWord>(cpu.get_reg(inst.second)));
 
   return UpdatePC;
 }
@@ -404,17 +364,8 @@ Update storehri(CPU& cpu, Instruction inst)
  */
 Update storeq(CPU& cpu, Instruction inst)
 {
-  Word dst = cpu.get_mem(cpu.get_reg(REGISTER_PC) + inst.offset);
-  Word src = cpu.get_reg(inst.first);
-#if defined(IS_BIG_ENDIAN)
-  set_byte(&dst, 0, get_byte(src, 3));
-#elif defined(IS_LITTLE_ENDIAN)
-  set_byte(&dst, 3, get_byte(src, 0));
-#else
-#error endianness not specified
-#endif
-
-  cpu.set_mem(cpu.get_reg(REGISTER_PC) + inst.offset, dst);
+  cpu.set_quartermem(cpu.get_reg(REGISTER_PC) + inst.offset,
+                     static_cast<QuarterWord>(cpu.get_reg(inst.first)));
 
   return UpdatePC;
 }
@@ -429,17 +380,8 @@ Update storeq(CPU& cpu, Instruction inst)
  */
 Update storeqrr(CPU& cpu, Instruction inst)
 {
-  Word dst = cpu.get_mem(cpu.get_reg(inst.first) + cpu.get_reg(inst.data));
-  Word src = cpu.get_reg(inst.second);
-#if defined(IS_BIG_ENDIAN)
-  set_byte(&dst, 0, get_byte(src, 3));
-#elif defined(IS_LITTLE_ENDIAN)
-  set_byte(&dst, 3, get_byte(src, 0));
-#else
-#error endianness not specified
-#endif
-
-  cpu.set_mem(cpu.get_reg(inst.first) + cpu.get_reg(inst.data), dst);
+  cpu.set_quartermem(cpu.get_reg(inst.first) + cpu.get_reg(inst.data),
+                     static_cast<QuarterWord>(cpu.get_reg(inst.second)));
 
   return UpdatePC;
 }
@@ -454,17 +396,8 @@ Update storeqrr(CPU& cpu, Instruction inst)
  */
 Update storeqri(CPU& cpu, Instruction inst)
 {
-  Word dst = cpu.get_mem(cpu.get_reg(inst.first) + inst.offset);
-  Word src = cpu.get_reg(inst.second);
-#if defined(IS_BIG_ENDIAN)
-  set_byte(&dst, 0, get_byte(src, 3));
-#elif defined(IS_LITTLE_ENDIAN)
-  set_byte(&dst, 3, get_byte(src, 0));
-#else
-#error endianness not specified
-#endif
-
-  cpu.set_mem(cpu.get_reg(inst.first) + inst.offset, dst);
+  cpu.set_quartermem(cpu.get_reg(inst.first) + inst.offset,
+                     static_cast<QuarterWord>(cpu.get_reg(inst.second)));
 
   return UpdatePC;
 }
