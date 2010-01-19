@@ -191,7 +191,7 @@ void CPU::execute()
  * @param cycles number of cycles to execute.
  * @return cycles remaining (> 0 if the CPU was stopped.
  */
-Uint8 CPU::execute(Uint8 cycles)
+Uint8 CPU::execute(Uint16 cycles)
 {
   while (this->running() and (cycles > 0)) {
     this->next();

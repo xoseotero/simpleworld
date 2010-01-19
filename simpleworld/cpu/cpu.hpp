@@ -108,7 +108,7 @@ public:
    * @param cycles number of cycles to execute.
    * @return cycles remaining (> 0 if the CPU was stopped.
    */
-  Uint8 execute(Uint8 cycles);
+  Uint8 execute(Uint16 cycles);
 
   /**
    * Execute the next instruction.
