@@ -1,4 +1,9 @@
-add_executable(swcpu swcpu.cpp)
+set(SWCPU_SRCS
+  memoryfile.cpp
+  cpu.cpp
+  swcpu.cpp)
+
+add_executable(swcpu ${SWCPU_SRCS})
 target_link_libraries(swcpu
   simpleworld_cpu
   common

@@ -2,7 +2,7 @@
  * @file src/swcpu/swlcpu.cpp
  * Simple World CPU
  *
- *  Copyright (C) 2006-2008  Xosé Otero <xoseotero@users.sourceforge.net>
+ *  Copyright (C) 2006-2010  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -27,19 +27,11 @@
 #include <boost/format.hpp>
 
 #include <simpleworld/config.hpp>
-#include <simpleworld/ints.hpp>
 #include <simpleworld/exception.hpp>
-#include <simpleworld/cpu/types.hpp>
-#include <simpleworld/cpu/memory.hpp>
-#include <simpleworld/cpu/memory_file.hpp>
-#include <simpleworld/cpu/instruction.hpp>
-#include <simpleworld/cpu/object.hpp>
-#include <simpleworld/cpu/codeerror.hpp>
 namespace sw = simpleworld;
-namespace cpu = simpleworld::cpu;
 
 #include "../common/printexc.hpp"
-#include "../common/fakecpu.hpp"
+#include "cpu.hpp"
 
 const char* program_short_name = "swcpu";
 const char* program_name = "Simple World CPU";
@@ -174,87 +166,6 @@ void parse_cmd(int argc, char* argv[])
     usage("too many object files");
 
   input = argv[optind];
-}
-
-
-class CPU: public FakeCPU, cpu::Object
-{
-public:
-  /**
-   * Constructor.
-   * @param filename filename from where to load the code.
-   * @exception FileAccessError problem with the file.
-   */
-  CPU(const std::string& filename) throw ();
-
-  /**
-   * Execute the next instruction.
-   * @exception CPUStopped A stop instruction was found
-   */
-  void next();
-
-protected:
-  cpu::Memory registers_;
-  cpu::MemoryFile memory_;
-};
-
-CPU::CPU(const std::string& filename) throw ()
-  : FakeCPU(&this->registers_, &this->memory_),
-    cpu::Object(cpu::CPU::isa_, filename),
-    registers_(sizeof(cpu::Word) * 16), memory_(filename)
-{
-}
-
-void CPU::next()
-{
-  try {
-    cpu::Instruction instruction = this->fetch_instruction_();
-    std::cout
-      << this->decompile(instruction.encode())
-      << std::endl;
-  } catch (const cpu::CPUException& e) {
-    std::cout << boost::str(boost::format("Instruction[0x%08X]: 0x%08X")
-                            % this->registers_[ADDRESS(REGISTER_PC)]
-                            % this->memory_[this->registers_[ADDRESS(REGISTER_PC)]])
-              << std::endl;
-  }
-
-
-  FakeCPU::next();
-
-  sw::Uint8 i = 1;
-  std::vector<sw::Uint8> regs_codes = cpu::CPU::isa_.register_codes();
-  std::vector<sw::Uint8>::const_iterator reg = regs_codes.begin();
-  while (reg != regs_codes.end()) {
-    std::cout << boost::str(boost::format("%3s = 0x%08X")
-                            % cpu::CPU::isa_.register_name(*reg)
-                            % this->registers_[*reg * 4]);
-    if (i % 4 == 0)
-      std::cout << std::endl;
-    else
-      std::cout << ", ";
-
-    ++reg;
-    i++;
-  }
-
-  // Show the stack (the data between the fp and the sp).
-  // If the sp is 0, then (suppose) the stack is not initialized.
-  // If the fp is 0, then (suppose) the code is not in a function.
-  if (this->registers_[REGISTER_SP * sizeof(cpu::Word)] != 0 and
-      this->registers_[REGISTER_FP * sizeof(cpu::Word)] != 0 and
-      this->registers_[REGISTER_SP * sizeof(cpu::Word)] !=
-      this->registers_[REGISTER_FP * sizeof(cpu::Word)]) {
-    std::cout << "Stack:" << std::endl;
-    for (cpu::Address addr = this->registers_[REGISTER_SP * sizeof(cpu::Word)];
-         addr > this->registers_[REGISTER_FP * sizeof(cpu::Word)];
-         addr -= sizeof(cpu::Word))
-      std::cout << boost::str(boost::format("0x%08X") %
-                              this->memory_[addr - 4])
-                << std::endl;
-  }
-
-  std::cout << std::endl;
 }
 
 
