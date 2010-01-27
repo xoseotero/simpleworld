@@ -70,8 +70,6 @@ sll r5 r6 fp
 slli r5 r6 0x0001
 srl r5 r6 r11
 srli r5 r6 0x0002
-sla r5 r6 r10
-slai r5 r6 0x0003
 sra r5 r6 r9
 srai r5 r6 0x0004
 rl r5 r6 r8

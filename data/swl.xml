@@ -77,20 +77,14 @@
             <item> subi </item>
             <item> multl </item>
             <item> multli </item>
-            <item> multlu </item>
-            <item> multlui </item>
             <item> multh </item>
             <item> multhi </item>
             <item> multhu </item>
             <item> multhui </item>
             <item> div </item>
             <item> divi </item>
-            <item> divu </item>
-            <item> divui </item>
             <item> mod </item>
             <item> modi </item>
-            <item> modu </item>
-            <item> modui </item>
 
             <!-- Sign operations -->
             <item> signh </item>
@@ -110,8 +104,6 @@
             <item> slli </item>
             <item> srl </item>
             <item> srli </item>
-            <item> sla </item>
-            <item> slai </item>
             <item> sra </item>
             <item> srai </item>
             <item> rl </item>

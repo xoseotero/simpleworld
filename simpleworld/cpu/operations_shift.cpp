@@ -2,7 +2,7 @@
  * @file simpleworld/cpu/operations_shift.cpp
  * Shift operations of the Simple CPU.
  *
- *  Copyright (C) 2006-2008  Xosé Otero <xoseotero@users.sourceforge.net>
+ *  Copyright (C) 2006-2010  Xosé Otero <xoseotero@users.sourceforge.net>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -81,36 +81,6 @@ Update srl(CPU& cpu, Instruction inst)
 Update srli(CPU& cpu, Instruction inst)
 {
   cpu.set_reg(inst.first, cpu.get_reg(inst.second) >> inst.data);
-
-  return UpdatePC;
-}
-
-/**
- * Arithmetic shift left.
- *
- * Same as logic shift left.
- * @param cpu the CPU.
- * @param inst the instruction.
- * @return if the PC must be updated.
- */
-Update sla(CPU& cpu, Instruction inst)
-{
-  cpu.set_reg(inst.first, cpu.get_reg(inst.second) << cpu.get_reg(inst.data));
-
-  return UpdatePC;
-}
-
-/**
- * Arithmetic shift left.
- *
- * Same as logic shift left.
- * @param cpu the CPU.
- * @param inst the instruction.
- * @return if the PC must be updated.
- */
-Update slai(CPU& cpu, Instruction inst)
-{
-  cpu.set_reg(inst.first, cpu.get_reg(inst.second) << inst.data);
 
   return UpdatePC;
 }

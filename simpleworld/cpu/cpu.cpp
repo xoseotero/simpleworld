@@ -168,14 +168,12 @@ CPU::CPU(Memory* registers, Memory* memory)
   this->isa_.add_instruction(0x91, "slli", 2, true, slli);
   this->isa_.add_instruction(0x92, "srl", 3, false, srl);
   this->isa_.add_instruction(0x93, "srli", 2, true, srli);
-  this->isa_.add_instruction(0x94, "sla", 3, false, sla);
-  this->isa_.add_instruction(0x95, "slai", 2, true, slai);
-  this->isa_.add_instruction(0x96, "sra", 3, false, sra);
-  this->isa_.add_instruction(0x97, "srai", 2, true, srai);
-  this->isa_.add_instruction(0x98, "rl", 3, false, rl);
-  this->isa_.add_instruction(0x99, "rli", 2, true, rli);
-  this->isa_.add_instruction(0x9a, "rr", 3, false, rr);
-  this->isa_.add_instruction(0x9b, "rri", 2, true, rri);
+  this->isa_.add_instruction(0x94, "sra", 3, false, sra);
+  this->isa_.add_instruction(0x95, "srai", 2, true, srai);
+  this->isa_.add_instruction(0x96, "rl", 3, false, rl);
+  this->isa_.add_instruction(0x97, "rli", 2, true, rli);
+  this->isa_.add_instruction(0x98, "rr", 3, false, rr);
+  this->isa_.add_instruction(0x99, "rri", 2, true, rri);
 }
 
 

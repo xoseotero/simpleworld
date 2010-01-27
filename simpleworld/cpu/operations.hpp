@@ -2,7 +2,7 @@
  * @file simpleworld/cpu/operations.hpp
  * Operations of the Simple CPU.
  *
- *  Copyright (C) 2006-2008  Xosé Otero <xoseotero@users.sourceforge.net>
+ *  Copyright (C) 2006-2010  Xosé Otero <xoseotero@users.sourceforge.net>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -130,7 +130,7 @@ Update loadhrr(CPU& cpu, Instruction inst);
 Update loadhri(CPU& cpu, Instruction inst);
 
 /**
- * Load a quarter word (16 bits) from memory.
+ * Load a quarter word (8 bits) from memory.
  *
  * REGISTERS[FIRST] = MEMORY[PC + OFFSET]
  * @param cpu the CPU.
@@ -140,7 +140,7 @@ Update loadhri(CPU& cpu, Instruction inst);
 Update loadq(CPU& cpu, Instruction inst);
 
 /**
- * Load a quarter word (16 bits) from memory using two base registers.
+ * Load a quarter word (8 bits) from memory using two base registers.
  *
  * REGISTERS[FIRST] = MEMORY[REGISTERS[SECOND] + REGISTERS[DATA]]
  * @param cpu the CPU.
@@ -150,7 +150,7 @@ Update loadq(CPU& cpu, Instruction inst);
 Update loadqrr(CPU& cpu, Instruction inst);
 
 /**
- * Load a quarter word (16 bits) from memory using a base register and a offset.
+ * Load a quarter word (8 bits) from memory using a base register and a offset.
  *
  * REGISTERS[FIRST] = MEMORY[REGISTERS[SECOND] + OFFSET]
  * @param cpu the CPU.
@@ -757,26 +757,6 @@ Update srl(CPU& cpu, Instruction inst);
  * @return if the PC must be updated.
  */
 Update srli(CPU& cpu, Instruction inst);
-
-/**
- * Arithmetic shift left.
- *
- * Same as logic shift left.
- * @param cpu the CPU.
- * @param inst the instruction.
- * @return if the PC must be updated.
- */
-Update sla(CPU& cpu, Instruction inst);
-
-/**
- * Arithmetic shift left.
- *
- * Same as logic shift left.
- * @param cpu the CPU.
- * @param inst the instruction.
- * @return if the PC must be updated.
- */
-Update slai(CPU& cpu, Instruction inst);
 
 /**
  * Arithmetic shift right.

@@ -1468,8 +1468,7 @@ BOOST_AUTO_TEST_CASE(cpu_logic)
 
 /**
  * Execute shift operations.
- * Operations: sll, slli, srl, srli, sla, slai, sra, srai,
- *             rl, rli, rr, rri
+ * Operations: sll, slli, srl, srli, sra, srai, rl, rli, rr, rri
  */
 BOOST_AUTO_TEST_CASE(cpu_shift)
 {
@@ -1491,8 +1490,8 @@ BOOST_AUTO_TEST_CASE(cpu_shift)
   source.insert(line++, "srli r8 r8 0x2"); // r8 = 0x00003fff
   source.insert(line++, "or r7 r7 r8");    // r7 = 0xffff3fff
 
-  source.insert(line++, "sla r8 r3 r5");
-  source.insert(line++, "slai r8 r8 0x8"); // r8 = 0xffff0000
+  source.insert(line++, "sll r8 r3 r5");
+  source.insert(line++, "slli r8 r8 0x8"); // r8 = 0xffff0000
   source.insert(line++, "sra r8 r8 r5");   // r8 = 0x80ffff00
   source.insert(line++, "srai r8 r8 0x8"); // r8 = 0x8080ffff
 
@@ -1505,11 +1504,8 @@ BOOST_AUTO_TEST_CASE(cpu_shift)
   source.insert(line++, "slli r10 r2 0x4");
   source.insert(line++, "srli r10 r10 0x4"); // r10 = 0x0707
 
-  source.insert(line++, "slai r11 r2 0x4");
-  source.insert(line++, "srai r11 r11 0x4"); // r11 = 0x0707
-
-  source.insert(line++, "rli cs r2 0x4");
-  source.insert(line++, "rri cs cs 0x4");    // cs = 0x0707
+  source.insert(line++, "rli r11 r2 0x4");
+  source.insert(line++, "rri r11 r11 0x4"); // r11 = 0x0707
 
   compile(source);
 
@@ -1525,5 +1521,4 @@ BOOST_AUTO_TEST_CASE(cpu_shift)
   BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r9")], 0xffffffff);
   BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r10")], 0x0707);
   BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r11")], 0x0707);
-  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "cs")], 0x0707);
 }
