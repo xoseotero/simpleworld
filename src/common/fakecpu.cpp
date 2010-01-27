@@ -44,5 +44,8 @@ cpu::Update fakeworld(cpu::CPU& cpu, cpu::Instruction inst)
 FakeCPU::FakeCPU(cpu::Memory* registers, cpu::Memory* memory)
   : cpu::CPU(registers, memory)
 {
+  this->isa_.add_interrupt(5, "InvalidWorldCommand", true);
+  this->isa_.add_interrupt(6, "WorldEvent", false);
+
   this->isa_.add_instruction(0x58, "world", 0, true, fakeworld);
 }
