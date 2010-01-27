@@ -244,14 +244,14 @@ Instruction info:\tcode: 0x%02X, name: %s, nregs: %d, has_i: %d")
     // If the pc or the itp are out of range, the error is critical and
     // the CPU must be stopped
     this->interrupt(INTERRUPT_INSTRUCTION,
-                    this->memory_->get_word(ADDRESS(REGISTER_PC)),
+                    this->registers_->get_word(ADDRESS(REGISTER_PC)),
                     instruction.code);
   } catch (const MemoryError& exc) {
     // If the pc or the itp are out of range, then the error is critical and
     // the CPU must be stopped
     this->interrupt(INTERRUPT_MEMORY,
-                    this->memory_->get_word(ADDRESS(REGISTER_PC)),
-                    instruction.data);
+                    this->registers_->get_word(ADDRESS(REGISTER_PC)),
+                    exc.address);
   }
 }
 

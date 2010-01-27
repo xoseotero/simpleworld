@@ -108,9 +108,9 @@ void Memory::resize(Address size)
 Word Memory::get_word(Address address, bool system_endian) const
 {
   if (address > (this->size_ - sizeof(Word)))
-    throw EXCEPTION(MemoryError, boost::str(boost::format("\
+    throw EXCEPTION1(MemoryError, boost::str(boost::format("\
 Address 0x%08X is out of range")
-                                            % address));
+                                            % address), address);
 
 #if defined(IS_BIG_ENDIAN)
   return *(reinterpret_cast<Word*>(&this->memory_[address]));
@@ -137,9 +137,9 @@ Address 0x%08X is out of range")
 HalfWord Memory::get_halfword(Address address, bool system_endian) const
 {
   if (address > (this->size_ - sizeof(HalfWord)))
-    throw EXCEPTION(MemoryError, boost::str(boost::format("\
+    throw EXCEPTION1(MemoryError, boost::str(boost::format("\
 Address 0x%08X is out of range")
-                                            % address));
+                                            % address), address);
 
 #if defined(IS_BIG_ENDIAN)
   return *(reinterpret_cast<HalfWord*>(&this->memory_[address]));
@@ -162,9 +162,9 @@ Address 0x%08X is out of range")
 QuarterWord Memory::get_quarterword(Address address) const
 {
   if (address > (this->size_ - sizeof(QuarterWord)))
-    throw EXCEPTION(MemoryError, boost::str(boost::format("\
+    throw EXCEPTION1(MemoryError, boost::str(boost::format("\
 Address 0x%08X is out of range")
-                                            % address));
+                                            % address), address);
 
   return *(reinterpret_cast<QuarterWord*>(&this->memory_[address]));
 }
@@ -183,9 +183,9 @@ Address 0x%08X is out of range")
 void Memory::set_word(Address address, Word value, bool system_endian)
 {
   if (address > (this->size_ - sizeof(Word)))
-    throw EXCEPTION(MemoryError, boost::str(boost::format("\
+    throw EXCEPTION1(MemoryError, boost::str(boost::format("\
 Address 0x%08X is out of range")
-                                            % address));
+                                            % address), address);
 
 
 #if defined(IS_BIG_ENDIAN)
@@ -214,9 +214,9 @@ Address 0x%08X is out of range")
 void Memory::set_halfword(Address address, HalfWord value, bool system_endian)
 {
   if (address > (this->size_ - sizeof(HalfWord)))
-    throw EXCEPTION(MemoryError, boost::str(boost::format("\
+    throw EXCEPTION1(MemoryError, boost::str(boost::format("\
 Address 0x%08X is out of range")
-                                            % address));
+                                            % address), address);
 
 
 #if defined(IS_BIG_ENDIAN)
@@ -241,9 +241,9 @@ Address 0x%08X is out of range")
 void Memory::set_quarterword(Address address, QuarterWord value)
 {
   if (address > (this->size_ - sizeof(QuarterWord)))
-    throw EXCEPTION(MemoryError, boost::str(boost::format("\
+    throw EXCEPTION1(MemoryError, boost::str(boost::format("\
 Address 0x%08X is out of range")
-                                            % address));
+                                            % address), address);
 
 
   *(reinterpret_cast<QuarterWord*>(&this->memory_[address])) = value;

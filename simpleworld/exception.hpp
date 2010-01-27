@@ -60,10 +60,20 @@ public:
 /**
  * Macro to set the automatic values of the exceptions.
  * @param exception Exception to call.
- * @param what Waht happened.
+ * @param what What happened.
  */
 #define EXCEPTION(exception, what) \
   (exception(__FILE__, __LINE__, BOOST_CURRENT_FUNCTION, what))
+
+/**
+ * Macro to set the automatic values of the exceptions with 1 extra argument.
+ * @param exception Exception to call.
+ * @param what What happened.
+ * @param extra Extra argument.
+ */
+#define EXCEPTION1(exception, what, extra) \
+  (exception(__FILE__, __LINE__, BOOST_CURRENT_FUNCTION, what, extra))
+
 
 }
 

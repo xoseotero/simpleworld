@@ -23,6 +23,7 @@
 #include <string>
 
 #include <simpleworld/ints.hpp>
+#include <simpleworld/cpu/types.hpp>
 #include <simpleworld/cpu/exception.hpp>
 
 namespace simpleworld
@@ -44,9 +45,11 @@ public:
    * @param what What happened.
    */
   MemoryError(std::string file, Uint32 line, std::string function,
-              std::string what) throw ()
-    : CPUException(file, line, function, what)
+              std::string what, Address address) throw ()
+    : CPUException(file, line, function, what), address(address)
   {}
+
+  Address address;
 };
 
 }

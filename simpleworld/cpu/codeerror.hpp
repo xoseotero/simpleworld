@@ -22,6 +22,7 @@
 
 #include <string>
 
+#include <simpleworld/types.hpp>
 #include <simpleworld/ints.hpp>
 #include <simpleworld/cpu/exception.hpp>
 
