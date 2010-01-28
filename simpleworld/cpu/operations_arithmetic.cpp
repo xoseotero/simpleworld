@@ -96,7 +96,7 @@ Update subi(CPU& cpu, Instruction inst)
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update multl(CPU& cpu, Instruction inst)
+Update mult(CPU& cpu, Instruction inst)
 {
   Sint64 result = cpu.get_reg(inst.second) * cpu.get_reg(inst.data);
   cpu.set_reg(inst.first, result & LOWBITS_64BITS);
@@ -112,7 +112,7 @@ Update multl(CPU& cpu, Instruction inst)
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update multli(CPU& cpu, Instruction inst)
+Update multi(CPU& cpu, Instruction inst)
 {
   Sint64 result = cpu.get_reg(inst.second) * inst.data;
   cpu.set_reg(inst.first, result & LOWBITS_64BITS);

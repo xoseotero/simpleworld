@@ -535,7 +535,7 @@ Update subi(CPU& cpu, Instruction inst);
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update multl(CPU& cpu, Instruction inst);
+Update mult(CPU& cpu, Instruction inst);
 
 /**
  * Low 32bits from multiply a registers and the data (signed value).
@@ -545,7 +545,7 @@ Update multl(CPU& cpu, Instruction inst);
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
-Update multli(CPU& cpu, Instruction inst);
+Update multi(CPU& cpu, Instruction inst);
 
 /**
  * High 32bits from multiply two signed registers.

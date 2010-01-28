@@ -942,7 +942,7 @@ BOOST_AUTO_TEST_CASE(cpu_interrupt)
   // Interrupt handler
   // Store the code of the interrupt in a the position data + 4 * code
   source.insert(line++, ".label handler_int");
-  source.insert(line++, "multli r1 r0 0x4");
+  source.insert(line++, "multi r1 r0 0x4");
   source.insert(line++, "loada r2 data");
   source.insert(line++, "storerr r1 r0 r2");
   source.insert(line++, "reti");
@@ -1298,7 +1298,7 @@ BOOST_AUTO_TEST_CASE(cpu_arithmetic_add)
 }
 
 /**
- * Execute the arithmetic operations multl, multli, multh, multhi,
+ * Execute the arithmetic operations mult, multi, multh, multhi,
  * multhu and multhui.
  */
 BOOST_AUTO_TEST_CASE(cpu_arithmetic_mult)
@@ -1313,10 +1313,10 @@ BOOST_AUTO_TEST_CASE(cpu_arithmetic_mult)
   source.insert(line++, "slli r3 r3 0x10");
   source.insert(line++, "or r3 r3 r2");
 
-  source.insert(line++, "multl r4 r2 r3");
-  source.insert(line++, "multli r5 r3 0x10");
-  source.insert(line++, "multl r6 r3 r0");
-  source.insert(line++, "multli r7 r2 0xfff");
+  source.insert(line++, "mult r4 r2 r3");
+  source.insert(line++, "multi r5 r3 0x10");
+  source.insert(line++, "mult r6 r3 r0");
+  source.insert(line++, "multi r7 r2 0xfff");
   source.insert(line++, "multh r8 r3 r3");
   source.insert(line++, "multhi r9 r3 0x1");
   source.insert(line++, "multhu r10 r3 r3");

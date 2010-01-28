@@ -169,7 +169,7 @@
         # check if there is enough space in the block to be divided in 2
         loadi r3 STD_QWORDSIZE
         addi r3 r3 _STD_MBLOCK_OVERHEAD
-        multli r3 r3 0x2
+        multi r3 r3 0x2
         add r3 r3 r1
         loadri r2 r0 _STD_MBLOCK_SIZE
         bltu r2 r3 __std_mblockdivide_enomem

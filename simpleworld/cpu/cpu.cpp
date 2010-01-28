@@ -139,8 +139,8 @@ CPU::CPU(Memory* registers, Memory* memory)
   this->isa_.add_instruction(0x61, "addi", 2, true, addi);
   this->isa_.add_instruction(0x62, "sub", 3, false, sub);
   this->isa_.add_instruction(0x63, "subi", 2, true, subi);
-  this->isa_.add_instruction(0x64, "multl", 3, false, multl);
-  this->isa_.add_instruction(0x65, "multli", 2, true, multli);
+  this->isa_.add_instruction(0x64, "mult", 3, false, mult);
+  this->isa_.add_instruction(0x65, "multi", 2, true, multi);
   this->isa_.add_instruction(0x66, "multh", 3, false, multh);
   this->isa_.add_instruction(0x67, "multhi", 2, true, multhi);
   this->isa_.add_instruction(0x68, "multhu", 3, false, multhu);

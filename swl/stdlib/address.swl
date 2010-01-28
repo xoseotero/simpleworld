@@ -74,7 +74,7 @@ STD_MAXU
         subi r1 r1 0x1
         add r0 r0 r1
         divi r0 r0 STD_WORDSIZE
-        multli r0 r0 STD_WORDSIZE
+        multi r0 r0 STD_WORDSIZE
 
         # check if the word is accessible
         load r1 _std_invaladdr

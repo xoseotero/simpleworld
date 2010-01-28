@@ -75,8 +75,8 @@
             <item> addi </item>
             <item> sub </item>
             <item> subi </item>
-            <item> multl </item>
-            <item> multli </item>
+            <item> mult </item>
+            <item> multi </item>
             <item> multh </item>
             <item> multhi </item>
             <item> multhu </item>

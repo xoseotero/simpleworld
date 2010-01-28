@@ -96,7 +96,7 @@
         # calculate the pointer to the list of handlers
         loada r0 _std_hnds
         loadri r1 fp 0x0
-        multli r1 r1 STD_WORDSIZE
+        multi r1 r1 STD_WORDSIZE
         add r0 r0 r1
         loadri r0 r0 0x0
         push r0                         # list is in fp + 0xC
@@ -154,7 +154,7 @@
 
         .label __std_intinit_loop1
         # set the internal handler
-        multli r4 r0 STD_WORDSIZE
+        multi r4 r0 STD_WORDSIZE
         storerr r2 r3 r4
 
         # update the start
@@ -174,7 +174,7 @@
         bnz r1 __std_intinit_enomem
         loada r1 _std_hnds
         loadri r2 fp 0x4
-        multli r3 r2 STD_WORDSIZE
+        multi r3 r2 STD_WORDSIZE
         storerr r1 r0 r3
 
         # update the start
@@ -258,7 +258,7 @@
         # calculate the pointer to the list
         loada r0 _std_hnds
         loadri r1 fp 0x0
-        multli r1 r1 STD_WORDSIZE
+        multi r1 r1 STD_WORDSIZE
         add r0 r0 r1
         loadri r0 r0 0x0
         push r0                         # list is in fp + 0x8
@@ -313,7 +313,7 @@
         # calculate the pointer to the list
         loada r0 _std_hnds
         loadri r1 fp 0x0
-        multli r1 r1 STD_WORDSIZE
+        multi r1 r1 STD_WORDSIZE
         add r0 r0 r1
         loadri r0 r0 0x0
         push r0                         # list is in fp + 0x8

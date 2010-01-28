@@ -47,8 +47,8 @@ add r0 r1 r2
 addi r2 r2 0x0001
 sub r0 r1 r2
 subi r2 r2 0x0001
-multl r0 r1 r2
-multli r0 r1 0x0001
+mult r0 r1 r2
+multi r0 r1 0x0001
 multh r0 r1 r2
 multhi r0 r1 0x0001
 multhu r0 r1 r2

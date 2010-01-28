@@ -39,7 +39,7 @@
         push r0                         # elements is in fp + 0x0
 
         # allocate the memory
-        multli r0 r0 STD_WORDSIZE
+        multi r0 r0 STD_WORDSIZE
         addi r0 r0 _STD_ARRAY_MEM
         call std_alloc
         bnz r1 _std_array_enomem
@@ -103,7 +103,7 @@
         push r0                         # pointer is in fp + 0x0
         push r1                         # elements is in fp + 0x4
 
-        multli r1 r1 STD_WORDSIZE
+        multi r1 r1 STD_WORDSIZE
         addi r1 r1 _STD_ARRAY_MEM
         call std_realloc
         bz r1 _std_arrayresize_ok
@@ -150,7 +150,7 @@
         loadri r0 fp 0x0
         addi r0 r0 _STD_ARRAY_MEM
         loadri r1 fp 0x4
-        multli r1 r1 STD_WORDSIZE
+        multi r1 r1 STD_WORDSIZE
         loadrr r0 r0 r1
 
         .label _std_arrayget_ret
@@ -194,7 +194,7 @@
         loadri r0 fp 0x0
         addi r0 r0 _STD_ARRAY_MEM
         loadri r1 fp 0x4
-        multli r1 r1 STD_WORDSIZE
+        multi r1 r1 STD_WORDSIZE
         loadri r2 fp 0x8
         storerr r0 r2 r1
 
@@ -231,7 +231,7 @@
         addi r0 r0 _STD_ARRAY_MEM
         loadri r1 fp 0x0
         loadri r1 r1 _STD_ARRAY_SIZE
-        multli r1 r1 STD_WORDSIZE
+        multi r1 r1 STD_WORDSIZE
         loadri r2 fp 0x4
         call std_fill
         bz r1 _std_arrayfill_ret
@@ -278,7 +278,7 @@
         loadri r1 r1 _STD_ARRAY_SIZE
         loadri r2 fp 0x4
         sub r1 r1 r2
-        multli r1 r1 STD_WORDSIZE
+        multi r1 r1 STD_WORDSIZE
         loadri r2 fp 0x8
         call std_find
         bz r1 _std_arrayfind_ret
@@ -320,7 +320,7 @@
         addi r0 r0 _STD_ARRAY_MEM
         loadri r1 fp 0x0
         loadri r1 r1 _STD_ARRAY_SIZE
-        multli r1 r1 STD_WORDSIZE
+        multi r1 r1 STD_WORDSIZE
         loadri r2 fp 0x4
         call std_count
         bz r1 _std_arraycount_ret

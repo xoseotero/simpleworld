@@ -65,7 +65,7 @@ STD_FULL
         load r3 _std_random_c
 
         # LCG in the seed
-        multl r0 r0 r1
+        mult r0 r0 r1
         add r0 r0 r2
         and r0 r0 r3
 
