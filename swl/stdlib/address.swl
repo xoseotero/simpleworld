@@ -1,0 +1,93 @@
+# @file stdlib/address.swl
+# Check if a address or block is valid.
+# std_init must be executed before using any of this functions.
+#
+#  Copyright (C) 2008-2010  Xosé Otero <xoseotero@gmail.com>
+#
+#  This program is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+.include "stdlib/def.swl"
+.include "stdlib/int.swl"
+
+
+# Lowest invalid address
+.label _std_invaladdr
+STD_MAXU
+
+# Handler for the invalid memory location interrupt.
+# IN:  r0 type of interrupt
+# IN:  r1 location of the instruction
+# IN:  r2 address
+.label _std_memhandler
+        load r0 _std_invaladdr
+        bltu r2 r0 __std_memhandler_update
+        ret
+
+        .label __std_memhandler_update
+        store r2 _std_invaladdr
+        ret
+
+# Initialize the address check.
+# OUT: r1 error status
+#      STD_NOERROR: no errors
+#      STD_ENOMEM:  there is not enough memory
+.label _std_addressinit
+        # insert the invalid memory location interrupt
+        loadi r0 STD_IMEM
+        loada r1 _std_memhandler
+        call std_handler
+
+        .label __std_addressinit_ret
+        ret                   # return the same error than std_handler
+
+
+# Check if a address is valid.
+# A address is valid if it is not STD_NULL and doesn't throw a STD_IMEM when
+# it is accessed.
+# IN:  r0 address
+# IN:  r1 size of the block of memory
+# OUT: r0 if the address is valid
+#      STD_TRUE: if the address is valid
+#      STD_FALSE: if the address is not valid
+.label std_address
+        # this method only works if the interrupts are enabled and
+        # _std_addressinit was called
+
+        # check if the address is STD_NULL (0)
+        bz r0 _std_address_invalid
+
+        # check if the size is 0
+        bz r1 _std_address_ok
+
+        # calculate the highest word containing the memory to check
+        subi r1 r1 0x1
+        add r0 r0 r1
+        divi r0 r0 STD_WORDSIZE
+        multli r0 r0 STD_WORDSIZE
+
+        # check if the word is accessible
+        load r1 _std_invaladdr
+        bgeu r0 r1 _std_address_invalid
+
+        loadri r2 r0 0x0
+        load r1 _std_invaladdr
+        bgeu r0 r1 _std_address_invalid
+
+        .label _std_address_ok
+        loadi r0 STD_TRUE
+        ret
+
+        .label _std_address_invalid
+        loadi r0 STD_FALSE
+        ret

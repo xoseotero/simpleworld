@@ -1,4 +1,5 @@
 Simple World 1.0b1:
+	* Add the stdlib (standard library of SWL)
 	* Revert the change in Alpha 2 about the order of the parameters in
 	  the store instructions.
 	* Make Simple World portable between different architectures:

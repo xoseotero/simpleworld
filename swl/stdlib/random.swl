@@ -1,7 +1,7 @@
 # @file stdlib/random.swl
 # Pseudorandom number generator.
 #
-#  Copyright (C) 2007  Xosé Otero <xoseotero@users.sourceforge.net>
+#  Copyright (C) 2007-2010  Xosé Otero <xoseotero@gmail.com>
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -20,82 +20,83 @@
 # http://en.wikipedia.org/wiki/Linear_congruential_generator
 # The GNU libc LCG algorithm is used: Vi = (A * V(i-1) + B) & C
 
+.include "stdlib/def.swl"
+.include "stdlib/bits.swl"
 
 
 # Constants for calculate next random value
-.label _random_a
+.label _std_random_a
 0x41c64e6d
-.label _random_b
+.label _std_random_b
 0x3039
-.label _random_c
-0x7fffffff
+.label _std_random_c
+STD_MAX
 
 # Seed zero by default
-.label _random_seed1
-0x0
-.label _random_seed2
-0xffffffff
-
-# Word with all the bits to 1 (to calculate the complement)
-.label _random_complement
-0xffffffff
+.label _std_random_seed1
+STD_ZERO
+.label _std_random_seed2
+STD_FULL
 
 
-# Update the value of the seed
-# IN:  r0 the new value for the seed
-.label random_seed
-	# the second word of the seed is the complement of the first one
-	load r1 _random_complement
-	xor r1 r0 r1
+# Set the seed.
+# IN:  r0 the seed
+.label std_seed
+        push r0                         # seed is in fp + 0x0
 
-	store r0 _random_seed1
-	store r1 _random_seed2
+        # the second word of the seed is the complement of the first one
+        call std_bitscomp
 
-	ret
+        pop r1
+
+        store r0 _std_random_seed1
+        store r1 _std_random_seed2
+
+        ret
 
 
 
 # Update the seed with a iteration of the LCG algorithm
 # IN:  r0 the seed
 # OUT: r0 the new value of the seed
-.label _random_lcg
-	load r1 _random_a
-	load r2 _random_b
-	load r3 _random_c
+.label _std_random_lcg
+        load r1 _std_random_a
+        load r2 _std_random_b
+        load r3 _std_random_c
 
-	# LCG in the seed
-	multl r0 r0 r1
-	add r0 r0 r2
-	and r0 r0 r3
+        # LCG in the seed
+        multl r0 r0 r1
+        add r0 r0 r2
+        and r0 r0 r3
 
-	ret
+        ret
 
 
 
-# Calculate a new random value
+# Calculate a new random value.
 # OUT: r0 the random value
-.label random_value
-	# LCG in the two seeds
-	load r0 _random_seed1
-	call _random_lcg
-	push r0
+.label std_random
+        # LCG in the two seeds
+        load r0 _std_random_seed1
+        call _std_random_lcg
+        push r0
 
-	load r0 _random_seed2
-	call _random_lcg
+        load r0 _std_random_seed2
+        call _std_random_lcg
 
-	# seed1 in r1
-	# seed2 in r0
-	pop r1
+        # seed1 in r1
+        # seed2 in r0
+        pop r1
 
-	# Update seeds
-	store r1 _random_seed1
-	store r0 _random_seed2
+        # Update seeds
+        store r1 _std_random_seed1
+        store r0 _std_random_seed2
 
-	# Calculate the new word using the most value bits of the words
-	# (the LCG algorith only returns 31 bits, the MLB = 0)
-	srli r1 r1 0x0f		# r1 = (r1 >> 15) << 16
-	slli r1 r1 0x10
-	srli r0 r0 0x0f		# r0 = r0 >> 15
-	or r0 r0 r1		# r0 = r0 | r1
+        # Calculate the new word using the most value bits of the words
+        # (the LCG algorith only returns 31 bits, the MLB = 0)
+        srli r1 r1 0x0f
+        slli r1 r1 0x10
+        srli r0 r0 0x0f
+        or r0 r0 r1
 
-	ret
+        ret

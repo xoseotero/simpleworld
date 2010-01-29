@@ -1,9 +1,7 @@
 # @file stdlib/error.swl
-# Error management.
-# Functions that can detect or produce errors must use the functions defined
-# here to inform about the error (that happened and what was the error).
+# Error definitions.
 #
-#  Copyright (C) 2006-2007  Xosé Otero <xoseotero@users.sourceforge.net>
+#  Copyright (C) 2006-2010  Xosé Otero <xoseotero@gmail.com>
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -19,17 +17,11 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Definitions for the errors
-.define ERROR_NOERROR	0x0000	# No error
+.define STD_NOERROR           0x0000    # No error
 
-.define ERROR_NOFUNC	0x0001	# Function not implemented
+.define STD_EINVAL            0x0001    # Invalid argument
+.define STD_EFAULT            0x0002    # Bad address
 
-.define ERROR_INVAL	0x0002	# Invalid argument
-.define ERROR_RANGE	0x0003	# Math result not representable
-.define ERROR_OVERFLOW	0x0004	# Value too large for defined data type
+.define STD_EOVERFLOW         0x0003    # Value too large
 
-
-
-# Variable with the value of the last error
-.label error_error
-0x00000000	# This should be ERROR_NOERROR, but a 32 bits number must be
-		# used
+.define STD_ENOMEM            0x0004    # Not enough space

@@ -1,0 +1,43 @@
+# @file stdlib/def.swl
+# Standard definitions.
+#
+#  Copyright (C) 2007-2010  Xosé Otero <xoseotero@gmail.com>
+#
+#  This program is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+# Boolean values
+.define STD_FALSE       0x0000
+.define STD_TRUE        0x0001          # any value different than 0
+
+# NULL pointer
+.define STD_NULL        0x0000
+
+# Sizes of addressable memory
+.define STD_WORDSIZE    0x4
+.define STD_HWORDSIZE   0x2
+.define STD_QWORDSIZE   0x1
+
+# Word with all bits to 0.
+.define STD_ZERO        0x00000000
+# Word with all bits to 1.
+.define STD_FULL        0xFFFFFFFF
+
+# Minimum signed value.
+.define STD_MIN         0x80000000
+# Maximum signed value.
+.define STD_MAX         0x7FFFFFFF
+# Minimum unsigned value.
+.define STD_MINU        0x00000000
+# Maximum unsigned value.
+.define STD_MAXU        0xFFFFFFFF

@@ -10,6 +10,11 @@ handled but some error happens, the bug is killed. Until now, in the
 previous case, the CPU tries to send a new interrupt, but sometimes this
 is impossible.
 
+The most important addition in this version was the stdlib (standard
+library of SWL). Some interesting parts are the data structures: lists,
+queue, etc; and a dynamic memory allocator or the code to help to manage
+interrupts.
+
 This version has incompatibles changes in the code of the bugs. Several 
 new instructions have been added to access half and quarter words and 
 these instructions caused that the code of some old instructions changed 

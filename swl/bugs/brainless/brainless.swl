@@ -23,152 +23,150 @@
 
 # Initialization
 .label init
-	loadi sp stack		# Initialize the Stack Pointer
-	b main
+        loada sp stack                  # Initialize the Stack Pointer
+        b main
 
 
-.include "stdlib/action.swl"
+.include "stdlib/world.swl"
 .include "stdlib/random.swl"
 
 
-.define ENERGY_TO_CREATE_EGG 0x40	# 64
+.define ENERGY_TO_CREATE_EGG  0x40      # 64
 
 
 # Main function of the bug
 .label main
-	call init_seed
+        call init_seed
 
-	.label _main_loop
-	call random_value
-	modi r0 r0 0x2		# r0 = random_value % 2
+        .label _main_loop
+        call std_random
+        modi r0 r0 0x2                  # r0 = std_random % 2
 
-	bz r0 _main_move
-	.label _main_turn	# if random_value != 0
-	call random_turn
-	b _main_loop
-	.label _main_move	# else (random_value == 0)
-	call random_move
+        bz r0 _main_move
+        .label _main_turn               # if std_random != 0
+        call random_turn
+        b _main_loop
+        .label _main_move               # else (std_random == 0)
+        call random_move
 
-	bnz r0 _main_detect
-	b _main_loop
+        bnz r0 _main_detect
+        b _main_loop
 
-	.label _main_detect	# the bug couldn't move
-	call detect
-	b _main_loop
+        .label _main_detect             # the bug couldn't move
+        call detect
+        b _main_loop
 
 
 # Use the actual position of the bug as the seed of the
 # random number generator
 .label init_seed
-	world ACTION_MYSELF_POSITION
-	add r0 r1 r2
+        world STD_MYPOSITION
+        add r0 r1 r2
 
-	call random_seed
+        call std_seed
 
-	ret
+        ret
 
 
 # Move forward or backwoard randomly
-# OUT:	r0 0x0 if there is nothing in front of the bug
-#          0x1 if there is something in front of the bug
+# OUT: r0 0x0 if there is nothing in front of the bug
+#         0x1 if there is something in front of the bug
 .label random_move
-	# r0 = random_value % 2
-	call random_value
-	modi r0 r0 0x2
+        # r0 = std_random % 2
+        call std_random
+        modi r0 r0 0x2
 
-	bz r0 _random_move_forward
-	.label _random_move_backward	# if random_value != 0
-	world ACTION_MOVE_BACKWARD
-	loadi r0 0x0
-	ret
-	.label _random_move_forward	# else (random_value == 0)
-	world ACTION_MOVE_FORWARD
-	ret
+        bz r0 _random_move_forward
+        .label _random_move_backward    # if std_random != 0
+        world STD_MOVEBACKWARD
+        loadi r0 0x0
+        ret
+        .label _random_move_forward     # else (std_random == 0)
+        world STD_MOVEFORWARD
+        move r0 r1
+        ret
 
 
 # Turn on the left or on the right randomly
-# OUT:	r0 ACTION_SUCCESS
 .label random_turn
-	# r0 = random_value % 2
-	call random_value
-	modi r0 r0 0x2
+        # r0 = std_random % 2
+        call std_random
+        modi r0 r0 0x2
 
-	bz r0 _random_turn_left
-	.label _random_turn_right	# if random_value != 0
-	world ACTION_TURN_RIGHT
-	ret
-	.label _random_turn_left	# else (random_value == 0)
-	world ACTION_TURN_LEFT
-	ret
+        bz r0 _random_turn_left
+        .label _random_turn_right       # if std_random != 0
+        world STD_TURNRIGHT
+        ret
+        .label _random_turn_left        # else (std_random == 0)
+        world STD_TURNLEFT
+        ret
 
 
 # Attack until error
 .label attack
-	loadi r2 ACTION_OK
+        .label _attack_loop             # do
+        loadi r0 0x8
+        world STD_ATTACK
+        bz r0 _attack_loop              # while STD_ATTACK == STD_SUCCESS
 
-	.label _attack_loop		# do
-	loadi r0 0x8
-	world ACTION_ATTACK
-	beq r0 r2 _attack_loop		# while ATTACK == ACTION_OK
+        call detect
 
-	call detect
-
-	ret
+        ret
 
 
 # Create a egg in front of the bug
 .label egg
-	world ACTION_EGG
+        world STD_EGG
 
-	# let the egg alone
-	call random_turn
-	call random_move
+        # let the egg alone
+        call random_turn
+        call random_move
 
-	ret
+        ret
 
 
 # Eat the element that is in front of the bug
 .label eat
-	world ACTION_EAT
+        world STD_EAT
 
-	world ACTION_MYSELF_ENERGY
-	loadi r0 ENERGY_TO_CREATE_EGG
-	bgt r1 r0 _eat_egg
+        world STD_MYENERGY
+        loadi r0 ENERGY_TO_CREATE_EGG
+        bgt r1 r0 _eat_egg
 
-	.label _eat_ret	# if MYSELF_ENERGY <= ENERGY_TO_CREATE_EGG
-	ret
+        .label _eat_ret                 # if MYSELF_ENERGY <= ENERGY_TO_CREATE_EGG
+        ret
 
-	.label _eat_egg	# else (MYSELF_ENERGY > ENERGY_TO_CREATE_EGG)
-	call egg
-	ret
+        .label _eat_egg                 # else (MYSELF_ENERGY > ENERGY_TO_CREATE_EGG)
+        call egg
+        ret
 
 
 # Detect what is in front of the bug and:
 # a) eats it if the element is food or a egg
 # b) attacks it if the element is a bug
 .label detect
-	world ACTION_DETECT		# r1 = ELEMENT
+        world STD_DETECT                # r1 = ELEMENT
 
-	loadi r0 ELEMENT_NOTHING
-	bne r1 r0 _detect_something
-	.label _detect_nothing	# if ELEMENT == NOTHING
-	ret
+        loadi r0 STD_LNOTHING
+        bne r1 r0 _detect_something
+        .label _detect_nothing          # if ELEMENT == NOTHING
+        ret
 
-	.label _detect_something	# else (ELEMENT != NOTHING)
+        .label _detect_something        # else (ELEMENT != NOTHING)
 
-	loadi r0 ELEMENT_FOOD
-	beq r1 r0 _detect_eat
+        loadi r0 STD_LFOOD
+        beq r1 r0 _detect_eat
 
-	.label _detect_attack		# if ELEMENT != FOOD
-	call attack
-	ret
+        .label _detect_attack           # if ELEMENT != FOOD
+        call attack
+        ret
 
-	.label _detect_eat		# else (ELEMENT == FOOD)
-	call eat
-	ret
+        .label _detect_eat              # else (ELEMENT == FOOD)
+        call eat
+        ret
 
 
 # The stack can't be calculate a priori because there are recursive calls
 # detect->attackt->detect->...
 .label stack
-.block 0x40	# 64
+.block 0x40                             # 64

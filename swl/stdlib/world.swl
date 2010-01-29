@@ -1,0 +1,66 @@
+# @file stdlib/world.swl
+# Definitions to interact with the World.
+#
+#  Copyright (C) 2007-2010  Xosé Otero <xoseotero@gmail.com>
+#
+#  This program is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+# Status of the actions
+.define STD_SUCCESS           0x0000    # The action was done
+.define STD_FAILURE           0x0001    # The action couldn't be done
+
+# Actions
+.define STD_NOTHING           0x0000    # Do nothing
+
+.define STD_MYID              0x0010    # Get the own id
+.define STD_MYSIZE            0x0011    # Get the own size
+.define STD_MYENERGY          0x0012    # Get the own energy
+.define STD_MYPOSITION        0x0013    # Get the own position
+.define STD_MYORIENTATION     0x0014    # Get the own orientation
+
+.define STD_DETECT            0x0020    # Detect what is in front
+
+.define STD_INFOID            0x0030    # Id of what is in front
+.define STD_INFOSIZE          0x0031    # Size of what is in front
+.define STD_INFOENERGY        0x0032    # Energy of what is in front
+.define STD_INFOPOSITION      0x0033    # Position of what is in front
+.define STD_INFOORIENTATION   0x0034    # Orientation of what is in front
+
+.define STD_MOVEFORWARD       0x0040    # Move forward
+.define STD_MOVEBACKWARD      0x0041    # Move backward
+
+.define STD_TURNLEFT          0x0042    # Turn on the left
+.define STD_TURNRIGHT         0x0043    # Turn on the right
+
+.define STD_ATTACK            0x0050    # Attack what is in front of the bug
+
+.define STD_EAT               0x0060    # Eat what is in front of the bug
+
+.define STD_EGG               0x0070    # Put a egg in front of the bug
+
+# Orientations
+.define STD_ONORTH            0x0000    # Orientation to the north
+.define STD_OEAST             0x0001    # Orientation to the east
+.define STD_OSOUTH            0x0002    # Orientation to the south
+.define STD_OWEST             0x0003    # Orientation to the west
+
+# Elements of the World
+.define STD_LNOTHING          0x0000    # Nothing
+.define STD_LEGG              0x0001    # Egg
+.define STD_LBUG              0x0002    # Bug
+.define STD_LFOOD             0x0003    # Food
+
+# Interrupts of the World
+.define STD_IACTION           0x0005    # Invalid action
+.define STD_IEVENT            0x0006    # World event

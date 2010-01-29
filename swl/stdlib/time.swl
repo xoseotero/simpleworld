@@ -1,7 +1,8 @@
 # @file stdlib/time.swl
 # Management of the Timer Interrupt to calculate the cycles of the World.
+# std_init must be executed before using any of this functions.
 #
-#  Copyright (C) 2006-2007  Xosé Otero <xoseotero@users.sourceforge.net>
+#  Copyright (C) 2006-2010  Xosé Otero <xoseotero@gmail.com>
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -16,10 +17,69 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-.include "stdlib/interrupt.swl"
+.include "stdlib/def.swl"
+.include "stdlib/error.swl"
+.include "stdlib/world.swl"
+.include "stdlib/int.swl"
 
-.label time_init
+# current time
+.label _std_time
+.block STD_WORDSIZE
 
-.label time_interrupt
-.label time_time
-.label time_add_function
+
+# Handler for the timer interrupt.
+# IN:  r0 type of interrupt
+.label _std_timerhandler
+        load r0 _std_time
+        addi r0 r0 0x1
+        store r0 _std_time
+        ret
+
+# Initialize the time.
+# IN:  r0 cycles
+# OUT: r1 error status
+#      STD_NOERROR: no errors
+#      STD_ENOMEM:  there is not enough memory
+.label _std_timeinit
+        # initialize the time
+        store r0 _std_time
+
+        # insert the timer interrupt
+        loadi r0 STD_ITIMER
+        loada r1 _std_timerhandler
+        call std_handler
+        bnz r1 __std_timeinit_enomem
+
+        .label __std_timeinit_ok
+        loadi r1 STD_NOERROR
+        ret
+
+        .label __std_timeinit_enomem
+        #loadi r1 STD_ENOMEM  # not needed because std_handler already sets it
+        ret
+
+# Get the current time.
+# OUT: r0 cycles
+.label std_time
+        load r0 _std_time
+        ret
+
+# Sleep during some cycles.
+# IN:  r0 cycles to sleep
+.label std_sleep
+        # don't sleep if cycles are 0
+        bz r0 _std_sleep_ret
+
+        load r1 _std_time
+        add r1 r0 r1
+
+        # loop while time < r0
+        .label _std_sleep_loop
+        world STD_NOTHING
+
+        # r1 shouldn't be changed by world STD_NOTHING
+        load r0 _std_time
+        bltu r0 r1 _std_sleep_loop
+
+        .label _std_sleep_ret
+        ret

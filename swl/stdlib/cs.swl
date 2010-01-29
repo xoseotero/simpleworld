@@ -1,7 +1,7 @@
-# @file stdlib/interrupt.swl
-# Interrupt handling.
+# @file stdlib/cs.swl
+# Elements of the cs (control & status) register.
 #
-#  Copyright (C) 2006-2007  Xosé Otero <xoseotero@users.sourceforge.net>
+#  Copyright (C) 2008-2010  Xosé Otero <xoseotero@gmail.com>
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -16,15 +16,14 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# Kind of exceptions
-.define INTERRUPT_TIME		0x0	# Timer Interrupt
-.define INTERRUPT_SOFTWARE	0x1	# Software Interrupt
-.define INTERRUPT_INSTRUCTION	0x2	# Invalid Instruction
-.define INTERRUPT_MEMORY	0x3	# Invalid Memory Location
-.define INTERRUPT_DIVISION	0x4	# Division by Zero
-.define INTERRUPT_WORLD		0x5	# Invalid World Command
-.define INTERRUPT_EVENT		0x6	# World Event
+# itp (interrupt table pointer)
+.define STD_CSITP             0xFFFF0000
 
-.label interrupt_add
-.label interrupt_clear
-.label interrupt_clearall
+# interrupt enable bit
+.define STD_CSENABLE          0x0080
+
+# interrupt found bit
+.define STD_CSINT             0x0040
+
+# number maximum of interrupts
+.define STD_CSINTMAX          0x000F

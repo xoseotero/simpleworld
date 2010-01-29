@@ -1,0 +1,162 @@
+# @file stdlib/set.swl
+# Set data structure.
+# std_init must be executed before using any of this functions.
+#
+#  Copyright (C) 2008-2010  Xosé Otero <xoseotero@gmail.com>
+#
+#  This program is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+.include "stdlib/def.swl"
+.include "stdlib/error.swl"
+.include "stdlib/address.swl"
+.include "stdlib/list.swl"
+
+# Create a new set.
+# OUT: r0 pointer to the new set
+# OUT: r1 error status
+#      STD_ENOMEM: there is not memory enough
+.label std_set
+        call std_list
+        ret
+
+# Free the set.
+# IN:  r0 pointer to the set.
+# OUT: r1 error status
+#      STD_NOERROR: no errors
+#      STD_EFAULT: the pointer is not valid.
+.label std_setfree
+        call std_listfree
+        ret
+
+
+# Get the number of elements of the set.
+# IN:  r0 pointer to the set
+# OUT: r0 size of the set
+# OUT: r1 error status
+#      STD_NOERROR: no errors
+#      STD_EFAULT: the pointer is not valid
+.label std_setsize
+        call std_listsize
+        ret
+
+
+# Get a element of the set.
+# IN:  r0 pointer to the set
+# IN:  r1 position
+# OUT: r0 element
+# OUT: r1 error status
+#      STD_NOERROR: no errors
+#      STD_EINVAL: the position is out of range
+#      STD_EFAULT: the pointer is not valid
+.label std_setget
+        call std_listget
+        ret
+
+
+# Insert a element in the set.
+# IN:  r0 pointer to the set
+# IN:  r1 value
+# OUT: r1 error status
+#      STD_NOERROR: no errors
+#      STD_EFAULT: the pointer is not valid
+#      STD_ENOMEM: there is not memory enough
+.label std_setinsert
+        push r0                         # pointer is in fp + 0x0
+        push r1                         # value is in fp + 0x4
+
+        # check if the pointer is valid
+        loadi r1 _STD_LIST_STRUCT
+        call std_address
+        bz r0 _std_setinsert_efault
+
+        # check if the value is already in the set
+        loadri r0 fp 0x0
+        loadi r1 0x0
+        loadri r2 fp 0x4
+        call std_listfind
+        bnz r1 _std_setinsert_insert
+        loadi r1 STD_NOERROR
+        ret
+
+        # insert the value
+        .label _std_setinsert_insert
+        loadri r0 fp 0x0
+        loadi r1 0x0
+        loadri r2 fp 0x4
+        call std_listinsert
+        ret
+
+        .label _std_setinsert_efault
+        loadi r1 STD_EFAULT
+        ret
+
+# Remove a element from the set.
+# IN:  r0 pointer to the set
+# IN:  r1 value
+# OUT: r1 error status
+#      STD_NOERROR: no errors
+#      STD_EINVAL: the value is not in the set
+#      STD_EFAULT: the pointer is not valid
+.label std_setremove
+        push r0                         # pointer is in fp + 0x0
+        push r1                         # value is in fp + 0x4
+
+        # check if the pointer is valid
+        loadi r1 _STD_LIST_STRUCT
+        call std_address
+        bz r0 _std_setremove_efault
+
+        # search the value in the set
+        loadri r0 fp 0x0
+        loadi r1 0x0
+        loadri r2 fp 0x4
+        call std_listfind
+        bz r1 _std_setremove_remove
+        ret
+
+        # remove the value
+        .label _std_setremove_remove
+        move r1 r0
+        loadri r0 fp 0x0
+        call std_listremove
+        ret
+
+        .label _std_setremove_efault
+        loadi r1 STD_EFAULT
+        ret
+
+
+# Check if a element is in the set.
+# IN:  r0 pointer to the set
+# IN:  r1 value
+# OUT: r0 boolean value
+#      STD_TRUE: the value is in the set
+#      STD_FALSE: the value is not in the set
+# OUT: r1 error status
+#      STD_NOERROR: no errors
+#      STD_EFAULT: the pointer is not valid
+.label std_setcheck
+        # search the value in the set
+        move r2 r1
+        loadi r1 0x0
+        call std_listfind
+        bz r1 _std_setcheck_found
+        loadi r0 STD_FALSE
+        loadi r1 STD_NOERROR
+        ret
+
+        .label _std_setcheck_found
+        loadi r0 STD_TRUE
+        loadi r1 STD_NOERROR
+        ret
