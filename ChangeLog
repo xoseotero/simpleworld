@@ -1,4 +1,4 @@
-Simple World 1.0b1:
+Simple World 1.0b1 (2010/03/02):
 	* Add the stdlib (standard library of SWL)
 	* Revert the change in Alpha 2 about the order of the parameters in
 	  the store instructions.

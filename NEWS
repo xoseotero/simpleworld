@@ -1,4 +1,4 @@
--- Simple World 1.0b1 --
+-- Simple World 1.0b1 (2010/03/02) --
 
 Simple World should be more portable now. It was tested (under 
 emulation) in big endian and little endian architectures, in 32 bits and 
