@@ -1,63 +1,6 @@
 # Use extern SQLite3 library if found
 if(SQLite3_USE_INTERNAL)
-  set(SQLite3_SRCS
-    alter.c
-    analyze.c
-    attach.c
-    auth.c
-    btmutex.c
-    btree.c
-    build.c
-    callback.c
-    complete.c
-    date.c
-    delete.c
-    expr.c
-    func.c
-    hash.c
-    icu.c
-    insert.c
-    journal.c
-    legacy.c
-    loadext.c
-    main.c
-    malloc.c
-    mem1.c
-    mem2.c
-    mem3.c
-    mem4.c
-    mutex.c
-    mutex.h
-    mutex_os2.c
-    mutex_unix.c
-    mutex_w32.c
-    opcodes.c
-    os.c
-    os_os2.c
-    os_unix.c
-    os_win.c
-    pager.c
-    parse.c
-    pragma.c
-    prepare.c
-    printf.c
-    random.c
-    select.c
-    table.c
-    tokenize.c
-    trigger.c
-    update.c
-    utf.c
-    util.c
-    vacuum.c
-    vdbeapi.c
-    vdbeaux.c
-    vdbeblob.c
-    vdbe.c
-    vdbefifo.c
-    vdbemem.c
-    vtab.c
-    where.c)
+  set(SQLite3_SRCS sqlite3.c)
   add_library(sqlite3 STATIC ${SQLite3_SRCS})
 
   # Simple World doesn't use extensions
