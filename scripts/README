@@ -1,0 +1,10 @@
+In this directory you can found scripts (bash and python scripts) to do simple
+actions that right now can't be done by Simple World.
+
+run.sh do several iterations over the world adding food and bugs and creating
+writing some information about the state of the world. You must create the
+world before executing the script and modify the path to simple world and the
+bugs.
+
+The rest of the scripts are used to get information about the world and some
+are used by run.sh.
