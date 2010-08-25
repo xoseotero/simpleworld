@@ -673,12 +673,12 @@ bool Source::is_data(File::size_type line) const
  */
 bool Source::is_instruction(File::size_type line) const
 {
-  return boost::regex_match(this->get_line(line), re_inst0) |
-    boost::regex_match(this->get_line(line), re_inst0i) |
-    boost::regex_match(this->get_line(line), re_inst1) |
-    boost::regex_match(this->get_line(line), re_inst1i) |
-    boost::regex_match(this->get_line(line), re_inst2) |
-    boost::regex_match(this->get_line(line), re_inst2i) |
+  return boost::regex_match(this->get_line(line), re_inst0) or
+    boost::regex_match(this->get_line(line), re_inst0i) or
+    boost::regex_match(this->get_line(line), re_inst1) or
+    boost::regex_match(this->get_line(line), re_inst1i) or
+    boost::regex_match(this->get_line(line), re_inst2) or
+    boost::regex_match(this->get_line(line), re_inst2i) or
     boost::regex_match(this->get_line(line), re_inst3);
 }
 
