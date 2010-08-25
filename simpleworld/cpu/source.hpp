@@ -208,6 +208,16 @@ protected:
 
 
   /**
+   * Return all the keywords of a line.
+   *
+   * If the line has not any keyword a empty vector is returned.
+   * @param line Number of the line.
+   * @return the components of a define.
+   * @exception CPUException if line > lines of the file.
+   */
+  std::vector<std::string> get_keywords(File::size_type line) const;
+
+  /**
    * Return the components of a define.
    *
    * If the line is not a define a empty vector is returned.

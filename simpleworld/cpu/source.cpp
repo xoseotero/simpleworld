@@ -55,6 +55,10 @@ namespace cpu
 #define COMMENT "#.*"
 #define OPTIONAL_COMMENT "(?:#.*)?"
 
+// A keyword
+static const boost::regex re_keyword("(" KEYWORD ")"
+				     OPTIONAL_SPACE
+				     OPTIONAL_COMMENT);
 // A blank line
 static const boost::regex re_blank(BEGIN_LINE
                                    OPTIONAL_SPACE
@@ -379,23 +383,36 @@ Constant %2% already defined")
       i++;
 
   // Replace defines
-  for (i = 0; i < this->lines(); i++)
+  for (i = 0; i < this->lines(); i++) {
+    // Definicions can be replaced several times if it's value is other
+    // definition instead of a number
+    bool again = true;
+
     // Don't replace defines in blank lines or comments
     // TODO: the defines are replaced if they are in a inline comment
-    if (not this->is_blank(i) and not this->is_comment(i)) {
-      std::map<std::string, std::string>::const_iterator iter =
-        this->defines_.begin();
-      while (iter != this->defines_.end()) {
-        this->get_line(i) =
-          boost::regex_replace(this->get_line(i),
-                               boost::regex(std::string(BEGIN_WORD) +
-                                            (*iter).first +
-                                            std::string(END_WORD)),
-                               (*iter).second);
+    if (not this->is_blank(i) and not this->is_comment(i))
+      while (again) {
+	again = false;
 
-        ++iter;
+	std::vector<std::string> keywords(this->get_keywords(i));
+	std::vector<std::string>::const_iterator key = keywords.begin();
+	while (key != keywords.end()) {
+	  std::map<std::string, std::string>::const_iterator define =
+	    this->defines_.find(*key);
+	  if (define != this->defines_.end()) {
+	    this->get_line(i) =
+	      boost::regex_replace(this->get_line(i),
+				   boost::regex(std::string(BEGIN_WORD) +
+						(*define).first +
+						std::string(END_WORD)),
+				   (*define).second);
+	    again = true;
+	  }
+
+	  ++key;
+	}
       }
-    }
+  }
 }
 
 /**
@@ -431,38 +448,46 @@ Label %2% already defined")
     // confused with a instruction without arguments
     if (this->is_label_as_data(i)) {
       // If a label is used as data, it's replaced by the address
-      std::map<std::string, Address>::const_iterator iter =
-        this->labels_.begin();
-      while (iter != this->labels_.end()) {
-        std::string address(boost::str(boost::format("0x%08X") %
-                                       (*iter).second));
-        this->get_line(i) =
-          boost::regex_replace(this->get_line(i),
-                               boost::regex(std::string(BEGIN_WORD) +
-                                            (*iter).first +
-                                            std::string(END_WORD)),
-                               address);
+      std::vector<std::string> keywords(this->get_keywords(i));
+      std::vector<std::string>::const_iterator key = keywords.begin();
+      while (key != keywords.end()) {
+	std::map<std::string, Address>::const_iterator label =
+	  this->labels_.find(*key);
+	if (label != this->labels_.end()) {
+	  std::string address(boost::str(boost::format("0x%08X") %
+					 (*label).second));
+	  this->get_line(i) =
+	    boost::regex_replace(this->get_line(i),
+				 boost::regex(std::string(BEGIN_WORD) +
+					      (*label).first +
+					      std::string(END_WORD)),
+				 address);
+	}
 
-        ++iter;
+	++key;
       }
 
       lines_code++;
     } else if (this->is_instruction(i)) {
       // If a label is used in a instruction, it's replaced by the offset to pc
-      std::map<std::string, Address>::const_iterator iter =
-        this->labels_.begin();
-      while (iter != this->labels_.end()) {
-        std::string offset(boost::str(boost::format("0x%04X") %
-                                      static_cast<Uint16>(((*iter).second -
-                                                           lines_code * sizeof(Word)))));
-        this->get_line(i) =
-          boost::regex_replace(this->get_line(i),
-                               boost::regex(std::string(BEGIN_WORD) +
-                                            (*iter).first +
-                                            std::string(END_WORD)),
-                               offset);
+      std::vector<std::string> keywords(this->get_keywords(i));
+      std::vector<std::string>::const_iterator key = keywords.begin();
+      while (key != keywords.end()) {
+	std::map<std::string, Address>::const_iterator label =
+	  this->labels_.find(*key);
+	if (label != this->labels_.end()) {
+	  std::string offset(boost::str(boost::format("0x%04X") %
+					static_cast<Uint16>(((*label).second -
+							     lines_code * sizeof(Word)))));
+	  this->get_line(i) =
+	    boost::regex_replace(this->get_line(i),
+				 boost::regex(std::string(BEGIN_WORD) +
+					      (*label).first +
+					      std::string(END_WORD)),
+				 offset);
+	}
 
-        ++iter;
+	++key;
       }
 
       lines_code++;
@@ -682,6 +707,31 @@ bool Source::is_instruction(File::size_type line) const
     boost::regex_match(this->get_line(line), re_inst3);
 }
 
+
+/**
+ * Return all the keywords of a line.
+ *
+ * If the line has not any keyword a empty vector is returned.
+ * @param line Number of the line.
+ * @return the components of a define.
+ * @exception CPUException if line > lines of the file.
+ */
+std::vector<std::string> Source::get_keywords(File::size_type line) const
+{
+  std::vector<std::string> result;
+
+  std::string text = this->get_line(line);
+  std::string::const_iterator start = text.begin(), end = text.end();
+  boost::smatch what;
+
+  while (boost::regex_search(start, end, what, re_keyword)) {
+    result.insert(result.end(), what.begin() + 1, what.end());
+
+    start = what[0].second;
+  }
+
+  return result;
+}
 
 /**
  * Return the components of a define.
