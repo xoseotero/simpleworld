@@ -380,9 +380,9 @@ Constant %2% already defined")
 
   // Replace defines
   for (i = 0; i < this->lines(); i++)
-    // Don't replace defines in comments
-    // TODO: the defines is replaced if the it is in a inline comment
-    if (not this->is_comment(i)) {
+    // Don't replace defines in blank lines or comments
+    // TODO: the defines are replaced if they are in a inline comment
+    if (not this->is_blank(i) and not this->is_comment(i)) {
       std::map<std::string, std::string>::const_iterator iter =
         this->defines_.begin();
       while (iter != this->defines_.end()) {
