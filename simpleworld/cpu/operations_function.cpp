@@ -2,7 +2,7 @@
  * @file simpleworld/cpu/operations_function.cpp
  * Function operations of the Simple CPU.
  *
- *  Copyright (C) 2006-2008  Xosé Otero <xoseotero@users.sourceforge.net>
+ *  Copyright (C) 2006-2008  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by

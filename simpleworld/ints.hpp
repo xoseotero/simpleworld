@@ -2,7 +2,7 @@
  * @file simpleworld/ints.hpp
  * Definition of the integer types used in Simple World.
  *
- *  Copyright (C) 2004, 2006-2008  Xosé Otero <xoseotero@users.sourceforge.net>
+ *  Copyright (C) 2004, 2006-2008  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by

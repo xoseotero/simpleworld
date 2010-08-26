@@ -2,7 +2,7 @@
  * @file tests/stdlib/random_test.cpp
  * Unit test for stdlib/random.swl
  *
- *  Copyright (C) 2009-2010  Xosé Otero <xoseotero@users.sourceforge.net>
+ *  Copyright (C) 2009-2010  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
