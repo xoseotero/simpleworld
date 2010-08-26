@@ -1,6 +1,7 @@
 # Test code for source_test.cpp
 
 .include "defines.swl"
+.include "macros.swl"
 
 .ifndef VALUE2 0x0003
 .ifndef VALUE3 0x000F
@@ -27,5 +28,4 @@
        b init		# loop
 
 # 4 bytes for the stack
-.label stack
-.block 0x0004
+STACK 0x0004

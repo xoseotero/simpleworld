@@ -2,7 +2,7 @@
  * @file simpleworld/cpu/source.hpp
  * Simple World Language source file.
  *
- *  Copyright (C) 2006-2007  Xosé Otero <xoseotero@users.sourceforge.net>
+ *  Copyright (C) 2006-2010  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -25,6 +25,7 @@
 #include <set>
 #include <map>
 #include <string>
+#include <utility>
 
 #include <simpleworld/cpu/types.hpp>
 #include <simpleworld/cpu/isa.hpp>
@@ -45,6 +46,11 @@ namespace cpu
  */
 class Source: public File
 {
+  struct Macro {
+    std::vector<std::string> params;
+    std::vector<std::string> code;
+  };
+
 public:
   /**
    * Constructor for a empty file.
@@ -99,22 +105,28 @@ protected:
   void replace_includes();
 
   /**
+   * Replace the macros with its value.
+   * @exception ParserError error found in the code.
+   */
+  void replace_macros();
+
+  /**
    * Replace the defines (and ifndefs) with its value.
    * @exception ParserError error found in the code.
    */
   void replace_defines();
 
   /**
-   * Replace the labels with its value.
-   * @exception ParserError error found in the code.
-   */
-  void replace_labels();
-
-  /**
    * Replace the blocks of memory with the zero values.
    * @exception ParserError error found in the code.
    */
   void replace_blocks();
+
+  /**
+   * Replace the labels with its value.
+   * @exception ParserError error found in the code.
+   */
+  void replace_labels();
 
 
   /**
@@ -141,6 +153,30 @@ protected:
    * @exception CPUException if line > lines of the file.
    */
   bool is_comment(File::size_type line) const;
+
+  /**
+   * Check if a line is a include.
+   * @param line Number of the line.
+   * @return the check result.
+   * @exception CPUException if line > lines of the file.
+   */
+  bool is_include(File::size_type line) const;
+
+  /**
+   * Check if a line is the begining of a macro.
+   * @param line Number of the line.
+   * @return the check result.
+   * @exception CPUException if line > lines of the file.
+   */
+  bool is_macro(File::size_type line) const;
+
+  /**
+   * Check if a line is the end of a macro.
+   * @param line Number of the line.
+   * @return the check result.
+   * @exception CPUException if line > lines of the file.
+   */
+  bool is_endmacro(File::size_type line) const;
 
   /**
    * Check if a line is a define.
@@ -183,14 +219,6 @@ protected:
   bool is_label_as_data(File::size_type line) const;
 
   /**
-   * Check if a line is a include.
-   * @param line Number of the line.
-   * @return the check result.
-   * @exception CPUException if line > lines of the file.
-   */
-  bool is_include(File::size_type line) const;
-
-  /**
    * Check if a line is data (32 bits number).
    * @param line Number of the line.
    * @return the check result.
@@ -216,6 +244,26 @@ protected:
    * @exception CPUException if line > lines of the file.
    */
   std::vector<std::string> get_keywords(File::size_type line) const;
+
+  /**
+   * Return the included file.
+   *
+   * If the line is not a include a empty string is returned.
+   * @param line Number of the line.
+   * @return the file name.
+   * @exception CPUException if line > lines of the file.
+   */
+  std::string get_include(File::size_type line) const;
+
+  /**
+   * Return the components of a macro.
+   *
+   * If the line is not the begining of a macro a empty vector is returned.
+   * @param line Number of the line.
+   * @return the components of a macro.
+   * @exception CPUException if line > lines of the file.
+   */
+  std::pair<std::string, Macro> get_macro(File::size_type line) const;
 
   /**
    * Return the components of a define.
@@ -260,16 +308,6 @@ protected:
   std::string get_label(File::size_type line) const;
 
   /**
-   * Return the included file.
-   *
-   * If the line is not a include a empty string is returned.
-   * @param line Number of the line.
-   * @return the file name.
-   * @exception CPUException if line > lines of the file.
-   */
-  std::string get_include(File::size_type line) const;
-
-  /**
    * Return the data.
    *
    * If the line is not data 0 is returned.
@@ -295,6 +333,7 @@ private:
   const ISA& isa_;
   std::vector<std::string> include_path_;
   std::set<std::string> includes_;
+  std::map<std::string, Macro> macros_;
   std::map<std::string, std::string> defines_;
   std::map<std::string, Address> labels_;
 };

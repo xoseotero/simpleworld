@@ -2,7 +2,7 @@
  * @file simpleworld/cpu/source.cpp
  * Simple World Language source file.
  *
- *  Copyright (C) 2006-2007  Xosé Otero <xoseotero@users.sourceforge.net>
+ *  Copyright (C) 2006-2010  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -79,6 +79,23 @@ static const boost::regex re_include(BEGIN_LINE
                                      OPTIONAL_SPACE
                                      OPTIONAL_COMMENT
                                      END_LINE);
+// A line with the begining of a macro block
+static const boost::regex re_macro(BEGIN_LINE
+				   OPTIONAL_SPACE
+				   "\\.macro"
+				   SPACE
+				   "(" KEYWORD ")"
+				   OPTIONAL_SPACE
+				   "(" ANYTHING ")"
+				   OPTIONAL_COMMENT
+				   END_LINE);
+// A line with the end of a macro block
+static const boost::regex re_endmacro(BEGIN_LINE
+				      OPTIONAL_SPACE
+				      "\\.endmacro"
+				      OPTIONAL_SPACE
+				      OPTIONAL_COMMENT
+				      END_LINE);
 // A line with a define
 static const boost::regex re_define(BEGIN_LINE
                                     OPTIONAL_SPACE
@@ -283,6 +300,7 @@ void Source::load(std::string filename)
 void Source::preprocess()
 {
   this->replace_includes();
+  this->replace_macros();
   this->replace_defines();
   this->replace_blocks();
   this->replace_labels();
@@ -352,6 +370,71 @@ File %1% not found")
 }
 
 /**
+ * Replace the macros with its value.
+ * @exception ParserError error found in the code.
+ */
+void Source::replace_macros()
+{
+  // Search macros
+  File::size_type i = 0;
+  while (i < this->lines())
+    if (this->is_macro(i)) {
+      std::pair<std::string, Source::Macro> macro(this->get_macro(i));
+      if (this->defines_.find(macro.first) != this->defines_.end())
+        throw EXCEPTION(ParserError, boost::str(boost::format("\
+Line: %1%\n\
+Macro %2% already defined")
+                                                % this->get_line(i)
+                                                % macro.first));
+
+      this->remove(i, macro.second.code.size() + 2);
+
+      this->macros_.insert(macro);
+    } else
+      i++;
+
+  // Replace macros
+  for (i = 0; i < this->lines(); i++)
+    // Don't try to replace macros in blank lines or comments
+    if (not this->is_blank(i) and not this->is_comment(i)) {
+      std::vector<std::string> keywords(this->get_keywords(i));
+      std::map<std::string, Source::Macro>::const_iterator macro =
+	this->macros_.find(keywords[0]);
+      if (macro != this->macros_.end()) {
+	if ((*macro).second.params.size() != (keywords.size() - 1))
+	  throw EXCEPTION(ParserError, boost::str(boost::format("\
+Line: %1%\n\
+Wrong number of parameters")
+						  % this->get_line(i)));
+
+	// Replace the parameters
+	std::vector<std::string> code((*macro).second.code);
+	std::vector<std::string>::iterator line = code.begin();
+	while (line != code.end()) {
+	  File::size_type p;
+	  for (p = 0; p < keywords.size() - 1; p++)
+	    *line = boost::regex_replace(*line,
+					 boost::regex((*macro).second.params[p]),
+					 keywords[p + 1]);
+
+	  ++line;
+	}
+
+	// Insert the code
+	this->remove(i, 1);
+	line = code.begin();
+	while (line != code.end()) {
+	  this->insert(i, *line);
+
+	  ++line;
+	  if (line != code.end())
+	    i++;
+	}
+      }
+  }
+}
+
+/**
  * Replace the defines (and ifndefs) with its value.
  * @exception ParserError error found in the code.
  */
@@ -413,6 +496,26 @@ Constant %2% already defined")
 	}
       }
   }
+}
+
+/**
+ * Replace the blocks of memory with the zero values.
+ * @exception ParserError error found in the code.
+ */
+void Source::replace_blocks()
+{
+  for (File::size_type i = 0; i < this->lines(); i++)
+    if (this->is_block(i)) {
+      Address size = this->get_block(i);
+      if (size > 0) {
+        // Round to the next multiple of 4
+        size = ((size - 1) / sizeof(Word) + 1);
+
+        this->remove(i, 1);
+        while (size-- > 0)
+          this->insert(i, "0x00000000");
+      }
+    }
 }
 
 /**
@@ -493,26 +596,6 @@ Label %2% already defined")
       lines_code++;
     } else if(this->is_data(i)) {
       lines_code++;
-    }
-}
-
-/**
- * Replace the blocks of memory with the zero values.
- * @exception ParserError error found in the code.
- */
-void Source::replace_blocks()
-{
-  for (File::size_type i = 0; i < this->lines(); i++)
-    if (this->is_block(i)) {
-      Address size = this->get_block(i);
-      if (size > 0) {
-        // Round to the next multiple of 4
-        size = ((size - 1) / sizeof(Word) + 1);
-
-        this->remove(i, 1);
-        while (size-- > 0)
-          this->insert(i, "0x00000000");
-      }
     }
 }
 
@@ -608,6 +691,39 @@ bool Source::is_comment(File::size_type line) const
 }
 
 /**
+ * Check if a line is a include.
+ * @param line Number of the line.
+ * @return the check result.
+ * @exception CPUException if line > lines of the file.
+ */
+bool Source::is_include(File::size_type line) const
+{
+  return boost::regex_match(this->get_line(line), re_include);
+}
+
+/**
+ * Check if a line is the begining of a macro.
+ * @param line Number of the line.
+ * @return the check result.
+ * @exception CPUException if line > lines of the file.
+ */
+bool Source::is_macro(File::size_type line) const
+{
+  return boost::regex_match(this->get_line(line), re_macro);
+}
+
+/**
+ * Check if a line is the end of a macro.
+ * @param line Number of the line.
+ * @return the check result.
+ * @exception CPUException if line > lines of the file.
+ */
+bool Source::is_endmacro(File::size_type line) const
+{
+  return boost::regex_match(this->get_line(line), re_endmacro);
+}
+
+/**
  * Check if a line is a define.
  * @param line Number of the line.
  * @return the check result.
@@ -669,17 +785,6 @@ bool Source::is_label_as_data(File::size_type line) const
 }
 
 /**
- * Check if a line is a include.
- * @param line Number of the line.
- * @return the check result.
- * @exception CPUException if line > lines of the file.
- */
-bool Source::is_include(File::size_type line) const
-{
-  return boost::regex_match(this->get_line(line), re_include);
-}
-
-/**
  * Check if a line is data (32 bits number).
  * @param line Number of the line.
  * @return the check result.
@@ -728,6 +833,59 @@ std::vector<std::string> Source::get_keywords(File::size_type line) const
     result.insert(result.end(), what.begin() + 1, what.end());
 
     start = what[0].second;
+  }
+
+  return result;
+}
+
+/**
+ * Return the included file.
+ *
+ * If the line is not a include a empty string is returned.
+ * @param line Number of the line.
+ * @return the file name.
+ * @exception CPUException if line > lines of the file.
+ */
+std::string Source::get_include(File::size_type line) const
+{
+  std::string result;
+
+  boost::smatch what;
+  if (boost::regex_match(this->get_line(line), what, re_include))
+    result = what[1];
+
+  return result;
+}
+
+/**
+ * Return the components of a macro.
+ *
+ * If the line is not the begining of a macro a empty vector is returned.
+ * @param line Number of the line.
+ * @return the components of a macro.
+ * @exception CPUException if line > lines of the file.
+ * @exception ParserError error found in the code.
+ */
+std::pair<std::string, Source::Macro> Source::get_macro(File::size_type line)
+  const
+{
+  std::pair<std::string, Source::Macro> result;
+
+  boost::smatch what;
+  if (boost::regex_match(this->get_line(line), what, re_macro)) {
+    std::vector<std::string> keywords(this->get_keywords(line));
+    result.first = keywords[1];
+    result.second.params.insert(result.second.params.begin(),
+				keywords.begin() + 2, keywords.end());
+    File::size_type end = line;
+    while ((++end < this->lines()) and not this->is_endmacro(end))
+      result.second.code.push_back(this->get_line(end));
+
+    if (end == this->lines())
+        throw EXCEPTION(ParserError, boost::str(boost::format("\
+Line: %1%\n\
+Macro has not .endmacro")
+                                                % this->get_line(line)));
   }
 
   return result;
@@ -806,25 +964,6 @@ std::string Source::get_label(File::size_type line) const
 
   boost::smatch what;
   if (boost::regex_match(this->get_line(line), what, re_label))
-    result = what[1];
-
-  return result;
-}
-
-/**
- * Return the included file.
- *
- * If the line is not a include a empty string is returned.
- * @param line Number of the line.
- * @return the file name.
- * @exception CPUException if line > lines of the file.
- */
-std::string Source::get_include(File::size_type line) const
-{
-  std::string result;
-
-  boost::smatch what;
-  if (boost::regex_match(this->get_line(line), what, re_include))
     result = what[1];
 
   return result;

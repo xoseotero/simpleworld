@@ -1,0 +1,4 @@
+.macro STACK SIZE
+.label stack
+.block SIZE
+.endmacro
