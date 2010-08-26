@@ -2,7 +2,7 @@
  * @file src/swld/swld.cpp
  * Simple World Language decompiler
  *
- *  Copyright (C) 2006-2008  Xosé Otero <xoseotero@users.sourceforge.net>
+ *  Copyright (C) 2006-2010  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -40,10 +40,10 @@ namespace cpu = simpleworld::cpu;
 
 const char* program_short_name = "swld";
 const char* program_name = "Simple World Language decompiler";
-const char* program_version = "1.0b1-svn";
-const char* program_years = "2006-2008";
+const char* program_version = "1.0b2-git";
+const char* program_years = "2006-2010";
 const char* program_author = "Xosé Otero";
-const char* program_author_email = "xoseotero@users.sourceforge.net";
+const char* program_author_email = "xoseotero@gmail.com";
 const char* program_mailbugs = "simpleworld-list@lists.sourceforge.net";
 
 
