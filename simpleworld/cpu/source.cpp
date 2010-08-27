@@ -107,17 +107,31 @@ static const boost::regex re_define(BEGIN_LINE
                                     OPTIONAL_SPACE
                                     OPTIONAL_COMMENT
                                     END_LINE);
-// A line with a ifndef
+// A line with the begining of a ifdef block
+static const boost::regex re_ifdef(BEGIN_LINE
+				   OPTIONAL_SPACE
+				   "\\.ifdef"
+				   SPACE
+				   "(" KEYWORD ")"
+				   OPTIONAL_SPACE
+				   OPTIONAL_COMMENT
+				   END_LINE);
+// A line with the begining of a ifndef block
 static const boost::regex re_ifndef(BEGIN_LINE
-                                    OPTIONAL_SPACE
-                                    "\\.ifndef"
-                                    SPACE
+				    OPTIONAL_SPACE
+				    "\\.ifndef"
+				    SPACE
                                     "(" KEYWORD ")"
-                                    SPACE
-                                    "(" ANYTHING ")"
-                                    OPTIONAL_SPACE
-                                    OPTIONAL_COMMENT
-                                    END_LINE);
+				    OPTIONAL_SPACE
+				    OPTIONAL_COMMENT
+				    END_LINE);
+// A line with the end of a if block
+static const boost::regex re_endif(BEGIN_LINE
+				   OPTIONAL_SPACE
+				   "\\.endif"
+				   OPTIONAL_SPACE
+				   OPTIONAL_COMMENT
+				   END_LINE);
 // A line with a block of memory
 static const boost::regex re_block(BEGIN_LINE
                                    OPTIONAL_SPACE
@@ -435,7 +449,7 @@ Wrong number of parameters")
 }
 
 /**
- * Replace the defines (and ifndefs) with its value.
+ * Replace the defines (and ifdef/ifndefs blocks) with its value.
  * @exception ParserError error found in the code.
  */
 void Source::replace_defines()
@@ -455,13 +469,46 @@ Constant %2% already defined")
       this->remove(i, 1);
       this->defines_.insert(std::pair<std::string,
                             std::string>(define[0], define[1]));
-    } else if (this->is_ifndef(i)) {
-      std::vector<std::string> ifndef(this->get_ifndef(i));
-      if (this->defines_.find(ifndef[0]) == this->defines_.end())
-        this->defines_.insert(std::pair<std::string,
-                              std::string>(ifndef[0], ifndef[1]));
+    } else if (this->is_ifdef(i)) {
+      std::string ifdef(this->get_ifdef(i));
 
-      this->remove(i, 1);
+      File::size_type end = i;
+      while ((end < this->lines()) and not this->is_endif(end))
+	end++;
+      if (end == this->lines())
+	throw EXCEPTION(ParserError, boost::str(boost::format("\
+Line: %1%\n\
+ifdef block has not .endifdef")
+                                                % this->get_line(i)));
+
+      if (this->defines_.find(ifdef) != this->defines_.end()) {
+	// Remove the begining and end of the block
+	this->remove(i, 1);
+	this->remove(end - 1, 1);
+      } else {
+	// Remove all the block
+	this->remove(i, end - i + 1);
+      }
+    } else if (this->is_ifndef(i)) {
+      std::string ifndef(this->get_ifndef(i));
+
+      File::size_type end = i;
+      while ((end < this->lines()) and not this->is_endif(end))
+	end++;
+      if (end == this->lines())
+	throw EXCEPTION(ParserError, boost::str(boost::format("\
+Line: %1%\n\
+ifndef block has not .endifndef")
+                                                % this->get_line(i)));
+
+      if (this->defines_.find(ifndef) == this->defines_.end()) {
+	// Remove the begining and end of the block
+	this->remove(i, 1);
+	this->remove(end - 1, 1);
+      } else {
+	// Remove all the block
+	this->remove(i, end - i + 1);
+      }
     } else
       i++;
 
@@ -735,7 +782,18 @@ bool Source::is_define(File::size_type line) const
 }
 
 /**
- * Check if a line is a ifndef.
+ * Check if a line is the begining of a ifdef block.
+ * @param line Number of the line.
+ * @return the check result.
+ * @exception CPUException if line > lines of the file.
+ */
+bool Source::is_ifdef(File::size_type line) const
+{
+  return boost::regex_match(this->get_line(line), re_ifdef);
+}
+
+/**
+ * Check if a line is the begining of a ifndef.
  * @param line Number of the line.
  * @return the check result.
  * @exception CPUException if line > lines of the file.
@@ -743,6 +801,17 @@ bool Source::is_define(File::size_type line) const
 bool Source::is_ifndef(File::size_type line) const
 {
   return boost::regex_match(this->get_line(line), re_ifndef);
+}
+
+/**
+ * Check if a line is the end of a if.
+ * @param line Number of the line.
+ * @return the check result.
+ * @exception CPUException if line > lines of the file.
+ */
+bool Source::is_endif(File::size_type line) const
+{
+  return boost::regex_match(this->get_line(line), re_endif);
 }
 
 /**
@@ -912,21 +981,41 @@ std::vector<std::string> Source::get_define(File::size_type line) const
 }
 
 /**
- * Return the components of a ifndef.
+ * Return the identificator of a ifdef.
  *
  * If the line is not a define a empty vector is returned.
  * The first position is the name and the second is the value.
  * @param line Number of the line.
- * @return the components of a ifndef.
+ * @return the identificator.
  * @exception CPUException if line > lines of the file.
  */
-std::vector<std::string> Source::get_ifndef(File::size_type line) const
+std::string Source::get_ifdef(File::size_type line) const
 {
-  std::vector<std::string> result;
+  std::string result;
+
+  boost::smatch what;
+  if (boost::regex_match(this->get_line(line), what, re_ifdef))
+    result = what[1];
+
+  return result;
+}
+
+/**
+ * Return the identificator of a ifndef.
+ *
+ * If the line is not a define a empty vector is returned.
+ * The first position is the name and the second is the value.
+ * @param line Number of the line.
+ * @return the identificator.
+ * @exception CPUException if line > lines of the file.
+ */
+std::string Source::get_ifndef(File::size_type line) const
+{
+  std::string result;
 
   boost::smatch what;
   if (boost::regex_match(this->get_line(line), what, re_ifndef))
-    result.insert(result.begin(), what.begin() + 1, what.end());
+    result = what[1];
 
   return result;
 }

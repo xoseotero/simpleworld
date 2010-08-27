@@ -111,7 +111,7 @@ protected:
   void replace_macros();
 
   /**
-   * Replace the defines (and ifndefs) with its value.
+   * Replace the defines (and ifdef/ifndefs blocks) with its value.
    * @exception ParserError error found in the code.
    */
   void replace_defines();
@@ -187,12 +187,28 @@ protected:
   bool is_define(File::size_type line) const;
 
   /**
-   * Check if a line is a ifndef.
+   * Check if a line is the begining of a ifdef block.
+   * @param line Number of the line.
+   * @return the check result.
+   * @exception CPUException if line > lines of the file.
+   */
+  bool is_ifdef(File::size_type line) const;
+
+  /**
+   * Check if a line is the begining of a ifndef.
    * @param line Number of the line.
    * @return the check result.
    * @exception CPUException if line > lines of the file.
    */
   bool is_ifndef(File::size_type line) const;
+
+  /**
+   * Check if a line is the end of a if.
+   * @param line Number of the line.
+   * @return the check result.
+   * @exception CPUException if line > lines of the file.
+   */
+  bool is_endif(File::size_type line) const;
 
   /**
    * Check if a line is a block of memory.
@@ -277,15 +293,26 @@ protected:
   std::vector<std::string> get_define(File::size_type line) const;
 
   /**
-   * Return the components of a ifndef.
+   * Return the identificator of a ifdef.
    *
    * If the line is not a define a empty vector is returned.
    * The first position is the name and the second is the value.
    * @param line Number of the line.
-   * @return the components of a ifndef.
+   * @return the identificator.
    * @exception CPUException if line > lines of the file.
    */
-  std::vector<std::string> get_ifndef(File::size_type line) const;
+  std::string get_ifdef(File::size_type line) const;
+
+  /**
+   * Return the identificator of a ifndef.
+   *
+   * If the line is not a define a empty vector is returned.
+   * The first position is the name and the second is the value.
+   * @param line Number of the line.
+   * @return the identificator.
+   * @exception CPUException if line > lines of the file.
+   */
+  std::string get_ifndef(File::size_type line) const;
 
   /**
    * Return the value of the block of memory.

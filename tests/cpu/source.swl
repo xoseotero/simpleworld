@@ -3,8 +3,12 @@
 .include "defines.swl"
 .include "macros.swl"
 
-.ifndef VALUE2 0x0003
-.ifndef VALUE3 0x000F
+.ifndef VALUE2
+.define VALUE2 0x0003
+.endif
+.ifndef VALUE3
+.define VALUE3 0x000F
+.endif
 
 # Loop
 .label init
@@ -17,10 +21,12 @@
        move r0 r1
        swap r2 r2
 
+.ifdef VALUE1
        push r0
        div r0 r1 r2
        pop r0
        rri r0 r0 VALUE3
+.endif
 
        # restart the CPU
        RESTART

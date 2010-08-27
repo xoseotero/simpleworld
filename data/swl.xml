@@ -5,12 +5,14 @@
     <highlighting>
         <list name="prep">
             <item> .include </item>
-            <item> .define </item>
-            <item> .ifndef </item>
             <item> .macro </item>
             <item> .endmacro </item>
-            <item> .label </item>
+            <item> .define </item>
+            <item> .ifdef </item>
+            <item> .ifndef </item>
+            <item> .endif </item>
             <item> .block </item>
+            <item> .label </item>
         </list>
         <list name="inst">
             <!-- Management operations -->
