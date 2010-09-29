@@ -83,9 +83,10 @@ public:
 
   /**
    * Preprocess the source code.
+   * @param strip if the comments and blank lines can be deleted.
    * @exception IOError if a file can't be found.
    */
-  void preprocess();
+  void preprocess(bool strip = false);
 
 
   /**
@@ -127,6 +128,12 @@ protected:
    * @exception ParserError error found in the code.
    */
   void replace_labels();
+
+
+  /**
+   * Delete comments and blank lines.
+   */
+  void strip();
 
 
   /**

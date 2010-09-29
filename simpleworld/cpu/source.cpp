@@ -309,11 +309,14 @@ void Source::load(std::string filename)
 
 /**
  * Preprocess the source code.
+ * @param strip if the comments and blank lines can be deleted.
  * @exception IOError if a file can't be found.
  */
-void Source::preprocess()
+void Source::preprocess(bool strip)
 {
   this->replace_includes();
+  if (strip)
+    this->strip();
   this->replace_macros();
   this->replace_defines();
   this->replace_blocks();
@@ -329,7 +332,7 @@ void Source::preprocess()
  */
 void Source::compile(std::string filename)
 {
-  this->preprocess();
+  this->preprocess(true);
 
   std::ofstream file(filename.c_str(), std::ios::binary | std::ios::trunc);
   if (file.rdstate() & std::ofstream::failbit)
@@ -644,6 +647,20 @@ Label %2% already defined")
     } else if(this->is_data(i)) {
       lines_code++;
     }
+}
+
+
+/**
+ * Delete comments and blank lines.
+ */
+void Source::strip()
+{
+  File::size_type i = 0;
+  while (i < this->lines())
+    if (this->is_blank(i) or this->is_comment(i))
+      this->remove(i, 1);
+    else
+      i++;
 }
 
 
