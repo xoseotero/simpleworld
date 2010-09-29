@@ -56,17 +56,6 @@ void compile(const cpu::File& file)
 
 
 /**
- * Include the file.
- */
-BOOST_AUTO_TEST_CASE(swl_include)
-{
-  cpu::File source;
-  cpu::Source::size_type line = 0;
-
-  BOOST_CHECK_NO_THROW(source.insert(line++, ".include \"stdlib/jmp.swl\""));
-}
-
-/**
  * Compile the file.
  */
 BOOST_AUTO_TEST_CASE(swl_compile)
