@@ -27,10 +27,12 @@
 
 // flags for specific bits
 #if defined(IS_BIG_ENDIAN)
+#define WINDOW_MASK    0x00000F00
 #define ENABLE_FLAG    0x00000080
 #define INTERRUPT_FLAG 0x00000040
 #define MAXINTS_MASK   0x0000000F
 #elif defined(IS_LITTLE_ENDIAN)
+#define WINDOW_MASK    0x000F0000
 #define ENABLE_FLAG    0x80000000
 #define INTERRUPT_FLAG 0x40000000
 #define MAXINTS_MASK   0x0F000000
@@ -76,6 +78,8 @@ public:
 
   // data
   Uint16 itp;                   /**< Interrupt Table Pointer */
+
+  Uint8 cw:4;                   /**< Current register Window */
 
   bool enable;                  /**< Interrupt enabled */
   bool interrupt;               /**< Interrupt found */

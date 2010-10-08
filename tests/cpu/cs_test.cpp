@@ -36,30 +36,28 @@ BOOST_AUTO_TEST_CASE(cs_encode)
 {
   cpu::CS cs;
   cs.itp = 0xABCD;
+  cs.cw = 0xA;
   cs.enable = true;
   cs.interrupt = false;
   cs.max_interrupts = 0x5;
 
 #if defined(IS_BIG_ENDIAN)
-  BOOST_CHECK_EQUAL(cs.encode(), 0xABCD0000 | ENABLE_FLAG | 0x00000005);
+  BOOST_CHECK_EQUAL(cs.encode(), 0xABCD0A05 | ENABLE_FLAG);
 #elif defined(IS_LITTLE_ENDIAN)
-  BOOST_CHECK_EQUAL(cs.encode(), 0x0000CDAB | ENABLE_FLAG | 0x05000000);
-#else
-#error endianness not defined
+  BOOST_CHECK_EQUAL(cs.encode(), 0x050ACDAB | ENABLE_FLAG);
 #endif
 
 
   cs.itp = 0x0110;
+  cs.cw = 0xF;
   cs.enable = false;
   cs.interrupt = true;
-  cs.max_interrupts = 0xf;
+  cs.max_interrupts = 0xF;
 
 #if defined(IS_BIG_ENDIAN)
-  BOOST_CHECK_EQUAL(cs.encode(), 0x01100000 | INTERRUPT_FLAG | 0x0000000F);
+  BOOST_CHECK_EQUAL(cs.encode(), 0x01100F0F | INTERRUPT_FLAG);
 #elif defined(IS_LITTLE_ENDIAN)
-  BOOST_CHECK_EQUAL(cs.encode(), 0x00001001 | INTERRUPT_FLAG | 0x0F000000);
-#else
-#error endianness not defined
+  BOOST_CHECK_EQUAL(cs.encode(), 0x0F0F1001 | INTERRUPT_FLAG);
 #endif
 }
 
@@ -69,30 +67,28 @@ BOOST_AUTO_TEST_CASE(cs_encode)
 BOOST_AUTO_TEST_CASE(cs_decode)
 {
 #if defined(IS_BIG_ENDIAN)
-  sw::Uint32 cs_coded = 0xABCD0000 | ENABLE_FLAG | 0x00000005;
+  sw::Uint32 cs_coded = 0xABCD0A05 | ENABLE_FLAG;
 #elif defined(IS_LITTLE_ENDIAN)
-  sw::Uint32 cs_coded = 0x0000CDAB | ENABLE_FLAG | 0x05000000;
-#else
-#error endianness not defined
+  sw::Uint32 cs_coded = 0x050ACDAB | ENABLE_FLAG;
 #endif
   cpu::CS cs(cs_coded);
 
   BOOST_CHECK_EQUAL(cs.itp, 0xABCD);
+  BOOST_CHECK_EQUAL(cs.cw, 0xA);
   BOOST_CHECK_EQUAL(cs.enable, true);
   BOOST_CHECK_EQUAL(cs.interrupt, false);
   BOOST_CHECK_EQUAL(cs.max_interrupts, 0x5);
 
 
 #if defined(IS_BIG_ENDIAN)
-  cs_coded = 0x01100000 | INTERRUPT_FLAG | 0x0000000F;
+  cs_coded = 0x01100000 | INTERRUPT_FLAG | 0x00000F0F;
 #elif defined(IS_LITTLE_ENDIAN)
-  cs_coded = 0x00001001 | INTERRUPT_FLAG | 0x0F000000;
-#else
-#error endianness not defined
+  cs_coded = 0x00001001 | INTERRUPT_FLAG | 0x0F0F0000;
 #endif
   cs.decode(cs_coded);
 
   BOOST_CHECK_EQUAL(cs.itp, 0x0110);
+  BOOST_CHECK_EQUAL(cs.cw, 0xF);
   BOOST_CHECK_EQUAL(cs.enable, false);
   BOOST_CHECK_EQUAL(cs.interrupt, true);
   BOOST_CHECK_EQUAL(cs.max_interrupts, 0xf);

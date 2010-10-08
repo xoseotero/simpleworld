@@ -1522,3 +1522,41 @@ BOOST_AUTO_TEST_CASE(cpu_shift)
   BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r10")], 0x0707);
   BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r11")], 0x0707);
 }
+
+/**
+ * Check the register windows.
+ */
+BOOST_AUTO_TEST_CASE(cpu_windows)
+{
+  cpu::File source;
+  cpu::Source::size_type line = 0;
+
+  // Initialize the stack pointer
+  source.insert(line++, "loada sp stack");
+  // Change registers r0 and r5
+  source.insert(line++, "loadi r0 0x1010");
+  source.insert(line++, "loadi r5 0x0f0f");
+  source.insert(line++, "call func");
+  source.insert(line++, "stop");
+
+  // Change registers r0 and r5
+  source.insert(line++, ".label func");
+  source.insert(line++, "loadi r0 0x10AB");
+  source.insert(line++, "loadi r5 0xBA01");
+  source.insert(line++, "ret");
+
+  // Space for 2 words in the stack
+  source.insert(line++, ".label stack");
+  source.insert(line++, ".block 0x8");
+
+  compile(source);
+
+
+  cpu::Memory registers;
+  cpu::MemoryFile memory(CPU_SAVE);
+  cpu::CPU cpu(&registers, &memory);
+  cpu.execute();
+
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r0")], 0x10AB);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r5")], 0x0f0f);
+}

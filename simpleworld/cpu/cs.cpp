@@ -60,8 +60,12 @@ Word CS::encode() const
 #elif defined(IS_LITTLE_ENDIAN)
   set_byte(&word, 0, get_byte(static_cast<Word>(this->itp), 1));
   set_byte(&word, 1, get_byte(static_cast<Word>(this->itp), 0));
-#else
-#error endianness not specified
+#endif
+
+#if defined(IS_BIG_ENDIAN)
+  word |= this->cw << 8;
+#elif defined(IS_LITTLE_ENDIAN)
+  word |= this->cw << 16;
 #endif
 
   if (this->enable)
@@ -72,8 +76,6 @@ Word CS::encode() const
   word |= this->max_interrupts;
 #elif defined(IS_LITTLE_ENDIAN)
   word |= this->max_interrupts << 24;
-#else
-#error endianness not specified
 #endif
 
   return word;
@@ -92,10 +94,14 @@ void CS::decode(Word word)
 #elif defined(IS_LITTLE_ENDIAN)
   set_byte(&itp, 0, get_byte(word, 1));
   set_byte(&itp, 1, get_byte(word, 0));
-#else
-#error endianness not specified
 #endif
   this->itp = itp;
+
+#if defined(IS_BIG_ENDIAN)
+  this->cw = (word & WINDOW_MASK) >> 8;
+#elif defined(IS_LITTLE_ENDIAN)
+  this->cw = (word & WINDOW_MASK) >> 16;
+#endif
 
   this->enable = word & ENABLE_FLAG;
   this->interrupt = word & INTERRUPT_FLAG;
@@ -103,8 +109,6 @@ void CS::decode(Word word)
   this->max_interrupts = word & MAXINTS_MASK;
 #elif defined(IS_LITTLE_ENDIAN)
   this->max_interrupts = (word & MAXINTS_MASK) >> 24;
-#else
-#error endianness not specified
 #endif
 }
 

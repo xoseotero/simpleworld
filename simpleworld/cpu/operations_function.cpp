@@ -20,11 +20,37 @@
 
 #include "types.hpp"
 #include "operations.hpp"
+#include "cs.hpp"
 
 namespace simpleworld
 {
 namespace cpu
 {
+
+/**
+ * Increase the register window.
+ *
+ * @param cpu the CPU.
+ */
+static void increase_window(CPU& cpu)
+{
+  CS cs(cpu.get_reg(REGISTER_CS, false));
+  cs.cw++;
+  cpu.set_reg(REGISTER_CS, cs.encode(), false);
+}
+
+/**
+ * Decrease the register window.
+ *
+ * @param cpu the CPU.
+ */
+static void decrease_window(CPU& cpu)
+{
+  CS cs(cpu.get_reg(REGISTER_CS, false));
+  cs.cw--;
+  cpu.set_reg(REGISTER_CS, cs.encode(), false);
+}
+
 
 /**
  * Call a function.
@@ -41,6 +67,8 @@ Update call(CPU& cpu, Instruction inst)
   // giving this instruction as data.
   Address address = cpu.get_reg(REGISTER_PC) + inst.offset;
   cpu.get_mem(address);
+
+  increase_window(cpu);
 
   // Save the frame pointer and the program counter in the top of the stack
   cpu.set_mem(cpu.get_reg(REGISTER_SP), cpu.get_reg(REGISTER_FP));
@@ -71,6 +99,8 @@ Update callr(CPU& cpu, Instruction inst)
   Address address = cpu.get_reg(inst.first);
   cpu.get_mem(address);
 
+  increase_window(cpu);
+
   // Save the frame pointer and the program counter in the top of the stack
   cpu.set_mem(cpu.get_reg(REGISTER_SP), cpu.get_reg(REGISTER_FP));
   cpu.set_mem(cpu.get_reg(REGISTER_SP) + sizeof(Word),
@@ -93,6 +123,8 @@ Update callr(CPU& cpu, Instruction inst)
  */
 Update interrupt(CPU& cpu, Instruction inst)
 {
+  // It's not needed to increase the register window because cpu.interrupt()
+  // already does it if the interrupts are enabled'
   cpu.interrupt(INTERRUPT_SOFTWARE, inst.data);
 
   return UpdateInterrupt;
@@ -108,6 +140,8 @@ Update interrupt(CPU& cpu, Instruction inst)
  */
 Update ret(CPU& cpu, Instruction inst)
 {
+  decrease_window(cpu);
+
   // Update stack pointer
   cpu.set_reg(REGISTER_SP, cpu.get_reg(REGISTER_FP) - 8);
   // Restore the program counter and the frame pointer
@@ -128,6 +162,8 @@ Update ret(CPU& cpu, Instruction inst)
  */
 Update reti(CPU& cpu, Instruction inst)
 {
+  decrease_window(cpu);
+
   // Update stack pointer
   cpu.set_reg(REGISTER_SP, cpu.get_reg(REGISTER_FP));
 

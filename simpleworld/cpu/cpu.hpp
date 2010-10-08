@@ -30,10 +30,22 @@
 #include <simpleworld/cpu/instruction.hpp>
 #include <simpleworld/cpu/isa.hpp>
 
-#define REGISTER_PC 0xc
-#define REGISTER_SP 0xd
-#define REGISTER_FP 0xe
-#define REGISTER_CS 0xf
+#define REGISTER_PC 0x0
+#define REGISTER_SP 0x1
+#define REGISTER_FP 0x2
+#define REGISTER_CS 0x3
+#define REGISTER_R0 0x4
+#define REGISTER_R1 0x5
+#define REGISTER_R2 0x6
+#define REGISTER_R3 0x7
+#define REGISTER_R4 0x8
+#define REGISTER_R5 0x9
+#define REGISTER_R6 0xA
+#define REGISTER_R7 0xB
+#define REGISTER_R8 0xC
+#define REGISTER_R9 0xD
+#define REGISTER_R10 0xE
+#define REGISTER_R11 0xF
 
 #define INTERRUPT_TIMER (0x0)
 #define INTERRUPT_SOFTWARE (0x1)

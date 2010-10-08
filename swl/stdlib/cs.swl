@@ -19,11 +19,12 @@
 # itp (interrupt table pointer)
 .define STD_CSITP             0xFFFF0000
 
+# current register window
+.define STD_CSCW              0x0F00
+
 # interrupt enable bit
 .define STD_CSENABLE          0x0080
-
 # interrupt found bit
 .define STD_CSINT             0x0040
-
 # number maximum of interrupts
 .define STD_CSINTMAX          0x000F

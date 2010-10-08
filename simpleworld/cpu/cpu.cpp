@@ -30,6 +30,10 @@
 #include "cs.hpp"
 #include "operations.hpp"
 
+#define GLOBAL_REGISTERS        8      // Shared registers
+#define REGISTERS_PER_WINDOW    8      // Registers per window
+#define REGISTER_WINDOWS        1      // Number of register windows
+
 namespace simpleworld
 {
 namespace cpu
@@ -45,26 +49,29 @@ CPU::CPU(Memory* registers, Memory* memory)
   : registers_(registers), memory_(memory), running_(true)
 {
   // 16 registers
-  static const Address min_size = sizeof(Word) * 16;
+  static const Address min_size =
+    sizeof(Word) * (GLOBAL_REGISTERS +
+                    REGISTER_WINDOWS * REGISTERS_PER_WINDOW);
+
   if (this->registers_->size() < min_size)
     this->registers_->resize(min_size);
 
-  this->isa_.add_register(0x0, "r0");
-  this->isa_.add_register(0x1, "r1");
-  this->isa_.add_register(0x2, "r2");
-  this->isa_.add_register(0x3, "r3");
-  this->isa_.add_register(0x4, "r4");
-  this->isa_.add_register(0x5, "r5");
-  this->isa_.add_register(0x6, "r6");
-  this->isa_.add_register(0x7, "r7");
-  this->isa_.add_register(0x8, "r8");
-  this->isa_.add_register(0x9, "r9");
-  this->isa_.add_register(0xa, "r10");
-  this->isa_.add_register(0xb, "r11");
-  this->isa_.add_register(0xc, "pc");
-  this->isa_.add_register(0xd, "sp");
-  this->isa_.add_register(0xe, "fp");
-  this->isa_.add_register(0xf, "cs");
+  this->isa_.add_register(REGISTER_PC, "pc");
+  this->isa_.add_register(REGISTER_SP, "sp");
+  this->isa_.add_register(REGISTER_FP, "fp");
+  this->isa_.add_register(REGISTER_CS, "cs");
+  this->isa_.add_register(REGISTER_R0, "r0");
+  this->isa_.add_register(REGISTER_R1, "r1");
+  this->isa_.add_register(REGISTER_R2, "r2");
+  this->isa_.add_register(REGISTER_R3, "r3");
+  this->isa_.add_register(REGISTER_R4, "r4");
+  this->isa_.add_register(REGISTER_R5, "r5");
+  this->isa_.add_register(REGISTER_R6, "r6");
+  this->isa_.add_register(REGISTER_R7, "r7");
+  this->isa_.add_register(REGISTER_R8, "r8");
+  this->isa_.add_register(REGISTER_R9, "r9");
+  this->isa_.add_register(REGISTER_R10, "r10");
+  this->isa_.add_register(REGISTER_R11, "r11");
 
   // Interrupts
   this->isa_.add_interrupt(INTERRUPT_TIMER, "TimerInterrupt", false);
@@ -264,6 +271,16 @@ Instruction info:\tcode: 0x%02X, name: %s, nregs: %d, has_i: %d")
  */
 Word CPU::get_reg(Uint8 reg, bool system_endian) const
 {
+  if (reg >= GLOBAL_REGISTERS) {
+    CS cs(this->registers_->get_word(ADDRESS(REGISTER_CS), false));
+    Address size_needed = sizeof(Word) * (GLOBAL_REGISTERS +
+                                          (cs.cw + 1) * REGISTERS_PER_WINDOW);
+    if (this->registers_->size() < size_needed)
+      this->registers_->resize(size_needed);
+
+    reg += cs.cw * REGISTERS_PER_WINDOW;
+  }
+
   return this->registers_->get_word(ADDRESS(reg), system_endian);
 }
 
@@ -275,6 +292,16 @@ Word CPU::get_reg(Uint8 reg, bool system_endian) const
  */
 void CPU::set_reg(Uint8 reg, Word word, bool system_endian)
 {
+  if (reg >= GLOBAL_REGISTERS) {
+    CS cs(this->registers_->get_word(ADDRESS(REGISTER_CS), false));
+    Address size_needed = sizeof(Word) * (GLOBAL_REGISTERS +
+                                          (cs.cw + 1) * REGISTERS_PER_WINDOW);
+    if (this->registers_->size() < size_needed)
+      this->registers_->resize(size_needed);
+
+    reg += cs.cw * REGISTERS_PER_WINDOW;
+  }
+
   this->registers_->set_word(ADDRESS(reg), word, system_endian); 
 }
 
@@ -402,14 +429,15 @@ Interrupt thrown:\tcode: 0x%02X, name: %s")
                              this->registers_->get_word(ADDRESS(REGISTER_SP)));
 
   // Store the information of the interrupt
-  this->registers_->set_word(ADDRESS(0), code);
-  this->registers_->set_word(ADDRESS(1), r1);
-  this->registers_->set_word(ADDRESS(2), r2);
+  this->registers_->set_word(ADDRESS(REGISTER_R0), code);
+  this->registers_->set_word(ADDRESS(REGISTER_R1), r1);
+  this->registers_->set_word(ADDRESS(REGISTER_R2), r2);
 
   // Update the PC with the interrupt handler location
   this->registers_->set_word(ADDRESS(REGISTER_PC), handler);
 
   // Update the cs register
+  cs.cw++;
   cs.interrupt = true;
   cs.max_interrupts--;
   this->registers_->set_word(ADDRESS(REGISTER_CS), cs.encode(), false);

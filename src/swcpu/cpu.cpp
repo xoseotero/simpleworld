@@ -69,7 +69,7 @@ void CPU::next()
   while (reg != regs_codes.end()) {
     std::cout << boost::str(boost::format("%3s = 0x%08X")
                             % cpu::CPU::isa_.register_name(*reg)
-                            % this->registers_[*reg * 4]);
+                            % this->get_reg(*reg));
     if (i % 4 == 0)
       std::cout << std::endl;
     else
