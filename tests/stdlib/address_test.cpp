@@ -84,9 +84,9 @@ BOOST_AUTO_TEST_CASE(std_address)
 
   // Initialize the stdlib
   source.insert(line++, ".define HEAP_SIZE 0x400");
-  source.insert(line++, "loada r0 heap");
-  source.insert(line++, "loadi r1 HEAP_SIZE");
-  source.insert(line++, "loadi r2 0x1");
+  source.insert(line++, "loada g0 heap");
+  source.insert(line++, "loadi g1 HEAP_SIZE");
+  source.insert(line++, "loadi g2 0x1");
   source.insert(line++, "call std_init");
 
   source.insert(line++, "b main");
@@ -97,8 +97,8 @@ BOOST_AUTO_TEST_CASE(std_address)
 
   // Test
   source.insert(line++, ".label main");
-  source.insert(line++, "loada r0 main");
-  source.insert(line++, "loadi r1 STD_WORDSIZE");
+  source.insert(line++, "loada g0 main");
+  source.insert(line++, "loadi g1 STD_WORDSIZE");
   source.insert(line++, "call std_address");
   source.insert(line++, "stop");
 
@@ -118,7 +118,7 @@ BOOST_AUTO_TEST_CASE(std_address)
   cpu.execute(MAX_CYCLES);
 
   BOOST_CHECK(not cpu.running());
-  BOOST_CHECK_NE(registers[REGISTER(cpu, "r0")], 0x0);
+  BOOST_CHECK_NE(registers[REGISTER(cpu, "g0")], 0x0);
 }
 
 /**
@@ -138,9 +138,9 @@ BOOST_AUTO_TEST_CASE(std_address_limit_word)
 
   // Initialize the stdlib
   source.insert(line++, ".define HEAP_SIZE 0x400");
-  source.insert(line++, "loada r0 heap");
-  source.insert(line++, "loadi r1 HEAP_SIZE");
-  source.insert(line++, "loadi r2 0x1");
+  source.insert(line++, "loada g0 heap");
+  source.insert(line++, "loadi g1 HEAP_SIZE");
+  source.insert(line++, "loadi g2 0x1");
   source.insert(line++, "call std_init");
 
   source.insert(line++, "b main");
@@ -151,9 +151,9 @@ BOOST_AUTO_TEST_CASE(std_address_limit_word)
 
   // Test
   source.insert(line++, ".label main");
-  source.insert(line++, "loada r0 end");
-  source.insert(line++, "subi r0 r0 STD_WORDSIZE");
-  source.insert(line++, "loadi r1 STD_WORDSIZE");
+  source.insert(line++, "loada g0 end");
+  source.insert(line++, "subi g0 g0 STD_WORDSIZE");
+  source.insert(line++, "loadi g1 STD_WORDSIZE");
   source.insert(line++, "call std_address");
   source.insert(line++, "stop");
 
@@ -176,7 +176,7 @@ BOOST_AUTO_TEST_CASE(std_address_limit_word)
   cpu.execute(MAX_CYCLES);
 
   BOOST_CHECK(not cpu.running());
-  BOOST_CHECK_NE(registers[REGISTER(cpu, "r0")], 0x0);
+  BOOST_CHECK_NE(registers[REGISTER(cpu, "g0")], 0x0);
 }
 
 /**
@@ -196,9 +196,9 @@ BOOST_AUTO_TEST_CASE(std_address_limit_halfword)
 
   // Initialize the stdlib
   source.insert(line++, ".define HEAP_SIZE 0x400");
-  source.insert(line++, "loada r0 heap");
-  source.insert(line++, "loadi r1 HEAP_SIZE");
-  source.insert(line++, "loadi r2 0x1");
+  source.insert(line++, "loada g0 heap");
+  source.insert(line++, "loadi g1 HEAP_SIZE");
+  source.insert(line++, "loadi g2 0x1");
   source.insert(line++, "call std_init");
 
   source.insert(line++, "b main");
@@ -209,9 +209,9 @@ BOOST_AUTO_TEST_CASE(std_address_limit_halfword)
 
   // Test
   source.insert(line++, ".label main");
-  source.insert(line++, "loada r0 end");
-  source.insert(line++, "subi r0 r0 STD_HWORDSIZE");
-  source.insert(line++, "loadi r1 STD_HWORDSIZE");
+  source.insert(line++, "loada g0 end");
+  source.insert(line++, "subi g0 g0 STD_HWORDSIZE");
+  source.insert(line++, "loadi g1 STD_HWORDSIZE");
   source.insert(line++, "call std_address");
   source.insert(line++, "stop");
 
@@ -234,7 +234,7 @@ BOOST_AUTO_TEST_CASE(std_address_limit_halfword)
   cpu.execute(MAX_CYCLES);
 
   BOOST_CHECK(not cpu.running());
-  BOOST_CHECK_NE(registers[REGISTER(cpu, "r0")], 0x0);
+  BOOST_CHECK_NE(registers[REGISTER(cpu, "g0")], 0x0);
 }
 
 /**
@@ -254,9 +254,9 @@ BOOST_AUTO_TEST_CASE(std_address_limit_quarterword)
 
   // Initialize the stdlib
   source.insert(line++, ".define HEAP_SIZE 0x400");
-  source.insert(line++, "loada r0 heap");
-  source.insert(line++, "loadi r1 HEAP_SIZE");
-  source.insert(line++, "loadi r2 0x1");
+  source.insert(line++, "loada g0 heap");
+  source.insert(line++, "loadi g1 HEAP_SIZE");
+  source.insert(line++, "loadi g2 0x1");
   source.insert(line++, "call std_init");
 
   source.insert(line++, "b main");
@@ -267,9 +267,9 @@ BOOST_AUTO_TEST_CASE(std_address_limit_quarterword)
 
   // Test
   source.insert(line++, ".label main");
-  source.insert(line++, "loada r0 end");
-  source.insert(line++, "subi r0 r0 STD_QWORDSIZE");
-  source.insert(line++, "loadi r1 STD_QWORDSIZE");
+  source.insert(line++, "loada g0 end");
+  source.insert(line++, "subi g0 g0 STD_QWORDSIZE");
+  source.insert(line++, "loadi g1 STD_QWORDSIZE");
   source.insert(line++, "call std_address");
   source.insert(line++, "stop");
 
@@ -292,7 +292,7 @@ BOOST_AUTO_TEST_CASE(std_address_limit_quarterword)
   cpu.execute(MAX_CYCLES);
 
   BOOST_CHECK(not cpu.running());
-  BOOST_CHECK_NE(registers[REGISTER(cpu, "r0")], 0x0);
+  BOOST_CHECK_NE(registers[REGISTER(cpu, "g0")], 0x0);
 }
 
 /**
@@ -312,9 +312,9 @@ BOOST_AUTO_TEST_CASE(std_address_null)
 
   // Initialize the stdlib
   source.insert(line++, ".define HEAP_SIZE 0x400");
-  source.insert(line++, "loada r0 heap");
-  source.insert(line++, "loadi r1 HEAP_SIZE");
-  source.insert(line++, "loadi r2 0x1");
+  source.insert(line++, "loada g0 heap");
+  source.insert(line++, "loadi g1 HEAP_SIZE");
+  source.insert(line++, "loadi g2 0x1");
   source.insert(line++, "call std_init");
 
   source.insert(line++, "b main");
@@ -325,8 +325,8 @@ BOOST_AUTO_TEST_CASE(std_address_null)
 
   // Test
   source.insert(line++, ".label main");
-  source.insert(line++, "loadi r0 STD_NULL");
-  source.insert(line++, "loadi r1 STD_WORDSIZE");
+  source.insert(line++, "loadi g0 STD_NULL");
+  source.insert(line++, "loadi g1 STD_WORDSIZE");
   source.insert(line++, "call std_address");
   source.insert(line++, "stop");
 
@@ -346,7 +346,7 @@ BOOST_AUTO_TEST_CASE(std_address_null)
   cpu.execute(MAX_CYCLES);
 
   BOOST_CHECK(not cpu.running());
-  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r0")], 0x0);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "g0")], 0x0);
 }
 
 /**
@@ -366,9 +366,9 @@ BOOST_AUTO_TEST_CASE(std_address_inval)
 
   // Initialize the stdlib
   source.insert(line++, ".define HEAP_SIZE 0x400");
-  source.insert(line++, "loada r0 heap");
-  source.insert(line++, "loadi r1 HEAP_SIZE");
-  source.insert(line++, "loadi r2 0x1");
+  source.insert(line++, "loada g0 heap");
+  source.insert(line++, "loadi g1 HEAP_SIZE");
+  source.insert(line++, "loadi g2 0x1");
   source.insert(line++, "call std_init");
 
   source.insert(line++, "b main");
@@ -378,8 +378,8 @@ BOOST_AUTO_TEST_CASE(std_address_inval)
 
   // Test
   source.insert(line++, ".label main");
-  source.insert(line++, "loada r0 end");
-  source.insert(line++, "loadi r1 STD_WORDSIZE");
+  source.insert(line++, "loada g0 end");
+  source.insert(line++, "loadi g1 STD_WORDSIZE");
   source.insert(line++, "call std_address");
   source.insert(line++, "stop");
 
@@ -402,5 +402,5 @@ BOOST_AUTO_TEST_CASE(std_address_inval)
   cpu.execute(MAX_CYCLES);
 
   BOOST_CHECK(not cpu.running());
-  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r0")], 0x0);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "g0")], 0x0);
 }

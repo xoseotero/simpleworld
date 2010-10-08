@@ -80,9 +80,9 @@ BOOST_AUTO_TEST_CASE(std_list)
   source.insert(line++, ".label init");
   source.insert(line++, "loada sp stack");
   source.insert(line++, "move fp sp");
-  source.insert(line++, "loada r0 heap");
-  source.insert(line++, "loadi r1 0x400");
-  source.insert(line++, "loadi r2 0x1");
+  source.insert(line++, "loada g0 heap");
+  source.insert(line++, "loadi g1 0x400");
+  source.insert(line++, "loadi g2 0x1");
   source.insert(line++, "call std_init");
   source.insert(line++, "b main");
 
@@ -92,27 +92,27 @@ BOOST_AUTO_TEST_CASE(std_list)
 
   // Test
   source.insert(line++, ".label main");
-  source.insert(line++, "loada r0 minfo");
+  source.insert(line++, "loada g0 minfo");
   source.insert(line++, "call std_minfo");
-  source.insert(line++, "loadri r0 r0 STD_MINFO_FREE");
-  source.insert(line++, "push r0");
+  source.insert(line++, "loadri g0 g0 STD_MINFO_FREE");
+  source.insert(line++, "push g0");
 
   source.insert(line++, "call std_list");
-  source.insert(line++, "push r0");
+  source.insert(line++, "push g0");
 
-  source.insert(line++, "loada r0 minfo");
+  source.insert(line++, "loada g0 minfo");
   source.insert(line++, "call std_minfo");
-  source.insert(line++, "loadri r0 r0 STD_MINFO_FREE");
-  source.insert(line++, "push r0");
+  source.insert(line++, "loadri g0 g0 STD_MINFO_FREE");
+  source.insert(line++, "push g0");
 
-  source.insert(line++, "loadri r0 fp 0x4");
+  source.insert(line++, "loadri g0 fp 0x4");
   source.insert(line++, "call std_listfree");
 
-  source.insert(line++, "loada r0 minfo");
+  source.insert(line++, "loada g0 minfo");
   source.insert(line++, "call std_minfo");
-  source.insert(line++, "loadri r2 r0 STD_MINFO_FREE");
-  source.insert(line++, "loadri r0 fp 0x0");
-  source.insert(line++, "loadri r1 fp 0x8");
+  source.insert(line++, "loadri g2 g0 STD_MINFO_FREE");
+  source.insert(line++, "loadri g0 fp 0x0");
+  source.insert(line++, "loadri g1 fp 0x8");
 
   source.insert(line++, "stop");
 
@@ -136,12 +136,12 @@ BOOST_AUTO_TEST_CASE(std_list)
   cpu.execute(MAX_CYCLES);
 
   BOOST_CHECK(not cpu.running());
-  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r0")],
-                    registers[REGISTER(cpu, "r2")]);
-  BOOST_CHECK_GT(registers[REGISTER(cpu, "r0")],
-                 registers[REGISTER(cpu, "r1")]);
-  BOOST_CHECK_LT(registers[REGISTER(cpu, "r1")],
-                 registers[REGISTER(cpu, "r2")]);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "g0")],
+                    registers[REGISTER(cpu, "g2")]);
+  BOOST_CHECK_GT(registers[REGISTER(cpu, "g0")],
+                 registers[REGISTER(cpu, "g1")]);
+  BOOST_CHECK_LT(registers[REGISTER(cpu, "g1")],
+                 registers[REGISTER(cpu, "g2")]);
 }
 
 /**
@@ -156,9 +156,9 @@ BOOST_AUTO_TEST_CASE(std_listsize)
   source.insert(line++, ".label init");
   source.insert(line++, "loada sp stack");
   source.insert(line++, "move fp sp");
-  source.insert(line++, "loada r0 heap");
-  source.insert(line++, "loadi r1 0x400");
-  source.insert(line++, "loadi r2 0x1");
+  source.insert(line++, "loada g0 heap");
+  source.insert(line++, "loadi g1 0x400");
+  source.insert(line++, "loadi g2 0x1");
   source.insert(line++, "call std_init");
   source.insert(line++, "b main");
 
@@ -189,7 +189,7 @@ BOOST_AUTO_TEST_CASE(std_listsize)
   cpu.execute(MAX_CYCLES);
 
   BOOST_CHECK(not cpu.running());
-  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r0")], 0x0);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "g0")], 0x0);
 }
 
 /**
@@ -204,9 +204,9 @@ BOOST_AUTO_TEST_CASE(std_listinsert)
   source.insert(line++, ".label init");
   source.insert(line++, "loada sp stack");
   source.insert(line++, "move fp sp");
-  source.insert(line++, "loada r0 heap");
-  source.insert(line++, "loadi r1 0x400");
-  source.insert(line++, "loadi r2 0x1");
+  source.insert(line++, "loada g0 heap");
+  source.insert(line++, "loadi g1 0x400");
+  source.insert(line++, "loadi g2 0x1");
   source.insert(line++, "call std_init");
   source.insert(line++, "b main");
 
@@ -216,33 +216,33 @@ BOOST_AUTO_TEST_CASE(std_listinsert)
   // Test
   source.insert(line++, ".label main");
   source.insert(line++, "call std_list");
-  source.insert(line++, "push r0");
+  source.insert(line++, "push g0");
 
-  source.insert(line++, "loadi r1 0x0");
-  source.insert(line++, "loadi r2 0xF3F");
+  source.insert(line++, "loadi g1 0x0");
+  source.insert(line++, "loadi g2 0xF3F");
   source.insert(line++, "call std_listinsert");
 
-  source.insert(line++, "loadri r0 fp 0x0");
-  source.insert(line++, "loadi r1 0x1");
-  source.insert(line++, "loadi r2 0x3F3");
+  source.insert(line++, "loadri g0 fp 0x0");
+  source.insert(line++, "loadi g1 0x1");
+  source.insert(line++, "loadi g2 0x3F3");
   source.insert(line++, "call std_listinsert");
 
-  source.insert(line++, "loadri r0 fp 0x0");
-  source.insert(line++, "loadi r1 0x0");
+  source.insert(line++, "loadri g0 fp 0x0");
+  source.insert(line++, "loadi g1 0x0");
   source.insert(line++, "call std_listget");
-  source.insert(line++, "push r0");
+  source.insert(line++, "push g0");
 
-  source.insert(line++, "loadri r0 fp 0x0");
-  source.insert(line++, "loadi r1 0x1");
+  source.insert(line++, "loadri g0 fp 0x0");
+  source.insert(line++, "loadi g1 0x1");
   source.insert(line++, "call std_listget");
-  source.insert(line++, "push r0");
+  source.insert(line++, "push g0");
 
-  source.insert(line++, "loadri r0 fp 0x0");
+  source.insert(line++, "loadri g0 fp 0x0");
   source.insert(line++, "call std_listsize");
 
-  source.insert(line++, "move r2 r0");
-  source.insert(line++, "pop r1");
-  source.insert(line++, "pop r0");
+  source.insert(line++, "move g2 g0");
+  source.insert(line++, "pop g1");
+  source.insert(line++, "pop g0");
 
   source.insert(line++, "stop");
 
@@ -262,9 +262,9 @@ BOOST_AUTO_TEST_CASE(std_listinsert)
   cpu.execute(MAX_CYCLES);
 
   BOOST_CHECK(not cpu.running());
-  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r0")], 0xF3F);
-  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r1")], 0x3F3);
-  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r2")], 0x2);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "g0")], 0xF3F);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "g1")], 0x3F3);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "g2")], 0x2);
 }
 
 /**
@@ -279,9 +279,9 @@ BOOST_AUTO_TEST_CASE(std_listremove)
   source.insert(line++, ".label init");
   source.insert(line++, "loada sp stack");
   source.insert(line++, "move fp sp");
-  source.insert(line++, "loada r0 heap");
-  source.insert(line++, "loadi r1 0x400");
-  source.insert(line++, "loadi r2 0x1");
+  source.insert(line++, "loada g0 heap");
+  source.insert(line++, "loadi g1 0x400");
+  source.insert(line++, "loadi g2 0x1");
   source.insert(line++, "call std_init");
   source.insert(line++, "b main");
 
@@ -291,31 +291,31 @@ BOOST_AUTO_TEST_CASE(std_listremove)
   // Test
   source.insert(line++, ".label main");
   source.insert(line++, "call std_list");
-  source.insert(line++, "push r0");
+  source.insert(line++, "push g0");
 
-  source.insert(line++, "loadi r1 0x0");
-  source.insert(line++, "loadi r2 0xF3F");
+  source.insert(line++, "loadi g1 0x0");
+  source.insert(line++, "loadi g2 0xF3F");
   source.insert(line++, "call std_listinsert");
 
-  source.insert(line++, "loadri r0 fp 0x0");
-  source.insert(line++, "loadi r1 0x1");
-  source.insert(line++, "loadi r2 0x3F3");
+  source.insert(line++, "loadri g0 fp 0x0");
+  source.insert(line++, "loadi g1 0x1");
+  source.insert(line++, "loadi g2 0x3F3");
   source.insert(line++, "call std_listinsert");
 
-  source.insert(line++, "loadri r0 fp 0x0");
-  source.insert(line++, "loadi r1 0x0");
+  source.insert(line++, "loadri g0 fp 0x0");
+  source.insert(line++, "loadi g1 0x0");
   source.insert(line++, "call std_listremove");
 
-  source.insert(line++, "loadri r0 fp 0x0");
-  source.insert(line++, "loadi r1 0x0");
+  source.insert(line++, "loadri g0 fp 0x0");
+  source.insert(line++, "loadi g1 0x0");
   source.insert(line++, "call std_listget");
-  source.insert(line++, "push r0");
+  source.insert(line++, "push g0");
 
-  source.insert(line++, "loadri r0 fp 0x0");
+  source.insert(line++, "loadri g0 fp 0x0");
   source.insert(line++, "call std_listsize");
 
-  source.insert(line++, "move r1 r0");
-  source.insert(line++, "pop r0");
+  source.insert(line++, "move g1 g0");
+  source.insert(line++, "pop g0");
 
   source.insert(line++, "stop");
 
@@ -335,8 +335,8 @@ BOOST_AUTO_TEST_CASE(std_listremove)
   cpu.execute(MAX_CYCLES);
 
   BOOST_CHECK(not cpu.running());
-  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r0")], 0x3F3);
-  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r1")], 0x1);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "g0")], 0x3F3);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "g1")], 0x1);
 }
 
 /**
@@ -351,9 +351,9 @@ BOOST_AUTO_TEST_CASE(std_listfind)
   source.insert(line++, ".label init");
   source.insert(line++, "loada sp stack");
   source.insert(line++, "move fp sp");
-  source.insert(line++, "loada r0 heap");
-  source.insert(line++, "loadi r1 0x400");
-  source.insert(line++, "loadi r2 0x1");
+  source.insert(line++, "loada g0 heap");
+  source.insert(line++, "loadi g1 0x400");
+  source.insert(line++, "loadi g2 0x1");
   source.insert(line++, "call std_init");
   source.insert(line++, "b main");
 
@@ -363,30 +363,30 @@ BOOST_AUTO_TEST_CASE(std_listfind)
   // Test
   source.insert(line++, ".label main");
   source.insert(line++, "call std_list");
-  source.insert(line++, "push r0");
+  source.insert(line++, "push g0");
 
-  source.insert(line++, "loadi r1 0x0");
-  source.insert(line++, "loadi r2 0x50");
+  source.insert(line++, "loadi g1 0x0");
+  source.insert(line++, "loadi g2 0x50");
   source.insert(line++, "call std_listinsert");
 
-  source.insert(line++, "loadri r0 fp 0x0");
-  source.insert(line++, "loadi r1 0x1");
-  source.insert(line++, "loadi r2 0x40");
+  source.insert(line++, "loadri g0 fp 0x0");
+  source.insert(line++, "loadi g1 0x1");
+  source.insert(line++, "loadi g2 0x40");
   source.insert(line++, "call std_listinsert");
 
-  source.insert(line++, "loadri r0 fp 0x0");
-  source.insert(line++, "loadi r1 0x0");
-  source.insert(line++, "loadi r2 0x50");
+  source.insert(line++, "loadri g0 fp 0x0");
+  source.insert(line++, "loadi g1 0x0");
+  source.insert(line++, "loadi g2 0x50");
   source.insert(line++, "call std_listfind");
-  source.insert(line++, "push r0");
+  source.insert(line++, "push g0");
 
-  source.insert(line++, "loadri r0 fp 0x0");
-  source.insert(line++, "loadi r1 0x0");
-  source.insert(line++, "loadi r2 0x40");
+  source.insert(line++, "loadri g0 fp 0x0");
+  source.insert(line++, "loadi g1 0x0");
+  source.insert(line++, "loadi g2 0x40");
   source.insert(line++, "call std_listfind");
 
-  source.insert(line++, "move r1 r0");
-  source.insert(line++, "pop r0");
+  source.insert(line++, "move g1 g0");
+  source.insert(line++, "pop g0");
 
   source.insert(line++, "stop");
 
@@ -406,8 +406,8 @@ BOOST_AUTO_TEST_CASE(std_listfind)
   cpu.execute(MAX_CYCLES);
 
   BOOST_CHECK(not cpu.running());
-  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r0")], 0x0);
-  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r1")], 0x1);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "g0")], 0x0);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "g1")], 0x1);
 }
 
 /**
@@ -422,9 +422,9 @@ BOOST_AUTO_TEST_CASE(std_listcount)
   source.insert(line++, ".label init");
   source.insert(line++, "loada sp stack");
   source.insert(line++, "move fp sp");
-  source.insert(line++, "loada r0 heap");
-  source.insert(line++, "loadi r1 0x400");
-  source.insert(line++, "loadi r2 0x1");
+  source.insert(line++, "loada g0 heap");
+  source.insert(line++, "loadi g1 0x400");
+  source.insert(line++, "loadi g2 0x1");
   source.insert(line++, "call std_init");
   source.insert(line++, "b main");
 
@@ -434,28 +434,28 @@ BOOST_AUTO_TEST_CASE(std_listcount)
   // Test
   source.insert(line++, ".label main");
   source.insert(line++, "call std_list");
-  source.insert(line++, "push r0");
+  source.insert(line++, "push g0");
 
-  source.insert(line++, "loadi r1 0x0");
-  source.insert(line++, "loadi r2 0x50");
+  source.insert(line++, "loadi g1 0x0");
+  source.insert(line++, "loadi g2 0x50");
   source.insert(line++, "call std_listinsert");
 
-  source.insert(line++, "loadri r0 fp 0x0");
-  source.insert(line++, "loadi r1 0x1");
-  source.insert(line++, "loadi r2 0x40");
+  source.insert(line++, "loadri g0 fp 0x0");
+  source.insert(line++, "loadi g1 0x1");
+  source.insert(line++, "loadi g2 0x40");
   source.insert(line++, "call std_listinsert");
 
-  source.insert(line++, "loadri r0 fp 0x0");
-  source.insert(line++, "loadi r1 0x40");
+  source.insert(line++, "loadri g0 fp 0x0");
+  source.insert(line++, "loadi g1 0x40");
   source.insert(line++, "call std_listcount");
-  source.insert(line++, "push r0");
+  source.insert(line++, "push g0");
 
-  source.insert(line++, "loadri r0 fp 0x0");
-  source.insert(line++, "loadi r1 0x20");
+  source.insert(line++, "loadri g0 fp 0x0");
+  source.insert(line++, "loadi g1 0x20");
   source.insert(line++, "call std_listcount");
 
-  source.insert(line++, "move r1 r0");
-  source.insert(line++, "pop r0");
+  source.insert(line++, "move g1 g0");
+  source.insert(line++, "pop g0");
 
   source.insert(line++, "stop");
 
@@ -475,6 +475,6 @@ BOOST_AUTO_TEST_CASE(std_listcount)
   cpu.execute(MAX_CYCLES);
 
   BOOST_CHECK(not cpu.running());
-  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r0")], 0x1);
-  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r1")], 0x0);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "g0")], 0x1);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "g1")], 0x0);
 }

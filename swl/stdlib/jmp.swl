@@ -29,74 +29,74 @@
 
 
 # Destination of a non-local jump.
-# IN:  r0 jmp struct
-# OUT: r0 value
+# IN:  g0 jmp struct
+# OUT: g0 value
 #      0: returning directly
 #      *: returning from std_jmp
-# OUT: r1 error status
+# OUT: g1 error status
 #      STD_EFAULT: the pointer is not valid
 .label std_jmpset
-        push r0                         # pointer is in fp + 0x0
+        push g0                         # pointer is in fp + 0x0
 
         # check if the pointer is valid
-        loadi r1 STD_JMP_STRUCT
+        loadi g1 STD_JMP_STRUCT
         call std_address
-        bz r0 _std_jmpset_efault
+        bz g0 _std_jmpset_efault
 
-        loadri r0 fp 0x0
+        loadri g0 fp 0x0
 
-        storeri r0 fp STD_JMP_FP
+        storeri g0 fp STD_JMP_FP
 
-        loadri r1 fp 0xFFF8
-        storeri r0 r1 STD_JMP_CALLERFP
+        loadri g1 fp 0xFFF8
+        storeri g0 g1 STD_JMP_CALLERFP
 
-        loadri r1 fp 0xFFFC
-        storeri r0 r1 STD_JMP_CALLERPC
+        loadri g1 fp 0xFFFC
+        storeri g0 g1 STD_JMP_CALLERPC
 
-        loadi r0 0x0
+        loadi g0 0x0
         ret
 
         .label _std_jmpset_efault
-        loadi r1 STD_EFAULT
+        loadi g1 STD_EFAULT
         ret
 
 # Non-local jump.
-# IN:  r0 jmp struct
-# IN:  r1 value (it must be greater than 0)
-# OUT: r1 error status
+# IN:  g0 jmp struct
+# IN:  g1 value (it must be greater than 0)
+# OUT: g1 error status
 #      STD_EINVAL: invalid value
 #      STD_EFAULT: the pointer is not valid
 .label std_jmp
         # check if the value is correct
-        bz r1 _std_jmp_einval
+        bz g1 _std_jmp_einval
 
-        push r0                         # pointer is in fp + 0x0
-        push r1                         # value is in fp + 0x4
+        push g0                         # pointer is in fp + 0x0
+        push g1                         # value is in fp + 0x4
 
         # check if the pointer is valid
-        loadi r1 STD_JMP_STRUCT
+        loadi g1 STD_JMP_STRUCT
         call std_address
-        bz r0 _std_jmp_efault
+        bz g0 _std_jmp_efault
 
         # all the parameters must be restored before the fp is changed
-        loadri r0 fp 0x0
-        loadri r1 fp 0x4
+        loadri g0 fp 0x0
+        loadri g1 fp 0x4
 
-        loadri fp r0 STD_JMP_FP
+        loadri fp g0 STD_JMP_FP
 
-        loadri r2 r0 STD_JMP_CALLERFP
-        storeri fp r2 0xFFF8
+        loadri g2 g0 STD_JMP_CALLERFP
+        storeri fp g2 0xFFF8
 
-        loadri r2 r0 STD_JMP_CALLERPC
-        storeri fp r2 0xFFFC
+        loadri g2 g0 STD_JMP_CALLERPC
+        storeri fp g2 0xFFFC
 
-        move r0 r1
+        move g0 g1
         ret
 
         .label _std_jmp_einval
-        loadi r1 STD_EINVAL
+        loadi g1 STD_EINVAL
         ret
 
         .label _std_jmp_efault
-        loadi r1 STD_EFAULT
+        loadi g1 STD_EFAULT
         ret

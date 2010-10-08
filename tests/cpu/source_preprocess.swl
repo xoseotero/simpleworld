@@ -5,18 +5,18 @@
 
 # Loop
        # load the initial values
-       loadi r1 0x0001
-       loadi r2 0x0002
+       loadi g1 0x0001
+       loadi g2 0x0002
 
        # some operations
-       add r0 r1 r2
-       move r0 r1
-       swap r2 r2
+       add g0 g1 g2
+       move g0 g1
+       swap g2 g2
 
-       push r0
-       div r0 r1 r2
-       pop r0
-       rri r0 r0 0x000F
+       push g0
+       div g0 g1 g2
+       pop g0
+       rri g0 g0 0x000F
 
        # restart the CPU
        restart

@@ -84,31 +84,31 @@ BOOST_AUTO_TEST_CASE(std_neg)
 
   // Test with a positive value
   source.insert(line++, ".label main");
-  source.insert(line++, "loadi r0 0xF");
+  source.insert(line++, "loadi g0 0xF");
   source.insert(line++, "call std_neg");
-  source.insert(line++, "push r0");
+  source.insert(line++, "push g0");
 
   // Test with a negative value
-  source.insert(line++, "loadi r0 0xFFF1");
-  source.insert(line++, "loadhi r0 0xFFFF");
+  source.insert(line++, "loadi g0 0xFFF1");
+  source.insert(line++, "loadhi g0 0xFFFF");
   source.insert(line++, "call std_neg");
-  source.insert(line++, "push r0");
+  source.insert(line++, "push g0");
 
   // Test with zero
-  source.insert(line++, "loadi r0 0x0");
+  source.insert(line++, "loadi g0 0x0");
   source.insert(line++, "call std_neg");
-  source.insert(line++, "push r0");
+  source.insert(line++, "push g0");
 
   // Test with 0x80000000
-  source.insert(line++, "loadi r0 0x0000");
-  source.insert(line++, "loadhi r0 0x8000");
+  source.insert(line++, "loadi g0 0x0000");
+  source.insert(line++, "loadhi g0 0x8000");
   source.insert(line++, "call std_neg");
-  source.insert(line++, "move r3 r0");
+  source.insert(line++, "move g3 g0");
 
   // Put the results in registers
-  source.insert(line++, "pop r2");
-  source.insert(line++, "pop r1");
-  source.insert(line++, "pop r0");
+  source.insert(line++, "pop g2");
+  source.insert(line++, "pop g1");
+  source.insert(line++, "pop g0");
 
   source.insert(line++, "stop");
 
@@ -124,10 +124,10 @@ BOOST_AUTO_TEST_CASE(std_neg)
   cpu.execute(MAX_CYCLES);
 
   BOOST_CHECK(not cpu.running());
-  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r0")], 0xFFFFFFF1);
-  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r1")], 0xF);
-  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r2")], 0x0);
-  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r3")], 0x80000000);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "g0")], 0xFFFFFFF1);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "g1")], 0xF);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "g2")], 0x0);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "g3")], 0x80000000);
 }
 
 /**
@@ -147,31 +147,31 @@ BOOST_AUTO_TEST_CASE(std_abs)
 
   // Test with a positive value
   source.insert(line++, ".label main");
-  source.insert(line++, "loadi r0 0xF");
+  source.insert(line++, "loadi g0 0xF");
   source.insert(line++, "call std_abs");
-  source.insert(line++, "push r0");
+  source.insert(line++, "push g0");
 
   // Test with a negative value
-  source.insert(line++, "loadi r0 0xFFF1");
-  source.insert(line++, "loadhi r0 0xFFFF");
+  source.insert(line++, "loadi g0 0xFFF1");
+  source.insert(line++, "loadhi g0 0xFFFF");
   source.insert(line++, "call std_abs");
-  source.insert(line++, "push r0");
+  source.insert(line++, "push g0");
 
   // Test with zero
-  source.insert(line++, "loadi r0 0x0");
+  source.insert(line++, "loadi g0 0x0");
   source.insert(line++, "call std_abs");
-  source.insert(line++, "push r0");
+  source.insert(line++, "push g0");
 
   // Test with 0x80000000
-  source.insert(line++, "loadi r0 0x0000");
-  source.insert(line++, "loadhi r0 0x8000");
+  source.insert(line++, "loadi g0 0x0000");
+  source.insert(line++, "loadhi g0 0x8000");
   source.insert(line++, "call std_abs");
-  source.insert(line++, "move r3 r0");
+  source.insert(line++, "move g3 g0");
 
   // Put the results in registers
-  source.insert(line++, "pop r2");
-  source.insert(line++, "pop r1");
-  source.insert(line++, "pop r0");
+  source.insert(line++, "pop g2");
+  source.insert(line++, "pop g1");
+  source.insert(line++, "pop g0");
 
   source.insert(line++, "stop");
 
@@ -187,10 +187,10 @@ BOOST_AUTO_TEST_CASE(std_abs)
   cpu.execute(MAX_CYCLES);
 
   BOOST_CHECK(not cpu.running());
-  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r0")], 0xF);
-  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r1")], 0xF);
-  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r2")], 0x0);
-  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r3")], 0x80000000);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "g0")], 0xF);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "g1")], 0xF);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "g2")], 0x0);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "g3")], 0x80000000);
 }
 
 /**
@@ -210,40 +210,40 @@ BOOST_AUTO_TEST_CASE(std_pow)
 
   // Test with a base zero
   source.insert(line++, ".label main");
-  source.insert(line++, "loadi r0 0x0");
-  source.insert(line++, "loadi r1 0x3");
+  source.insert(line++, "loadi g0 0x0");
+  source.insert(line++, "loadi g1 0x3");
   source.insert(line++, "call std_pow");
-  source.insert(line++, "push r0");
+  source.insert(line++, "push g0");
 
   // Test with a base of 1
-  source.insert(line++, "loadi r0 0x1");
-  source.insert(line++, "loadi r1 0x4");
+  source.insert(line++, "loadi g0 0x1");
+  source.insert(line++, "loadi g1 0x4");
   source.insert(line++, "call std_pow");
-  source.insert(line++, "push r0");
+  source.insert(line++, "push g0");
 
   // Test with a exponent zero
-  source.insert(line++, "loadi r0 0x3");
-  source.insert(line++, "loadi r1 0x0");
+  source.insert(line++, "loadi g0 0x3");
+  source.insert(line++, "loadi g1 0x0");
   source.insert(line++, "call std_pow");
-  source.insert(line++, "push r0");
+  source.insert(line++, "push g0");
 
   // Test with a exponent 1
-  source.insert(line++, "loadi r0 0x5");
-  source.insert(line++, "loadi r1 0x1");
+  source.insert(line++, "loadi g0 0x5");
+  source.insert(line++, "loadi g1 0x1");
   source.insert(line++, "call std_pow");
-  source.insert(line++, "push r0");
+  source.insert(line++, "push g0");
 
   // Test with other base and exponent
-  source.insert(line++, "loadi r0 0x5");
-  source.insert(line++, "loadi r1 0x7");
+  source.insert(line++, "loadi g0 0x5");
+  source.insert(line++, "loadi g1 0x7");
   source.insert(line++, "call std_pow");
-  source.insert(line++, "move r4 r0");
+  source.insert(line++, "move r0 g0");
 
   // Put the results in registers
-  source.insert(line++, "pop r3");
-  source.insert(line++, "pop r2");
-  source.insert(line++, "pop r1");
-  source.insert(line++, "pop r0");
+  source.insert(line++, "pop g3");
+  source.insert(line++, "pop g2");
+  source.insert(line++, "pop g1");
+  source.insert(line++, "pop g0");
 
   source.insert(line++, "stop");
 
@@ -259,11 +259,11 @@ BOOST_AUTO_TEST_CASE(std_pow)
   cpu.execute(MAX_CYCLES);
 
   BOOST_CHECK(not cpu.running());
-  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r0")], 0x0);
-  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r1")], 0x1);
-  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r2")], 0x1);
-  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r3")], 0x5);
-  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r4")], 0x1312D);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "g0")], 0x0);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "g1")], 0x1);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "g2")], 0x1);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "g3")], 0x5);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r0")], 0x1312D);
 }
 
 /**
@@ -283,29 +283,29 @@ BOOST_AUTO_TEST_CASE(std_min)
 
   // Test with 2 positive values
   source.insert(line++, ".label main");
-  source.insert(line++, "loadi r0 0x0");
-  source.insert(line++, "loadi r1 0x3");
+  source.insert(line++, "loadi g0 0x0");
+  source.insert(line++, "loadi g1 0x3");
   source.insert(line++, "call std_min");
-  source.insert(line++, "push r0");
+  source.insert(line++, "push g0");
 
   // Test with 2 negative values
-  source.insert(line++, "loadi r0 0x1");
-  source.insert(line++, "loadhi r0 0xFFFF");
-  source.insert(line++, "loadi r1 0x4");
-  source.insert(line++, "loadhi r1 0xFFFF");
+  source.insert(line++, "loadi g0 0x1");
+  source.insert(line++, "loadhi g0 0xFFFF");
+  source.insert(line++, "loadi g1 0x4");
+  source.insert(line++, "loadhi g1 0xFFFF");
   source.insert(line++, "call std_min");
-  source.insert(line++, "push r0");
+  source.insert(line++, "push g0");
 
   // Test with a positive and a negative value
-  source.insert(line++, "loadi r0 0x3");
-  source.insert(line++, "loadi r1 0x0");
-  source.insert(line++, "loadhi r1 0xFFFF");
+  source.insert(line++, "loadi g0 0x3");
+  source.insert(line++, "loadi g1 0x0");
+  source.insert(line++, "loadhi g1 0xFFFF");
   source.insert(line++, "call std_min");
-  source.insert(line++, "move r2 r0");
+  source.insert(line++, "move g2 g0");
 
   // Put the results in registers
-  source.insert(line++, "pop r1");
-  source.insert(line++, "pop r0");
+  source.insert(line++, "pop g1");
+  source.insert(line++, "pop g0");
 
   source.insert(line++, "stop");
 
@@ -321,9 +321,9 @@ BOOST_AUTO_TEST_CASE(std_min)
   cpu.execute(MAX_CYCLES);
 
   BOOST_CHECK(not cpu.running());
-  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r0")], 0x0);
-  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r1")], 0xFFFF0001);
-  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r2")], 0xFFFF0000);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "g0")], 0x0);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "g1")], 0xFFFF0001);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "g2")], 0xFFFF0000);
 }
 
 /**
@@ -343,9 +343,9 @@ BOOST_AUTO_TEST_CASE(std_bmin)
 
   // Test
   source.insert(line++, ".label main");
-  source.insert(line++, "loada r0 data");
-  source.insert(line++, "loada r1 data_end");
-  source.insert(line++, "sub r1 r1 r0");
+  source.insert(line++, "loada g0 data");
+  source.insert(line++, "loada g1 data_end");
+  source.insert(line++, "sub g1 g1 g0");
   source.insert(line++, "call std_bmin");
 
   source.insert(line++, "stop");
@@ -370,7 +370,7 @@ BOOST_AUTO_TEST_CASE(std_bmin)
   cpu.execute(MAX_CYCLES);
 
   BOOST_CHECK(not cpu.running());
-  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r0")], 0x8F0040C0);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "g0")], 0x8F0040C0);
 }
 
 /**
@@ -390,9 +390,9 @@ BOOST_AUTO_TEST_CASE(std_bminh)
 
   // Test
   source.insert(line++, ".label main");
-  source.insert(line++, "loada r0 data");
-  source.insert(line++, "loada r1 data_end");
-  source.insert(line++, "sub r1 r1 r0");
+  source.insert(line++, "loada g0 data");
+  source.insert(line++, "loada g1 data_end");
+  source.insert(line++, "sub g1 g1 g0");
   source.insert(line++, "call std_bminh");
 
   source.insert(line++, "stop");
@@ -417,7 +417,7 @@ BOOST_AUTO_TEST_CASE(std_bminh)
   cpu.execute(MAX_CYCLES);
 
   BOOST_CHECK(not cpu.running());
-  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r0")], 0xFFFF8F00);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "g0")], 0xFFFF8F00);
 }
 
 /**
@@ -437,9 +437,9 @@ BOOST_AUTO_TEST_CASE(std_bminq)
 
   // Test
   source.insert(line++, ".label main");
-  source.insert(line++, "loada r0 data");
-  source.insert(line++, "loada r1 data_end");
-  source.insert(line++, "sub r1 r1 r0");
+  source.insert(line++, "loada g0 data");
+  source.insert(line++, "loada g1 data_end");
+  source.insert(line++, "sub g1 g1 g0");
   source.insert(line++, "call std_bminq");
 
   source.insert(line++, "stop");
@@ -464,7 +464,7 @@ BOOST_AUTO_TEST_CASE(std_bminq)
   cpu.execute(MAX_CYCLES);
 
   BOOST_CHECK(not cpu.running());
-  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r0")], 0xFFFFFF80);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "g0")], 0xFFFFFF80);
 }
 
 /**
@@ -484,29 +484,29 @@ BOOST_AUTO_TEST_CASE(std_minu)
 
   // Test with 2 positive values
   source.insert(line++, ".label main");
-  source.insert(line++, "loadi r0 0x0");
-  source.insert(line++, "loadi r1 0x3");
+  source.insert(line++, "loadi g0 0x0");
+  source.insert(line++, "loadi g1 0x3");
   source.insert(line++, "call std_minu");
-  source.insert(line++, "push r0");
+  source.insert(line++, "push g0");
 
   // Test with 2 negative values
-  source.insert(line++, "loadi r0 0x1");
-  source.insert(line++, "loadhi r0 0xFFFF");
-  source.insert(line++, "loadi r1 0x4");
-  source.insert(line++, "loadhi r1 0xFFFF");
+  source.insert(line++, "loadi g0 0x1");
+  source.insert(line++, "loadhi g0 0xFFFF");
+  source.insert(line++, "loadi g1 0x4");
+  source.insert(line++, "loadhi g1 0xFFFF");
   source.insert(line++, "call std_minu");
-  source.insert(line++, "push r0");
+  source.insert(line++, "push g0");
 
   // Test with a positive and a negative value
-  source.insert(line++, "loadi r0 0x3");
-  source.insert(line++, "loadi r1 0x0");
-  source.insert(line++, "loadhi r1 0xFFFF");
+  source.insert(line++, "loadi g0 0x3");
+  source.insert(line++, "loadi g1 0x0");
+  source.insert(line++, "loadhi g1 0xFFFF");
   source.insert(line++, "call std_minu");
-  source.insert(line++, "move r2 r0");
+  source.insert(line++, "move g2 g0");
 
   // Put the results in registers
-  source.insert(line++, "pop r1");
-  source.insert(line++, "pop r0");
+  source.insert(line++, "pop g1");
+  source.insert(line++, "pop g0");
 
   source.insert(line++, "stop");
 
@@ -522,9 +522,9 @@ BOOST_AUTO_TEST_CASE(std_minu)
   cpu.execute(MAX_CYCLES);
 
   BOOST_CHECK(not cpu.running());
-  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r0")], 0x0);
-  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r1")], 0xFFFF0001);
-  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r2")], 0x3);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "g0")], 0x0);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "g1")], 0xFFFF0001);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "g2")], 0x3);
 }
 
 /**
@@ -544,9 +544,9 @@ BOOST_AUTO_TEST_CASE(std_bminu)
 
   // Test
   source.insert(line++, ".label main");
-  source.insert(line++, "loada r0 data");
-  source.insert(line++, "loada r1 data_end");
-  source.insert(line++, "sub r1 r1 r0");
+  source.insert(line++, "loada g0 data");
+  source.insert(line++, "loada g1 data_end");
+  source.insert(line++, "sub g1 g1 g0");
   source.insert(line++, "call std_bminu");
 
   source.insert(line++, "stop");
@@ -571,7 +571,7 @@ BOOST_AUTO_TEST_CASE(std_bminu)
   cpu.execute(MAX_CYCLES);
 
   BOOST_CHECK(not cpu.running());
-  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r0")], 0x0029D06A);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "g0")], 0x0029D06A);
 }
 
 /**
@@ -591,9 +591,9 @@ BOOST_AUTO_TEST_CASE(std_bminuh)
 
   // Test
   source.insert(line++, ".label main");
-  source.insert(line++, "loada r0 data");
-  source.insert(line++, "loada r1 data_end");
-  source.insert(line++, "sub r1 r1 r0");
+  source.insert(line++, "loada g0 data");
+  source.insert(line++, "loada g1 data_end");
+  source.insert(line++, "sub g1 g1 g0");
   source.insert(line++, "call std_bminuh");
 
   source.insert(line++, "stop");
@@ -618,7 +618,7 @@ BOOST_AUTO_TEST_CASE(std_bminuh)
   cpu.execute(MAX_CYCLES);
 
   BOOST_CHECK(not cpu.running());
-  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r0")], 0x0029);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "g0")], 0x0029);
 }
 
 /**
@@ -638,9 +638,9 @@ BOOST_AUTO_TEST_CASE(std_bminuq)
 
   // Test
   source.insert(line++, ".label main");
-  source.insert(line++, "loada r0 data");
-  source.insert(line++, "loada r1 data_end");
-  source.insert(line++, "sub r1 r1 r0");
+  source.insert(line++, "loada g0 data");
+  source.insert(line++, "loada g1 data_end");
+  source.insert(line++, "sub g1 g1 g0");
   source.insert(line++, "call std_bminuq");
 
   source.insert(line++, "stop");
@@ -665,7 +665,7 @@ BOOST_AUTO_TEST_CASE(std_bminuq)
   cpu.execute(MAX_CYCLES);
 
   BOOST_CHECK(not cpu.running());
-  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r0")], 0x00);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "g0")], 0x00);
 }
 
 /**
@@ -685,29 +685,29 @@ BOOST_AUTO_TEST_CASE(std_max)
 
   // Test with 2 positive values
   source.insert(line++, ".label main");
-  source.insert(line++, "loadi r0 0x0");
-  source.insert(line++, "loadi r1 0x3");
+  source.insert(line++, "loadi g0 0x0");
+  source.insert(line++, "loadi g1 0x3");
   source.insert(line++, "call std_max");
-  source.insert(line++, "push r0");
+  source.insert(line++, "push g0");
 
   // Test with 2 negative values
-  source.insert(line++, "loadi r0 0x1");
-  source.insert(line++, "loadhi r0 0xFFFF");
-  source.insert(line++, "loadi r1 0x4");
-  source.insert(line++, "loadhi r1 0xFFFF");
+  source.insert(line++, "loadi g0 0x1");
+  source.insert(line++, "loadhi g0 0xFFFF");
+  source.insert(line++, "loadi g1 0x4");
+  source.insert(line++, "loadhi g1 0xFFFF");
   source.insert(line++, "call std_max");
-  source.insert(line++, "push r0");
+  source.insert(line++, "push g0");
 
   // Test with a positive and a negative value
-  source.insert(line++, "loadi r0 0x3");
-  source.insert(line++, "loadi r1 0x0");
-  source.insert(line++, "loadhi r1 0xFFFF");
+  source.insert(line++, "loadi g0 0x3");
+  source.insert(line++, "loadi g1 0x0");
+  source.insert(line++, "loadhi g1 0xFFFF");
   source.insert(line++, "call std_max");
-  source.insert(line++, "move r2 r0");
+  source.insert(line++, "move g2 g0");
 
   // Put the results in registers
-  source.insert(line++, "pop r1");
-  source.insert(line++, "pop r0");
+  source.insert(line++, "pop g1");
+  source.insert(line++, "pop g0");
 
   source.insert(line++, "stop");
 
@@ -723,9 +723,9 @@ BOOST_AUTO_TEST_CASE(std_max)
   cpu.execute(MAX_CYCLES);
 
   BOOST_CHECK(not cpu.running());
-  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r0")], 0x3);
-  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r1")], 0xFFFF0004);
-  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r2")], 0x3);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "g0")], 0x3);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "g1")], 0xFFFF0004);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "g2")], 0x3);
 }
 
 /**
@@ -745,9 +745,9 @@ BOOST_AUTO_TEST_CASE(std_bmax)
 
   // Test
   source.insert(line++, ".label main");
-  source.insert(line++, "loada r0 data");
-  source.insert(line++, "loada r1 data_end");
-  source.insert(line++, "sub r1 r1 r0");
+  source.insert(line++, "loada g0 data");
+  source.insert(line++, "loada g1 data_end");
+  source.insert(line++, "sub g1 g1 g0");
   source.insert(line++, "call std_bmax");
 
   source.insert(line++, "stop");
@@ -772,7 +772,7 @@ BOOST_AUTO_TEST_CASE(std_bmax)
   cpu.execute(MAX_CYCLES);
 
   BOOST_CHECK(not cpu.running());
-  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r0")], 0x01800500);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "g0")], 0x01800500);
 }
 
 /**
@@ -792,9 +792,9 @@ BOOST_AUTO_TEST_CASE(std_bmaxh)
 
   // Test
   source.insert(line++, ".label main");
-  source.insert(line++, "loada r0 data");
-  source.insert(line++, "loada r1 data_end");
-  source.insert(line++, "sub r1 r1 r0");
+  source.insert(line++, "loada g0 data");
+  source.insert(line++, "loada g1 data_end");
+  source.insert(line++, "sub g1 g1 g0");
   source.insert(line++, "call std_bmaxh");
 
   source.insert(line++, "stop");
@@ -819,7 +819,7 @@ BOOST_AUTO_TEST_CASE(std_bmaxh)
   cpu.execute(MAX_CYCLES);
 
   BOOST_CHECK(not cpu.running());
-  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r0")], 0x40C0);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "g0")], 0x40C0);
 }
 
 /**
@@ -839,9 +839,9 @@ BOOST_AUTO_TEST_CASE(std_bmaxq)
 
   // Test
   source.insert(line++, ".label main");
-  source.insert(line++, "loada r0 data");
-  source.insert(line++, "loada r1 data_end");
-  source.insert(line++, "sub r1 r1 r0");
+  source.insert(line++, "loada g0 data");
+  source.insert(line++, "loada g1 data_end");
+  source.insert(line++, "sub g1 g1 g0");
   source.insert(line++, "call std_bmaxq");
 
   source.insert(line++, "stop");
@@ -866,7 +866,7 @@ BOOST_AUTO_TEST_CASE(std_bmaxq)
   cpu.execute(MAX_CYCLES);
 
   BOOST_CHECK(not cpu.running());
-  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r0")], 0x6A);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "g0")], 0x6A);
 }
 
 /**
@@ -886,29 +886,29 @@ BOOST_AUTO_TEST_CASE(std_maxu)
 
   // Test with 2 positive values
   source.insert(line++, ".label main");
-  source.insert(line++, "loadi r0 0x0");
-  source.insert(line++, "loadi r1 0x3");
+  source.insert(line++, "loadi g0 0x0");
+  source.insert(line++, "loadi g1 0x3");
   source.insert(line++, "call std_maxu");
-  source.insert(line++, "push r0");
+  source.insert(line++, "push g0");
 
   // Test with 2 negative values
-  source.insert(line++, "loadi r0 0x1");
-  source.insert(line++, "loadhi r0 0xFFFF");
-  source.insert(line++, "loadi r1 0x4");
-  source.insert(line++, "loadhi r1 0xFFFF");
+  source.insert(line++, "loadi g0 0x1");
+  source.insert(line++, "loadhi g0 0xFFFF");
+  source.insert(line++, "loadi g1 0x4");
+  source.insert(line++, "loadhi g1 0xFFFF");
   source.insert(line++, "call std_maxu");
-  source.insert(line++, "push r0");
+  source.insert(line++, "push g0");
 
   // Test with a positive and a negative value
-  source.insert(line++, "loadi r0 0x3");
-  source.insert(line++, "loadi r1 0x0");
-  source.insert(line++, "loadhi r1 0xFFFF");
+  source.insert(line++, "loadi g0 0x3");
+  source.insert(line++, "loadi g1 0x0");
+  source.insert(line++, "loadhi g1 0xFFFF");
   source.insert(line++, "call std_maxu");
-  source.insert(line++, "move r2 r0");
+  source.insert(line++, "move g2 g0");
 
   // Put the results in registers
-  source.insert(line++, "pop r1");
-  source.insert(line++, "pop r0");
+  source.insert(line++, "pop g1");
+  source.insert(line++, "pop g0");
 
   source.insert(line++, "stop");
 
@@ -924,9 +924,9 @@ BOOST_AUTO_TEST_CASE(std_maxu)
   cpu.execute(MAX_CYCLES);
 
   BOOST_CHECK(not cpu.running());
-  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r0")], 0x3);
-  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r1")], 0xFFFF0004);
-  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r2")], 0xFFFF0000);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "g0")], 0x3);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "g1")], 0xFFFF0004);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "g2")], 0xFFFF0000);
 }
 
 /**
@@ -946,9 +946,9 @@ BOOST_AUTO_TEST_CASE(std_bmaxu)
 
   // Test
   source.insert(line++, ".label main");
-  source.insert(line++, "loada r0 data");
-  source.insert(line++, "loada r1 data_end");
-  source.insert(line++, "sub r1 r1 r0");
+  source.insert(line++, "loada g0 data");
+  source.insert(line++, "loada g1 data_end");
+  source.insert(line++, "sub g1 g1 g0");
   source.insert(line++, "call std_bmaxu");
 
   source.insert(line++, "stop");
@@ -973,7 +973,7 @@ BOOST_AUTO_TEST_CASE(std_bmaxu)
   cpu.execute(MAX_CYCLES);
 
   BOOST_CHECK(not cpu.running());
-  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r0")], 0x8F0040C0);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "g0")], 0x8F0040C0);
 }
 
 /**
@@ -993,9 +993,9 @@ BOOST_AUTO_TEST_CASE(std_bmaxuh)
 
   // Test
   source.insert(line++, ".label main");
-  source.insert(line++, "loada r0 data");
-  source.insert(line++, "loada r1 data_end");
-  source.insert(line++, "sub r1 r1 r0");
+  source.insert(line++, "loada g0 data");
+  source.insert(line++, "loada g1 data_end");
+  source.insert(line++, "sub g1 g1 g0");
   source.insert(line++, "call std_bmaxuh");
 
   source.insert(line++, "stop");
@@ -1020,7 +1020,7 @@ BOOST_AUTO_TEST_CASE(std_bmaxuh)
   cpu.execute(MAX_CYCLES);
 
   BOOST_CHECK(not cpu.running());
-  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r0")], 0xD06A);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "g0")], 0xD06A);
 }
 
 /**
@@ -1040,9 +1040,9 @@ BOOST_AUTO_TEST_CASE(std_bmaxuq)
 
   // Test
   source.insert(line++, ".label main");
-  source.insert(line++, "loada r0 data");
-  source.insert(line++, "loada r1 data_end");
-  source.insert(line++, "sub r1 r1 r0");
+  source.insert(line++, "loada g0 data");
+  source.insert(line++, "loada g1 data_end");
+  source.insert(line++, "sub g1 g1 g0");
   source.insert(line++, "call std_bmaxuq");
 
   source.insert(line++, "stop");
@@ -1067,7 +1067,7 @@ BOOST_AUTO_TEST_CASE(std_bmaxuq)
   cpu.execute(MAX_CYCLES);
 
   BOOST_CHECK(not cpu.running());
-  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r0")], 0xE3);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "g0")], 0xE3);
 }
 
 /**
@@ -1087,9 +1087,9 @@ BOOST_AUTO_TEST_CASE(std_bsum)
 
   // Test
   source.insert(line++, ".label main");
-  source.insert(line++, "loada r0 data");
-  source.insert(line++, "loada r1 data_end");
-  source.insert(line++, "sub r1 r1 r0");
+  source.insert(line++, "loada g0 data");
+  source.insert(line++, "loada g1 data_end");
+  source.insert(line++, "sub g1 g1 g0");
   source.insert(line++, "call std_bsum");
 
   source.insert(line++, "stop");
@@ -1114,7 +1114,7 @@ BOOST_AUTO_TEST_CASE(std_bsum)
   cpu.execute(MAX_CYCLES);
 
   BOOST_CHECK(not cpu.running());
-  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r0")], 0x918D16E1);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "g0")], 0x918D16E1);
 }
 
 /**
@@ -1134,9 +1134,9 @@ BOOST_AUTO_TEST_CASE(std_bsumh)
 
   // Test
   source.insert(line++, ".label main");
-  source.insert(line++, "loada r0 data");
-  source.insert(line++, "loada r1 data_end");
-  source.insert(line++, "sub r1 r1 r0");
+  source.insert(line++, "loada g0 data");
+  source.insert(line++, "loada g1 data_end");
+  source.insert(line++, "sub g1 g1 g0");
   source.insert(line++, "call std_bsumh");
 
   source.insert(line++, "stop");
@@ -1161,7 +1161,7 @@ BOOST_AUTO_TEST_CASE(std_bsumh)
   cpu.execute(MAX_CYCLES);
 
   BOOST_CHECK(not cpu.running());
-  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r0")], 0x1A86D);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "g0")], 0x1A86D);
 }
 
 /**
@@ -1181,9 +1181,9 @@ BOOST_AUTO_TEST_CASE(std_bsumq)
 
   // Test
   source.insert(line++, ".label main");
-  source.insert(line++, "loada r0 data");
-  source.insert(line++, "loada r1 data_end");
-  source.insert(line++, "sub r1 r1 r0");
+  source.insert(line++, "loada g0 data");
+  source.insert(line++, "loada g1 data_end");
+  source.insert(line++, "sub g1 g1 g0");
   source.insert(line++, "call std_bsumq");
 
   source.insert(line++, "stop");
@@ -1208,7 +1208,7 @@ BOOST_AUTO_TEST_CASE(std_bsumq)
   cpu.execute(MAX_CYCLES);
 
   BOOST_CHECK(not cpu.running());
-  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r0")], 0x512);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "g0")], 0x512);
 }
 
 /**
@@ -1228,9 +1228,9 @@ BOOST_AUTO_TEST_CASE(std_bavg)
 
   // Test
   source.insert(line++, ".label main");
-  source.insert(line++, "loada r0 data");
-  source.insert(line++, "loada r1 data_end");
-  source.insert(line++, "sub r1 r1 r0");
+  source.insert(line++, "loada g0 data");
+  source.insert(line++, "loada g1 data_end");
+  source.insert(line++, "sub g1 g1 g0");
   source.insert(line++, "call std_bavg");
 
   source.insert(line++, "stop");
@@ -1255,7 +1255,7 @@ BOOST_AUTO_TEST_CASE(std_bavg)
   cpu.execute(MAX_CYCLES);
 
   BOOST_CHECK(not cpu.running());
-  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r0")], 0x246345B8);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "g0")], 0x246345B8);
 }
 
 /**
@@ -1275,9 +1275,9 @@ BOOST_AUTO_TEST_CASE(std_bavgh)
 
   // Test
   source.insert(line++, ".label main");
-  source.insert(line++, "loada r0 data");
-  source.insert(line++, "loada r1 data_end");
-  source.insert(line++, "sub r1 r1 r0");
+  source.insert(line++, "loada g0 data");
+  source.insert(line++, "loada g1 data_end");
+  source.insert(line++, "sub g1 g1 g0");
   source.insert(line++, "call std_bavgh");
 
   source.insert(line++, "stop");
@@ -1302,7 +1302,7 @@ BOOST_AUTO_TEST_CASE(std_bavgh)
   cpu.execute(MAX_CYCLES);
 
   BOOST_CHECK(not cpu.running());
-  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r0")], 0x350D);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "g0")], 0x350D);
 }
 
 /**
@@ -1322,9 +1322,9 @@ BOOST_AUTO_TEST_CASE(std_bavgq)
 
   // Test
   source.insert(line++, ".label main");
-  source.insert(line++, "loada r0 data");
-  source.insert(line++, "loada r1 data_end");
-  source.insert(line++, "sub r1 r1 r0");
+  source.insert(line++, "loada g0 data");
+  source.insert(line++, "loada g1 data_end");
+  source.insert(line++, "sub g1 g1 g0");
   source.insert(line++, "call std_bavgq");
 
   source.insert(line++, "stop");
@@ -1349,5 +1349,5 @@ BOOST_AUTO_TEST_CASE(std_bavgq)
   cpu.execute(MAX_CYCLES);
 
   BOOST_CHECK(not cpu.running());
-  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r0")], 0x51);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "g0")], 0x51);
 }

@@ -40,63 +40,63 @@ STD_FULL
 
 
 # Set the seed.
-# IN:  r0 the seed
+# IN:  g0 the seed
 .label std_seed
-        push r0                         # seed is in fp + 0x0
+        push g0                         # seed is in fp + 0x0
 
         # the second word of the seed is the complement of the first one
         call std_bitscomp
 
-        pop r1
+        pop g1
 
-        store r0 _std_random_seed1
-        store r1 _std_random_seed2
+        store g0 _std_random_seed1
+        store g1 _std_random_seed2
 
         ret
 
 
 
 # Update the seed with a iteration of the LCG algorithm
-# IN:  r0 the seed
-# OUT: r0 the new value of the seed
+# IN:  g0 the seed
+# OUT: g0 the new value of the seed
 .label _std_random_lcg
-        load r1 _std_random_a
-        load r2 _std_random_b
-        load r3 _std_random_c
+        load g1 _std_random_a
+        load g2 _std_random_b
+        load g3 _std_random_c
 
         # LCG in the seed
-        mult r0 r0 r1
-        add r0 r0 r2
-        and r0 r0 r3
+        mult g0 g0 g1
+        add g0 g0 g2
+        and g0 g0 g3
 
         ret
 
 
 
 # Calculate a new random value.
-# OUT: r0 the random value
+# OUT: g0 the random value
 .label std_random
         # LCG in the two seeds
-        load r0 _std_random_seed1
+        load g0 _std_random_seed1
         call _std_random_lcg
-        push r0
+        push g0
 
-        load r0 _std_random_seed2
+        load g0 _std_random_seed2
         call _std_random_lcg
 
-        # seed1 in r1
-        # seed2 in r0
-        pop r1
+        # seed1 in g1
+        # seed2 in g0
+        pop g1
 
         # Update seeds
-        store r1 _std_random_seed1
-        store r0 _std_random_seed2
+        store g1 _std_random_seed1
+        store g0 _std_random_seed2
 
         # Calculate the new word using the most value bits of the words
         # (the LCG algorith only returns 31 bits, the MLB = 0)
-        srli r1 r1 0x0f
-        slli r1 r1 0x10
-        srli r0 r0 0x0f
-        or r0 r0 r1
+        srli g1 g1 0x0f
+        slli g1 g1 0x10
+        srli g0 g0 0x0f
+        or g0 g0 g1
 
         ret

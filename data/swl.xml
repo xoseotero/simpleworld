@@ -117,6 +117,14 @@
             <item> rri </item>
         </list>
         <list name="register">
+            <item> pc </item>
+            <item> sp </item>
+            <item> fp </item>
+            <item> cs </item>
+            <item> g0 </item>
+            <item> g1 </item>
+            <item> g2 </item>
+            <item> g3 </item>
             <item> r0 </item>
             <item> r1 </item>
             <item> r2 </item>
@@ -125,14 +133,6 @@
             <item> r5 </item>
             <item> r6 </item>
             <item> r7 </item>
-            <item> r8 </item>
-            <item> r9 </item>
-            <item> r10 </item>
-            <item> r11 </item>
-            <item> pc </item>
-            <item> sp </item>
-            <item> fp </item>
-            <item> cs </item>
         </list>
         <contexts>
             <context name="normal" attribute="Normal Text" lineEndContext="#stay" >

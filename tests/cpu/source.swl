@@ -13,19 +13,19 @@
 # Loop
 .label init
        # load the initial values
-       loadi r1 VALUE1
-       loadi r2 VALUE2
+       loadi g1 VALUE1
+       loadi g2 VALUE2
 
        # some operations
-       add r0 r1 r2
-       move r0 r1
-       swap r2 r2
+       add g0 g1 g2
+       move g0 g1
+       swap g2 g2
 
 .ifdef VALUE1
-       push r0
-       div r0 r1 r2
-       pop r0
-       rri r0 r0 VALUE3
+       push g0
+       div g0 g1 g2
+       pop g0
+       rri g0 g0 VALUE3
 .endif
 
        # restart the CPU

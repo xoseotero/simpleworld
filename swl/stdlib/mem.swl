@@ -21,565 +21,565 @@
 .include "stdlib/address.swl"
 
 # Set all the words of a block of memory to a value.
-# IN:  r0 pointer
-# IN:  r1 size of the block of memory
-# IN:  r2 value
-# OUT: r1 error status
+# IN:  g0 pointer
+# IN:  g1 size of the block of memory
+# IN:  g2 value
+# OUT: g1 error status
 #      STD_NOERROR: no errors
 #      STD_EINVAL:  size is not valid
 #      STD_EFAULT:  the pointer is not valid
 .label std_fill
-        push r0                         # pointer is in fp + 0x0
-        push r1                         # size is in fp + 0x4
-        push r2                         # value is in fp + 0x8
+        push g0                         # pointer is in fp + 0x0
+        push g1                         # size is in fp + 0x4
+        push g2                         # value is in fp + 0x8
 
         # check if the size is valid
-        bz r1 _std_fill_einval
-        modi r3 r1 STD_WORDSIZE
-        bnz r3 _std_fill_einval
+        bz g1 _std_fill_einval
+        modi g3 g1 STD_WORDSIZE
+        bnz g3 _std_fill_einval
 
         # check if the block is valid
         call std_address
-        bz r0 _std_fill_efault
+        bz g0 _std_fill_efault
 
         # restore the parameters
-        loadri r0 fp 0x0
-        loadri r1 fp 0x4
-        loadri r2 fp 0x8
+        loadri g0 fp 0x0
+        loadri g1 fp 0x4
+        loadri g2 fp 0x8
 
         # set all the block to the value
         .label _std_fill_loop
-        subi r1 r1 STD_WORDSIZE
-        storerr r0 r2 r1
-        bnz r1 _std_fill_loop
+        subi g1 g1 STD_WORDSIZE
+        storerr g0 g2 g1
+        bnz g1 _std_fill_loop
 
         .label _std_fill_ok
-        loadi r1 STD_NOERROR
+        loadi g1 STD_NOERROR
         ret
 
         .label _std_fill_einval
-        loadi r1 STD_EINVAL
+        loadi g1 STD_EINVAL
         ret
 
         .label _std_fill_efault
-        loadi r1 STD_EFAULT
+        loadi g1 STD_EFAULT
         ret
 
 # Set all the half words of a block of memory to a value.
-# IN:  r0 pointer
-# IN:  r1 size of the block of memory
-# IN:  r2 value
-# OUT: r1 error status
+# IN:  g0 pointer
+# IN:  g1 size of the block of memory
+# IN:  g2 value
+# OUT: g1 error status
 #      STD_NOERROR: no errors
 #      STD_EINVAL:  size is not valid
 #      STD_EFAULT:  the pointer is not valid
 .label std_fillh
-        push r0                         # pointer is in fp + 0x0
-        push r1                         # size is in fp + 0x4
-        push r2                         # value is in fp + 0x8
+        push g0                         # pointer is in fp + 0x0
+        push g1                         # size is in fp + 0x4
+        push g2                         # value is in fp + 0x8
 
         # check if the size is valid
-        bz r1 _std_fillh_einval
-        modi r3 r1 STD_HWORDSIZE
-        bnz r3 _std_fillh_einval
+        bz g1 _std_fillh_einval
+        modi g3 g1 STD_HWORDSIZE
+        bnz g3 _std_fillh_einval
 
         # check if the block is valid
         call std_address
-        bz r0 _std_fillh_efault
+        bz g0 _std_fillh_efault
 
         # restore the parameters
-        loadri r0 fp 0x0
-        loadri r1 fp 0x4
-        loadri r2 fp 0x8
+        loadri g0 fp 0x0
+        loadri g1 fp 0x4
+        loadri g2 fp 0x8
 
         # set all the block to the value
         .label _std_fillh_loop
-        subi r1 r1 STD_HWORDSIZE
-        storehrr r0 r2 r1
-        bnz r1 _std_fillh_loop
+        subi g1 g1 STD_HWORDSIZE
+        storehrr g0 g2 g1
+        bnz g1 _std_fillh_loop
 
         .label _std_fillh_ok
-        loadi r1 STD_NOERROR
+        loadi g1 STD_NOERROR
         ret
 
         .label _std_fillh_einval
-        loadi r1 STD_EINVAL
+        loadi g1 STD_EINVAL
         ret
 
         .label _std_fillh_efault
-        loadi r1 STD_EFAULT
+        loadi g1 STD_EFAULT
         ret
 
 # Set all the quarter words of a block of memory to a value.
-# IN:  r0 pointer
-# IN:  r1 size of the block of memory
-# IN:  r2 value
-# OUT: r1 error status
+# IN:  g0 pointer
+# IN:  g1 size of the block of memory
+# IN:  g2 value
+# OUT: g1 error status
 #      STD_NOERROR: no errors
 #      STD_EINVAL:  size is not valid
 #      STD_EFAULT:  the pointer is not valid
 .label std_fillq
-        push r0                         # pointer is in fp + 0x0
-        push r1                         # size is in fp + 0x4
-        push r2                         # value is in fp + 0x8
+        push g0                         # pointer is in fp + 0x0
+        push g1                         # size is in fp + 0x4
+        push g2                         # value is in fp + 0x8
 
         # check if the size is valid
-        bz r1 _std_fillq_einval
+        bz g1 _std_fillq_einval
 
         # check if the block is valid
         call std_address
-        bz r0 _std_fillq_efault
+        bz g0 _std_fillq_efault
 
         # restore the parameters
-        loadri r0 fp 0x0
-        loadri r1 fp 0x4
-        loadri r2 fp 0x8
+        loadri g0 fp 0x0
+        loadri g1 fp 0x4
+        loadri g2 fp 0x8
 
         # set all the block to the value
         .label _std_fillq_loop
-        subi r1 r1 STD_QWORDSIZE
-        storeqrr r0 r2 r1
-        bnz r1 _std_fillq_loop
+        subi g1 g1 STD_QWORDSIZE
+        storeqrr g0 g2 g1
+        bnz g1 _std_fillq_loop
 
         .label _std_fillq_ok
-        loadi r1 STD_NOERROR
+        loadi g1 STD_NOERROR
         ret
 
         .label _std_fillq_einval
-        loadi r1 STD_EINVAL
+        loadi g1 STD_EINVAL
         ret
 
         .label _std_fillq_efault
-        loadi r1 STD_EFAULT
+        loadi g1 STD_EFAULT
         ret
 
 
 # Copy a block of memory (quarter word by quarter word).
-# IN:  r0 destination pointer
-# IN:  r1 source pointer
-# IN:  r2 size of the block of memory
-# OUT: r1 error status
+# IN:  g0 destination pointer
+# IN:  g1 source pointer
+# IN:  g2 size of the block of memory
+# OUT: g1 error status
 #      STD_NOERROR: no errors
 #      STD_EINVAL:  size is not valid
 #      STD_EFAULT:  the pointers are not valid
 .label std_copy
-        push r0                         # dst is in fp + 0x0
-        push r1                         # src is in fp + 0x4
-        push r2                         # size is in fp + 0x8
+        push g0                         # dst is in fp + 0x0
+        push g1                         # src is in fp + 0x4
+        push g2                         # size is in fp + 0x8
 
         # check if the size is valid
-        bz r1 _std_copy_einval
+        bz g1 _std_copy_einval
 
         # check if the dst block is valid
-        move r1 r2
+        move g1 g2
         call std_address
-        bz r0 _std_copy_efault
+        bz g0 _std_copy_efault
 
         # check if the src block is valid
-        loadri r0 fp 0x4
-        loadri r1 fp 0x8
+        loadri g0 fp 0x4
+        loadri g1 fp 0x8
         call std_address
-        bz r0 _std_copy_efault
+        bz g0 _std_copy_efault
 
         # restore the parameters
-        loadri r0 fp 0x0
-        loadri r1 fp 0x4
-        loadri r2 fp 0x8
+        loadri g0 fp 0x0
+        loadri g1 fp 0x4
+        loadri g2 fp 0x8
 
         # copy the block
         .label _std_copy_loop
-        subi r2 r2 STD_QWORDSIZE
-        loadqrr r3 r1 r2
-        storeqrr r0 r3 r2
-        bnz r2 _std_copy_loop
+        subi g2 g2 STD_QWORDSIZE
+        loadqrr g3 g1 g2
+        storeqrr g0 g3 g2
+        bnz g2 _std_copy_loop
 
         .label _std_copy_ok
-        loadi r1 STD_NOERROR
+        loadi g1 STD_NOERROR
         ret
 
         .label _std_copy_einval
-        loadi r1 STD_EINVAL
+        loadi g1 STD_EINVAL
         ret
 
         .label _std_copy_efault
-        loadi r1 STD_EFAULT
+        loadi g1 STD_EFAULT
         ret
 
 
 # Compare two blocks of memory (quarter word by quarter word).
-# IN:  r0 pointer1
-# IN:  r1 pointer2
-# IN:  r2 size of the block of memory
-# OUT: r0 difference
-#      < 0: pointer1 < pointer2
-#      = 0: pointer1 = pointer2
-#      > 0: pointer1 > pointer2
-# OUT: r1 error status
+# IN:  g0 pointeg1
+# IN:  g1 pointeg2
+# IN:  g2 size of the block of memory
+# OUT: g0 difference
+#      < 0: pointeg1 < pointeg2
+#      = 0: pointeg1 = pointeg2
+#      > 0: pointeg1 > pointeg2
+# OUT: g1 error status
 #      STD_NOERROR: no errors
 #      STD_EFAULT:  the pointers are not valid
 .label std_cmp
-        push r0                         # pt1 is in fp + 0x0
-        push r1                         # pt2 is in fp + 0x4
-        push r2                         # size is in fp + 0x8
+        push g0                         # pt1 is in fp + 0x0
+        push g1                         # pt2 is in fp + 0x4
+        push g2                         # size is in fp + 0x8
 
         # check if the size is valid
-        bz r2 _std_cmp_einval
+        bz g2 _std_cmp_einval
 
         # check if the first block is valid
-        move r1 r2
+        move g1 g2
         call std_address
-        bz r0 _std_cmp_efault
+        bz g0 _std_cmp_efault
 
         # check if the second block is valid
-        loadri r0 fp 0x4
-        loadri r1 fp 0x8
+        loadri g0 fp 0x4
+        loadri g1 fp 0x8
         call std_address
-        bz r0 _std_cmp_efault
+        bz g0 _std_cmp_efault
 
         # restore the parameters
-        loadri r0 fp 0x0
-        loadri r1 fp 0x4
-        loadri r2 fp 0x8
+        loadri g0 fp 0x0
+        loadri g1 fp 0x4
+        loadri g2 fp 0x8
 
         # compare the block
-        loadi r3 0x0
+        loadi g3 0x0
 
         .label _std_cmp_loop
-        loadqrr r4 r0 r3
-        loadqrr r5 r1 r3
-        sub r6 r4 r5
-        bnz r6 _std_cmp_notequal
+        loadqrr r0 g0 g3
+        loadqrr r1 g1 g3
+        sub r2 r0 r1
+        bnz r2 _std_cmp_notequal
 
-        addi r3 r3 STD_QWORDSIZE
-        bne r2 r3 _std_cmp_loop
+        addi g3 g3 STD_QWORDSIZE
+        bne g2 g3 _std_cmp_loop
 
         .label _std_cmp_equal
-        loadi r0 0x0
-        loadi r1 STD_NOERROR
+        loadi g0 0x0
+        loadi g1 STD_NOERROR
         ret
 
         .label _std_cmp_notequal
-        move r0 r6                      # r6 is the difference
-        loadi r1 STD_NOERROR
+        move g0 r2                      # r2 is the difference
+        loadi g1 STD_NOERROR
         ret
 
         .label _std_cmp_einval
-        loadi r1 STD_EINVAL
+        loadi g1 STD_EINVAL
         ret
 
         .label _std_cmp_efault
-        loadi r1 STD_EFAULT
+        loadi g1 STD_EFAULT
         ret
 
 
 # Find a word in a block of memory.
-# IN:  r0 pointer
-# IN:  r1 size of the block of memory
-# IN:  r2 value
-# OUT: r0 offset of the value
-# OUT: r1 error status
+# IN:  g0 pointer
+# IN:  g1 size of the block of memory
+# IN:  g2 value
+# OUT: g0 offset of the value
+# OUT: g1 error status
 #      STD_NOERROR: no errors
 #      STD_EINVAL:  size is not valid or the value was not found
 #      STD_EFAULT:  the pointer is not valid
 .label std_find
-        push r0                         # pointer is in fp + 0x0
-        push r1                         # size is in fp + 0x4
-        push r2                         # value is in fp + 0x8
+        push g0                         # pointer is in fp + 0x0
+        push g1                         # size is in fp + 0x4
+        push g2                         # value is in fp + 0x8
 
         # check if the size is valid
-        bz r1 _std_find_einval
-        modi r3 r1 STD_WORDSIZE
-        bnz r3 _std_find_einval
+        bz g1 _std_find_einval
+        modi g3 g1 STD_WORDSIZE
+        bnz g3 _std_find_einval
 
         # check if the block is valid
         call std_address
-        bz r0 _std_find_efault
+        bz g0 _std_find_efault
 
         # restore the parameters
-        loadri r0 fp 0x0
-        loadri r1 fp 0x4
-        loadri r2 fp 0x8
+        loadri g0 fp 0x0
+        loadri g1 fp 0x4
+        loadri g2 fp 0x8
 
         # find the value
-        loadi r3 0x0
+        loadi g3 0x0
 
         .label _std_find_loop
-        loadrr r4 r0 r3
-        beq r2 r4 _std_find_found
+        loadrr r0 g0 g3
+        beq g2 r0 _std_find_found
 
-        addi r3 r3 STD_WORDSIZE
-        bne r1 r3 _std_find_loop
+        addi g3 g3 STD_WORDSIZE
+        bne g1 g3 _std_find_loop
 
         .label _std_find_einval
-        loadi r1 STD_EINVAL
+        loadi g1 STD_EINVAL
         ret
 
         .label _std_find_found
-        move r0 r3                      # r3 is the offset of the element
-        loadi r1 STD_NOERROR
+        move g0 g3                      # g3 is the offset of the element
+        loadi g1 STD_NOERROR
         ret
 
         .label _std_find_efault
-        loadi r1 STD_EFAULT
+        loadi g1 STD_EFAULT
         ret
 
 # Find a half word in a block of memory.
-# IN:  r0 pointer
-# IN:  r1 size of the block of memory
-# IN:  r2 value
-# OUT: r0 offset of the value
-# OUT: r1 error status
+# IN:  g0 pointer
+# IN:  g1 size of the block of memory
+# IN:  g2 value
+# OUT: g0 offset of the value
+# OUT: g1 error status
 #      STD_NOERROR: no errors
 #      STD_EINVAL:  size is not valid or the value was not found
 #      STD_EFAULT:  the pointer is not valid
 .label std_findh
-        push r0                         # pointer is in fp + 0x0
-        push r1                         # size is in fp + 0x4
-        push r2                         # value is in fp + 0x8
+        push g0                         # pointer is in fp + 0x0
+        push g1                         # size is in fp + 0x4
+        push g2                         # value is in fp + 0x8
 
         # check if the size is valid
-        bz r1 _std_findh_einval
-        modi r3 r1 STD_HWORDSIZE
-        bnz r3 _std_findh_einval
+        bz g1 _std_findh_einval
+        modi g3 g1 STD_HWORDSIZE
+        bnz g3 _std_findh_einval
 
         # check if the block is valid
         call std_address
-        bz r0 _std_findh_efault
+        bz g0 _std_findh_efault
 
         # restore the parameters
-        loadri r0 fp 0x0
-        loadri r1 fp 0x4
-        loadri r2 fp 0x8
+        loadri g0 fp 0x0
+        loadri g1 fp 0x4
+        loadri g2 fp 0x8
 
         # find the value
-        loadi r3 0x0
+        loadi g3 0x0
 
         .label _std_findh_loop
-        loadhrr r4 r0 r3
-        beq r2 r4 _std_findh_found
+        loadhrr r0 g0 g3
+        beq g2 r0 _std_findh_found
 
-        addi r3 r3 STD_HWORDSIZE
-        bne r1 r3 _std_findh_loop
+        addi g3 g3 STD_HWORDSIZE
+        bne g1 g3 _std_findh_loop
 
         .label _std_findh_einval
-        loadi r1 STD_EINVAL
+        loadi g1 STD_EINVAL
         ret
 
         .label _std_findh_found
-        move r0 r3                      # r3 is the offset of the element
-        loadi r1 STD_NOERROR
+        move g0 g3                      # g3 is the offset of the element
+        loadi g1 STD_NOERROR
         ret
 
         .label _std_findh_efault
-        loadi r1 STD_EFAULT
+        loadi g1 STD_EFAULT
         ret
 
 # Find a quarter word in a block of memory.
-# IN:  r0 pointer
-# IN:  r1 size of the block of memory
-# IN:  r2 value
-# OUT: r0 offset of the value
-# OUT: r1 error status
+# IN:  g0 pointer
+# IN:  g1 size of the block of memory
+# IN:  g2 value
+# OUT: g0 offset of the value
+# OUT: g1 error status
 #      STD_NOERROR: no errors
 #      STD_EINVAL:  size is not valid or the value was not found
 #      STD_EFAULT:  the pointer is not valid
 .label std_findq
-        push r0                         # pointer is in fp + 0x0
-        push r1                         # size is in fp + 0x4
-        push r2                         # value is in fp + 0x8
+        push g0                         # pointer is in fp + 0x0
+        push g1                         # size is in fp + 0x4
+        push g2                         # value is in fp + 0x8
 
         # check if the size is valid
-        bz r1 _std_findq_einval
+        bz g1 _std_findq_einval
 
         # check if the block is valid
         call std_address
-        bz r0 _std_findq_efault
+        bz g0 _std_findq_efault
 
         # restore the parameters
-        loadri r0 fp 0x0
-        loadri r1 fp 0x4
-        loadri r2 fp 0x8
+        loadri g0 fp 0x0
+        loadri g1 fp 0x4
+        loadri g2 fp 0x8
 
         # find the value
-        loadi r3 0x0
+        loadi g3 0x0
 
         .label _std_findq_loop
-        loadqrr r4 r0 r3
-        beq r2 r4 _std_findq_found
+        loadqrr r0 g0 g3
+        beq g2 r0 _std_findq_found
 
-        addi r3 r3 STD_QWORDSIZE
-        bne r1 r3 _std_findq_loop
+        addi g3 g3 STD_QWORDSIZE
+        bne g1 g3 _std_findq_loop
 
         .label _std_findq_einval
-        loadi r1 STD_EINVAL
+        loadi g1 STD_EINVAL
         ret
 
         .label _std_findq_found
-        move r0 r3                      # r3 is the offset of the element
-        loadi r1 STD_NOERROR
+        move g0 g3                      # g3 is the offset of the element
+        loadi g1 STD_NOERROR
         ret
 
         .label _std_findq_efault
-        loadi r1 STD_EFAULT
+        loadi g1 STD_EFAULT
         ret
 
 
 # Count the times that a word is found in a block of memory.
-# IN:  r0 pointer
-# IN:  r1 size of the block of memory
-# IN:  r2 value
-# OUT: r0 number of elements found
-# OUT: r1 error status
+# IN:  g0 pointer
+# IN:  g1 size of the block of memory
+# IN:  g2 value
+# OUT: g0 number of elements found
+# OUT: g1 error status
 #      STD_NOERROR: no errors
 #      STD_EINVAL:  size is not valid
 #      STD_EFAULT:  the pointer is not valid
 .label std_count
-        push r0                         # pointer is in fp + 0x0
-        push r1                         # size is in fp + 0x4
-        push r2                         # value is in fp + 0x8
+        push g0                         # pointer is in fp + 0x0
+        push g1                         # size is in fp + 0x4
+        push g2                         # value is in fp + 0x8
 
         # check if the size is valid
-        bz r1 _std_count_einval
-        modi r3 r1 STD_WORDSIZE
-        bnz r3 _std_count_einval
+        bz g1 _std_count_einval
+        modi g3 g1 STD_WORDSIZE
+        bnz g3 _std_count_einval
 
         # check if the block is valid
         call std_address
-        bz r0 _std_count_efault
+        bz g0 _std_count_efault
 
         # restore the parameters
-        loadri r0 fp 0x0
-        loadri r1 fp 0x4
-        loadri r2 fp 0x8
+        loadri g0 fp 0x0
+        loadri g1 fp 0x4
+        loadri g2 fp 0x8
 
         # count the values
-        loadi r3 0x0
-        loadi r4 0x0                    # counter
+        loadi g3 0x0
+        loadi r0 0x0                    # counter
 
         .label _std_count_loop
-        loadrr r5 r0 r3
-        bne r2 r5 _std_count_notequal
-        addi r4 r4 0x1                  # element found
+        loadrr r1 g0 g3
+        bne g2 r1 _std_count_notequal
+        addi r0 r0 0x1                  # element found
 
         .label _std_count_notequal
-        addi r3 r3 STD_WORDSIZE
-        bne r1 r3 _std_count_loop
+        addi g3 g3 STD_WORDSIZE
+        bne g1 g3 _std_count_loop
 
         .label _std_count_ok
-        move r0 r4
-        loadi r1 STD_NOERROR
+        move g0 r0
+        loadi g1 STD_NOERROR
         ret
 
         .label _std_count_einval
-        loadi r1 STD_EINVAL
+        loadi g1 STD_EINVAL
         ret
 
         .label _std_count_efault
-        loadi r1 STD_EFAULT
+        loadi g1 STD_EFAULT
         ret
 
 # Count the times that a word is found in a block of memory.
-# IN:  r0 pointer
-# IN:  r1 size of the block of memory
-# IN:  r2 value
-# OUT: r0 number of elements found
-# OUT: r1 error status
+# IN:  g0 pointer
+# IN:  g1 size of the block of memory
+# IN:  g2 value
+# OUT: g0 number of elements found
+# OUT: g1 error status
 #      STD_NOERROR: no errors
 #      STD_EINVAL:  size is not valid
 #      STD_EFAULT:  the pointer is not valid
 .label std_counth
-        push r0                         # pointer is in fp + 0x0
-        push r1                         # size is in fp + 0x4
-        push r2                         # value is in fp + 0x8
+        push g0                         # pointer is in fp + 0x0
+        push g1                         # size is in fp + 0x4
+        push g2                         # value is in fp + 0x8
 
         # check if the size is valid
-        bz r1 _std_counth_einval
-        modi r3 r1 STD_HWORDSIZE
-        bnz r3 _std_counth_einval
+        bz g1 _std_counth_einval
+        modi g3 g1 STD_HWORDSIZE
+        bnz g3 _std_counth_einval
 
         # check if the block is valid
         call std_address
-        bz r0 _std_counth_efault
+        bz g0 _std_counth_efault
 
         # restore the parameters
-        loadri r0 fp 0x0
-        loadri r1 fp 0x4
-        loadri r2 fp 0x8
+        loadri g0 fp 0x0
+        loadri g1 fp 0x4
+        loadri g2 fp 0x8
 
         # count the values
-        loadi r3 0x0
-        loadi r4 0x0                    # counter
+        loadi g3 0x0
+        loadi r0 0x0                    # counter
 
         .label _std_counth_loop
-        loadhrr r5 r0 r3
-        bne r2 r5 _std_counth_notequal
-        addi r4 r4 0x1                  # element found
+        loadhrr r1 g0 g3
+        bne g2 r1 _std_counth_notequal
+        addi r0 r0 0x1                  # element found
 
         .label _std_counth_notequal
-        addi r3 r3 STD_HWORDSIZE
-        bne r1 r3 _std_counth_loop
+        addi g3 g3 STD_HWORDSIZE
+        bne g1 g3 _std_counth_loop
 
         .label _std_counth_ok
-        move r0 r4
-        loadi r1 STD_NOERROR
+        move g0 r0
+        loadi g1 STD_NOERROR
         ret
 
         .label _std_counth_einval
-        loadi r1 STD_EINVAL
+        loadi g1 STD_EINVAL
         ret
 
         .label _std_counth_efault
-        loadi r1 STD_EFAULT
+        loadi g1 STD_EFAULT
         ret
 
 # Count the times that a word is found in a block of memory.
-# IN:  r0 pointer
-# IN:  r1 size of the block of memory
-# IN:  r2 value
-# OUT: r0 number of elements found
-# OUT: r1 error status
+# IN:  g0 pointer
+# IN:  g1 size of the block of memory
+# IN:  g2 value
+# OUT: g0 number of elements found
+# OUT: g1 error status
 #      STD_NOERROR: no errors
 #      STD_EINVAL:  size is not valid
 #      STD_EFAULT:  the pointer is not valid
 .label std_countq
-        push r0                         # pointer is in fp + 0x0
-        push r1                         # size is in fp + 0x4
-        push r2                         # value is in fp + 0x8
+        push g0                         # pointer is in fp + 0x0
+        push g1                         # size is in fp + 0x4
+        push g2                         # value is in fp + 0x8
 
         # check if the size is valid
-        bz r1 _std_countq_einval
+        bz g1 _std_countq_einval
 
         # check if the block is valid
         call std_address
-        bz r0 _std_countq_efault
+        bz g0 _std_countq_efault
 
         # restore the parameters
-        loadri r0 fp 0x0
-        loadri r1 fp 0x4
-        loadri r2 fp 0x8
+        loadri g0 fp 0x0
+        loadri g1 fp 0x4
+        loadri g2 fp 0x8
 
         # count the values
-        loadi r3 0x0
-        loadi r4 0x0                    # counter
+        loadi g3 0x0
+        loadi r0 0x0                    # counter
 
         .label _std_countq_loop
-        loadqrr r5 r0 r3
-        bne r2 r5 _std_countq_notequal
-        addi r4 r4 0x1                  # element found
+        loadqrr r1 g0 g3
+        bne g2 r1 _std_countq_notequal
+        addi r0 r0 0x1                  # element found
 
         .label _std_countq_notequal
-        addi r3 r3 STD_QWORDSIZE
-        bne r1 r3 _std_countq_loop
+        addi g3 g3 STD_QWORDSIZE
+        bne g1 g3 _std_countq_loop
 
         .label _std_countq_ok
-        move r0 r4
-        loadi r1 STD_NOERROR
+        move g0 r0
+        loadi g1 STD_NOERROR
         ret
 
         .label _std_countq_einval
-        loadi r1 STD_EINVAL
+        loadi g1 STD_EINVAL
         ret
 
         .label _std_countq_efault
-        loadi r1 STD_EFAULT
+        loadi g1 STD_EFAULT
         ret

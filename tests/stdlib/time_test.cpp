@@ -78,9 +78,9 @@ BOOST_AUTO_TEST_CASE(std_time)
   // Initialize the stack pointer
   source.insert(line++, ".label init");
   source.insert(line++, "loada sp stack");
-  source.insert(line++, "loada r0 heap");
-  source.insert(line++, "loadi r1 0x400");
-  source.insert(line++, "loadi r2 0x1");
+  source.insert(line++, "loada g0 heap");
+  source.insert(line++, "loadi g1 0x400");
+  source.insert(line++, "loadi g2 0x1");
   source.insert(line++, "call std_init");
   source.insert(line++, "b main");
 
@@ -90,15 +90,15 @@ BOOST_AUTO_TEST_CASE(std_time)
   // Test
   source.insert(line++, ".label main");
   source.insert(line++, "call std_time");
-  source.insert(line++, "push r0");
+  source.insert(line++, "push g0");
 
   // Flag
-  source.insert(line++, "loadi r11 0xF894");
+  source.insert(line++, "loadi r7 0xF894");
 
   source.insert(line++, "call std_time");
 
-  source.insert(line++, "move r1 r0");
-  source.insert(line++, "pop r0");
+  source.insert(line++, "move g1 g0");
+  source.insert(line++, "pop g0");
 
   source.insert(line++, "stop");
 
@@ -120,7 +120,7 @@ BOOST_AUTO_TEST_CASE(std_time)
   cpu::MemoryFile memory(CPU_SAVE);
   FakeCPU cpu(&registers, &memory);
   int i = 0;
-  while (registers[REGISTER(cpu, "r11")] != 0xF894) {
+  while (registers[REGISTER(cpu, "r7")] != 0xF894) {
     cpu.execute(1);
 
     if (++i == MAX_CYCLES)
@@ -130,8 +130,8 @@ BOOST_AUTO_TEST_CASE(std_time)
   cpu.execute(MAX_CYCLES - i);
 
   BOOST_CHECK(not cpu.running());
-  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r0")], 0x0);
-  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r1")], 0x1);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "g0")], 0x0);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "g1")], 0x1);
 }
 
 /**
@@ -145,9 +145,9 @@ BOOST_AUTO_TEST_CASE(std_sleep)
   // Initialize the stack pointer
   source.insert(line++, ".label init");
   source.insert(line++, "loada sp stack");
-  source.insert(line++, "loada r0 heap");
-  source.insert(line++, "loadi r1 0x400");
-  source.insert(line++, "loadi r2 0x1");
+  source.insert(line++, "loada g0 heap");
+  source.insert(line++, "loadi g1 0x400");
+  source.insert(line++, "loadi g2 0x1");
   source.insert(line++, "call std_init");
   source.insert(line++, "b main");
 
@@ -156,7 +156,7 @@ BOOST_AUTO_TEST_CASE(std_sleep)
 
   // Test
   source.insert(line++, ".label main");
-  source.insert(line++, "loadi r0 0x1");
+  source.insert(line++, "loadi g0 0x1");
   source.insert(line++, "call std_sleep");
 
   source.insert(line++, "call std_time");
@@ -185,5 +185,5 @@ BOOST_AUTO_TEST_CASE(std_sleep)
   cpu.execute(MAX_CYCLES);
 
   BOOST_CHECK(not cpu.running());
-  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r0")], 0x1);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "g0")], 0x1);
 }

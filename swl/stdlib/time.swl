@@ -28,58 +28,58 @@
 
 
 # Handler for the timer interrupt.
-# IN:  r0 type of interrupt
+# IN:  g0 type of interrupt
 .label _std_timerhandler
-        load r0 _std_time
-        addi r0 r0 0x1
-        store r0 _std_time
+        load g0 _std_time
+        addi g0 g0 0x1
+        store g0 _std_time
         ret
 
 # Initialize the time.
-# IN:  r0 cycles
-# OUT: r1 error status
+# IN:  g0 cycles
+# OUT: g1 error status
 #      STD_NOERROR: no errors
 #      STD_ENOMEM:  there is not enough memory
 .label _std_timeinit
         # initialize the time
-        store r0 _std_time
+        store g0 _std_time
 
         # insert the timer interrupt
-        loadi r0 STD_ITIMER
-        loada r1 _std_timerhandler
+        loadi g0 STD_ITIMER
+        loada g1 _std_timerhandler
         call std_handler
-        bnz r1 __std_timeinit_enomem
+        bnz g1 __std_timeinit_enomem
 
         .label __std_timeinit_ok
-        loadi r1 STD_NOERROR
+        loadi g1 STD_NOERROR
         ret
 
         .label __std_timeinit_enomem
-        #loadi r1 STD_ENOMEM  # not needed because std_handler already sets it
+        #loadi g1 STD_ENOMEM  # not needed because std_handler already sets it
         ret
 
 # Get the current time.
-# OUT: r0 cycles
+# OUT: g0 cycles
 .label std_time
-        load r0 _std_time
+        load g0 _std_time
         ret
 
 # Sleep during some cycles.
-# IN:  r0 cycles to sleep
+# IN:  g0 cycles to sleep
 .label std_sleep
         # don't sleep if cycles are 0
-        bz r0 _std_sleep_ret
+        bz g0 _std_sleep_ret
 
-        load r1 _std_time
-        add r1 r0 r1
+        load g1 _std_time
+        add g1 g0 g1
 
-        # loop while time < r0
+        # loop while time < g0
         .label _std_sleep_loop
         world STD_NOTHING
 
-        # r1 shouldn't be changed by world STD_NOTHING
-        load r0 _std_time
-        bltu r0 r1 _std_sleep_loop
+        # g1 shouldn't be changed by world STD_NOTHING
+        load g0 _std_time
+        bltu g0 g1 _std_sleep_loop
 
         .label _std_sleep_ret
         ret

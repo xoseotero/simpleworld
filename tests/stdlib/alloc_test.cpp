@@ -84,18 +84,18 @@ BOOST_AUTO_TEST_CASE(std_minfo)
 
   // Test
   source.insert(line++, ".label main");
-  source.insert(line++, "loada r0 heap");
-  source.insert(line++, "loadi r1 0x400");
+  source.insert(line++, "loada g0 heap");
+  source.insert(line++, "loadi g1 0x400");
   source.insert(line++, "call _std_minit");
 
-  source.insert(line++, "loada r0 minfo");
+  source.insert(line++, "loada g0 minfo");
   source.insert(line++, "call std_minfo");
 
-  source.insert(line++, "loada r0 minfo");
-  source.insert(line++, "loadri r1 r0 STD_MINFO_MEM");
-  source.insert(line++, "loadri r2 r0 STD_MINFO_TOTAL");
-  source.insert(line++, "loadri r3 r0 STD_MINFO_FREE");
-  source.insert(line++, "loada r0 heap");
+  source.insert(line++, "loada g0 minfo");
+  source.insert(line++, "loadri g1 g0 STD_MINFO_MEM");
+  source.insert(line++, "loadri g2 g0 STD_MINFO_TOTAL");
+  source.insert(line++, "loadri g3 g0 STD_MINFO_FREE");
+  source.insert(line++, "loada g0 heap");
 
   source.insert(line++, "stop");
 
@@ -119,11 +119,11 @@ BOOST_AUTO_TEST_CASE(std_minfo)
   cpu.execute(MAX_CYCLES);
 
   BOOST_CHECK(not cpu.running());
-  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r0")],
-                    registers[REGISTER(cpu, "r1")]);
-  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r2")], 0x400);
-  BOOST_CHECK_GT(registers[REGISTER(cpu, "r3")], 0x0);
-  BOOST_CHECK_LT(registers[REGISTER(cpu, "r3")], 0x400);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "g0")],
+                    registers[REGISTER(cpu, "g1")]);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "g2")], 0x400);
+  BOOST_CHECK_GT(registers[REGISTER(cpu, "g3")], 0x0);
+  BOOST_CHECK_LT(registers[REGISTER(cpu, "g3")], 0x400);
 }
 
 /**
@@ -143,30 +143,30 @@ BOOST_AUTO_TEST_CASE(std_alloc)
 
   // Test
   source.insert(line++, ".label main");
-  source.insert(line++, "loada r0 heap");
-  source.insert(line++, "loadi r1 0x400");
+  source.insert(line++, "loada g0 heap");
+  source.insert(line++, "loadi g1 0x400");
   source.insert(line++, "call _std_minit");
 
-  source.insert(line++, "loada r0 minfo");
+  source.insert(line++, "loada g0 minfo");
   source.insert(line++, "call std_minfo");
-  source.insert(line++, "loada r0 minfo");
-  source.insert(line++, "loadri r0 r0 STD_MINFO_FREE");
-  source.insert(line++, "push r0");
+  source.insert(line++, "loada g0 minfo");
+  source.insert(line++, "loadri g0 g0 STD_MINFO_FREE");
+  source.insert(line++, "push g0");
 
-  source.insert(line++, "loadi r0 0x20");
+  source.insert(line++, "loadi g0 0x20");
   source.insert(line++, "call std_alloc");
-  source.insert(line++, "push r0");
+  source.insert(line++, "push g0");
 
-  source.insert(line++, "loada r0 minfo");
+  source.insert(line++, "loada g0 minfo");
   source.insert(line++, "call std_minfo");
-  source.insert(line++, "loada r0 minfo");
-  source.insert(line++, "loadri r0 r0 STD_MINFO_FREE");
+  source.insert(line++, "loada g0 minfo");
+  source.insert(line++, "loadri g0 g0 STD_MINFO_FREE");
 
-  source.insert(line++, "move r1 r0");
-  source.insert(line++, "pop r2");
-  source.insert(line++, "pop r0");
-  source.insert(line++, "loada r3 heap");
-  source.insert(line++, "loada r4 stack");
+  source.insert(line++, "move g1 g0");
+  source.insert(line++, "pop g2");
+  source.insert(line++, "pop g0");
+  source.insert(line++, "loada g3 heap");
+  source.insert(line++, "loada r0 stack");
 
   source.insert(line++, "stop");
 
@@ -190,12 +190,12 @@ BOOST_AUTO_TEST_CASE(std_alloc)
   cpu.execute(MAX_CYCLES);
 
   BOOST_CHECK(not cpu.running());
-  BOOST_CHECK_GT(registers[REGISTER(cpu, "r0")],
-                 registers[REGISTER(cpu, "r1")]);
-  BOOST_CHECK_GT(registers[REGISTER(cpu, "r2")],
-                 registers[REGISTER(cpu, "r3")]);
-  BOOST_CHECK_LT(registers[REGISTER(cpu, "r2")],
-                 registers[REGISTER(cpu, "r4")]);
+  BOOST_CHECK_GT(registers[REGISTER(cpu, "g0")],
+                 registers[REGISTER(cpu, "g1")]);
+  BOOST_CHECK_GT(registers[REGISTER(cpu, "g2")],
+                 registers[REGISTER(cpu, "g3")]);
+  BOOST_CHECK_LT(registers[REGISTER(cpu, "g2")],
+                 registers[REGISTER(cpu, "r0")]);
 }
 
 /**
@@ -215,26 +215,26 @@ BOOST_AUTO_TEST_CASE(std_free)
 
   // Test
   source.insert(line++, ".label main");
-  source.insert(line++, "loada r0 heap");
-  source.insert(line++, "loadi r1 0x400");
+  source.insert(line++, "loada g0 heap");
+  source.insert(line++, "loadi g1 0x400");
   source.insert(line++, "call _std_minit");
 
-  source.insert(line++, "loada r0 minfo");
+  source.insert(line++, "loada g0 minfo");
   source.insert(line++, "call std_minfo");
-  source.insert(line++, "loadri r0 r0 STD_MINFO_FREE");
-  source.insert(line++, "push r0");
+  source.insert(line++, "loadri g0 g0 STD_MINFO_FREE");
+  source.insert(line++, "push g0");
 
-  source.insert(line++, "loadi r0 0x20");
+  source.insert(line++, "loadi g0 0x20");
   source.insert(line++, "call std_alloc");
 
   source.insert(line++, "call std_free");
 
-  source.insert(line++, "loada r0 minfo");
+  source.insert(line++, "loada g0 minfo");
   source.insert(line++, "call std_minfo");
-  source.insert(line++, "loadri r0 r0 STD_MINFO_FREE");
+  source.insert(line++, "loadri g0 g0 STD_MINFO_FREE");
 
-  source.insert(line++, "move r1 r0");
-  source.insert(line++, "pop r0");
+  source.insert(line++, "move g1 g0");
+  source.insert(line++, "pop g0");
 
   source.insert(line++, "stop");
 
@@ -258,8 +258,8 @@ BOOST_AUTO_TEST_CASE(std_free)
   cpu.execute(MAX_CYCLES);
 
   BOOST_CHECK(not cpu.running());
-  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r0")],
-                    registers[REGISTER(cpu, "r1")]);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "g0")],
+                    registers[REGISTER(cpu, "g1")]);
 }
 
 /**
@@ -280,39 +280,39 @@ BOOST_AUTO_TEST_CASE(std_realloc)
 
   // Test
   source.insert(line++, ".label main");
-  source.insert(line++, "loada r0 heap");
-  source.insert(line++, "loadi r1 0x400");
+  source.insert(line++, "loada g0 heap");
+  source.insert(line++, "loadi g1 0x400");
   source.insert(line++, "call _std_minit");
 
-  source.insert(line++, "loadi r0 0x8");
+  source.insert(line++, "loadi g0 0x8");
   source.insert(line++, "call std_alloc");
-  source.insert(line++, "push r0");
+  source.insert(line++, "push g0");
 
-  source.insert(line++, "loada r0 minfo");
+  source.insert(line++, "loada g0 minfo");
   source.insert(line++, "call std_minfo");
-  source.insert(line++, "loadri r0 r0 STD_MINFO_FREE");
-  source.insert(line++, "push r0");
+  source.insert(line++, "loadri g0 g0 STD_MINFO_FREE");
+  source.insert(line++, "push g0");
 
-  source.insert(line++, "loadri r0 fp 0x0");
-  source.insert(line++, "loadi r1 0x1");
-  source.insert(line++, "storeri r0 r1 0x0");
-  source.insert(line++, "loadi r1 0x2");
-  source.insert(line++, "storeri r0 r1 0x4");
+  source.insert(line++, "loadri g0 fp 0x0");
+  source.insert(line++, "loadi g1 0x1");
+  source.insert(line++, "storeri g0 g1 0x0");
+  source.insert(line++, "loadi g1 0x2");
+  source.insert(line++, "storeri g0 g1 0x4");
 
-  source.insert(line++, "loadi r1 0xC");
+  source.insert(line++, "loadi g1 0xC");
   source.insert(line++, "call std_realloc");
-  source.insert(line++, "push r0");
+  source.insert(line++, "push g0");
 
-  source.insert(line++, "loada r0 minfo");
+  source.insert(line++, "loada g0 minfo");
   source.insert(line++, "call std_minfo");
-  source.insert(line++, "loadri r0 r0 STD_MINFO_FREE");
-  source.insert(line++, "move r3 r0");
+  source.insert(line++, "loadri g0 g0 STD_MINFO_FREE");
+  source.insert(line++, "move g3 g0");
 
-  source.insert(line++, "loadri r4 fp 0x8");
-  source.insert(line++, "loadri r0 r4 0x0");
-  source.insert(line++, "loadri r1 r4 0x4");
+  source.insert(line++, "loadri r0 fp 0x8");
+  source.insert(line++, "loadri g0 r0 0x0");
+  source.insert(line++, "loadri g1 r0 0x4");
 
-  source.insert(line++, "loadri r2 fp 0x4");
+  source.insert(line++, "loadri g2 fp 0x4");
 
   source.insert(line++, "stop");
 
@@ -336,8 +336,8 @@ BOOST_AUTO_TEST_CASE(std_realloc)
   cpu.execute(MAX_CYCLES);
 
   BOOST_CHECK(not cpu.running());
-  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r0")], 0x1);
-  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r1")], 0x2);
-  BOOST_CHECK_GT(registers[REGISTER(cpu, "r2")],
-                 registers[REGISTER(cpu, "r3")]);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "g0")], 0x1);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "g1")], 0x2);
+  BOOST_CHECK_GT(registers[REGISTER(cpu, "g2")],
+                 registers[REGISTER(cpu, "g3")]);
 }

@@ -60,6 +60,10 @@ CPU::CPU(Memory* registers, Memory* memory)
   this->isa_.add_register(REGISTER_SP, "sp");
   this->isa_.add_register(REGISTER_FP, "fp");
   this->isa_.add_register(REGISTER_CS, "cs");
+  this->isa_.add_register(REGISTER_G0, "g0");
+  this->isa_.add_register(REGISTER_G1, "g1");
+  this->isa_.add_register(REGISTER_G2, "g2");
+  this->isa_.add_register(REGISTER_G3, "g3");
   this->isa_.add_register(REGISTER_R0, "r0");
   this->isa_.add_register(REGISTER_R1, "r1");
   this->isa_.add_register(REGISTER_R2, "r2");
@@ -68,10 +72,6 @@ CPU::CPU(Memory* registers, Memory* memory)
   this->isa_.add_register(REGISTER_R5, "r5");
   this->isa_.add_register(REGISTER_R6, "r6");
   this->isa_.add_register(REGISTER_R7, "r7");
-  this->isa_.add_register(REGISTER_R8, "r8");
-  this->isa_.add_register(REGISTER_R9, "r9");
-  this->isa_.add_register(REGISTER_R10, "r10");
-  this->isa_.add_register(REGISTER_R11, "r11");
 
   // Interrupts
   this->isa_.add_interrupt(INTERRUPT_TIMER, "TimerInterrupt", false);
@@ -373,11 +373,11 @@ void CPU::set_quartermem(Address addr, QuarterWord word)
 /**
  * Throw a interrupt.
  * @param code the ode of the interrupt.
- * @param r1 the word stored in r1.
- * @param r2 the word stored in r2.
+ * @param g1 the word stored in g1.
+ * @param g2 the word stored in g2.
  * @exception MemoryError if the itp is not valid.
  */
-void CPU::interrupt(Uint8 code, Word r1, Word r2)
+void CPU::interrupt(Uint8 code, Word g1, Word g2)
 {
   // If there isn't enough space in the stack to store all the registers,
   // then a MemoryError exception is thrown.
@@ -429,9 +429,9 @@ Interrupt thrown:\tcode: 0x%02X, name: %s")
                              this->registers_->get_word(ADDRESS(REGISTER_SP)));
 
   // Store the information of the interrupt
-  this->registers_->set_word(ADDRESS(REGISTER_R0), code);
-  this->registers_->set_word(ADDRESS(REGISTER_R1), r1);
-  this->registers_->set_word(ADDRESS(REGISTER_R2), r2);
+  this->registers_->set_word(ADDRESS(REGISTER_G0), code);
+  this->registers_->set_word(ADDRESS(REGISTER_G1), g1);
+  this->registers_->set_word(ADDRESS(REGISTER_G2), g2);
 
   // Update the PC with the interrupt handler location
   this->registers_->set_word(ADDRESS(REGISTER_PC), handler);

@@ -30,212 +30,212 @@
 
 
 # Create a new list.
-# OUT: r0 pointer to the new list
-# OUT: r1 error status
+# OUT: g0 pointer to the new list
+# OUT: g1 error status
 #      STD_NOERROR: no errors
 #      STD_ENOMEM: there is not memory enough
 .label std_list
         # allocate the memory
-        loadi r0 _STD_LIST_STRUCT
+        loadi g0 _STD_LIST_STRUCT
         call std_alloc
-        bnz r1 _std_list_enomem
+        bnz g1 _std_list_enomem
 
         # initialize the fields
-        loadi r1 STD_NULL
-        storeri r0 r1 _STD_LIST_FIRST
+        loadi g1 STD_NULL
+        storeri g0 g1 _STD_LIST_FIRST
 
-        loadi r1 0x0
-        storeri r0 r1 _STD_LIST_SIZE
+        loadi g1 0x0
+        storeri g0 g1 _STD_LIST_SIZE
 
         .label _std_list_ret
-        loadi r1 STD_NOERROR
+        loadi g1 STD_NOERROR
         ret
 
         .label _std_list_enomem
-        loadi r1 STD_ENOMEM
+        loadi g1 STD_ENOMEM
         ret
 
 # Free the list.
-# IN:  r0 pointer to the list.
-# OUT: r1 error status
+# IN:  g0 pointer to the list.
+# OUT: g1 error status
 #      STD_NOERROR: no errors
 #      STD_EFAULT: the pointer is not valid.
 .label std_listfree
-        push r0               # pointer is in fp + 0x0
+        push g0               # pointer is in fp + 0x0
 
         # check if the pointer is valid
-        loadi r1 _STD_LIST_STRUCT
+        loadi g1 _STD_LIST_STRUCT
         call std_address
-        bz r0 _std_listfree_efault
+        bz g0 _std_listfree_efault
 
         # free all the nodes
-        loadri r0 fp 0x0
-        loadri r0 r0 _STD_LIST_FIRST
-        bz r0 _std_listfree_free
+        loadri g0 fp 0x0
+        loadri g0 g0 _STD_LIST_FIRST
+        bz g0 _std_listfree_free
 
         .label _std_listfree_loop
-        loadi r1 0x1
+        loadi g1 0x1
         call std_next
-        bnz r1 _std_listfree_free
+        bnz g1 _std_listfree_free
 
         # free the node
-        push r0
+        push g0
         call std_nodefree
-        pop r0
+        pop g0
         b _std_listfree_loop
 
         .label _std_listfree_free
         # free the list
-        loadri r0 fp 0x0
+        loadri g0 fp 0x0
         call std_free
 
         .label _std_listfree_ret
-        loadi r1 STD_NOERROR
+        loadi g1 STD_NOERROR
         ret
 
         .label _std_listfree_efault
-        loadi r1 STD_EFAULT
+        loadi g1 STD_EFAULT
         ret
 
 
 # Get the number of elements of the list.
-# IN:  r0 pointer to the list
-# OUT: r0 size of the list
-# OUT: r1 error status
+# IN:  g0 pointer to the list
+# OUT: g0 size of the list
+# OUT: g1 error status
 #      STD_NOERROR: no errors
 #      STD_EFAULT: the pointer is not valid
 .label std_listsize
         # save the parameters in the stack
-        push r0               # pointer is in fp + 0x0
+        push g0               # pointer is in fp + 0x0
 
         # check if the pointer is valid
-        loadi r1 _STD_LIST_STRUCT
+        loadi g1 _STD_LIST_STRUCT
         call std_address
-        bz r0 _std_listsize_efault
+        bz g0 _std_listsize_efault
 
         # restore the parameters
-        loadri r0 fp 0x0
+        loadri g0 fp 0x0
 
         # get the size
-        loadri r0 r0 _STD_LIST_SIZE
+        loadri g0 g0 _STD_LIST_SIZE
 
         .label _std_listsize_ret
-        loadi r1 STD_NOERROR
+        loadi g1 STD_NOERROR
         ret
 
         .label _std_listsize_efault
-        loadi r1 STD_EFAULT
+        loadi g1 STD_EFAULT
         ret
 
 
 # Get a element of the list.
-# IN:  r0 pointer to the list
-# IN:  r1 position
-# OUT: r0 element
-# OUT: r1 error status
+# IN:  g0 pointer to the list
+# IN:  g1 position
+# OUT: g0 element
+# OUT: g1 error status
 #      STD_NOERROR: no errors
 #      STD_EINVAL: the position is out of range
 #      STD_EFAULT: the pointer is not valid
 .label std_listget
-        push r0               # pointer is in fp + 0x0
-        push r1               # position is in fp + 0x4
+        push g0               # pointer is in fp + 0x0
+        push g1               # position is in fp + 0x4
 
         # check if the pointer is valid
-        loadi r1 _STD_LIST_STRUCT
+        loadi g1 _STD_LIST_STRUCT
         call std_address
-        bz r0 _std_listget_efault
+        bz g0 _std_listget_efault
 
         # check if the position is valid
-        loadri r0 fp 0x0
-        loadri r0 r0 _STD_LIST_SIZE
-        loadri r1 fp 0x4
-        bgeu r1 r0 _std_listget_einval
+        loadri g0 fp 0x0
+        loadri g0 g0 _STD_LIST_SIZE
+        loadri g1 fp 0x4
+        bgeu g1 g0 _std_listget_einval
 
         # get the element
-        loadri r0 fp 0x0
-        loadri r0 r0 _STD_LIST_FIRST
-        loadri r1 fp 0x4
+        loadri g0 fp 0x0
+        loadri g0 g0 _STD_LIST_FIRST
+        loadri g1 fp 0x4
         call std_next
 
         # if std_next returns a error return it
-        bz r1 _std_listget_ret
+        bz g1 _std_listget_ret
         ret
 
         .label _std_listget_ret
-        loadri r0 r0 _STD_NODE_DATA
-        loadi r1 STD_NOERROR
+        loadri g0 g0 _STD_NODE_DATA
+        loadi g1 STD_NOERROR
         ret
 
         .label _std_listget_einval
-        loadi r1 STD_EINVAL
+        loadi g1 STD_EINVAL
         ret
 
         .label _std_listget_efault
-        loadi r1 STD_EFAULT
+        loadi g1 STD_EFAULT
         ret
 
 
 # Insert a element in the list.
-# IN:  r0 pointer to the list
-# IN:  r1 position
-# IN:  r2 value
-# OUT: r1 error status
+# IN:  g0 pointer to the list
+# IN:  g1 position
+# IN:  g2 value
+# OUT: g1 error status
 #      STD_NOERROR: no errors
 #      STD_EINVAL: the position is out of range
 #      STD_EFAULT: the pointer is not valid
 #      STD_ENOMEM: there is not memory enough
 .label std_listinsert
-        push r0               # pointer is in fp + 0x0
-        push r1               # position is in fp + 0x4
-        push r2               # value is in fp + 0x8
+        push g0               # pointer is in fp + 0x0
+        push g1               # position is in fp + 0x4
+        push g2               # value is in fp + 0x8
 
         # check if the pointer is valid
-        loadi r1 _STD_LIST_STRUCT
+        loadi g1 _STD_LIST_STRUCT
         call std_address
-        bz r0 _std_listinsert_efault
+        bz g0 _std_listinsert_efault
 
         # check if the position is valid
-        loadri r0 fp 0x0
-        loadri r0 r0 _STD_LIST_SIZE
-        loadri r1 fp 0x4
-        bgtu r1 r0 _std_listinsert_einval
+        loadri g0 fp 0x0
+        loadri g0 g0 _STD_LIST_SIZE
+        loadri g1 fp 0x4
+        bgtu g1 g0 _std_listinsert_einval
 
         # check if the insert is at the beginning
-        bz r1 _std_listinsert_beginning
+        bz g1 _std_listinsert_beginning
 
         # insert in a position different than the beginning
         # calculate the previous node
-        loadri r0 fp 0x0
-        loadri r0 r0 _STD_LIST_FIRST
-        loadri r1 fp 0x4
-        subi r1 r1 0x1
+        loadri g0 fp 0x0
+        loadri g0 g0 _STD_LIST_FIRST
+        loadri g1 fp 0x4
+        subi g1 g1 0x1
         call std_next
-        bnz r1 _std_listinsert_efault
-        push r0               # previous is in fp + 0xC
+        bnz g1 _std_listinsert_efault
+        push g0               # previous is in fp + 0xC
 
         # allocate the new node
         # node.prev = previous
         # node.next = previous.next
-        loadri r0 r0 _STD_NODE_NEXT
-        move r1 r0
-        loadri r0 fp 0xC
-        loadri r2 fp 0x8
+        loadri g0 g0 _STD_NODE_NEXT
+        move g1 g0
+        loadri g0 fp 0xC
+        loadri g2 fp 0x8
         call std_node
-        push r0               # new is in fp + 0x10
-        bnz r1 _std_listinsert_enomem
+        push g0               # new is in fp + 0x10
+        bnz g1 _std_listinsert_enomem
 
         # update the previous node
         # previous.next = node
-        loadri r0 fp 0xC
-        loadri r1 fp 0x10
-        storeri r0 r1 _STD_NODE_NEXT
+        loadri g0 fp 0xC
+        loadri g1 fp 0x10
+        storeri g0 g1 _STD_NODE_NEXT
 
         # update the next node
         # next.prev = node
-        loadri r0 r1 _STD_NODE_NEXT
-        bz r0 _std_listinsert_ret
+        loadri g0 g1 _STD_NODE_NEXT
+        bz g0 _std_listinsert_ret
 
-        storeri r0 r1 _STD_NODE_PREV
+        storeri g0 g1 _STD_NODE_PREV
 
         b _std_listinsert_ret
 
@@ -245,291 +245,291 @@
         # allocate the new node
         # node.prev = STD_NULL
         # node.next = first
-        loadri r0 fp 0x0
-        loadri r1 r0 _STD_LIST_FIRST
-        loadi r0 STD_NULL
-        loadri r2 fp 0x8
+        loadri g0 fp 0x0
+        loadri g1 g0 _STD_LIST_FIRST
+        loadi g0 STD_NULL
+        loadri g2 fp 0x8
         call std_node
-        bnz r1 _std_listinsert_enomem
+        bnz g1 _std_listinsert_enomem
 
         # update the first pointer
         # first = node
-        move r1 r0
-        loadri r0 fp 0x0
-        storeri r0 r1 _STD_LIST_FIRST
+        move g1 g0
+        loadri g0 fp 0x0
+        storeri g0 g1 _STD_LIST_FIRST
 
         # update the next node
         # next.prev = node
-        loadri r0 r1 _STD_NODE_NEXT
-        bz r0 _std_listinsert_ret
+        loadri g0 g1 _STD_NODE_NEXT
+        bz g0 _std_listinsert_ret
 
-        storeri r0 r1 _STD_NODE_PREV
+        storeri g0 g1 _STD_NODE_PREV
 
         .label _std_listinsert_ret
         # update the size
-        loadri r0 fp 0x0
-        loadri r0 r0 _STD_LIST_SIZE
-        addi r1 r0 0x1
-        loadri r0 fp 0x0
-        storeri r0 r1 _STD_LIST_SIZE
+        loadri g0 fp 0x0
+        loadri g0 g0 _STD_LIST_SIZE
+        addi g1 g0 0x1
+        loadri g0 fp 0x0
+        storeri g0 g1 _STD_LIST_SIZE
 
-        loadi r1 STD_NOERROR
+        loadi g1 STD_NOERROR
         ret
 
         .label _std_listinsert_einval
-        loadi r1 STD_EINVAL
+        loadi g1 STD_EINVAL
         ret
 
         .label _std_listinsert_efault
-        loadi r1 STD_EFAULT
+        loadi g1 STD_EFAULT
         ret
 
         .label _std_listinsert_enomem
-        loadi r1 STD_ENOMEM
+        loadi g1 STD_ENOMEM
         ret
 
 # Remove a element from the list.
-# IN:  r0 pointer to the list
-# IN:  r1 position
-# OUT: r1 error status
+# IN:  g0 pointer to the list
+# IN:  g1 position
+# OUT: g1 error status
 #      STD_NOERROR: no errors
 #      STD_EINVAL: the position is out of range
 #      STD_EFAULT: the pointer is not valid
 .label std_listremove
-        push r0               # pointer is in fp + 0x0
-        push r1               # position is in fp + 0x4
+        push g0               # pointer is in fp + 0x0
+        push g1               # position is in fp + 0x4
 
         # check if the pointer is valid
-        loadi r1 _STD_LIST_STRUCT
+        loadi g1 _STD_LIST_STRUCT
         call std_address
-        bz r0 _std_listremove_efault
+        bz g0 _std_listremove_efault
 
         # check if the position is valid
-        loadri r0 fp 0x0
-        loadri r0 r0 _STD_LIST_SIZE
-        loadri r1 fp 0x4
-        bgeu r1 r0 _std_listremove_einval
+        loadri g0 fp 0x0
+        loadri g0 g0 _STD_LIST_SIZE
+        loadri g1 fp 0x4
+        bgeu g1 g0 _std_listremove_einval
 
         # calculate the node to remove
-        loadri r0 fp 0x0
-        loadri r0 r0 _STD_LIST_FIRST
-        loadri r1 fp 0x4
+        loadri g0 fp 0x0
+        loadri g0 g0 _STD_LIST_FIRST
+        loadri g1 fp 0x4
         call std_next
-        bnz r1 _std_listremove_efault
-        push r0               # removed is in fp + 0x8
+        bnz g1 _std_listremove_efault
+        push g0               # removed is in fp + 0x8
 
         # update the previous node
         # previous.next = removed.next
         # only if the the removed node is not the first one
-        loadri r0 fp 0x4
-        bz r0 _std_listremove_next
+        loadri g0 fp 0x4
+        bz g0 _std_listremove_next
 
-        loadri r0 fp 0x8
-        loadi r1 0x1
+        loadri g0 fp 0x8
+        loadi g1 0x1
         call std_prev
-        bnz r1 _std_listremove_efault
-        loadri r1 fp 0x8
-        loadri r1 r1 _STD_NODE_NEXT
-        storeri r0 r1 _STD_NODE_NEXT
+        bnz g1 _std_listremove_efault
+        loadri g1 fp 0x8
+        loadri g1 g1 _STD_NODE_NEXT
+        storeri g0 g1 _STD_NODE_NEXT
 
         # update the next node
         # next.prev = removed.prev
         .label _std_listremove_next
         # only if the removed node is not the last one
-        loadri r0 fp 0x0
-        loadri r0 r0 _STD_LIST_SIZE
-        subi r0 r0 0x1
-        loadri r1 fp 0x4
-        beq r0 r1 _std_listremove_first
+        loadri g0 fp 0x0
+        loadri g0 g0 _STD_LIST_SIZE
+        subi g0 g0 0x1
+        loadri g1 fp 0x4
+        beq g0 g1 _std_listremove_first
 
-        loadri r0 fp 0x8
-        loadi r1 0x1
+        loadri g0 fp 0x8
+        loadi g1 0x1
         call std_next
-        bnz r1 _std_listremove_efault
-        loadri r1 fp 0x8
-        loadri r1 r1 _STD_NODE_PREV
-        storeri r0 r1 _STD_NODE_PREV
+        bnz g1 _std_listremove_efault
+        loadri g1 fp 0x8
+        loadri g1 g1 _STD_NODE_PREV
+        storeri g0 g1 _STD_NODE_PREV
 
         # update the first node
         # first = removed.next
         .label _std_listremove_first
         # only if the remove node is the first one
-        loadri r0 fp 0x4
-        bnz r0 _std_listremove_free
+        loadri g0 fp 0x4
+        bnz g0 _std_listremove_free
 
-        loadri r0 fp 0x8
-        loadi r1 0x1
+        loadri g0 fp 0x8
+        loadi g1 0x1
         call std_next
-        bnz r1 _std_listremove_efault
-        loadri r1 fp 0x0
-        storeri r1 r0 _STD_LIST_FIRST
+        bnz g1 _std_listremove_efault
+        loadri g1 fp 0x0
+        storeri g1 g0 _STD_LIST_FIRST
 
         # free the node
         .label _std_listremove_free
-        loadri r0 fp 0x8
+        loadri g0 fp 0x8
         call std_nodefree
 
         .label _std_listremove_ret
         # update the size
-        loadri r0 fp 0x0
-        loadri r0 r0 _STD_LIST_SIZE
-        subi r1 r0 0x1
-        loadri r0 fp 0x0
-        storeri r0 r1 _STD_LIST_SIZE
+        loadri g0 fp 0x0
+        loadri g0 g0 _STD_LIST_SIZE
+        subi g1 g0 0x1
+        loadri g0 fp 0x0
+        storeri g0 g1 _STD_LIST_SIZE
 
-        loadi r1 STD_NOERROR
+        loadi g1 STD_NOERROR
         ret
 
         .label _std_listremove_einval
-        loadi r1 STD_EINVAL
+        loadi g1 STD_EINVAL
         ret
 
         .label _std_listremove_efault
-        loadi r1 STD_EFAULT
+        loadi g1 STD_EFAULT
         ret
 
 
 # Find a value in the list.
-# IN:  r0 pointer to the list
-# IN:  r1 start position
-# IN:  r2 value
-# OUT: r0 position
-# OUT: r1 error status
+# IN:  g0 pointer to the list
+# IN:  g1 start position
+# IN:  g2 value
+# OUT: g0 position
+# OUT: g1 error status
 #      STD_NOERROR: no errors
 #      STD_EINVAL: the value was not found
 #      STD_EFAULT: the pointer is not valid
 .label std_listfind
-        push r0               # pointer is in fp + 0x0
-        push r1               # position is in fp + 0x4
-        push r2               # value is in fp + 0x8
+        push g0               # pointer is in fp + 0x0
+        push g1               # position is in fp + 0x4
+        push g2               # value is in fp + 0x8
 
         # check if the pointer is valid
-        loadi r1 _STD_LIST_STRUCT
+        loadi g1 _STD_LIST_STRUCT
         call std_address
-        bz r0 _std_listfind_efault
+        bz g0 _std_listfind_efault
 
         # check if the size is 0
-        loadri r0 fp 0x0
-        loadri r0 r0 _STD_LIST_SIZE
-        bz r0 _std_listfind_einval
+        loadri g0 fp 0x0
+        loadri g0 g0 _STD_LIST_SIZE
+        bz g0 _std_listfind_einval
 
         # check if the position is valid
-        loadri r0 fp 0x0
-        loadri r0 r0 _STD_LIST_SIZE
-        loadri r1 fp 0x4
-        bgeu r1 r0 _std_listfind_einval
+        loadri g0 fp 0x0
+        loadri g0 g0 _STD_LIST_SIZE
+        loadri g1 fp 0x4
+        bgeu g1 g0 _std_listfind_einval
 
-        push r0               # size is in fp + 0xC
+        push g0               # size is in fp + 0xC
 
         # search the value
         # start the search in the position
-        loadri r0 fp 0x0
-        loadri r0 r0 _STD_LIST_FIRST
-        loadri r1 fp 0x4
+        loadri g0 fp 0x0
+        loadri g0 g0 _STD_LIST_FIRST
+        loadri g1 fp 0x4
         call std_next
-        bnz r1 _std_listfind_efault
+        bnz g1 _std_listfind_efault
 
         .label _std_listfind_loop
         # compare the value
-        loadri r1 r0 _STD_NODE_DATA
-        loadri r2 fp 0x8
-        beq r1 r2 _std_listfind_ret
+        loadri g1 g0 _STD_NODE_DATA
+        loadri g2 fp 0x8
+        beq g1 g2 _std_listfind_ret
 
         # update the position
-        loadri r1 fp 0x4
-        addi r1 r1 0x1
-        storeri fp r1 0x4
+        loadri g1 fp 0x4
+        addi g1 g1 0x1
+        storeri fp g1 0x4
         # check if there are more nodes
-        loadri r2 fp 0xC
-        beq r1 r2 _std_listfind_einval
+        loadri g2 fp 0xC
+        beq g1 g2 _std_listfind_einval
 
         # go to the next node
-        loadi r1 0x1
+        loadi g1 0x1
         call std_next
-        bnz r1 _std_listfind_efault
+        bnz g1 _std_listfind_efault
 
         b _std_listfind_loop
 
 
         .label _std_listfind_ret
-        loadri r0 fp 0x4
-        loadi r1 STD_NOERROR
+        loadri g0 fp 0x4
+        loadi g1 STD_NOERROR
         ret
 
         .label _std_listfind_einval
-        loadi r1 STD_EINVAL
+        loadi g1 STD_EINVAL
         ret
 
         .label _std_listfind_efault
-        loadi r1 STD_EFAULT
+        loadi g1 STD_EFAULT
         ret
 
 
 # Get the times a value is found in the list.
-# IN:  r0 pointer to the list
-# IN:  r1 value
-# OUT: r0 the times the value was found
-# OUT: r1 error status
+# IN:  g0 pointer to the list
+# IN:  g1 value
+# OUT: g0 the times the value was found
+# OUT: g1 error status
 #      STD_NOERROR: no errors
 #      STD_EFAULT: the pointer is not valid
 .label std_listcount
-        push r0               # pointer is in fp + 0x0
-        push r1               # value is in fp + 0x4
+        push g0               # pointer is in fp + 0x0
+        push g1               # value is in fp + 0x4
 
         # check if the pointer is valid
-        loadi r1 _STD_LIST_STRUCT
+        loadi g1 _STD_LIST_STRUCT
         call std_address
-        bz r0 _std_listcount_efault
+        bz g0 _std_listcount_efault
 
         # check if the size is 0
-        loadri r0 fp 0x0
-        loadri r1 r0 _STD_LIST_SIZE
-        bz r1 _std_listcount_empty
+        loadri g0 fp 0x0
+        loadri g1 g0 _STD_LIST_SIZE
+        bz g1 _std_listcount_empty
 
-        push r1               # size is in fp + 0x8
+        push g1               # size is in fp + 0x8
 
-        loadi r1 0x0
-        push r1               # counter is in fp + 0xC
+        loadi g1 0x0
+        push g1               # counter is in fp + 0xC
 
-        loadri r0 r0 _STD_LIST_FIRST
+        loadri g0 g0 _STD_LIST_FIRST
 
         # count the times the value is found
         .label _std_listcount_loop
         # compare the value
-        loadri r1 r0 _STD_NODE_DATA
-        loadri r2 fp 0x4
-        bne r1 r2 _std_listcount_continue
+        loadri g1 g0 _STD_NODE_DATA
+        loadri g2 fp 0x4
+        bne g1 g2 _std_listcount_continue
         # update the counter
-        loadri r1 fp 0xC
-        addi r1 r1 0x1
-        storeri fp r1 0xC
+        loadri g1 fp 0xC
+        addi g1 g1 0x1
+        storeri fp g1 0xC
 
         .label _std_listcount_continue
         # update the size
-        loadri r1 fp 0x8
-        subi r1 r1 0x1
-        storeri fp r1 0x8
+        loadri g1 fp 0x8
+        subi g1 g1 0x1
+        storeri fp g1 0x8
         # check if there are more nodes
-        bz r1 _std_listcount_ret
+        bz g1 _std_listcount_ret
 
         # go to the next node
-        loadi r1 0x1
+        loadi g1 0x1
         call std_next
-        bnz r1 _std_listcount_efault
+        bnz g1 _std_listcount_efault
 
         b _std_listcount_loop
 
 
         .label _std_listcount_ret
-        loadri r0 fp 0xC
-        loadi r1 STD_NOERROR
+        loadri g0 fp 0xC
+        loadi g1 STD_NOERROR
         ret
 
         .label _std_listcount_empty
-        loadi r0 0x0
-        loadi r1 STD_NOERROR
+        loadi g0 0x0
+        loadi g1 STD_NOERROR
         ret
 
         .label _std_listcount_efault
-        loadi r1 STD_EFAULT
+        loadi g1 STD_EFAULT
         ret

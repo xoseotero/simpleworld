@@ -30,230 +30,230 @@
 
 
 # Create a new queue.
-# OUT: r0 pointer to the new queue
-# OUT: r1 error status
+# OUT: g0 pointer to the new queue
+# OUT: g1 error status
 #      STD_NOERROR: no errors
 #      STD_ENOMEM: there is not memory enough
 .label std_queue
         # allocate the memory
-        loadi r0 _STD_QUEUE_STRUCT
+        loadi g0 _STD_QUEUE_STRUCT
         call std_alloc
-        bnz r1 _std_queue_enomem
+        bnz g1 _std_queue_enomem
 
         # initialize the fields
-        loadi r1 STD_NULL
-        storeri r0 r1 _STD_QUEUE_TOP
-        storeri r0 r1 _STD_QUEUE_BOTTOM
+        loadi g1 STD_NULL
+        storeri g0 g1 _STD_QUEUE_TOP
+        storeri g0 g1 _STD_QUEUE_BOTTOM
 
         .label _std_queue_ret
-        loadi r1 STD_NOERROR
+        loadi g1 STD_NOERROR
         ret
 
         .label _std_queue_enomem
-        loadi r1 STD_ENOMEM
+        loadi g1 STD_ENOMEM
         ret
 
 # Free the queue.
-# IN:  r0 pointer to the queue.
-# OUT: r1 error status
+# IN:  g0 pointer to the queue.
+# OUT: g1 error status
 #      STD_NOERROR: no errors
 #      STD_EFAULT: the pointer is not valid.
 .label std_queuefree
-        push r0                         # pointer is in fp + 0x0
+        push g0                         # pointer is in fp + 0x0
 
         # check if the pointer is valid
-        loadi r1 _STD_QUEUE_STRUCT
+        loadi g1 _STD_QUEUE_STRUCT
         call std_address
-        bz r0 _std_queuefree_efault
+        bz g0 _std_queuefree_efault
 
         # free all the nodes
-        loadri r0 fp 0x0
-        loadri r0 r0 _STD_QUEUE_TOP
-        bz r0 _std_queuefree_free
+        loadri g0 fp 0x0
+        loadri g0 g0 _STD_QUEUE_TOP
+        bz g0 _std_queuefree_free
 
         .label _std_queuefree_loop
-        loadi r1 0x1
+        loadi g1 0x1
         call std_next
-        bnz r1 _std_queuefree_free
+        bnz g1 _std_queuefree_free
 
         # free the node
-        push r0
+        push g0
         call std_nodefree
-        pop r0
+        pop g0
         b _std_queuefree_loop
 
         .label _std_queuefree_free
         # free the list
-        loadri r0 fp 0x0
+        loadri g0 fp 0x0
         call std_free
 
         .label _std_queuefree_ret
-        loadi r1 STD_NOERROR
+        loadi g1 STD_NOERROR
         ret
 
         .label _std_queuefree_efault
-        loadi r1 STD_EFAULT
+        loadi g1 STD_EFAULT
         ret
 
 
 # Check if the queue is empty.
-# IN:  r0 pointer to the queue
-# OUT: r0 if the queue is empty
+# IN:  g0 pointer to the queue
+# OUT: g0 if the queue is empty
 #      STD_TRUE: the queue is empty
 #      STD_FALSE_ the queue is not empty
-# OUT: r1 error status
+# OUT: g1 error status
 #      STD_NOERROR: no errors
 #      STD_EFAULT: the pointer is not valid
 .label std_queueempty
-        push r0                         # pointer is in fp + 0x0
+        push g0                         # pointer is in fp + 0x0
 
         # check if the pointer is valid
-        loadi r1 _STD_QUEUE_STRUCT
+        loadi g1 _STD_QUEUE_STRUCT
         call std_address
-        bz r0 _std_queueempty_efault
+        bz g0 _std_queueempty_efault
 
         # check if the stack is empty
-        loadri r0 fp 0x0
-        loadri r0 r0 _STD_QUEUE_TOP
-        bz r0 _std_queueempty_empty
-        loadi r0 STD_FALSE
+        loadri g0 fp 0x0
+        loadri g0 g0 _STD_QUEUE_TOP
+        bz g0 _std_queueempty_empty
+        loadi g0 STD_FALSE
         b _std_queueempty_ret
 
         .label _std_queueempty_empty
-        loadi r0 STD_TRUE
+        loadi g0 STD_TRUE
 
         .label _std_queueempty_ret
-        loadi r1 STD_NOERROR
+        loadi g1 STD_NOERROR
         ret
 
         .label _std_queueempty_efault
-        loadi r1 STD_EFAULT
+        loadi g1 STD_EFAULT
         ret
 
 
 # Insert a element in the queue.
-# IN:  r0 pointer to the queue
-# IN:  r1 value
-# OUT: r1 error status
+# IN:  g0 pointer to the queue
+# IN:  g1 value
+# OUT: g1 error status
 #      STD_NOERROR: no errors
 #      STD_EFAULT: the pointer is not valid
 #      STD_ENOMEM: there is not memory enough
 .label std_queuepush
-        push r0                         # pointer is in fp + 0x0
-        push r1                         # value is in fp + 0x4
+        push g0                         # pointer is in fp + 0x0
+        push g1                         # value is in fp + 0x4
 
         # check if the pointer is valid
-        loadi r1 _STD_QUEUE_STRUCT
+        loadi g1 _STD_QUEUE_STRUCT
         call std_address
-        bz r0 _std_queuepush_efault
+        bz g0 _std_queuepush_efault
 
         # allocate the new node
         # node.prev = STD_NULL
         # node.next = STD_NULL
-        loadi r0 STD_NULL
-        loadi r1 STD_NULL
-        loadri r2 fp 0x4
+        loadi g0 STD_NULL
+        loadi g1 STD_NULL
+        loadri g2 fp 0x4
         call std_node
-        bnz r1 _std_queuepush_enomem
-        push r0                         # node is in fp + 0x8
+        bnz g1 _std_queuepush_enomem
+        push g0                         # node is in fp + 0x8
 
         # check if the queue is empty
-        loadri r0 fp 0x0
-        loadri r1 r0 _STD_QUEUE_TOP
-        bz r1 _std_queuepush_empty
+        loadri g0 fp 0x0
+        loadri g1 g0 _STD_QUEUE_TOP
+        bz g1 _std_queuepush_empty
 
         # update the previous node
         # previous.next = node
-        loadri r0 fp 0x8
-        storeri r1 r0 _STD_NODE_NEXT
+        loadri g0 fp 0x8
+        storeri g1 g0 _STD_NODE_NEXT
         b _std_queuepush_top
 
         .label _std_queuepush_empty
         # update the bottom pointer
         # bottom = node
-        loadri r1 fp 0x8
-        storeri r0 r1 _STD_QUEUE_BOTTOM
+        loadri g1 fp 0x8
+        storeri g0 g1 _STD_QUEUE_BOTTOM
 
         .label _std_queuepush_top
         # update the top pointer
         # top = node
-        loadri r0 fp 0x0
-        loadri r1 fp 0x8
-        storeri r0 r1 _STD_QUEUE_TOP
+        loadri g0 fp 0x0
+        loadri g1 fp 0x8
+        storeri g0 g1 _STD_QUEUE_TOP
 
         .label _std_queuepush_ret
-        loadi r1 STD_NOERROR
+        loadi g1 STD_NOERROR
         ret
 
         .label _std_queuepush_efault
-        loadi r1 STD_EFAULT
+        loadi g1 STD_EFAULT
         ret
 
         .label _std_queuepush_enomem
-        loadi r1 STD_ENOMEM
+        loadi g1 STD_ENOMEM
         ret
 
 # Remove a element from the queue.
-# IN:  r0 pointer to the queue
-# OUT: r0 element removed
-# OUT: r1 error status
+# IN:  g0 pointer to the queue
+# OUT: g0 element removed
+# OUT: g1 error status
 #      STD_NOERROR: no errors
 #      STD_EINVAL: the queue is empty
 #      STD_EFAULT: the pointer is not valid
 .label std_queuepop
-        push r0                         # pointer is in fp + 0x0
+        push g0                         # pointer is in fp + 0x0
 
         # check if the pointer is valid
-        loadi r1 _STD_QUEUE_STRUCT
+        loadi g1 _STD_QUEUE_STRUCT
         call std_address
-        bz r0 _std_queuepop_efault
+        bz g0 _std_queuepop_efault
 
         # check if the queue is empty
-        loadri r0 fp 0x0
-        loadri r0 r0 _STD_QUEUE_TOP
-        bz r0 _std_queuepop_einval
+        loadri g0 fp 0x0
+        loadri g0 g0 _STD_QUEUE_TOP
+        bz g0 _std_queuepop_einval
 
         # get the node to remove
-        loadri r0 fp 0x0
-        loadri r0 r0 _STD_QUEUE_BOTTOM
-        push r0                         # removed is in fp + 0x4
+        loadri g0 fp 0x0
+        loadri g0 g0 _STD_QUEUE_BOTTOM
+        push g0                         # removed is in fp + 0x4
 
         # get the data
-        loadri r0 r0 _STD_NODE_DATA
-        push r0                         # data is in fp + 0x8
+        loadri g0 g0 _STD_NODE_DATA
+        push g0                         # data is in fp + 0x8
 
         # update the bottom pointer
-        loadri r0 fp 0x0
-        loadri r1 fp 0x4
-        loadri r1 r1 _STD_NODE_NEXT
-        storeri r0 r1 _STD_QUEUE_BOTTOM
+        loadri g0 fp 0x0
+        loadri g1 fp 0x4
+        loadri g1 g1 _STD_NODE_NEXT
+        storeri g0 g1 _STD_QUEUE_BOTTOM
 
         # check if the queue is empty
-        loadri r0 fp 0x0
-        loadri r1 r0 _STD_QUEUE_BOTTOM
-        bnz r1 _std_queuepop_free
+        loadri g0 fp 0x0
+        loadri g1 g0 _STD_QUEUE_BOTTOM
+        bnz g1 _std_queuepop_free
 
         # update the top node
         # top = NULL
         .label _std_queuepop_empty
-        loadri r0 fp 0x0
-        loadi r1 STD_NULL
-        storeri r0 r1 _STD_QUEUE_TOP
+        loadri g0 fp 0x0
+        loadi g1 STD_NULL
+        storeri g0 g1 _STD_QUEUE_TOP
 
         # free the node
         .label _std_queuepop_free
-        loadri r0 fp 0x4
+        loadri g0 fp 0x4
         call std_nodefree
 
         .label _std_queuepop_ret
-        loadri r0 fp 0x8
-        loadi r1 STD_NOERROR
+        loadri g0 fp 0x8
+        loadi g1 STD_NOERROR
         ret
 
         .label _std_queuepop_einval
-        loadi r1 STD_EINVAL
+        loadi g1 STD_EINVAL
         ret
 
         .label _std_queuepop_efault
-        loadi r1 STD_EFAULT
+        loadi g1 STD_EFAULT
         ret

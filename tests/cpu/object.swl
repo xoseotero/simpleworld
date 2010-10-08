@@ -1,80 +1,80 @@
 stop
 restart
-move r0 r1
-swap r2 r3
-push r4
-pop r5
-load r6 0x1ADC
-loadrr r10 r9 r10
-loadri r11 r11 0x0001
-loadh r6 0x1ADC
-loadhrr r10 r9 r10
-loadhri r11 r11 0x0001
-loadq r6 0x1ADC
-loadqrr r10 r9 r10
-loadqri r11 r11 0x0001
-loadi r7 0x1ADC
-loadhi r8 0xDC1A
-loada r9 0x0000
+move g0 g1
+swap g2 g3
+push r0
+pop r1
+load r2 0x1ADC
+loadrr r6 r5 r6
+loadri r7 r7 0x0001
+loadh r2 0x1ADC
+loadhrr r6 r5 r6
+loadhri r7 r7 0x0001
+loadq r2 0x1ADC
+loadqrr r6 r5 r6
+loadqri r7 r7 0x0001
+loadi r3 0x1ADC
+loadhi r4 0xDC1A
+loada r5 0x0000
 store pc 0xAFFF
-storerr pc sp r0
+storerr pc sp g0
 storeri fp cs 0x0001
 storeh pc 0xAFFF
-storehrr pc sp r0
+storehrr pc sp g0
 storehri fp cs 0x0001
 storeq pc 0xAFFF
-storeqrr pc sp r0
+storeqrr pc sp g0
 storeqri fp cs 0x0001
 b 0xFFFF
-bz r0 0x0000
-bnz r0 0x0000
-beq r0 r1 0x0000
-bne r0 r1 0x0000
-blt r0 r1 0x0000
-bltu r0 r1 0x0000
-bgt r0 r1 0x0000
-bgtu r0 r1 0x0000
-ble r0 r1 0x0000
-bleu r0 r1 0x0000
-bge r0 r1 0x0000
-bgeu r0 r1 0x0000
+bz g0 0x0000
+bnz g0 0x0000
+beq g0 g1 0x0000
+bne g0 g1 0x0000
+blt g0 g1 0x0000
+bltu g0 g1 0x0000
+bgt g0 g1 0x0000
+bgtu g0 g1 0x0000
+ble g0 g1 0x0000
+bleu g0 g1 0x0000
+bge g0 g1 0x0000
+bgeu g0 g1 0x0000
 call 0x0000
-callr r0
+callr g0
 int 0x0005
 ret
 reti
-add r0 r1 r2
-addi r2 r2 0x0001
-sub r0 r1 r2
-subi r2 r2 0x0001
-mult r0 r1 r2
-multi r0 r1 0x0001
-multh r0 r1 r2
-multhi r0 r1 0x0001
-multhu r0 r1 r2
-multhui r0 r1 0x0001
-div r0 r1 r2
-divi r0 r1 0x0001
-mod r0 r1 r2
-modi r0 r1 0x0001
-signh r0 r1
-signq r0 r1
-not r0 r0
-or r0 r1 r2
-ori r0 r2 0x0000
-and r0 r1 r2
-andi r0 r1 0xFFFF
-xor r0 r1 r2
-xori r0 r1 0xFFFF
-sll r5 r6 fp
-slli r5 r6 0x0001
-srl r5 r6 r11
-srli r5 r6 0x0002
-sra r5 r6 r9
-srai r5 r6 0x0004
-rl r5 r6 r8
-rli r5 r6 0x0005
-rr r5 r6 r7
-rri r5 r6 0x0006
+add g0 g1 g2
+addi g2 g2 0x0001
+sub g0 g1 g2
+subi g2 g2 0x0001
+mult g0 g1 g2
+multi g0 g1 0x0001
+multh g0 g1 g2
+multhi g0 g1 0x0001
+multhu g0 g1 g2
+multhui g0 g1 0x0001
+div g0 g1 g2
+divi g0 g1 0x0001
+mod g0 g1 g2
+modi g0 g1 0x0001
+signh g0 g1
+signq g0 g1
+not g0 g0
+or g0 g1 g2
+ori g0 g2 0x0000
+and g0 g1 g2
+andi g0 g1 0xFFFF
+xor g0 g1 g2
+xori g0 g1 0xFFFF
+sll r1 r2 fp
+slli r1 r2 0x0001
+srl r1 r2 r7
+srli r1 r2 0x0002
+sra r1 r2 r5
+srai r1 r2 0x0004
+rl r1 r2 r4
+rli r1 r2 0x0005
+rr r1 r2 r3
+rri r1 r2 0x0006
 0xABCD0123
 0x1EF56789

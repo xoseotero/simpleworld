@@ -84,8 +84,8 @@ BOOST_AUTO_TEST_CASE(std_bitsset)
 
   // Test
   source.insert(line++, ".label main");
-  source.insert(line++, "loadi r0 0xF050");
-  source.insert(line++, "loadi r1 0x2222");
+  source.insert(line++, "loadi g0 0xF050");
+  source.insert(line++, "loadi g1 0x2222");
   source.insert(line++, "call std_bitsset");
   source.insert(line++, "stop");
 
@@ -101,7 +101,7 @@ BOOST_AUTO_TEST_CASE(std_bitsset)
   cpu.execute(MAX_CYCLES);
 
   BOOST_CHECK(not cpu.running());
-  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r0")], 0xF272);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "g0")], 0xF272);
 }
 
 /**
@@ -121,8 +121,8 @@ BOOST_AUTO_TEST_CASE(std_bitsclear)
 
   // Test
   source.insert(line++, ".label main");
-  source.insert(line++, "loadi r0 0xF050");
-  source.insert(line++, "loadi r1 0x2222");
+  source.insert(line++, "loadi g0 0xF050");
+  source.insert(line++, "loadi g1 0x2222");
   source.insert(line++, "call std_bitsclear");
   source.insert(line++, "stop");
 
@@ -138,7 +138,7 @@ BOOST_AUTO_TEST_CASE(std_bitsclear)
   cpu.execute(MAX_CYCLES);
 
   BOOST_CHECK(not cpu.running());
-  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r0")], 0xD050);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "g0")], 0xD050);
 }
 
 /**
@@ -158,7 +158,7 @@ BOOST_AUTO_TEST_CASE(std_bitscomp)
 
   // Test
   source.insert(line++, ".label main");
-  source.insert(line++, "loadi r0 0xF050");
+  source.insert(line++, "loadi g0 0xF050");
   source.insert(line++, "call std_bitscomp");
   source.insert(line++, "stop");
 
@@ -174,5 +174,5 @@ BOOST_AUTO_TEST_CASE(std_bitscomp)
   cpu.execute(MAX_CYCLES);
 
   BOOST_CHECK(not cpu.running());
-  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r0")], 0xFFFF0FAF);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "g0")], 0xFFFF0FAF);
 }

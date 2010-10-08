@@ -35,55 +35,55 @@ STD_FALSE
 # Initialize the standard library.
 # It's not a error to call this function several times, but only the first
 # successfull call will initialize the standard library.
-# IN:  r0 heap start
-# IN:  r1 heap size
-# IN:  r2 maximum number of interrupts that can be handled
-# OUT: r1 error status 
+# IN:  g0 heap start
+# IN:  g1 heap size
+# IN:  g2 maximum number of interrupts that can be handled
+# OUT: g1 error status 
 #      STD_ENOMEM: the memory if not enough
 #      STD_EFAULT: the pointer is not valid
 .label std_init
         # check if the standard library is initialized
-        load r3 _std_initialized
-        bnz r3 _std_init_ok
+        load g3 _std_initialized
+        bnz g3 _std_init_ok
 
-        push r2                         # interrupts is in fp + 0x0
+        push g2                         # interrupts is in fp + 0x0
 
         # initialize the memory allocator
         call _std_minit
-        bnz r1 _std_init_error
+        bnz g1 _std_init_error
 
         # initialize the interrupts manager
-        loadri r0 fp 0x0
+        loadri g0 fp 0x0
         call _std_intinit
-        bnz r1 _std_init_error
+        bnz g1 _std_init_error
 
         # initialize the address check
         call _std_addressinit
-        bnz r1 _std_init_error
+        bnz g1 _std_init_error
 
         # initialize the time
-        loadi r0 0x0
+        loadi g0 0x0
         call _std_timeinit
-        bnz r1 _std_init_error
+        bnz g1 _std_init_error
 
         # initialize the pseudorandom number generator
         world STD_MYPOSITION
-        add r0 r1 r2
-        load r1 _std_random_seed1
-        add r0 r0 r1
+        add g0 g1 g2
+        load g1 _std_random_seed1
+        add g0 g0 g1
         call std_seed                   # this call can't fail
 
 
         # set the state of the standard library to initialized
-        loadi r0 STD_TRUE
-        store r0 _std_initialized
+        loadi g0 STD_TRUE
+        store g0 _std_initialized
 
         # enable the interrupts
         call std_enable
 
         # exit without errors
         .label _std_init_ok
-        loadi r1 STD_NOERROR
+        loadi g1 STD_NOERROR
         ret
 
         # the call to std_minit failled

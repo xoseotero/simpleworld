@@ -30,35 +30,35 @@
 
 
 # Create a new array.
-# IN:  r0 number of elements
-# OUT: r0 pointer to the array
-# OUT: r1 error status
+# IN:  g0 number of elements
+# OUT: g0 pointer to the array
+# OUT: g1 error status
 #      STD_NOERROR: no errors
 #      STD_ENOMEM: there is not memory enough
 .label std_array
-        push r0                         # elements is in fp + 0x0
+        push g0                         # elements is in fp + 0x0
 
         # allocate the memory
-        multi r0 r0 STD_WORDSIZE
-        addi r0 r0 _STD_ARRAY_MEM
+        multi g0 g0 STD_WORDSIZE
+        addi g0 g0 _STD_ARRAY_MEM
         call std_alloc
-        bnz r1 _std_array_enomem
+        bnz g1 _std_array_enomem
 
         # initialize the fields
-        loadri r1 fp 0x0
-        storeri r0 r1 _STD_ARRAY_SIZE
+        loadri g1 fp 0x0
+        storeri g0 g1 _STD_ARRAY_SIZE
 
         .label _std_array_ret
-        loadi r1 STD_NOERROR
+        loadi g1 STD_NOERROR
         ret
 
         .label _std_array_enomem
-        loadi r1 STD_ENOMEM
+        loadi g1 STD_ENOMEM
         ret
 
 # Free the array.
-# IN:  r0 pointer to the array.
-# OUT: r1 error status
+# IN:  g0 pointer to the array.
+# OUT: g1 error status
 #      STD_NOERROR: no errors
 #      STD_EFAULT: the pointer is not valid.
 .label std_arrayfree
@@ -67,269 +67,269 @@
 
 
 # Get the number of elements of the array.
-# IN:  r0 number of elements
-# OUT: r0 size of the array
-# OUT: r1 error status
+# IN:  g0 number of elements
+# OUT: g0 size of the array
+# OUT: g1 error status
 #      STD_NOERROR: no errors
 #      STD_EFAULT: the pointer is not valid
 .label std_arraysize
-        push r0                         # pointer is in fp + 0x0
+        push g0                         # pointer is in fp + 0x0
 
         # check if the pointer is valid
-        loadi r1 _STD_ARRAY_STRUCT
+        loadi g1 _STD_ARRAY_STRUCT
         call std_address
-        bz r0 _std_arraysize_efault
+        bz g0 _std_arraysize_efault
 
         # get the size
-        loadri r0 fp 0x0
-        loadri r0 r0 _STD_ARRAY_SIZE
+        loadri g0 fp 0x0
+        loadri g0 g0 _STD_ARRAY_SIZE
 
         .label _std_arraysize_ret
-        loadi r1 STD_NOERROR
+        loadi g1 STD_NOERROR
         ret
 
         .label _std_arraysize_efault
-        loadi r1 STD_EFAULT
+        loadi g1 STD_EFAULT
         ret
 
 # Resize the array.
-# IN:  r0 pointer to the array
-# IN:  r1 number of elements
-# OUT: r1 error status
+# IN:  g0 pointer to the array
+# IN:  g1 number of elements
+# OUT: g1 error status
 #      STD_NOERROR: no errors
 #      STD_EFAULT: the pointer is not valid
 #      STD_ENOMEM: there is not memory enough
 .label std_arrayresize
-        push r0                         # pointer is in fp + 0x0
-        push r1                         # elements is in fp + 0x4
+        push g0                         # pointer is in fp + 0x0
+        push g1                         # elements is in fp + 0x4
 
-        multi r1 r1 STD_WORDSIZE
-        addi r1 r1 _STD_ARRAY_MEM
+        multi g1 g1 STD_WORDSIZE
+        addi g1 g1 _STD_ARRAY_MEM
         call std_realloc
-        bz r1 _std_arrayresize_ok
+        bz g1 _std_arrayresize_ok
         ret
 
         .label _std_arrayresize_ok
-        push r0                         # new is in fp + 0x8
+        push g0                         # new is in fp + 0x8
 
         # update the size
-        loadri r0 fp 0x0
-        loadri r1 fp 0x4
-        storeri r0 r1 _STD_ARRAY_SIZE
+        loadri g0 fp 0x0
+        loadri g1 fp 0x4
+        storeri g0 g1 _STD_ARRAY_SIZE
 
         .label _std_arrayresize_ret
-        loadri r0 fp 0x8
-        loadi r1 STD_NOERROR
+        loadri g0 fp 0x8
+        loadi g1 STD_NOERROR
         ret
 
 
 # Get a element of the array.
-# IN:  r0 pointer to the array
-# IN:  r1 position
-# OUT: r0 element
-# OUT: r1 error status
+# IN:  g0 pointer to the array
+# IN:  g1 position
+# OUT: g0 element
+# OUT: g1 error status
 #      STD_NOERROR: no errors
 #      STD_EINVAL: the position is out of range
 #      STD_EFAULT: the pointer is not valid
 .label std_arrayget
-        push r0                         # pointer is in fp + 0x0
-        push r1                         # position is in fp + 0x4
+        push g0                         # pointer is in fp + 0x0
+        push g1                         # position is in fp + 0x4
 
         # check if the pointer is valid
-        loadi r1 _STD_ARRAY_STRUCT
+        loadi g1 _STD_ARRAY_STRUCT
         call std_address
-        bz r0 _std_arrayget_efault
+        bz g0 _std_arrayget_efault
 
         # check if the position is valid
-        loadri r0 fp 0x0
-        loadri r0 r0 _STD_ARRAY_SIZE
-        loadri r1 fp 0x4
-        bgeu r1 r0 _std_arrayget_einval
+        loadri g0 fp 0x0
+        loadri g0 g0 _STD_ARRAY_SIZE
+        loadri g1 fp 0x4
+        bgeu g1 g0 _std_arrayget_einval
 
         # get the element
-        loadri r0 fp 0x0
-        addi r0 r0 _STD_ARRAY_MEM
-        loadri r1 fp 0x4
-        multi r1 r1 STD_WORDSIZE
-        loadrr r0 r0 r1
+        loadri g0 fp 0x0
+        addi g0 g0 _STD_ARRAY_MEM
+        loadri g1 fp 0x4
+        multi g1 g1 STD_WORDSIZE
+        loadrr g0 g0 g1
 
         .label _std_arrayget_ret
-        loadi r1 STD_NOERROR
+        loadi g1 STD_NOERROR
         ret
 
         .label _std_arrayget_einval
-        loadi r1 STD_EINVAL
+        loadi g1 STD_EINVAL
         ret
 
         .label _std_arrayget_efault
-        loadi r1 STD_EFAULT
+        loadi g1 STD_EFAULT
         ret
 
 # Set the value of a element of the array.
-# IN:  r0 pointer to the array
-# IN:  r1 position
-# IN:  r2 value
-# OUT: r0 element
-# OUT: r1 error status
+# IN:  g0 pointer to the array
+# IN:  g1 position
+# IN:  g2 value
+# OUT: g0 element
+# OUT: g1 error status
 #      STD_NOERROR: no errors
 #      STD_EINVAL: the position is out of range
 #      STD_EFAULT: the pointer is not valid
 .label std_arrayset
-        push r0                         # pointer is in fp + 0x0
-        push r1                         # position is in fp + 0x4
-        push r2                         # value is in fp + 0x8
+        push g0                         # pointer is in fp + 0x0
+        push g1                         # position is in fp + 0x4
+        push g2                         # value is in fp + 0x8
 
         # check if the pointer is valid
-        loadi r1 _STD_ARRAY_STRUCT
+        loadi g1 _STD_ARRAY_STRUCT
         call std_address
-        bz r0 _std_arrayset_efault
+        bz g0 _std_arrayset_efault
 
         # check if the position is valid
-        loadri r0 fp 0x0
-        loadri r0 r0 _STD_ARRAY_SIZE
-        loadri r1 fp 0x4
-        bgeu r1 r0 _std_arrayset_einval
+        loadri g0 fp 0x0
+        loadri g0 g0 _STD_ARRAY_SIZE
+        loadri g1 fp 0x4
+        bgeu g1 g0 _std_arrayset_einval
 
         # set the element
-        loadri r0 fp 0x0
-        addi r0 r0 _STD_ARRAY_MEM
-        loadri r1 fp 0x4
-        multi r1 r1 STD_WORDSIZE
-        loadri r2 fp 0x8
-        storerr r0 r2 r1
+        loadri g0 fp 0x0
+        addi g0 g0 _STD_ARRAY_MEM
+        loadri g1 fp 0x4
+        multi g1 g1 STD_WORDSIZE
+        loadri g2 fp 0x8
+        storerr g0 g2 g1
 
         .label _std_arrayset_ret
-        loadi r1 STD_NOERROR
+        loadi g1 STD_NOERROR
         ret
 
         .label _std_arrayset_einval
-        loadi r1 STD_EINVAL
+        loadi g1 STD_EINVAL
         ret
 
         .label _std_arrayset_efault
-        loadi r1 STD_EFAULT
+        loadi g1 STD_EFAULT
         ret
 
 
 # Set the value of all the elements to a value.
-# IN:  r0 pointer to the array
-# IN:  r1 value
-# OUT: r1 error status
+# IN:  g0 pointer to the array
+# IN:  g1 value
+# OUT: g1 error status
 #      STD_NOERROR: no errors
 #      STD_EFAULT:  the pointer is not valid
 .label std_arrayfill
-        push r0                         # pointer is in fp + 0x0
-        push r1                         # value is in fp + 0x4
+        push g0                         # pointer is in fp + 0x0
+        push g1                         # value is in fp + 0x4
 
         # check if the pointer is valid
-        loadi r1 _STD_ARRAY_STRUCT
+        loadi g1 _STD_ARRAY_STRUCT
         call std_address
-        bz r0 _std_arrayfill_efault
+        bz g0 _std_arrayfill_efault
 
         # set the elements
-        loadri r0 fp 0x0
-        addi r0 r0 _STD_ARRAY_MEM
-        loadri r1 fp 0x0
-        loadri r1 r1 _STD_ARRAY_SIZE
-        multi r1 r1 STD_WORDSIZE
-        loadri r2 fp 0x4
+        loadri g0 fp 0x0
+        addi g0 g0 _STD_ARRAY_MEM
+        loadri g1 fp 0x0
+        loadri g1 g1 _STD_ARRAY_SIZE
+        multi g1 g1 STD_WORDSIZE
+        loadri g2 fp 0x4
         call std_fill
-        bz r1 _std_arrayfill_ret
+        bz g1 _std_arrayfill_ret
         ret
 
         .label _std_arrayfill_ret
-        loadi r1 STD_NOERROR
+        loadi g1 STD_NOERROR
         ret
 
         .label _std_arrayfill_efault
-        loadi r1 STD_EFAULT
+        loadi g1 STD_EFAULT
         ret
 
 
 # Find a value in a array.
-# IN:  r0 pointer to the array
-# IN:  r1 start position
-# IN:  r2 value
-# OUT: r0 poisition of the value
-# OUT: r1 error status
+# IN:  g0 pointer to the array
+# IN:  g1 start position
+# IN:  g2 value
+# OUT: g0 poisition of the value
+# OUT: g1 error status
 #      STD_NOERROR: no errors
 #      STD_EINVAL: the value was not found
 #      STD_EFAULT: the pointer is not valid
 .label std_arrayfind
-        push r0                         # pointer is in fp + 0x0
-        push r1                         # position is in fp + 0x4
-        push r2                         # value is in fp + 0x8
+        push g0                         # pointer is in fp + 0x0
+        push g1                         # position is in fp + 0x4
+        push g2                         # value is in fp + 0x8
 
         # check if the pointer is valid
-        loadi r1 _STD_ARRAY_STRUCT
+        loadi g1 _STD_ARRAY_STRUCT
         call std_address
-        bz r0 _std_arrayfind_efault
+        bz g0 _std_arrayfind_efault
 
         # check if the position is valid
-        loadri r0 fp 0x0
-        loadri r0 r0 _STD_ARRAY_SIZE
-        loadri r1 fp 0x4
-        bgeu r1 r0 _std_arrayfind_einval
+        loadri g0 fp 0x0
+        loadri g0 g0 _STD_ARRAY_SIZE
+        loadri g1 fp 0x4
+        bgeu g1 g0 _std_arrayfind_einval
 
         # search the element
-        loadri r0 fp 0x0
-        addi r0 r0 _STD_ARRAY_MEM
-        loadri r1 fp 0x0
-        loadri r1 r1 _STD_ARRAY_SIZE
-        loadri r2 fp 0x4
-        sub r1 r1 r2
-        multi r1 r1 STD_WORDSIZE
-        loadri r2 fp 0x8
+        loadri g0 fp 0x0
+        addi g0 g0 _STD_ARRAY_MEM
+        loadri g1 fp 0x0
+        loadri g1 g1 _STD_ARRAY_SIZE
+        loadri g2 fp 0x4
+        sub g1 g1 g2
+        multi g1 g1 STD_WORDSIZE
+        loadri g2 fp 0x8
         call std_find
-        bz r1 _std_arrayfind_ret
+        bz g1 _std_arrayfind_ret
         ret
 
         .label _std_arrayfind_ret
-        divi r0 r0 STD_WORDSIZE
-        loadri r1 fp 0x4
-        add r0 r0 r1
-        loadi r1 STD_NOERROR
+        divi g0 g0 STD_WORDSIZE
+        loadri g1 fp 0x4
+        add g0 g0 g1
+        loadi g1 STD_NOERROR
         ret
 
         .label _std_arrayfind_einval
-        loadi r1 STD_EINVAL
+        loadi g1 STD_EINVAL
         ret
 
         .label _std_arrayfind_efault
-        loadi r1 STD_EFAULT
+        loadi g1 STD_EFAULT
         ret
 
 # Get the times a value is found in the array.
-# IN:  r0 pointer to the array
-# IN:  r1 value
-# OUT: r0 the times the value was found
-# OUT: r1 error status
+# IN:  g0 pointer to the array
+# IN:  g1 value
+# OUT: g0 the times the value was found
+# OUT: g1 error status
 #      STD_NOERROR: no errors
 #      STD_EFAULT: the pointer is not valid
 .label std_arraycount
-        push r0                         # pointer is in fp + 0x0
-        push r1                         # value is in fp + 0x4
+        push g0                         # pointer is in fp + 0x0
+        push g1                         # value is in fp + 0x4
 
         # check if the pointer is valid
-        loadi r1 _STD_ARRAY_STRUCT
+        loadi g1 _STD_ARRAY_STRUCT
         call std_address
-        bz r0 _std_arraycount_efault
+        bz g0 _std_arraycount_efault
 
         # count the elements
-        loadri r0 fp 0x0
-        addi r0 r0 _STD_ARRAY_MEM
-        loadri r1 fp 0x0
-        loadri r1 r1 _STD_ARRAY_SIZE
-        multi r1 r1 STD_WORDSIZE
-        loadri r2 fp 0x4
+        loadri g0 fp 0x0
+        addi g0 g0 _STD_ARRAY_MEM
+        loadri g1 fp 0x0
+        loadri g1 g1 _STD_ARRAY_SIZE
+        multi g1 g1 STD_WORDSIZE
+        loadri g2 fp 0x4
         call std_count
-        bz r1 _std_arraycount_ret
+        bz g1 _std_arraycount_ret
         ret
 
         .label _std_arraycount_ret
-        loadi r1 STD_NOERROR
+        loadi g1 STD_NOERROR
         ret
 
         .label _std_arraycount_efault
-        loadi r1 STD_EFAULT
+        loadi g1 STD_EFAULT
         ret

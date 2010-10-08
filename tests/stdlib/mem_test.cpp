@@ -84,16 +84,16 @@ BOOST_AUTO_TEST_CASE(std_fill)
 
   // Test
   source.insert(line++, ".label main");
-  source.insert(line++, "loada r0 data");
-  source.insert(line++, "loada r1 data_end");
-  source.insert(line++, "sub r1 r1 r0");
-  source.insert(line++, "loadi r2 0x4567");
-  source.insert(line++, "loadhi r2 0x0123");
+  source.insert(line++, "loada g0 data");
+  source.insert(line++, "loada g1 data_end");
+  source.insert(line++, "sub g1 g1 g0");
+  source.insert(line++, "loadi g2 0x4567");
+  source.insert(line++, "loadhi g2 0x0123");
   source.insert(line++, "call std_fill");
 
-  source.insert(line++, "loada r0 data");
-  source.insert(line++, "loadri r1 r0 0x0");
-  source.insert(line++, "loadri r2 r0 0x4");
+  source.insert(line++, "loada g0 data");
+  source.insert(line++, "loadri g1 g0 0x0");
+  source.insert(line++, "loadri g2 g0 0x4");
 
   source.insert(line++, "stop");
 
@@ -114,8 +114,8 @@ BOOST_AUTO_TEST_CASE(std_fill)
   cpu.execute(MAX_CYCLES);
 
   BOOST_CHECK(not cpu.running());
-  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r1")], 0x01234567);
-  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r2")], 0x01234567);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "g1")], 0x01234567);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "g2")], 0x01234567);
 }
 
 /**
@@ -135,15 +135,15 @@ BOOST_AUTO_TEST_CASE(std_fillh)
 
   // Test
   source.insert(line++, ".label main");
-  source.insert(line++, "loada r0 data");
-  source.insert(line++, "loada r1 data_end");
-  source.insert(line++, "sub r1 r1 r0");
-  source.insert(line++, "loadi r2 0x0123");
+  source.insert(line++, "loada g0 data");
+  source.insert(line++, "loada g1 data_end");
+  source.insert(line++, "sub g1 g1 g0");
+  source.insert(line++, "loadi g2 0x0123");
   source.insert(line++, "call std_fillh");
 
-  source.insert(line++, "loada r0 data");
-  source.insert(line++, "loadri r1 r0 0x0");
-  source.insert(line++, "loadri r2 r0 0x4");
+  source.insert(line++, "loada g0 data");
+  source.insert(line++, "loadri g1 g0 0x0");
+  source.insert(line++, "loadri g2 g0 0x4");
 
   source.insert(line++, "stop");
 
@@ -164,8 +164,8 @@ BOOST_AUTO_TEST_CASE(std_fillh)
   cpu.execute(MAX_CYCLES);
 
   BOOST_CHECK(not cpu.running());
-  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r1")], 0x01230123);
-  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r2")], 0x01230123);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "g1")], 0x01230123);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "g2")], 0x01230123);
 }
 
 /**
@@ -185,15 +185,15 @@ BOOST_AUTO_TEST_CASE(std_fillq)
 
   // Test
   source.insert(line++, ".label main");
-  source.insert(line++, "loada r0 data");
-  source.insert(line++, "loada r1 data_end");
-  source.insert(line++, "sub r1 r1 r0");
-  source.insert(line++, "loadi r2 0x01");
+  source.insert(line++, "loada g0 data");
+  source.insert(line++, "loada g1 data_end");
+  source.insert(line++, "sub g1 g1 g0");
+  source.insert(line++, "loadi g2 0x01");
   source.insert(line++, "call std_fillq");
 
-  source.insert(line++, "loada r0 data");
-  source.insert(line++, "loadri r1 r0 0x0");
-  source.insert(line++, "loadri r2 r0 0x4");
+  source.insert(line++, "loada g0 data");
+  source.insert(line++, "loadri g1 g0 0x0");
+  source.insert(line++, "loadri g2 g0 0x4");
 
   source.insert(line++, "stop");
 
@@ -214,8 +214,8 @@ BOOST_AUTO_TEST_CASE(std_fillq)
   cpu.execute(MAX_CYCLES);
 
   BOOST_CHECK(not cpu.running());
-  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r1")], 0x01010101);
-  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r2")], 0x01010101);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "g1")], 0x01010101);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "g2")], 0x01010101);
 }
 
 /**
@@ -235,14 +235,14 @@ BOOST_AUTO_TEST_CASE(std_copy)
 
   // Test
   source.insert(line++, ".label main");
-  source.insert(line++, "loada r0 dst");
-  source.insert(line++, "loada r1 src");
-  source.insert(line++, "loadi r2 0x8");
+  source.insert(line++, "loada g0 dst");
+  source.insert(line++, "loada g1 src");
+  source.insert(line++, "loadi g2 0x8");
   source.insert(line++, "call std_copy");
 
-  source.insert(line++, "loada r0 dst");
-  source.insert(line++, "loadri r1 r0 0x0");
-  source.insert(line++, "loadri r2 r0 0x4");
+  source.insert(line++, "loada g0 dst");
+  source.insert(line++, "loadri g1 g0 0x0");
+  source.insert(line++, "loadri g2 g0 0x4");
 
   source.insert(line++, "stop");
 
@@ -266,8 +266,8 @@ BOOST_AUTO_TEST_CASE(std_copy)
   cpu.execute(MAX_CYCLES);
 
   BOOST_CHECK(not cpu.running());
-  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r1")], 0x01234567);
-  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r2")], 0x89ABCDEF);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "g1")], 0x01234567);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "g2")], 0x89ABCDEF);
 }
 
 /**
@@ -287,28 +287,28 @@ BOOST_AUTO_TEST_CASE(std_cmp)
 
   // Test with the same data
   source.insert(line++, ".label main");
-  source.insert(line++, "loada r0 data");
-  source.insert(line++, "loada r1 data");
-  source.insert(line++, "loadi r2 0x4");
+  source.insert(line++, "loada g0 data");
+  source.insert(line++, "loada g1 data");
+  source.insert(line++, "loadi g2 0x4");
   source.insert(line++, "call std_cmp");
-  source.insert(line++, "push r0");
+  source.insert(line++, "push g0");
 
   // Test with first > second
-  source.insert(line++, "loada r1 data");
-  source.insert(line++, "addi r0 r1 0x4");
-  source.insert(line++, "loadi r2 0x4");
+  source.insert(line++, "loada g1 data");
+  source.insert(line++, "addi g0 g1 0x4");
+  source.insert(line++, "loadi g2 0x4");
   source.insert(line++, "call std_cmp");
-  source.insert(line++, "push r0");
+  source.insert(line++, "push g0");
 
   // Test with first < second
-  source.insert(line++, "loada r0 data");
-  source.insert(line++, "addi r1 r0 0x4");
-  source.insert(line++, "loadi r2 0x4");
+  source.insert(line++, "loada g0 data");
+  source.insert(line++, "addi g1 g0 0x4");
+  source.insert(line++, "loadi g2 0x4");
   source.insert(line++, "call std_cmp");
 
-  source.insert(line++, "move r2 r0");
-  source.insert(line++, "pop r1");
-  source.insert(line++, "pop r0");
+  source.insert(line++, "move g2 g0");
+  source.insert(line++, "pop g1");
+  source.insert(line++, "pop g0");
 
   source.insert(line++, "stop");
 
@@ -329,9 +329,9 @@ BOOST_AUTO_TEST_CASE(std_cmp)
   cpu.execute(MAX_CYCLES);
 
   BOOST_CHECK(not cpu.running());
-  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r0")], 0x0);
-  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r1")], 0x2);
-  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r2")], 0xFFFFFFFE);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "g0")], 0x0);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "g1")], 0x2);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "g2")], 0xFFFFFFFE);
 }
 
 /**
@@ -351,25 +351,25 @@ BOOST_AUTO_TEST_CASE(std_find)
 
   // Test with a element that is not in the block
   source.insert(line++, ".label main");
-  source.insert(line++, "loada r0 data");
-  source.insert(line++, "loada r1 data_end");
-  source.insert(line++, "sub r1 r1 r0");
-  source.insert(line++, "loadi r2 0x0F0F");
+  source.insert(line++, "loada g0 data");
+  source.insert(line++, "loada g1 data_end");
+  source.insert(line++, "sub g1 g1 g0");
+  source.insert(line++, "loadi g2 0x0F0F");
   source.insert(line++, "call std_find");
-  source.insert(line++, "push r1");
+  source.insert(line++, "push g1");
 
   // Test with a element that is in the block
-  source.insert(line++, "loada r0 data");
-  source.insert(line++, "loada r1 data_end");
-  source.insert(line++, "sub r1 r1 r0");
-  source.insert(line++, "loadi r2 0x5050");
+  source.insert(line++, "loada g0 data");
+  source.insert(line++, "loada g1 data_end");
+  source.insert(line++, "sub g1 g1 g0");
+  source.insert(line++, "loadi g2 0x5050");
   source.insert(line++, "call std_find");
 
-  source.insert(line++, "move r3 r1");
-  source.insert(line++, "move r2 r0");
-  source.insert(line++, "loadi r4 STD_NOERROR");
-  source.insert(line++, "pop r0");
-  source.insert(line++, "loadi r1 STD_EINVAL");
+  source.insert(line++, "move g3 g1");
+  source.insert(line++, "move g2 g0");
+  source.insert(line++, "loadi r0 STD_NOERROR");
+  source.insert(line++, "pop g0");
+  source.insert(line++, "loadi g1 STD_EINVAL");
 
   source.insert(line++, "stop");
 
@@ -393,11 +393,11 @@ BOOST_AUTO_TEST_CASE(std_find)
   cpu.execute(MAX_CYCLES);
 
   BOOST_CHECK(not cpu.running());
-  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r0")],
-                    registers[REGISTER(cpu, "r1")]);
-  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r2")], 12);
-  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r3")],
-                    registers[REGISTER(cpu, "r4")]);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "g0")],
+                    registers[REGISTER(cpu, "g1")]);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "g2")], 12);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "g3")],
+                    registers[REGISTER(cpu, "r0")]);
 }
 
 /**
@@ -417,25 +417,25 @@ BOOST_AUTO_TEST_CASE(std_findh)
 
   // Test with a element that is not in the block
   source.insert(line++, ".label main");
-  source.insert(line++, "loada r0 data");
-  source.insert(line++, "loada r1 data_end");
-  source.insert(line++, "sub r1 r1 r0");
-  source.insert(line++, "loadi r2 0x0F0F");
+  source.insert(line++, "loada g0 data");
+  source.insert(line++, "loada g1 data_end");
+  source.insert(line++, "sub g1 g1 g0");
+  source.insert(line++, "loadi g2 0x0F0F");
   source.insert(line++, "call std_findh");
-  source.insert(line++, "push r1");
+  source.insert(line++, "push g1");
 
   // Test with a element that is in the block
-  source.insert(line++, "loada r0 data");
-  source.insert(line++, "loada r1 data_end");
-  source.insert(line++, "sub r1 r1 r0");
-  source.insert(line++, "loadi r2 0x5050");
+  source.insert(line++, "loada g0 data");
+  source.insert(line++, "loada g1 data_end");
+  source.insert(line++, "sub g1 g1 g0");
+  source.insert(line++, "loadi g2 0x5050");
   source.insert(line++, "call std_findh");
 
-  source.insert(line++, "move r3 r1");
-  source.insert(line++, "move r2 r0");
-  source.insert(line++, "loadi r4 STD_NOERROR");
-  source.insert(line++, "pop r0");
-  source.insert(line++, "loadi r1 STD_EINVAL");
+  source.insert(line++, "move g3 g1");
+  source.insert(line++, "move g2 g0");
+  source.insert(line++, "loadi r0 STD_NOERROR");
+  source.insert(line++, "pop g0");
+  source.insert(line++, "loadi g1 STD_EINVAL");
 
   source.insert(line++, "stop");
 
@@ -459,11 +459,11 @@ BOOST_AUTO_TEST_CASE(std_findh)
   cpu.execute(MAX_CYCLES);
 
   BOOST_CHECK(not cpu.running());
-  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r0")],
-                    registers[REGISTER(cpu, "r1")]);
-  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r2")], 14);
-  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r3")],
-                    registers[REGISTER(cpu, "r4")]);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "g0")],
+                    registers[REGISTER(cpu, "g1")]);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "g2")], 14);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "g3")],
+                    registers[REGISTER(cpu, "r0")]);
 }
 
 /**
@@ -483,25 +483,25 @@ BOOST_AUTO_TEST_CASE(std_findq)
 
   // Test with a element that is not in the block
   source.insert(line++, ".label main");
-  source.insert(line++, "loada r0 data");
-  source.insert(line++, "loada r1 data_end");
-  source.insert(line++, "sub r1 r1 r0");
-  source.insert(line++, "loadi r2 0xFF");
+  source.insert(line++, "loada g0 data");
+  source.insert(line++, "loada g1 data_end");
+  source.insert(line++, "sub g1 g1 g0");
+  source.insert(line++, "loadi g2 0xFF");
   source.insert(line++, "call std_findq");
-  source.insert(line++, "push r1");
+  source.insert(line++, "push g1");
 
   // Test with a element that is in the block
-  source.insert(line++, "loada r0 data");
-  source.insert(line++, "loada r1 data_end");
-  source.insert(line++, "sub r1 r1 r0");
-  source.insert(line++, "loadi r2 0x50");
+  source.insert(line++, "loada g0 data");
+  source.insert(line++, "loada g1 data_end");
+  source.insert(line++, "sub g1 g1 g0");
+  source.insert(line++, "loadi g2 0x50");
   source.insert(line++, "call std_findq");
 
-  source.insert(line++, "move r3 r1");
-  source.insert(line++, "move r2 r0");
-  source.insert(line++, "loadi r4 STD_NOERROR");
-  source.insert(line++, "pop r0");
-  source.insert(line++, "loadi r1 STD_EINVAL");
+  source.insert(line++, "move g3 g1");
+  source.insert(line++, "move g2 g0");
+  source.insert(line++, "loadi r0 STD_NOERROR");
+  source.insert(line++, "pop g0");
+  source.insert(line++, "loadi g1 STD_EINVAL");
 
   source.insert(line++, "stop");
 
@@ -525,11 +525,11 @@ BOOST_AUTO_TEST_CASE(std_findq)
   cpu.execute(MAX_CYCLES);
 
   BOOST_CHECK(not cpu.running());
-  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r0")],
-                    registers[REGISTER(cpu, "r1")]);
-  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r2")], 14);
-  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r3")],
-                    registers[REGISTER(cpu, "r4")]);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "g0")],
+                    registers[REGISTER(cpu, "g1")]);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "g2")], 14);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "g3")],
+                    registers[REGISTER(cpu, "r0")]);
 }
 
 /**
@@ -549,22 +549,22 @@ BOOST_AUTO_TEST_CASE(std_count)
 
   // Test with a element that is not in the block
   source.insert(line++, ".label main");
-  source.insert(line++, "loada r0 data");
-  source.insert(line++, "loada r1 data_end");
-  source.insert(line++, "sub r1 r1 r0");
-  source.insert(line++, "loadi r2 0x0F0F");
+  source.insert(line++, "loada g0 data");
+  source.insert(line++, "loada g1 data_end");
+  source.insert(line++, "sub g1 g1 g0");
+  source.insert(line++, "loadi g2 0x0F0F");
   source.insert(line++, "call std_count");
-  source.insert(line++, "push r0");
+  source.insert(line++, "push g0");
 
   // Test with a element that is in the block
-  source.insert(line++, "loada r0 data");
-  source.insert(line++, "loada r1 data_end");
-  source.insert(line++, "sub r1 r1 r0");
-  source.insert(line++, "loadi r2 0x5050");
+  source.insert(line++, "loada g0 data");
+  source.insert(line++, "loada g1 data_end");
+  source.insert(line++, "sub g1 g1 g0");
+  source.insert(line++, "loadi g2 0x5050");
   source.insert(line++, "call std_count");
 
-  source.insert(line++, "move r1 r0");
-  source.insert(line++, "pop r0");
+  source.insert(line++, "move g1 g0");
+  source.insert(line++, "pop g0");
 
   source.insert(line++, "stop");
 
@@ -589,8 +589,8 @@ BOOST_AUTO_TEST_CASE(std_count)
   cpu.execute(MAX_CYCLES);
 
   BOOST_CHECK(not cpu.running());
-  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r0")], 0);
-  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r1")], 2);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "g0")], 0);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "g1")], 2);
 }
 
 /**
@@ -610,22 +610,22 @@ BOOST_AUTO_TEST_CASE(std_counth)
 
   // Test with a element that is not in the block
   source.insert(line++, ".label main");
-  source.insert(line++, "loada r0 data");
-  source.insert(line++, "loada r1 data_end");
-  source.insert(line++, "sub r1 r1 r0");
-  source.insert(line++, "loadi r2 0x0F0F");
+  source.insert(line++, "loada g0 data");
+  source.insert(line++, "loada g1 data_end");
+  source.insert(line++, "sub g1 g1 g0");
+  source.insert(line++, "loadi g2 0x0F0F");
   source.insert(line++, "call std_counth");
-  source.insert(line++, "push r0");
+  source.insert(line++, "push g0");
 
   // Test with a element that is in the block
-  source.insert(line++, "loada r0 data");
-  source.insert(line++, "loada r1 data_end");
-  source.insert(line++, "sub r1 r1 r0");
-  source.insert(line++, "loadi r2 0x5050");
+  source.insert(line++, "loada g0 data");
+  source.insert(line++, "loada g1 data_end");
+  source.insert(line++, "sub g1 g1 g0");
+  source.insert(line++, "loadi g2 0x5050");
   source.insert(line++, "call std_counth");
 
-  source.insert(line++, "move r1 r0");
-  source.insert(line++, "pop r0");
+  source.insert(line++, "move g1 g0");
+  source.insert(line++, "pop g0");
 
   source.insert(line++, "stop");
 
@@ -650,8 +650,8 @@ BOOST_AUTO_TEST_CASE(std_counth)
   cpu.execute(MAX_CYCLES);
 
   BOOST_CHECK(not cpu.running());
-  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r0")], 0);
-  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r1")], 3);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "g0")], 0);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "g1")], 3);
 }
 
 /**
@@ -671,22 +671,22 @@ BOOST_AUTO_TEST_CASE(std_countq)
 
   // Test with a element that is not in the block
   source.insert(line++, ".label main");
-  source.insert(line++, "loada r0 data");
-  source.insert(line++, "loada r1 data_end");
-  source.insert(line++, "sub r1 r1 r0");
-  source.insert(line++, "loadi r2 0xFF");
+  source.insert(line++, "loada g0 data");
+  source.insert(line++, "loada g1 data_end");
+  source.insert(line++, "sub g1 g1 g0");
+  source.insert(line++, "loadi g2 0xFF");
   source.insert(line++, "call std_countq");
-  source.insert(line++, "push r0");
+  source.insert(line++, "push g0");
 
   // Test with a element that is in the block
-  source.insert(line++, "loada r0 data");
-  source.insert(line++, "loada r1 data_end");
-  source.insert(line++, "sub r1 r1 r0");
-  source.insert(line++, "loadi r2 0x50");
+  source.insert(line++, "loada g0 data");
+  source.insert(line++, "loada g1 data_end");
+  source.insert(line++, "sub g1 g1 g0");
+  source.insert(line++, "loadi g2 0x50");
   source.insert(line++, "call std_countq");
 
-  source.insert(line++, "move r1 r0");
-  source.insert(line++, "pop r0");
+  source.insert(line++, "move g1 g0");
+  source.insert(line++, "pop g0");
 
   source.insert(line++, "stop");
 
@@ -711,6 +711,6 @@ BOOST_AUTO_TEST_CASE(std_countq)
   cpu.execute(MAX_CYCLES);
 
   BOOST_CHECK(not cpu.running());
-  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r0")], 0);
-  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r1")], 6);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "g0")], 0);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "g1")], 6);
 }

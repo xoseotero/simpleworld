@@ -87,9 +87,9 @@ BOOST_AUTO_TEST_CASE(std_random)
   // Test
   source.insert(line++, ".label main");
   source.insert(line++, "call std_random");
-  source.insert(line++, "push r0");
+  source.insert(line++, "push g0");
   source.insert(line++, "call std_random");
-  source.insert(line++, "pop r1");
+  source.insert(line++, "pop g1");
   source.insert(line++, "stop");
 
   // Space for 16 words in the stack
@@ -104,8 +104,8 @@ BOOST_AUTO_TEST_CASE(std_random)
   cpu.execute(MAX_CYCLES);
 
   BOOST_CHECK(not cpu.running());
-  BOOST_CHECK_NE(registers[REGISTER(cpu, "r0")],
-                 registers[REGISTER(cpu, "r1")]);
+  BOOST_CHECK_NE(registers[REGISTER(cpu, "g0")],
+                 registers[REGISTER(cpu, "g1")]);
 }
 
 /**
@@ -127,15 +127,15 @@ BOOST_AUTO_TEST_CASE(std_seed)
 
   // Test
   source.insert(line++, ".label main");
-  source.insert(line++, "loadi r0 0x0");
+  source.insert(line++, "loadi g0 0x0");
   source.insert(line++, "call std_seed");
   source.insert(line++, "call std_random");
-  source.insert(line++, "push r0");
+  source.insert(line++, "push g0");
 
-  source.insert(line++, "loadi r0 0x0");
+  source.insert(line++, "loadi g0 0x0");
   source.insert(line++, "call std_seed");
   source.insert(line++, "call std_random");
-  source.insert(line++, "pop r1");
+  source.insert(line++, "pop g1");
 
   source.insert(line++, "stop");
 
@@ -151,6 +151,6 @@ BOOST_AUTO_TEST_CASE(std_seed)
   cpu.execute(MAX_CYCLES);
 
   BOOST_CHECK(not cpu.running());
-  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r0")],
-                    registers[REGISTER(cpu, "r1")]);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "g0")],
+                    registers[REGISTER(cpu, "g1")]);
 }

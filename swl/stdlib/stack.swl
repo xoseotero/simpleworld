@@ -29,203 +29,203 @@
 
 
 # Create a new stack.
-# OUT: r0 pointer to the new stack
-# OUT: r1 error status
+# OUT: g0 pointer to the new stack
+# OUT: g1 error status
 #      STD_NOERROR: no errors
 #      STD_ENOMEM: there is not memory enough
 .label std_stack
         # allocate the memory
-        loadi r0 _STD_STACK_STRUCT
+        loadi g0 _STD_STACK_STRUCT
         call std_alloc
-        bnz r1 _std_stack_enomem
+        bnz g1 _std_stack_enomem
 
         # initialize the fields
-        loadi r1 STD_NULL
-        storeri r0 r1 _STD_STACK_TOP
+        loadi g1 STD_NULL
+        storeri g0 g1 _STD_STACK_TOP
 
         .label _std_stack_ret
-        loadi r1 STD_NOERROR
+        loadi g1 STD_NOERROR
         ret
 
         .label _std_stack_enomem
-        loadi r1 STD_ENOMEM
+        loadi g1 STD_ENOMEM
         ret
 
 # Free the stack.
-# IN:  r0 pointer to the stack.
-# OUT: r1 error status
+# IN:  g0 pointer to the stack.
+# OUT: g1 error status
 #      STD_NOERROR: no errors
 #      STD_EFAULT: the pointer is not valid.
 .label std_stackfree
-        push r0                         # pointer is in fp + 0x0
+        push g0                         # pointer is in fp + 0x0
 
         # check if the pointer is valid
-        loadi r1 _STD_STACK_STRUCT
+        loadi g1 _STD_STACK_STRUCT
         call std_address
-        bz r0 _std_stackfree_efault
+        bz g0 _std_stackfree_efault
 
         # free all the nodes
-        loadri r0 fp 0x0
-        loadri r0 r0 _STD_STACK_TOP
-        bz r0 _std_stackfree_free
+        loadri g0 fp 0x0
+        loadri g0 g0 _STD_STACK_TOP
+        bz g0 _std_stackfree_free
 
         .label _std_stackfree_loop
-        loadi r1 0x1
+        loadi g1 0x1
         call std_next
-        bnz r1 _std_stackfree_free
+        bnz g1 _std_stackfree_free
 
         # free the node
-        push r0
+        push g0
         call std_nodefree
-        pop r0
+        pop g0
         b _std_stackfree_loop
 
         .label _std_stackfree_free
         # free the list
-        loadri r0 fp 0x0
+        loadri g0 fp 0x0
         call std_free
 
         .label _std_stackfree_ret
-        loadi r1 STD_NOERROR
+        loadi g1 STD_NOERROR
         ret
 
         .label _std_stackfree_efault
-        loadi r1 STD_EFAULT
+        loadi g1 STD_EFAULT
         ret
 
 
 # Check if the stack is empty.
-# IN:  r0 pointer to the stack
-# OUT: r0 if the queue is empty
+# IN:  g0 pointer to the stack
+# OUT: g0 if the queue is empty
 #      STD_TRUE: the queue is empty
 #      STD_FALSE_ the queue is not empty
-# OUT: r1 error status
+# OUT: g1 error status
 #      STD_NOERROR: no errors
 #      STD_EFAULT: the pointer is not valid
 .label std_stackempty
-        push r0                         # pointer is in fp + 0x0
+        push g0                         # pointer is in fp + 0x0
 
         # check if the pointer is valid
-        loadi r1 _STD_STACK_STRUCT
+        loadi g1 _STD_STACK_STRUCT
         call std_address
-        bz r0 _std_stackempty_efault
+        bz g0 _std_stackempty_efault
 
         # check if the stack is empty
-        loadri r0 fp 0x0
-        loadri r0 r0 _STD_STACK_TOP
-        bz r0 _std_stackempty_empty
-        loadi r0 STD_FALSE
+        loadri g0 fp 0x0
+        loadri g0 g0 _STD_STACK_TOP
+        bz g0 _std_stackempty_empty
+        loadi g0 STD_FALSE
         b _std_stackempty_ret
 
         .label _std_stackempty_empty
-        loadi r0 STD_TRUE
+        loadi g0 STD_TRUE
 
         .label _std_stackempty_ret
-        loadi r1 STD_NOERROR
+        loadi g1 STD_NOERROR
         ret
 
         .label _std_stackempty_efault
-        loadi r1 STD_EFAULT
+        loadi g1 STD_EFAULT
         ret
 
 
 # Insert a element in the stack.
-# IN:  r0 pointer to the stack
-# IN:  r1 value
-# OUT: r1 error status
+# IN:  g0 pointer to the stack
+# IN:  g1 value
+# OUT: g1 error status
 #      STD_NOERROR: no errors
 #      STD_EFAULT: the pointer is not valid
 #      STD_ENOMEM: there is not memory enough
 .label std_stackpush
-        push r0                         # pointer is in fp + 0x0
-        push r1                         # value is in fp + 0x4
+        push g0                         # pointer is in fp + 0x0
+        push g1                         # value is in fp + 0x4
 
         # check if the pointer is valid
-        loadi r1 _STD_STACK_STRUCT
+        loadi g1 _STD_STACK_STRUCT
         call std_address
-        bz r0 _std_stackpush_efault
+        bz g0 _std_stackpush_efault
 
         # allocate the new node
         # node.prev = STD_NULL
         # node.next = top
-        loadri r0 fp 0x0
-        loadri r1 r0 _STD_STACK_TOP
-        loadi r0 STD_NULL
-        loadri r2 fp 0x4
+        loadri g0 fp 0x0
+        loadri g1 g0 _STD_STACK_TOP
+        loadi g0 STD_NULL
+        loadri g2 fp 0x4
         call std_node
-        bnz r1 _std_stackpush_enomem
+        bnz g1 _std_stackpush_enomem
 
         # update the top pointer
         # top = node
-        move r1 r0
-        loadri r0 fp 0x0
-        storeri r0 r1 _STD_STACK_TOP
+        move g1 g0
+        loadri g0 fp 0x0
+        storeri g0 g1 _STD_STACK_TOP
 
         .label _std_stackpush_ret
-        loadi r1 STD_NOERROR
+        loadi g1 STD_NOERROR
         ret
 
         .label _std_stackpush_efault
-        loadi r1 STD_EFAULT
+        loadi g1 STD_EFAULT
         ret
 
         .label _std_stackpush_enomem
-        loadi r1 STD_ENOMEM
+        loadi g1 STD_ENOMEM
         ret
 
 # Remove a element from the stack.
-# IN:  r0 pointer to the stack
-# OUT: r0 element removed
-# OUT: r1 error status
+# IN:  g0 pointer to the stack
+# OUT: g0 element removed
+# OUT: g1 error status
 #      STD_NOERROR: no errors
 #      STD_EINVAL: the stack is empty
 #      STD_EFAULT: the pointer is not valid
 .label std_stackpop
-        push r0                         # pointer is in fp + 0x0
+        push g0                         # pointer is in fp + 0x0
 
         # check if the pointer is valid
-        loadi r1 _STD_STACK_STRUCT
+        loadi g1 _STD_STACK_STRUCT
         call std_address
-        bz r0 _std_stackpop_efault
+        bz g0 _std_stackpop_efault
 
         # check if the stack is empty
-        loadri r0 fp 0x0
-        loadri r0 r0 _STD_STACK_TOP
-        bz r0 _std_stackpop_einval
+        loadri g0 fp 0x0
+        loadri g0 g0 _STD_STACK_TOP
+        bz g0 _std_stackpop_einval
 
         # get the node to remove
-        loadri r0 fp 0x0
-        loadri r0 r0 _STD_STACK_TOP
-        push r0                         # removed is in fp + 0x4
+        loadri g0 fp 0x0
+        loadri g0 g0 _STD_STACK_TOP
+        push g0                         # removed is in fp + 0x4
 
         # get the data
-        loadri r0 r0 _STD_NODE_DATA
-        push r0                         # data is in fp + 0x8
+        loadri g0 g0 _STD_NODE_DATA
+        push g0                         # data is in fp + 0x8
 
         # update the top node
         # top = removed.next
-        loadri r0 fp 0x4
-        loadi r1 0x1
+        loadri g0 fp 0x4
+        loadi g1 0x1
         call std_next
-        bz r1 _std_stackpop_notempty
-        loadi r0 STD_NULL
+        bz g1 _std_stackpop_notempty
+        loadi g0 STD_NULL
         .label _std_stackpop_notempty
-        loadri r1 fp 0x0
-        storeri r1 r0 _STD_STACK_TOP
+        loadri g1 fp 0x0
+        storeri g1 g0 _STD_STACK_TOP
 
         # free the node
-        loadri r0 fp 0x4
+        loadri g0 fp 0x4
         call std_nodefree
 
         .label _std_stackpop_ret
-        loadri r0 fp 0x8
-        loadi r1 STD_NOERROR
+        loadri g0 fp 0x8
+        loadi g1 STD_NOERROR
         ret
 
         .label _std_stackpop_einval
-        loadi r1 STD_EINVAL
+        loadi g1 STD_EINVAL
         ret
 
         .label _std_stackpop_efault
-        loadi r1 STD_EFAULT
+        loadi g1 STD_EFAULT
         ret

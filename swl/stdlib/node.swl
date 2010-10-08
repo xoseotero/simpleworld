@@ -30,44 +30,44 @@
 
 
 # Create a new node.
-# IN:  r0 pointer to the previous node.
-# IN:  r1 pointer to the next node.
-# IN:  r2 data.
-# OUT: r0 pointer to the new node.
-# OUT: r1 error status
+# IN:  g0 pointer to the previous node.
+# IN:  g1 pointer to the next node.
+# IN:  g2 data.
+# OUT: g0 pointer to the new node.
+# OUT: g1 error status
 #      STD_NOERROR: no errors
 #      STD_ENOMEM: there is not memory enough
 .label std_node
-        push r0                         # prev is in fp + 0x0
-        push r1                         # next is in fp + 0x4
-        push r2                         # data is in fp + 0x8
+        push g0                         # prev is in fp + 0x0
+        push g1                         # next is in fp + 0x4
+        push g2                         # data is in fp + 0x8
 
         # allocate the memory
-        loadi r0 _STD_NODE_STRUCT
+        loadi g0 _STD_NODE_STRUCT
         call std_alloc
-        bnz r1 _std_node_enomem
+        bnz g1 _std_node_enomem
 
         # set the fields
-        loadri r1 fp 0x0
-        storeri r0 r1 _STD_NODE_PREV
+        loadri g1 fp 0x0
+        storeri g0 g1 _STD_NODE_PREV
 
-        loadri r1 fp 0x4
-        storeri r0 r1 _STD_NODE_NEXT
+        loadri g1 fp 0x4
+        storeri g0 g1 _STD_NODE_NEXT
 
-        loadri r1 fp 0x8
-        storeri r0 r1 _STD_NODE_DATA
+        loadri g1 fp 0x8
+        storeri g0 g1 _STD_NODE_DATA
 
         .label _std_node_ret
-        loadi r1 STD_NOERROR
+        loadi g1 STD_NOERROR
         ret
 
         .label _std_node_enomem
-        loadi r1 STD_ENOMEM
+        loadi g1 STD_ENOMEM
         ret
 
 # Free the node.
-# IN:  r0 pointer to the node.
-# OUT: r1 error status
+# IN:  g0 pointer to the node.
+# OUT: g1 error status
 #      STD_NOERROR: no errors
 #      STD_EFAULT: the pointer is not valid.
 .label std_nodefree
@@ -76,192 +76,192 @@
 
 
 # Go to the previous nodes.
-# IN:  r0 pointer to the node.
-# IN:  r1 nodes to follow.
-# OUT: r0 pointer to the node.
-# OUT: r1 error status
+# IN:  g0 pointer to the node.
+# IN:  g1 nodes to follow.
+# OUT: g0 pointer to the node.
+# OUT: g1 error status
 #      STD_NOERROR: no errors
 #      STD_EINVAL: there are not enough nodes
 #      STD_EFAULT: the pointer is not valid.
 .label std_prev
-        push r0                         # pointer is in fp + 0x0
-        push r1                         # nodes is in fp + 0x4
+        push g0                         # pointer is in fp + 0x0
+        push g1                         # nodes is in fp + 0x4
 
         # check if the pointer is valid
-        loadi r1 _STD_NODE_STRUCT
+        loadi g1 _STD_NODE_STRUCT
         call std_address
-        bz r0 _std_prev_efault
+        bz g0 _std_prev_efault
 
         # go to the node selected
         .label _std_prev_loop
         # check if this is the desired node
-        loadri r1 fp 0x4
-        bz r1 _std_prev_ret
+        loadri g1 fp 0x4
+        bz g1 _std_prev_ret
 
         # update the counter
-        subi r1 r1 0x1
-        storeri fp r1 0x4
+        subi g1 g1 0x1
+        storeri fp g1 0x4
 
         # calculate the previous node
-        loadri r0 fp 0x0
-        loadri r0 r0 _STD_NODE_PREV
-        storeri fp r0 0x0
+        loadri g0 fp 0x0
+        loadri g0 g0 _STD_NODE_PREV
+        storeri fp g0 0x0
 
         # check if the pointer is valid
-        loadi r1 _STD_NODE_STRUCT
+        loadi g1 _STD_NODE_STRUCT
         call std_address
-        bz r0 _std_prev_einval
+        bz g0 _std_prev_einval
 
         b _std_prev_loop
 
         .label _std_prev_ret
-        loadri r0 fp 0x0
-        loadi r1 STD_NOERROR
+        loadri g0 fp 0x0
+        loadi g1 STD_NOERROR
         ret
 
         .label _std_prev_einval
-        loadi r1 STD_EINVAL
+        loadi g1 STD_EINVAL
         ret
 
         .label _std_prev_efault
-        loadi r1 STD_EFAULT
+        loadi g1 STD_EFAULT
         ret
 
 # Go to the next nodes.
-# IN:  r0 pointer to the node.
-# IN:  r1 nodes to follow.
-# OUT: r0 pointer to the node.
-# OUT: r1 error status
+# IN:  g0 pointer to the node.
+# IN:  g1 nodes to follow.
+# OUT: g0 pointer to the node.
+# OUT: g1 error status
 #      STD_NOERROR: no errors
 #      STD_EINVAL: there are not enough nodes
 #      STD_EFAULT: the pointer is not valid.
 .label std_next
-        push r0                         # pointer is in fp + 0x0
-        push r1                         # nodes is in fp + 0x4
+        push g0                         # pointer is in fp + 0x0
+        push g1                         # nodes is in fp + 0x4
 
         # check if the pointer is valid
-        loadi r1 _STD_NODE_STRUCT
+        loadi g1 _STD_NODE_STRUCT
         call std_address
-        bz r0 _std_next_efault
+        bz g0 _std_next_efault
 
         # go to the node selected
         .label _std_next_loop
         # check if this is the desired node
-        loadri r1 fp 0x4
-        bz r1 _std_next_ret
+        loadri g1 fp 0x4
+        bz g1 _std_next_ret
 
         # update the counter
-        subi r1 r1 0x1
-        storeri fp r1 0x4
+        subi g1 g1 0x1
+        storeri fp g1 0x4
 
         # calculate the next node
-        loadri r0 fp 0x0
-        loadri r0 r0 _STD_NODE_NEXT
-        storeri fp r0 0x0
+        loadri g0 fp 0x0
+        loadri g0 g0 _STD_NODE_NEXT
+        storeri fp g0 0x0
 
         # check if the pointer is valid
-        loadi r1 _STD_NODE_STRUCT
+        loadi g1 _STD_NODE_STRUCT
         call std_address
-        bz r0 _std_next_einval
+        bz g0 _std_next_einval
 
         b _std_next_loop
 
         .label _std_next_ret
-        loadri r0 fp 0x0
-        loadi r1 STD_NOERROR
+        loadri g0 fp 0x0
+        loadi g1 STD_NOERROR
         ret
 
         .label _std_next_einval
-        loadi r1 STD_EINVAL
+        loadi g1 STD_EINVAL
         ret
 
         .label _std_next_efault
-        loadi r1 STD_EFAULT
+        loadi g1 STD_EFAULT
         ret
 
 
 # Go to the first node.
 # A infinite loop is created if there are loops in the nodes.
-# IN:  r0 pointer to the node.
-# OUT: r0 pointer to the first node.
-# OUT: r1 error status
+# IN:  g0 pointer to the node.
+# OUT: g0 pointer to the first node.
+# OUT: g1 error status
 #      STD_NOERROR: no errors
 #      STD_EFAULT: the pointer is not valid.
 .label std_first
-        push r0                         # pointer is in fp + 0x0
+        push g0                         # pointer is in fp + 0x0
 
         # check if the pointer is valid
-        loadi r1 _STD_NODE_STRUCT
+        loadi g1 _STD_NODE_STRUCT
         call std_address
-        bz r0 _std_first_efault
+        bz g0 _std_first_efault
 
         # go to the first node
         .label _std_first_loop
         # calculate the previous node
-        loadri r0 fp 0x0
-        loadri r0 r0 _STD_NODE_PREV
+        loadri g0 fp 0x0
+        loadri g0 g0 _STD_NODE_PREV
 
         # check if it is the first node
-        bz r0 _std_first_ret
+        bz g0 _std_first_ret
 
         # update the node
-        storeri fp r0 0x0
+        storeri fp g0 0x0
 
         # check if the pointer is valid
-        loadi r1 _STD_NODE_STRUCT
+        loadi g1 _STD_NODE_STRUCT
         call std_address
-        bz r0 _std_first_efault
+        bz g0 _std_first_efault
 
         b _std_first_loop
 
         .label _std_first_ret
-        loadri r0 fp 0x0
-        loadi r1 STD_NOERROR
+        loadri g0 fp 0x0
+        loadi g1 STD_NOERROR
         ret
 
         .label _std_first_efault
-        loadi r1 STD_EFAULT
+        loadi g1 STD_EFAULT
         ret
 
 # Go to the last node.
 # A infinite loop is created if there are loops in the nodes.
-# IN:  r0 pointer to the node.
-# OUT: r0 pointer to the last node.
-# OUT: r1 error status
+# IN:  g0 pointer to the node.
+# OUT: g0 pointer to the last node.
+# OUT: g1 error status
 #      STD_NOERROR: no errors
 #      STD_EFAULT: the pointer is not valid.
 .label std_last
-        push r0                         # pointer is in fp + 0x0
+        push g0                         # pointer is in fp + 0x0
 
         # check if the pointer is valid
-        loadi r1 _STD_NODE_STRUCT
+        loadi g1 _STD_NODE_STRUCT
         call std_address
-        bz r0 _std_last_efault
+        bz g0 _std_last_efault
 
         # go to the last node
         .label _std_last_loop
         # calculate the next node
-        loadri r0 fp 0x0
-        loadri r0 r0 _STD_NODE_NEXT
+        loadri g0 fp 0x0
+        loadri g0 g0 _STD_NODE_NEXT
 
         # check if it is the last node
-        bz r0 _std_first_ret
+        bz g0 _std_first_ret
 
         # update the node
-        storeri fp r0 0x0
+        storeri fp g0 0x0
 
         # check if the pointer is valid
-        loadi r1 _STD_NODE_STRUCT
+        loadi g1 _STD_NODE_STRUCT
         call std_address
-        bz r0 _std_last_ret
+        bz g0 _std_last_ret
 
         b _std_last_loop
 
         .label _std_last_ret
-        loadri r0 fp 0x0
-        loadi r1 STD_NOERROR
+        loadri g0 fp 0x0
+        loadi g1 STD_NOERROR
         ret
 
         .label _std_last_efault
-        loadi r1 STD_EFAULT
+        loadi g1 STD_EFAULT
         ret

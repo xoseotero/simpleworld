@@ -23,27 +23,27 @@ STD_FULL
 
 
 # Set the bits of a word to 1.
-# IN:  r0 word
-# IN:  r1 bits
-# OUT: r0 new word
+# IN:  g0 word
+# IN:  g1 bits
+# OUT: g0 new word
 .label std_bitsset
-        or r0 r0 r1
+        or g0 g0 g1
         ret
 
 # Set the bits of a word to 0.
-# IN:  r0 word
-# IN:  r1 bits
-# OUT: r0 new word
+# IN:  g0 word
+# IN:  g1 bits
+# OUT: g0 new word
 .label std_bitsclear
-        load r2 _std_bits_full
-        xor r1 r1 r2
-        and r0 r0 r1
+        load g2 _std_bits_full
+        xor g1 g1 g2
+        and g0 g0 g1
         ret
 
 # Get the complement of a word.
-# IN:  r0 word
-# OUT: r0 new word
+# IN:  g0 word
+# OUT: g0 new word
 .label std_bitscomp
-        load r1 _std_bits_full
-        xor r0 r0 r1
+        load g1 _std_bits_full
+        xor g0 g0 g1
         ret

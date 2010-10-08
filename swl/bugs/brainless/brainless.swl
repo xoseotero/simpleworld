@@ -40,16 +40,16 @@
 
         .label _main_loop
         call std_random
-        modi r0 r0 0x2                  # r0 = std_random % 2
+        modi g0 g0 0x2                  # g0 = std_random % 2
 
-        bz r0 _main_move
+        bz g0 _main_move
         .label _main_turn               # if std_random != 0
         call random_turn
         b _main_loop
         .label _main_move               # else (std_random == 0)
         call random_move
 
-        bnz r0 _main_detect
+        bnz g0 _main_detect
         b _main_loop
 
         .label _main_detect             # the bug couldn't move
@@ -61,7 +61,7 @@
 # random number generator
 .label init_seed
         world STD_MYPOSITION
-        add r0 r1 r2
+        add g0 g1 g2
 
         call std_seed
 
@@ -69,31 +69,31 @@
 
 
 # Move forward or backwoard randomly
-# OUT: r0 0x0 if there is nothing in front of the bug
+# OUT: g0 0x0 if there is nothing in front of the bug
 #         0x1 if there is something in front of the bug
 .label random_move
-        # r0 = std_random % 2
+        # g0 = std_random % 2
         call std_random
-        modi r0 r0 0x2
+        modi g0 g0 0x2
 
-        bz r0 _random_move_forward
+        bz g0 _random_move_forward
         .label _random_move_backward    # if std_random != 0
         world STD_MOVEBACKWARD
-        loadi r0 0x0
+        loadi g0 0x0
         ret
         .label _random_move_forward     # else (std_random == 0)
         world STD_MOVEFORWARD
-        move r0 r1
+        move g0 g1
         ret
 
 
 # Turn on the left or on the right randomly
 .label random_turn
-        # r0 = std_random % 2
+        # g0 = std_random % 2
         call std_random
-        modi r0 r0 0x2
+        modi g0 g0 0x2
 
-        bz r0 _random_turn_left
+        bz g0 _random_turn_left
         .label _random_turn_right       # if std_random != 0
         world STD_TURNRIGHT
         ret
@@ -105,9 +105,9 @@
 # Attack until error
 .label attack
         .label _attack_loop             # do
-        loadi r0 0x8
+        loadi g0 0x8
         world STD_ATTACK
-        bz r0 _attack_loop              # while STD_ATTACK == STD_SUCCESS
+        bz g0 _attack_loop              # while STD_ATTACK == STD_SUCCESS
 
         call detect
 
@@ -130,8 +130,8 @@
         world STD_EAT
 
         world STD_MYENERGY
-        loadi r0 ENERGY_TO_CREATE_EGG
-        bgt r1 r0 _eat_egg
+        loadi g0 ENERGY_TO_CREATE_EGG
+        bgt g1 g0 _eat_egg
 
         .label _eat_ret                 # if MYSELF_ENERGY <= ENERGY_TO_CREATE_EGG
         ret
@@ -145,17 +145,17 @@
 # a) eats it if the element is food or a egg
 # b) attacks it if the element is a bug
 .label detect
-        world STD_DETECT                # r1 = ELEMENT
+        world STD_DETECT                # g1 = ELEMENT
 
-        loadi r0 STD_LNOTHING
-        bne r1 r0 _detect_something
+        loadi g0 STD_LNOTHING
+        bne g1 g0 _detect_something
         .label _detect_nothing          # if ELEMENT == NOTHING
         ret
 
         .label _detect_something        # else (ELEMENT != NOTHING)
 
-        loadi r0 STD_LFOOD
-        beq r1 r0 _detect_eat
+        loadi g0 STD_LFOOD
+        beq g1 g0 _detect_eat
 
         .label _detect_attack           # if ELEMENT != FOOD
         call attack

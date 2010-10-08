@@ -84,20 +84,20 @@ BOOST_AUTO_TEST_CASE(std_jmp)
 
   // Test
   source.insert(line++, ".label main");
-  source.insert(line++, "loada r0 jmp");
+  source.insert(line++, "loada g0 jmp");
   source.insert(line++, "call std_jmpset");
 
-  source.insert(line++, "bnz r0 _main_jmp");
-  source.insert(line++, "loada r0 jmp");
-  source.insert(line++, "loadi r1 0x0123");
+  source.insert(line++, "bnz g0 _main_jmp");
+  source.insert(line++, "loada g0 jmp");
+  source.insert(line++, "loadi g1 0x0123");
   source.insert(line++, "call std_jmp");
   source.insert(line++, "b _main_exit");
 
   source.insert(line++, ".label _main_jmp");
-  source.insert(line++, "store r0 data");
+  source.insert(line++, "store g0 data");
 
   source.insert(line++, ".label _main_exit");
-  source.insert(line++, "load r0 data");
+  source.insert(line++, "load g0 data");
   source.insert(line++, "stop");
 
   // Space for jmp struct
@@ -120,5 +120,5 @@ BOOST_AUTO_TEST_CASE(std_jmp)
   cpu.execute(MAX_CYCLES);
 
   BOOST_CHECK(not cpu.running());
-  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r0")], 0x0123);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "g0")], 0x0123);
 }

@@ -34,18 +34,18 @@
 #define REGISTER_SP 0x1
 #define REGISTER_FP 0x2
 #define REGISTER_CS 0x3
-#define REGISTER_R0 0x4
-#define REGISTER_R1 0x5
-#define REGISTER_R2 0x6
-#define REGISTER_R3 0x7
-#define REGISTER_R4 0x8
-#define REGISTER_R5 0x9
-#define REGISTER_R6 0xA
-#define REGISTER_R7 0xB
-#define REGISTER_R8 0xC
-#define REGISTER_R9 0xD
-#define REGISTER_R10 0xE
-#define REGISTER_R11 0xF
+#define REGISTER_G0 0x4
+#define REGISTER_G1 0x5
+#define REGISTER_G2 0x6
+#define REGISTER_G3 0x7
+#define REGISTER_R0 0x8
+#define REGISTER_R1 0x9
+#define REGISTER_R2 0xA
+#define REGISTER_R3 0xB
+#define REGISTER_R4 0xC
+#define REGISTER_R5 0xD
+#define REGISTER_R6 0xE
+#define REGISTER_R7 0xF
 
 #define INTERRUPT_TIMER (0x0)
 #define INTERRUPT_SOFTWARE (0x1)
@@ -196,11 +196,11 @@ public:
   /**
    * Throw a interrupt.
    * @param code the ode of the interrupt.
-   * @param r1 the word stored in r1.
-   * @param r2 the word stored in r2.
+   * @param g1 the word stored in g1.
+   * @param g2 the word stored in g2.
    * @exception MemoryError if the itp is not valid.
    */
-  void interrupt(Uint8 code, Word r1 = 0, Word r2 = 0);
+  void interrupt(Uint8 code, Word g1 = 0, Word g2 = 0);
 
   /**
    * Throw the Timer Interrupt.

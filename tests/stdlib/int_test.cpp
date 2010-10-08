@@ -108,9 +108,9 @@ BOOST_AUTO_TEST_CASE(std_handler_timer)
   source.insert(line++, ".label init");
   source.insert(line++, "loada sp stack");
   source.insert(line++, "move fp sp");
-  source.insert(line++, "loada r0 heap");
-  source.insert(line++, "loadi r1 0x400");
-  source.insert(line++, "loadi r2 0x1");
+  source.insert(line++, "loada g0 heap");
+  source.insert(line++, "loadi g1 0x400");
+  source.insert(line++, "loadi g2 0x1");
   source.insert(line++, "call std_init");
   source.insert(line++, "b main");
 
@@ -120,20 +120,20 @@ BOOST_AUTO_TEST_CASE(std_handler_timer)
 
   // Handler for interrupt
   source.insert(line++, ".label handler");
-  source.insert(line++, "loadi r0 0xF505");
-  source.insert(line++, "store r0 data");
+  source.insert(line++, "loadi g0 0xF505");
+  source.insert(line++, "store g0 data");
   source.insert(line++, "ret");
 
   // Test
   source.insert(line++, ".label main");
-  source.insert(line++, "loadi r0 STD_ITIMER");
-  source.insert(line++, "loada r1 handler");
+  source.insert(line++, "loadi g0 STD_ITIMER");
+  source.insert(line++, "loada g1 handler");
   source.insert(line++, "call std_handler");
 
   // Flag
-  source.insert(line++, "loadi r11 0xF1F1");
+  source.insert(line++, "loadi r7 0xF1F1");
 
-  source.insert(line++, "load r0 data");
+  source.insert(line++, "load g0 data");
   source.insert(line++, "stop");
 
   // Space for 1 words
@@ -154,7 +154,7 @@ BOOST_AUTO_TEST_CASE(std_handler_timer)
   cpu::MemoryFile memory(CPU_SAVE);
   FakeCPU cpu(&registers, &memory);
   int i = 0;
-  while (registers[REGISTER(cpu, "r11")] != 0xF1F1) {
+  while (registers[REGISTER(cpu, "r7")] != 0xF1F1) {
     cpu.execute(1);
 
     if (++i == MAX_CYCLES)
@@ -164,7 +164,7 @@ BOOST_AUTO_TEST_CASE(std_handler_timer)
   cpu.execute(MAX_CYCLES - i);
 
   BOOST_CHECK(not cpu.running());
-  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r0")], 0xF505);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "g0")], 0xF505);
 }
 
 /**
@@ -179,9 +179,9 @@ BOOST_AUTO_TEST_CASE(std_handler_software)
   source.insert(line++, ".label init");
   source.insert(line++, "loada sp stack");
   source.insert(line++, "move fp sp");
-  source.insert(line++, "loada r0 heap");
-  source.insert(line++, "loadi r1 0x400");
-  source.insert(line++, "loadi r2 0x1");
+  source.insert(line++, "loada g0 heap");
+  source.insert(line++, "loadi g1 0x400");
+  source.insert(line++, "loadi g2 0x1");
   source.insert(line++, "call std_init");
   source.insert(line++, "b main");
 
@@ -191,19 +191,19 @@ BOOST_AUTO_TEST_CASE(std_handler_software)
 
   // Handler for interrupt
   source.insert(line++, ".label handler");
-  source.insert(line++, "loadi r0 0xF505");
-  source.insert(line++, "store r0 data");
+  source.insert(line++, "loadi g0 0xF505");
+  source.insert(line++, "store g0 data");
   source.insert(line++, "ret");
 
   // Test
   source.insert(line++, ".label main");
-  source.insert(line++, "loadi r0 STD_ISW");
-  source.insert(line++, "loada r1 handler");
+  source.insert(line++, "loadi g0 STD_ISW");
+  source.insert(line++, "loada g1 handler");
   source.insert(line++, "call std_handler");
 
   source.insert(line++, "int 0x0");
 
-  source.insert(line++, "load r0 data");
+  source.insert(line++, "load g0 data");
   source.insert(line++, "stop");
 
   // Space for 1 words
@@ -226,7 +226,7 @@ BOOST_AUTO_TEST_CASE(std_handler_software)
   cpu.execute(MAX_CYCLES);
 
   BOOST_CHECK(not cpu.running());
-  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r0")], 0xF505);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "g0")], 0xF505);
 }
 
 /**
@@ -241,9 +241,9 @@ BOOST_AUTO_TEST_CASE(std_handler_instruction)
   source.insert(line++, ".label init");
   source.insert(line++, "loada sp stack");
   source.insert(line++, "move fp sp");
-  source.insert(line++, "loada r0 heap");
-  source.insert(line++, "loadi r1 0x400");
-  source.insert(line++, "loadi r2 0x1");
+  source.insert(line++, "loada g0 heap");
+  source.insert(line++, "loadi g1 0x400");
+  source.insert(line++, "loadi g2 0x1");
   source.insert(line++, "call std_init");
   source.insert(line++, "b main");
 
@@ -253,19 +253,19 @@ BOOST_AUTO_TEST_CASE(std_handler_instruction)
 
   // Handler for interrupt
   source.insert(line++, ".label handler");
-  source.insert(line++, "loadi r0 0xF505");
-  source.insert(line++, "store r0 data");
+  source.insert(line++, "loadi g0 0xF505");
+  source.insert(line++, "store g0 data");
   source.insert(line++, "ret");
 
   // Test
   source.insert(line++, ".label main");
-  source.insert(line++, "loadi r0 STD_IINST");
-  source.insert(line++, "loada r1 handler");
+  source.insert(line++, "loadi g0 STD_IINST");
+  source.insert(line++, "loada g1 handler");
   source.insert(line++, "call std_handler");
 
   source.insert(line++, "0xFFFFFFFF");
 
-  source.insert(line++, "load r0 data");
+  source.insert(line++, "load g0 data");
   source.insert(line++, "stop");
 
   // Space for 1 words
@@ -288,7 +288,7 @@ BOOST_AUTO_TEST_CASE(std_handler_instruction)
   cpu.execute(MAX_CYCLES);
 
   BOOST_CHECK(not cpu.running());
-  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r0")], 0xF505);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "g0")], 0xF505);
 }
 
 /**
@@ -303,9 +303,9 @@ BOOST_AUTO_TEST_CASE(std_handler_memory)
   source.insert(line++, ".label init");
   source.insert(line++, "loada sp stack");
   source.insert(line++, "move fp sp");
-  source.insert(line++, "loada r0 heap");
-  source.insert(line++, "loadi r1 0x400");
-  source.insert(line++, "loadi r2 0x1");
+  source.insert(line++, "loada g0 heap");
+  source.insert(line++, "loadi g1 0x400");
+  source.insert(line++, "loadi g2 0x1");
   source.insert(line++, "call std_init");
   source.insert(line++, "b main");
 
@@ -315,19 +315,19 @@ BOOST_AUTO_TEST_CASE(std_handler_memory)
 
   // Handler for interrupt
   source.insert(line++, ".label handler");
-  source.insert(line++, "loadi r0 0xF505");
-  source.insert(line++, "store r0 data");
+  source.insert(line++, "loadi g0 0xF505");
+  source.insert(line++, "store g0 data");
   source.insert(line++, "ret");
 
   // Test
   source.insert(line++, ".label main");
-  source.insert(line++, "loadi r0 STD_IMEM");
-  source.insert(line++, "loada r1 handler");
+  source.insert(line++, "loadi g0 STD_IMEM");
+  source.insert(line++, "loada g1 handler");
   source.insert(line++, "call std_handler");
 
-  source.insert(line++, "load r0 0x7FFF");
+  source.insert(line++, "load g0 0x7FFF");
 
-  source.insert(line++, "load r0 data");
+  source.insert(line++, "load g0 data");
   source.insert(line++, "stop");
 
   // Space for 1 words
@@ -350,7 +350,7 @@ BOOST_AUTO_TEST_CASE(std_handler_memory)
   cpu.execute(MAX_CYCLES);
 
   BOOST_CHECK(not cpu.running());
-  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r0")], 0xF505);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "g0")], 0xF505);
 }
 
 /**
@@ -365,9 +365,9 @@ BOOST_AUTO_TEST_CASE(std_handler_division)
   source.insert(line++, ".label init");
   source.insert(line++, "loada sp stack");
   source.insert(line++, "move fp sp");
-  source.insert(line++, "loada r0 heap");
-  source.insert(line++, "loadi r1 0x400");
-  source.insert(line++, "loadi r2 0x1");
+  source.insert(line++, "loada g0 heap");
+  source.insert(line++, "loadi g1 0x400");
+  source.insert(line++, "loadi g2 0x1");
   source.insert(line++, "call std_init");
   source.insert(line++, "b main");
 
@@ -377,19 +377,19 @@ BOOST_AUTO_TEST_CASE(std_handler_division)
 
   // Handler for interrupt
   source.insert(line++, ".label handler");
-  source.insert(line++, "loadi r0 0xF505");
-  source.insert(line++, "store r0 data");
+  source.insert(line++, "loadi g0 0xF505");
+  source.insert(line++, "store g0 data");
   source.insert(line++, "ret");
 
   // Test
   source.insert(line++, ".label main");
-  source.insert(line++, "loadi r0 STD_IDIV");
-  source.insert(line++, "loada r1 handler");
+  source.insert(line++, "loadi g0 STD_IDIV");
+  source.insert(line++, "loada g1 handler");
   source.insert(line++, "call std_handler");
 
-  source.insert(line++, "divi r0 r0 0x0");
+  source.insert(line++, "divi g0 g0 0x0");
 
-  source.insert(line++, "load r0 data");
+  source.insert(line++, "load g0 data");
   source.insert(line++, "stop");
 
   // Space for 1 words
@@ -412,7 +412,7 @@ BOOST_AUTO_TEST_CASE(std_handler_division)
   cpu.execute(MAX_CYCLES);
 
   BOOST_CHECK(not cpu.running());
-  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r0")], 0xF505);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "g0")], 0xF505);
 }
 
 /**
@@ -427,9 +427,9 @@ BOOST_AUTO_TEST_CASE(std_handler_worldaction)
   source.insert(line++, ".label init");
   source.insert(line++, "loada sp stack");
   source.insert(line++, "move fp sp");
-  source.insert(line++, "loada r0 heap");
-  source.insert(line++, "loadi r1 0x400");
-  source.insert(line++, "loadi r2 0x1");
+  source.insert(line++, "loada g0 heap");
+  source.insert(line++, "loadi g1 0x400");
+  source.insert(line++, "loadi g2 0x1");
   source.insert(line++, "call std_init");
   source.insert(line++, "b main");
 
@@ -439,24 +439,24 @@ BOOST_AUTO_TEST_CASE(std_handler_worldaction)
 
   // Handler for interrupt
   source.insert(line++, ".label handler");
-  source.insert(line++, "loadi r0 0xF505");
-  source.insert(line++, "store r0 data");
+  source.insert(line++, "loadi g0 0xF505");
+  source.insert(line++, "store g0 data");
   source.insert(line++, "ret");
 
   // Test
   source.insert(line++, ".label main");
-  source.insert(line++, "loadi r0 STD_IACTION");
-  source.insert(line++, "loada r1 handler");
+  source.insert(line++, "loadi g0 STD_IACTION");
+  source.insert(line++, "loada g1 handler");
   source.insert(line++, "call std_handler");
 
   // Flag
-  source.insert(line++, "loadi r11 0xF1F1");
+  source.insert(line++, "loadi r7 0xF1F1");
 
   // NOP needed because World Action interrupts are thrown by instructions
   // and when caught a instruction is skipped
-  source.insert(line++, "or r0 r0 r0");
+  source.insert(line++, "or g0 g0 g0");
 
-  source.insert(line++, "load r0 data");
+  source.insert(line++, "load g0 data");
   source.insert(line++, "stop");
 
   // Space for 1 words
@@ -477,7 +477,7 @@ BOOST_AUTO_TEST_CASE(std_handler_worldaction)
   cpu::MemoryFile memory(CPU_SAVE);
   FakeCPU cpu(&registers, &memory);
   int i = 0;
-  while (registers[REGISTER(cpu, "r11")] != 0xF1F1) {
+  while (registers[REGISTER(cpu, "r7")] != 0xF1F1) {
     cpu.execute(1);
 
     if (++i == MAX_CYCLES)
@@ -487,7 +487,7 @@ BOOST_AUTO_TEST_CASE(std_handler_worldaction)
   cpu.execute(MAX_CYCLES - i);
 
   BOOST_CHECK(not cpu.running());
-  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r0")], 0xF505);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "g0")], 0xF505);
 }
 
 /**
@@ -502,9 +502,9 @@ BOOST_AUTO_TEST_CASE(std_handler_worldevent)
   source.insert(line++, ".label init");
   source.insert(line++, "loada sp stack");
   source.insert(line++, "move fp sp");
-  source.insert(line++, "loada r0 heap");
-  source.insert(line++, "loadi r1 0x400");
-  source.insert(line++, "loadi r2 0x1");
+  source.insert(line++, "loada g0 heap");
+  source.insert(line++, "loadi g1 0x400");
+  source.insert(line++, "loadi g2 0x1");
   source.insert(line++, "call std_init");
   source.insert(line++, "b main");
 
@@ -514,20 +514,20 @@ BOOST_AUTO_TEST_CASE(std_handler_worldevent)
 
   // Handler for interrupt
   source.insert(line++, ".label handler");
-  source.insert(line++, "loadi r0 0xF505");
-  source.insert(line++, "store r0 data");
+  source.insert(line++, "loadi g0 0xF505");
+  source.insert(line++, "store g0 data");
   source.insert(line++, "ret");
 
   // Test
   source.insert(line++, ".label main");
-  source.insert(line++, "loadi r0 STD_IEVENT");
-  source.insert(line++, "loada r1 handler");
+  source.insert(line++, "loadi g0 STD_IEVENT");
+  source.insert(line++, "loada g1 handler");
   source.insert(line++, "call std_handler");
 
   // Flag
-  source.insert(line++, "loadi r11 0xF1F1");
+  source.insert(line++, "loadi r7 0xF1F1");
 
-  source.insert(line++, "load r0 data");
+  source.insert(line++, "load g0 data");
   source.insert(line++, "stop");
 
   // Space for 1 words
@@ -548,7 +548,7 @@ BOOST_AUTO_TEST_CASE(std_handler_worldevent)
   cpu::MemoryFile memory(CPU_SAVE);
   FakeCPU cpu(&registers, &memory);
   int i = 0;
-  while (registers[REGISTER(cpu, "r11")] != 0xF1F1) {
+  while (registers[REGISTER(cpu, "r7")] != 0xF1F1) {
     cpu.execute(1);
 
     if (++i == MAX_CYCLES)
@@ -558,5 +558,5 @@ BOOST_AUTO_TEST_CASE(std_handler_worldevent)
   cpu.execute(MAX_CYCLES - i);
 
   BOOST_CHECK(not cpu.running());
-  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r0")], 0xF505);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "g0")], 0xF505);
 }
