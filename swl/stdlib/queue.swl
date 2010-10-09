@@ -59,7 +59,7 @@
 #      STD_NOERROR: no errors
 #      STD_EFAULT: the pointer is not valid.
 .label std_queuefree
-        push g0                         # pointer is in fp + 0x0
+        move r0 g0                      # pointer
 
         # check if the pointer is valid
         loadi g1 _STD_QUEUE_STRUCT
@@ -67,24 +67,24 @@
         bz g0 _std_queuefree_efault
 
         # free all the nodes
-        loadri g0 fp 0x0
-        loadri g0 g0 _STD_QUEUE_TOP
-        bz g0 _std_queuefree_free
+        loadri r1 r0 _STD_QUEUE_TOP     # node
+        bz r1 _std_queuefree_free
 
         .label _std_queuefree_loop
+        move g0 r1
         loadi g1 0x1
         call std_next
         bnz g1 _std_queuefree_free
 
+        move r1 g0
+
         # free the node
-        push g0
         call std_nodefree
-        pop g0
         b _std_queuefree_loop
 
         .label _std_queuefree_free
         # free the list
-        loadri g0 fp 0x0
+        move g0 r0
         call std_free
 
         .label _std_queuefree_ret
@@ -105,7 +105,7 @@
 #      STD_NOERROR: no errors
 #      STD_EFAULT: the pointer is not valid
 .label std_queueempty
-        push g0                         # pointer is in fp + 0x0
+        move r0 g0                      # pointer
 
         # check if the pointer is valid
         loadi g1 _STD_QUEUE_STRUCT
@@ -113,8 +113,7 @@
         bz g0 _std_queueempty_efault
 
         # check if the stack is empty
-        loadri g0 fp 0x0
-        loadri g0 g0 _STD_QUEUE_TOP
+        loadri g0 r0 _STD_QUEUE_TOP
         bz g0 _std_queueempty_empty
         loadi g0 STD_FALSE
         b _std_queueempty_ret
@@ -139,8 +138,8 @@
 #      STD_EFAULT: the pointer is not valid
 #      STD_ENOMEM: there is not memory enough
 .label std_queuepush
-        push g0                         # pointer is in fp + 0x0
-        push g1                         # value is in fp + 0x4
+        move r0 g0                      # pointer
+        move r1 g1                      # value
 
         # check if the pointer is valid
         loadi g1 _STD_QUEUE_STRUCT
@@ -152,34 +151,29 @@
         # node.next = STD_NULL
         loadi g0 STD_NULL
         loadi g1 STD_NULL
-        loadri g2 fp 0x4
+        move g2 r1
         call std_node
         bnz g1 _std_queuepush_enomem
-        push g0                         # node is in fp + 0x8
+        move r2 g0                      # node
 
         # check if the queue is empty
-        loadri g0 fp 0x0
-        loadri g1 g0 _STD_QUEUE_TOP
-        bz g1 _std_queuepush_empty
+        loadri g0 r0 _STD_QUEUE_TOP
+        bz g0 _std_queuepush_empty
 
         # update the previous node
         # previous.next = node
-        loadri g0 fp 0x8
-        storeri g1 g0 _STD_NODE_NEXT
+        storeri g0 r2 _STD_NODE_NEXT
         b _std_queuepush_top
 
         .label _std_queuepush_empty
         # update the bottom pointer
         # bottom = node
-        loadri g1 fp 0x8
-        storeri g0 g1 _STD_QUEUE_BOTTOM
+        storeri r0 r2 _STD_QUEUE_BOTTOM
 
         .label _std_queuepush_top
         # update the top pointer
         # top = node
-        loadri g0 fp 0x0
-        loadri g1 fp 0x8
-        storeri g0 g1 _STD_QUEUE_TOP
+        storeri r0 r2 _STD_QUEUE_TOP
 
         .label _std_queuepush_ret
         loadi g1 STD_NOERROR
@@ -201,7 +195,7 @@
 #      STD_EINVAL: the queue is empty
 #      STD_EFAULT: the pointer is not valid
 .label std_queuepop
-        push g0                         # pointer is in fp + 0x0
+        move r0 g0                      # pointer
 
         # check if the pointer is valid
         loadi g1 _STD_QUEUE_STRUCT
@@ -209,44 +203,36 @@
         bz g0 _std_queuepop_efault
 
         # check if the queue is empty
-        loadri g0 fp 0x0
-        loadri g0 g0 _STD_QUEUE_TOP
+        loadri g0 r0 _STD_QUEUE_TOP
         bz g0 _std_queuepop_einval
 
         # get the node to remove
-        loadri g0 fp 0x0
-        loadri g0 g0 _STD_QUEUE_BOTTOM
-        push g0                         # removed is in fp + 0x4
+        loadri r1 r0 _STD_QUEUE_BOTTOM  # removed
 
         # get the data
-        loadri g0 g0 _STD_NODE_DATA
-        push g0                         # data is in fp + 0x8
+        loadri r2 r1 _STD_NODE_DATA     # data
 
         # update the bottom pointer
-        loadri g0 fp 0x0
-        loadri g1 fp 0x4
-        loadri g1 g1 _STD_NODE_NEXT
-        storeri g0 g1 _STD_QUEUE_BOTTOM
+        loadri g0 r1 _STD_NODE_NEXT
+        storeri r0 g0 _STD_QUEUE_BOTTOM
 
         # check if the queue is empty
-        loadri g0 fp 0x0
-        loadri g1 g0 _STD_QUEUE_BOTTOM
-        bnz g1 _std_queuepop_free
+        loadri g0 r0 _STD_QUEUE_BOTTOM
+        bnz g0 _std_queuepop_free
 
         # update the top node
         # top = NULL
         .label _std_queuepop_empty
-        loadri g0 fp 0x0
         loadi g1 STD_NULL
-        storeri g0 g1 _STD_QUEUE_TOP
+        storeri r0 g1 _STD_QUEUE_TOP
 
         # free the node
         .label _std_queuepop_free
-        loadri g0 fp 0x4
+        move g0 r1
         call std_nodefree
 
         .label _std_queuepop_ret
-        loadri g0 fp 0x8
+        move g0 r2
         loadi g1 STD_NOERROR
         ret
 

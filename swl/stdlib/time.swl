@@ -70,16 +70,15 @@
         # don't sleep if cycles are 0
         bz g0 _std_sleep_ret
 
-        load g1 _std_time
-        add g1 g0 g1
+        load r0 _std_time
+        add r0 g0 r0
 
         # loop while time < g0
         .label _std_sleep_loop
         world STD_NOTHING
 
-        # g1 shouldn't be changed by world STD_NOTHING
         load g0 _std_time
-        bltu g0 g1 _std_sleep_loop
+        bltu g0 r0 _std_sleep_loop
 
         .label _std_sleep_ret
         ret

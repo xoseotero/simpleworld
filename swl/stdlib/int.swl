@@ -85,9 +85,9 @@
 # IN:  g1 first parameter
 # IN:  g2 second parameter
 .label _std_handler
-        push g0                         # type is in fp + 0x0
-        push g1                         # first is in fp + 0x4
-        push g2                         # second is in fp + 0x8
+        move r0 g0                      # type
+        move r1 g1                      # first
+        move r2 g2                      # second
 
         # check if the interrupt is valid
         call _std_interrupt
@@ -95,35 +95,30 @@
 
         # calculate the pointer to the list of handlers
         loada g0 _std_hnds
-        loadri g1 fp 0x0
-        multi g1 g1 STD_WORDSIZE
+        multi g1 r0 STD_WORDSIZE
         add g0 g0 g1
-        loadri g0 g0 0x0
-        push g0                         # list is in fp + 0xC
+        loadri r3 g0 0x0                # list
 
         # save the position of the handler executed
-        loadi g0 0x0
-        push g0                         # position is in fp + 0x10
+        loadi r4 0x0                    # position
 
         # execute all the interrupts
         .label __std_handler_loop
         # get the handler
-        loadri g0 fp 0x0C
-        loadri g1 fp 0x10
+        move g0 r3
+        move g1 r4
         call std_listget
         bnz g1 __std_handler_ret
         move g3 g0
 
         # call the handler
-        loadri g0 fp 0x0
-        loadri g1 fp 0x4
-        loadri g2 fp 0x8
+        move g0 r0
+        move g1 r1
+        move g2 r2
         callr g3
 
         # update the position
-        loadri g0 fp 0x10
-        addi g0 g0 0x1
-        storeri fp g0 0x10
+        addi r4 r4 0x1
 
         b __std_handler_loop
 
@@ -139,7 +134,7 @@
 #      STD_EINVAL: number of interrupts too bit (more than 15)
 #      STD_ENOMEM: there is not enough memory
 .label _std_intinit
-        push g0                         # number is in fp + 0x0
+        move r0 g0                      # number
 
         # check the number of interrupts
         loadi g1 STD_CSINTMAX
@@ -148,55 +143,48 @@
 
         # initialize the interrupts
         loadi g0 STD_ITIMER
-        loadi g1 STD_IEVENT
-        loada g2 _std_itp
-        loada g3 _std_handler
+        loadi r1 STD_IEVENT		# end
+        loada r2 _std_itp               # _std_itp
+        loada g1 _std_handler
 
         .label __std_intinit_loop1
         # set the internal handler
         multi r0 g0 STD_WORDSIZE
-        storerr g2 g3 r0
+        storerr r2 g1 r0
 
         # update the start
         addi g0 g0 0x1
-        bleu g0 g1 __std_intinit_loop1
+        bleu g0 r1 __std_intinit_loop1
 
         # initialize the handlers
         # reset the start
-        loadi g0 STD_ITIMER
-
-        push g0                         # start is in fp + 0x4
-        push g1                         # end is in fp + 0x8
+        loadi r3 STD_ITIMER             # start
 
         .label __std_intinit_loop2
         # initialize the handler
         call std_list
         bnz g1 __std_intinit_enomem
         loada g1 _std_hnds
-        loadri g2 fp 0x4
-        multi g3 g2 STD_WORDSIZE
+        multi g3 r3 STD_WORDSIZE
         storerr g1 g0 g3
 
         # update the start
-        addi g2 g2 0x1
-        storeri fp g2 0x4
-        loadri g0 fp 0x8
-        bleu g2 g0 __std_intinit_loop2
+        addi r3 r3 0x1
+        bleu r3 r1 __std_intinit_loop2
 
         # set the itp
         move g0 cs
         loadi g1 0x0000
         loadhi g1 0xFFFF
         call std_bitsclear
-        loada g1 _std_itp
-        slli g1 g1 0x10
+        slli g1 r2 0x10
         call std_bitsset
         move cs g0
 
         # set the maximum number of interrupts
         loadi g1 STD_CSINTMAX
         call std_bitsclear
-        loadri g1 fp 0x0
+        move g1 r0
         call std_bitsset
         move cs g0
 
@@ -242,44 +230,38 @@
 #      STD_EFAULT:  the handler is not valid
 #      STD_ENOMEM:  there is not enough memory
 .label std_handler
-        push g0                         # interrupt is in fp + 0x0
-        push g1                         # handler is in fp + 0x4
+        move r0 g0                      # interrupt
+        move r1 g1                      # handler
 
         # check if the interrupt is valid
         call _std_interrupt
         bz g0 _std_handler_einval
 
         # check if the handler is valid
-        loadri g0 fp 0x4
+        move g0 r1
         loadi g1 STD_WORDSIZE
         call std_address
         bz g0 _std_handler_efault
 
         # calculate the pointer to the list
         loada g0 _std_hnds
-        loadri g1 fp 0x0
-        multi g1 g1 STD_WORDSIZE
+        multi g1 r0 STD_WORDSIZE
         add g0 g0 g1
-        loadri g0 g0 0x0
-        push g0                         # list is in fp + 0x8
+        loadri r2 g0 0x0                # list
 
         # calculate the size of the list
+        move g0 r2
         call std_listsize
         bnz g1 _std_handler_efault
         move g1 g0                      # size is in g1
 
         # add the handler to the end of interrupt handlers
         # restore the parameters
-        loadri g0 fp 0x8
-        loadri g2 fp 0x4
+        move g0 r2
+        move g2 r1
         call std_listinsert
-        bz g1 _std_handler_ok
         ret                             # return the same error as
                                         # std_listinsert
-
-        .label _std_handler_ok
-        loadi g1 STD_NOERROR
-        ret
 
         .label _std_handler_einval
         loadi g1 STD_EINVAL
@@ -297,43 +279,37 @@
 #      STD_EINVAL:  the interrupt is not valid or the handler was not found
 #      STD_EFAULT:  the handler is not valid
 .label std_rmhandler
-        push g0                         # interrupt is in fp + 0x0
-        push g1                         # handler is in fp + 0x4
+        move r0 g0                      # interrupt
+        move r1 g1                      # handler
 
         # check if the interrupt is valid
         call _std_interrupt
         bz g0 _std_rmhandler_einval
 
         # check if the handler is valid
-        loadri g0 fp 0x4
+        move g0 r1
         loadi g1 STD_WORDSIZE
         call std_address
         bz g0 _std_rmhandler_efault
 
         # calculate the pointer to the list
         loada g0 _std_hnds
-        loadri g1 fp 0x0
-        multi g1 g1 STD_WORDSIZE
+        multi g1 r0 STD_WORDSIZE
         add g0 g0 g1
-        loadri g0 g0 0x0
-        push g0                         # list is in fp + 0x8
+        loadri r2 g0 0x0                # list
 
         # search the handler in the list
+        move g0 r2
         loadi g1 0x0
         call std_listfind
         bnz g1 _std_rmhandler_einval
         move g1 g0                      # position is in g1
 
         # remove the handler from the interrupt handlers
-        loadri g0 fp 0x8
+        move g0 r2
         call std_listremove
-        bz g1 _std_rmhandler_ok
         ret                             # return the same error as
                                         # std_listinsert
-
-        .label _std_rmhandler_ok
-        loadi g1 STD_NOERROR
-        ret
 
         .label _std_rmhandler_einval
         loadi g1 STD_EINVAL

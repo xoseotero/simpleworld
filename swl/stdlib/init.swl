@@ -46,14 +46,14 @@ STD_FALSE
         load g3 _std_initialized
         bnz g3 _std_init_ok
 
-        push g2                         # interrupts is in fp + 0x0
+        move r0 g2                      # interrupts
 
         # initialize the memory allocator
         call _std_minit
         bnz g1 _std_init_error
 
         # initialize the interrupts manager
-        loadri g0 fp 0x0
+        move g0 r0
         call _std_intinit
         bnz g1 _std_init_error
 

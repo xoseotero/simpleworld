@@ -126,20 +126,17 @@
 #      STD_NOERROR: no errors
 #      STD_ENOMEM: there isn't memory enough
 .label _std_mblocksearch
-        addi g0 g0 _STD_MBLOCK_OVERHEAD
-        push g0               # size is in fp + 0x0
+        addi r0 g0 _STD_MBLOCK_OVERHEAD # size
 
         # search from the begining
         loada g0 _std_minfo
         loadri g0 g0 STD_MINFO_MEM
 
         .label __std_mblocksearch_loop
-        loadri g1 fp 0x0
-
-        loadri g2 g0 _STD_MBLOCK_USED
-        bnz g2 __std_mblocksearch_next
-        loadri g2 g0 _STD_MBLOCK_SIZE
-        blt g2 g1 __std_mblocksearch_next
+        loadri g1 g0 _STD_MBLOCK_USED
+        bnz g1 __std_mblocksearch_next
+        loadri g1 g0 _STD_MBLOCK_SIZE
+        blt g1 r0 __std_mblocksearch_next
 
         # block found
         loadi g1 STD_NOERROR
@@ -171,23 +168,22 @@
         addi g3 g3 _STD_MBLOCK_OVERHEAD
         multi g3 g3 0x2
         add g3 g3 g1
-        loadri g2 g0 _STD_MBLOCK_SIZE
-        bltu g2 g3 __std_mblockdivide_enomem
+        loadri r0 g0 _STD_MBLOCK_SIZE   # total
+        bltu r0 g3 __std_mblockdivide_enomem
 
         # divide the block
-        push g0               # block is in fp + 0x0
+        move r1 g0                      # block
         addi g1 g1 _STD_MBLOCK_OVERHEAD
-        push g1               # size is in fp + 0x4
-        push g2               # total size is in fp + 0x8
+        move r2 g1                      # size
 
         # first block
         call _std_mblockinit
 
         # second block
-        loadri g0 fp 0x0
+        move g0 r1
         call _std_mblocknext
-        loadri g1 fp 0x4
-        loadri g2 fp 0x8
+        move g1 r2
+        move g2 r0
         sub g1 g2 g1
         call _std_mblockinit
 
@@ -217,9 +213,8 @@
         loadri g1 g0 _STD_MBLOCK_USED
         bnz g1 __std_mblockjoin_einval
 
-        push g0               # block is in fp + 0x0
-        loadri g1 g0 _STD_MBLOCK_SIZE
-        push g1               # size is in fp + 0x4
+        move r0 g0                      # block
+        loadri r1 g0 _STD_MBLOCK_SIZE   # size
 
         # join with the next block
         .label __std_mblockjoin_next
@@ -232,25 +227,24 @@
         bnz g1 __std_mblockjoin_previous
 
         # calculate the size
-        loadri g1 fp 0x4
         loadri g2 g0 _STD_MBLOCK_SIZE
-        add g1 g1 g2
-        storeri fp g1 0x4
+        add r1 r1 g2
 
         # join with the next block
-        loadri g0 fp 0x0
+        move g0 r0
+        move g1 r1
         call _std_mblockinit
 
         # update the free memory
-        loada g0 _std_minfo
-        loadri g1 g0 STD_MINFO_FREE
-        addi g1 g1 _STD_MBLOCK_OVERHEAD
-        storeri g0 g1 STD_MINFO_FREE
+        loada r2 _std_minfo             # _std_minfo
+        loadri g0 r2 STD_MINFO_FREE
+        addi g0 g0 _STD_MBLOCK_OVERHEAD
+        storeri r2 g0 STD_MINFO_FREE
 
         # join with the previous block
         .label __std_mblockjoin_previous
         # check if the block exists
-        loadri g0 fp 0x0
+        move g0 r0
         call _std_mblockprev
         bnz g1 __std_mblockjoin_ret
 
@@ -259,18 +253,16 @@
         bnz g1 __std_mblockjoin_ret
 
         # calculate the size
-        loadri g1 fp 0x4
-        loadri g2 g0 _STD_MBLOCK_SIZE
-        add g1 g1 g2
+        loadri g1 g0 _STD_MBLOCK_SIZE
+        add g1 g1 r1
 
         # join with the previous block
         call _std_mblockinit
 
         # update the free memory
-        loada g0 _std_minfo
-        loadri g1 g0 STD_MINFO_FREE
+        loadri g1 r2 STD_MINFO_FREE
         addi g1 g1 _STD_MBLOCK_OVERHEAD
-        storeri g0 g1 STD_MINFO_FREE
+        storeri r2 g1 STD_MINFO_FREE
 
         .label __std_mblockjoin_ret
         loadi g1 STD_NOERROR
@@ -289,32 +281,28 @@
 #      STD_ENOMEM: the size if not enough
 #      STD_EFAULT: the pointer is not valid
 .label _std_minit
-        push g0               # memory is in fp + 0x0
-        push g1               # size is in fp + 0x4
-
         # Check if the size is enough
         loadi g2 _STD_MBLOCK_OVERHEAD
         ble g1 g2 __std_minit_enomem
+
+        move r0 g0                      # memory
+        move r1 g1                      # size
 
         # check if the pointer is valid
         call std_address
         bz g0 __std_minit_efault
 
         # Initialize the block
-        loadri g0 fp 0x0
-        loadri g1 fp 0x4
+        move g0 r0
+        move g1 r1
         call _std_mblockinit
 
-        # Calculate the free size
-        loadri g0 fp 0x0
-        loadri g1 fp 0x4
-        subi g2 g1 _STD_MBLOCK_OVERHEAD
-
         # Set the values
-        loada g3 _std_minfo
-        storeri g3 g0 STD_MINFO_MEM
-        storeri g3 g1 STD_MINFO_TOTAL
-        storeri g3 g2 STD_MINFO_FREE
+        loada g0 _std_minfo
+        storeri g0 r0 STD_MINFO_MEM
+        storeri g0 r1 STD_MINFO_TOTAL
+        subi g1 r1 _STD_MBLOCK_OVERHEAD
+        storeri g0 g1 STD_MINFO_FREE
 
         .label __std_minit_ret
         loadi g1 STD_NOERROR
@@ -357,21 +345,20 @@
 #      STD_NOERROR: no errors
 #      STD_EFAULT: the pointer is not valid
 .label std_minfo
-        push g0               # pointer is in fp 0x0
+        move r0 g0                      # pointer
 
         # check if the pointer is valid
         loadi g1 STD_MINFO_STRUCT
         call std_address
         bz g0 _std_minfo_efault
 
-        loadri g0 fp 0x0
-        loada g1 _std_minfo
-        loadri g2 g1 STD_MINFO_MEM
-        storeri g0 g2 STD_MINFO_MEM
-        loadri g2 g1 STD_MINFO_TOTAL
-        storeri g0 g2 STD_MINFO_TOTAL
-        loadri g2 g1 STD_MINFO_FREE
-        storeri g0 g2 STD_MINFO_FREE
+        loada g0 _std_minfo
+        loadri g1 g0 STD_MINFO_MEM
+        storeri r0 g1 STD_MINFO_MEM
+        loadri g1 g0 STD_MINFO_TOTAL
+        storeri r0 g1 STD_MINFO_TOTAL
+        loadri g1 g0 STD_MINFO_FREE
+        storeri r0 g1 STD_MINFO_FREE
 
         loadi g1 STD_NOERROR
         ret
@@ -391,30 +378,27 @@
         # check if the size is 0
         bz g0 _std_alloc_einval
 
-        push g0               # size is in fp + 0x0
+        move r0 g0                      # size
 
         # search a free block of memory
         call _std_mblocksearch
         bnz g1 _std_alloc_enomem
 
-        push g0               # block is in fp + 0x4
+        move r1 g0                      # block
 
-        loadri g1 fp 0x0
+        # initialize the block of memory
+        move g1 r0
         call _std_mblockdivide
 
-        # set the size used
-        loadri g0 fp 0x4
-        loadri g1 fp 0x0
-        storeri g0 g1 _STD_MBLOCK_USED
+        storeri r1 r0 _STD_MBLOCK_USED
 
         # update the free memory
-        loada g1 _std_minfo
-        loadri g2 g1 STD_MINFO_FREE
-        loadri g3 g0 _STD_MBLOCK_USED
-        sub g2 g2 g3
-        storeri g1 g2 STD_MINFO_FREE
+        loada g0 _std_minfo
+        loadri g1 g0 STD_MINFO_FREE
+        sub g1 g1 r0
+        storeri g0 g1 STD_MINFO_FREE
 
-        addi g0 g0 _STD_MBLOCK_DATA
+        addi g0 r1 _STD_MBLOCK_DATA
         loadi g1 STD_NOERROR
         ret
 
@@ -433,32 +417,29 @@
 #      STD_EFAULT: the pointer is not valid
 .label std_free
         subi g0 g0 _STD_MBLOCK_DATA
-        push g0               # block is in fp + 0x0
+        move r0 g0                      # block
 
         # check if the pointer is valid
         call _std_maddress
         bz g0 _std_free_efault
 
         # check that the block is used
-        loadri g0 fp 0x0
-        loadri g1 g0 _STD_MBLOCK_SIZE
-        bz g1 _std_free_efault
+        loadri g0 r0 _STD_MBLOCK_SIZE
+        bz g0 _std_free_efault
 
-        subi g1 g1 _STD_MBLOCK_OVERHEAD
-        push g1               # size is in fp + 0x4
+        subi r1 g0 _STD_MBLOCK_OVERHEAD # size
 
         # set the block as not used
         loadi g1 0x0
-        storeri g0 g1 _STD_MBLOCK_USED
+        storeri r0 g1 _STD_MBLOCK_USED
 
         # update the free memory
         loada g0 _std_minfo
         loadri g1 g0 STD_MINFO_FREE
-        loadri g2 fp 0x4
-        add g1 g1 g2
+        add g1 g1 r1
         storeri g0 g1 STD_MINFO_FREE
 
-        loadri g0 fp 0x0
+        move g0 r0
         call _std_mblockjoin
 
         loadi g1 STD_NOERROR
@@ -481,38 +462,36 @@
         # check if the size is 0
         bz g0 _std_realloc_einval
 
-        push g0               # pointer is in fp + 0x0
-        push g1               # size is in fp + 0x4
+        move r0 g0                      # pointer
+        move r1 g1                      # size
         subi g2 g0 _STD_MBLOCK_DATA
-        loadri g2 g2 _STD_MBLOCK_USED
-        push g2               # old size is in fp + 0x8
+        loadri r2 g2 _STD_MBLOCK_USED   # old size
 
         # check if the pointer is valid
         call _std_maddress
         bz g0 _std_realloc_efault
 
         # allocate the new block
-        loadri g0 fp 0x4
+        move g0 r1
         call std_alloc
         bnz g1 _std_realloc_enomem
 
-        push g0               # new pointer is in fp + 0xC
+        move r3 g0                      # new pointer
 
         # copy the data
-        loadri g1 fp 0x0
-        loadri g2 fp 0x4
-        loadri g3 fp 0x8
-        bleu g2 g3 _std_realloc_copy
-        move g2 g3
+        move g1 r0
+        move g2 r1
+        bleu g2 r2 _std_realloc_copy
+        move g2 r2
         .label _std_realloc_copy
         call std_copy
 
         # free the old block
-        loadri g0 fp 0x0
+        move g0 r0
         call std_free
 
         .label _std_realloc_ret
-        loadri g0 fp 0xC
+        move g0 r3
         loadi g1 STD_NOERROR
         ret
 

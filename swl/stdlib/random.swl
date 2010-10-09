@@ -42,15 +42,13 @@ STD_FULL
 # Set the seed.
 # IN:  g0 the seed
 .label std_seed
-        push g0                         # seed is in fp + 0x0
+        move r0 g0                      # seed
 
         # the second word of the seed is the complement of the first one
         call std_bitscomp
 
-        pop g1
-
         store g0 _std_random_seed1
-        store g1 _std_random_seed2
+        store r0 _std_random_seed2
 
         ret
 
@@ -79,22 +77,18 @@ STD_FULL
         # LCG in the two seeds
         load g0 _std_random_seed1
         call _std_random_lcg
-        push g0
+        move r0 g0                      # lcg
 
         load g0 _std_random_seed2
         call _std_random_lcg
 
-        # seed1 in g1
-        # seed2 in g0
-        pop g1
-
         # Update seeds
-        store g1 _std_random_seed1
+        store r0 _std_random_seed1
         store g0 _std_random_seed2
 
         # Calculate the new word using the most value bits of the words
         # (the LCG algorith only returns 31 bits, the MLB = 0)
-        srli g1 g1 0x0f
+        srli g1 r0 0x0f
         slli g1 g1 0x10
         srli g0 g0 0x0f
         or g0 g0 g1

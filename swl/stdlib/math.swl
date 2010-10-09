@@ -97,36 +97,33 @@ STD_FULL
 #      STD_EINVAL: size is not valid
 #      STD_EFAULT: the pointer is not valid
 .label std_bmin
-        push g0                         # pointer is in fp + 0x0
-        push g1                         # size is in fp + 0x4
-
         # check if the size is valid
         bz g1 _std_bmin_einval
         modi g2 g1 STD_WORDSIZE
         bnz g2 _std_bmin_einval
 
+        move r0 g0                      # pointer
+        move r1 g1                      # size
+
         # check if the block is valid
         call std_address
         bz g0 _std_bmin_efault
 
-        # restore the parameters
-        loadri g0 fp 0x0
-        loadri g1 fp 0x4
-
         # search the minimum value
-        loadri g2 g0 0x0                # load the first element as the minimum
+        # load the first element as the minimum
+        loadri r2 r0 0x0                # min
 
         .label _std_bmin_loop
-        subi g1 g1 STD_WORDSIZE
-        loadrr g3 g0 g1
-        ble g2 g3 _std_bmin_continue
-        move g2 g3                      # found a new minimum
+        subi r1 r1 STD_WORDSIZE
+        loadrr g0 r0 r1
+        ble r2 g0 _std_bmin_continue
+        move r2 g0                      # found a new minimum
 
         .label _std_bmin_continue
-        bnz g1 _std_bmin_loop
+        bnz r1 _std_bmin_loop
 
         .label _std_bmin_ok
-        move g0 g2
+        move g0 r2
         loadi g1 STD_NOERROR
         ret
 
@@ -147,38 +144,35 @@ STD_FULL
 #      STD_EINVAL: size is not valid
 #      STD_EFAULT: the pointer is not valid
 .label std_bminh
-        push g0                         # pointer is in fp + 0x0
-        push g1                         # size is in fp + 0x4
-
         # check if the size is valid
         bz g1 _std_bminh_einval
         modi g2 g1 STD_HWORDSIZE
         bnz g2 _std_bminh_einval
 
+        move r0 g0                      # pointer
+        move r1 g1                      # size
+
         # check if the block is valid
         call std_address
         bz g0 _std_bminh_efault
 
-        # restore the parameters
-        loadri g0 fp 0x0
-        loadri g1 fp 0x4
-
         # search the minimum value
-        loadhri g2 g0 0x0               # load the first element as the minimum
-        signh g2 g2
+        # load the first element as the minimum
+        loadhri r2 r0 0x0               # min
+        signh r2 r2
 
         .label _std_bminh_loop
-        subi g1 g1 STD_HWORDSIZE
-        loadhrr g3 g0 g1
-        signh g3 g3
-        ble g2 g3 _std_bminh_continue
-        move g2 g3                      # found a new minimum
+        subi r1 r1 STD_HWORDSIZE
+        loadhrr g0 r0 r1
+        signh g0 g0
+        ble r2 g0 _std_bminh_continue
+        move r2 g0                      # found a new minimum
 
         .label _std_bminh_continue
-        bnz g1 _std_bminh_loop
+        bnz r1 _std_bminh_loop
 
         .label _std_bminh_ok
-        move g0 g2
+        move g0 r2
         loadi g1 STD_NOERROR
         ret
 
@@ -199,36 +193,33 @@ STD_FULL
 #      STD_EINVAL: size is not valid
 #      STD_EFAULT: the pointer is not valid
 .label std_bminq
-        push g0                         # pointer is in fp + 0x0
-        push g1                         # size is in fp + 0x4
-
         # check if the size is valid
         bz g1 _std_bminh_einval
+
+        move r0 g0                      # pointer
+        move r1 g1                      # size
 
         # check if the block is valid
         call std_address
         bz g0 _std_bminq_efault
 
-        # restore the parameters
-        loadri g0 fp 0x0
-        loadri g1 fp 0x4
-
         # search the minimum value
-        loadqri g2 g0 0x0               # load the first element as the minimum
-        signq g2 g2
+        # load the first element as the minimum
+        loadqri r2 r0 0x0               # min
+        signq r2 r2
 
         .label _std_bminq_loop
-        subi g1 g1 STD_QWORDSIZE
-        loadqrr g3 g0 g1
-        signq g3 g3
-        ble g2 g3 _std_bminq_continue
-        move g2 g3                      # found a new minimum
+        subi r1 r1 STD_QWORDSIZE
+        loadqrr g0 r0 r1
+        signq g0 g0
+        ble r2 g0 _std_bminq_continue
+        move r2 g0                      # found a new minimum
 
         .label _std_bminq_continue
-        bnz g1 _std_bminq_loop
+        bnz r1 _std_bminq_loop
 
         .label _std_bminq_ok
-        move g0 g2
+        move g0 r2
         loadi g1 STD_NOERROR
         ret
 
@@ -258,38 +249,45 @@ STD_FULL
 
 # Minimum unsigned value of a block of memory.
 # IN:  g0 pointer to the block of memory
-# IN:  g1 size in words of the block of memory
+# IN:  g1 size of the block of memory (must be a multiple of STD_WORDSIZE)
 # OUT: g0 minimum value
 # OUT: g1 error status
 #      STD_NOERROR: no errors
+#      STD_EINVAL: size is not valid
 #      STD_EFAULT: the pointer is not valid
 .label std_bminu
-        push g0                         # pointer is in fp + 0x0
-        push g1                         # size is in fp + 0x4
+        # check if the size is valid
+        bz g1 _std_bminu_einval
+        modi g2 g1 STD_WORDSIZE
+        bnz g2 _std_bminu_einval
+
+        move r0 g0                      # pointer
+        move r1 g1                      # size
 
         # check if the block is valid
         call std_address
         bz g0 _std_bminu_efault
 
-        # restore the parameters
-        loadri g0 fp 0x0
-        loadri g1 fp 0x4
-
         # search the minimum unsigned value
-        loadri g2 g0 0x0                # load the first element as the minimum
+        # load the first element as the minimum
+        loadri r2 r0 0x0                # min
 
         .label _std_bminu_loop
-        subi g1 g1 STD_WORDSIZE
-        loadrr g3 g0 g1
-        bleu g2 g3 _std_bminu_continue
-        move g2 g3                      # found a new minimum
+        subi r1 r1 STD_WORDSIZE
+        loadrr g0 r0 r1
+        bleu r2 g0 _std_bminu_continue
+        move r2 g0                      # found a new minimum
 
         .label _std_bminu_continue
-        bnz g1 _std_bminu_loop
+        bnz r1 _std_bminu_loop
 
         .label _std_bminu_ok
-        move g0 g2
+        move g0 r2
         loadi g1 STD_NOERROR
+        ret
+
+        .label _std_bminu_einval
+        loadi g1 STD_EINVAL
         ret
 
         .label _std_bminu_efault
@@ -298,38 +296,45 @@ STD_FULL
 
 # Minimum unsigned value of a block of memory (half words).
 # IN:  g0 pointer to the block of memory
-# IN:  g1 size in half words of the block of memory
+# IN:  g1 size of the block of memory (must be a multiple of STD_HWORDSIZE)
 # OUT: g0 minimum value
 # OUT: g1 error status
 #      STD_NOERROR: no errors
+#      STD_EINVAL: size is not valid
 #      STD_EFAULT: the pointer is not valid
 .label std_bminuh
-        push g0                         # pointer is in fp + 0x0
-        push g1                         # size is in fp + 0x4
+        # check if the size is valid
+        bz g1 _std_bminuh_einval
+        modi g2 g1 STD_HWORDSIZE
+        bnz g2 _std_bminuh_einval
+
+        move r0 g0                      # pointer
+        move r1 g1                      # size
 
         # check if the block is valid
         call std_address
         bz g0 _std_bminuh_efault
 
-        # restore the parameters
-        loadri g0 fp 0x0
-        loadri g1 fp 0x4
-
         # search the minimum unsigned value
-        loadhri g2 g0 0x0               # load the first element as the minimum
+        # load the first element as the minimum
+        loadhri r2 r0 0x0               # min
 
         .label _std_bminuh_loop
-        subi g1 g1 STD_HWORDSIZE
-        loadhrr g3 g0 g1
-        bleu g2 g3 _std_bminuh_continue
-        move g2 g3                      # found a new minimum
+        subi r1 r1 STD_HWORDSIZE
+        loadhrr g0 r0 r1
+        bleu r2 g0 _std_bminuh_continue
+        move r2 g0                      # found a new minimum
 
         .label _std_bminuh_continue
-        bnz g1 _std_bminuh_loop
+        bnz r1 _std_bminuh_loop
 
         .label _std_bminuh_ok
-        move g0 g2
+        move g0 r2
         loadi g1 STD_NOERROR
+        ret
+
+        .label _std_bminuh_einval
+        loadi g1 STD_EINVAL
         ret
 
         .label _std_bminuh_efault
@@ -338,38 +343,43 @@ STD_FULL
 
 # Minimum unsigned value of a block of memory (quarter words).
 # IN:  g0 pointer to the block of memory
-# IN:  g1 size in quarter words of the block of memory
+# IN:  g1 size of the block of memory
 # OUT: g0 minimum value
 # OUT: g1 error status
 #      STD_NOERROR: no errors
+#      STD_EINVAL: size is not valid
 #      STD_EFAULT: the pointer is not valid
 .label std_bminuq
-        push g0                         # pointer is in fp + 0x0
-        push g1                         # size is in fp + 0x4
+        # check if the size is valid
+        bz g1 _std_bminuq_einval
+
+        move r0 g0                      # pointer
+        move r1 g1                      # size
 
         # check if the block is valid
         call std_address
         bz g0 _std_bminuq_efault
 
-        # restore the parameters
-        loadri g0 fp 0x0
-        loadri g1 fp 0x4
-
         # search the minimum unsigned value
-        loadqri g2 g0 0x0               # load the first element as the minimum
+        # load the first element as the minimum
+        loadqri r2 r0 0x0               # min
 
         .label _std_bminuq_loop
-        subi g1 g1 STD_QWORDSIZE
-        loadqrr g3 g0 g1
-        bleu g2 g3 _std_bminuq_continue
-        move g2 g3                      # found a new minimum
+        subi r1 r1 STD_QWORDSIZE
+        loadqrr g0 r0 r1
+        bleu r2 g0 _std_bminuq_continue
+        move r2 g0                      # found a new minimum
 
         .label _std_bminuq_continue
-        bnz g1 _std_bminuq_loop
+        bnz r1 _std_bminuq_loop
 
         .label _std_bminuq_ok
-        move g0 g2
+        move g0 r2
         loadi g1 STD_NOERROR
+        ret
+
+        .label _std_bminuq_einval
+        loadi g1 STD_EINVAL
         ret
 
         .label _std_bminuq_efault
@@ -394,38 +404,45 @@ STD_FULL
 
 # Maximum signed value of a block of memory.
 # IN:  g0 pointer to the block of memory
-# IN:  g1 size in words of the block of memory
+# IN:  g1 size of the block of memory (must be a multiple of STD_WORDSIZE)
 # OUT: g0 maximum value
 # OUT: g1 error status
 #      STD_NOERROR: no errors
+#      STD_EINVAL: size is not valid
 #      STD_EFAULT: the pointer is not valid
 .label std_bmax
-        push g0                         # pointer is in fp + 0x0
-        push g1                         # size is in fp + 0x4
+        # check if the size is valid
+        bz g1 _std_bmax_einval
+        modi g2 g1 STD_WORDSIZE
+        bnz g2 _std_bmax_einval
+
+        move r0 g0                      # pointer
+        move r1 g1                      # size
 
         # check if the block is valid
         call std_address
         bz g0 _std_bmax_efault
 
-        # restore the parameters
-        loadri g0 fp 0x0
-        loadri g1 fp 0x4
-
         # search the maximum value
-        loadri g2 g0 0x0                # load the first element as the minimum
+        # load the first element as the minimum
+        loadri r2 r0 0x0                # min
 
         .label _std_bmax_loop
-        subi g1 g1 STD_WORDSIZE
-        loadrr g3 g0 g1
-        bge g2 g3 _std_bmax_continue
-        move g2 g3                      # found a new minimum
+        subi r1 r1 STD_WORDSIZE
+        loadrr g0 r0 r1
+        bge r2 g0 _std_bmax_continue
+        move r2 g0                      # found a new minimum
 
         .label _std_bmax_continue
-        bnz g1 _std_bmax_loop
+        bnz r1 _std_bmax_loop
 
         .label _std_bmax_ok
-        move g0 g2
+        move g0 r2
         loadi g1 STD_NOERROR
+        ret
+
+        .label _std_bmax_einval
+        loadi g1 STD_EINVAL
         ret
 
         .label _std_bmax_efault
@@ -434,40 +451,47 @@ STD_FULL
 
 # Maximum signed value of a block of memory (half words).
 # IN:  g0 pointer to the block of memory
-# IN:  g1 size in half words of the block of memory
+# IN:  g1 size of the block of memory (must be a multiple of STD_HWORDSIZE)
 # OUT: g0 maximum value
 # OUT: g1 error status
 #      STD_NOERROR: no errors
+#      STD_EINVAL: size is not valid
 #      STD_EFAULT: the pointer is not valid
 .label std_bmaxh
-        push g0                         # pointer is in fp + 0x0
-        push g1                         # size is in fp + 0x4
+        # check if the size is valid
+        bz g1 _std_bmaxh_einval
+        modi g2 g1 STD_HWORDSIZE
+        bnz g2 _std_bmaxh_einval
+
+        move r0 g0                      # pointer
+        move r1 g1                      # size
 
         # check if the block is valid
         call std_address
         bz g0 _std_bmaxh_efault
 
-        # restore the parameters
-        loadri g0 fp 0x0
-        loadri g1 fp 0x4
-
         # search the maximum value
-        loadhri g2 g0 0x0               # load the first element as the minimum
-        signh g2 g2
+        # load the first element as the minimum
+        loadhri r2 r0 0x0               # min
+        signh r2 r2
 
         .label _std_bmaxh_loop
-        subi g1 g1 STD_HWORDSIZE
-        loadhrr g3 g0 g1
-        signh g3 g3
-        bge g2 g3 _std_bmaxh_continue
-        move g2 g3                      # found a new minimum
+        subi r1 r1 STD_HWORDSIZE
+        loadhrr g0 r0 r1
+        signh g0 g0
+        bge r2 g0 _std_bmaxh_continue
+        move r2 g0                      # found a new minimum
 
         .label _std_bmaxh_continue
-        bnz g1 _std_bmaxh_loop
+        bnz r1 _std_bmaxh_loop
 
         .label _std_bmaxh_ok
-        move g0 g2
+        move g0 r2
         loadi g1 STD_NOERROR
+        ret
+
+        .label _std_bmaxh_einval
+        loadi g1 STD_EINVAL
         ret
 
         .label _std_bmaxh_efault
@@ -476,40 +500,45 @@ STD_FULL
 
 # Maximum signed value of a block of memory (quarter words).
 # IN:  g0 pointer to the block of memory
-# IN:  g1 size in quarter words of the block of memory
+# IN:  g1 size of the block of memory
 # OUT: g0 maximum value
 # OUT: g1 error status
 #      STD_NOERROR: no errors
+#      STD_EINVAL: size is not valid
 #      STD_EFAULT: the pointer is not valid
 .label std_bmaxq
-        push g0                         # pointer is in fp + 0x0
-        push g1                         # size is in fp + 0x4
+        # check if the size is valid
+        bz g1 _std_bmaxq_einval
+
+        move r0 g0                      # pointer
+        move r1 g1                      # size
 
         # check if the block is valid
         call std_address
         bz g0 _std_bmaxq_efault
 
-        # restore the parameters
-        loadri g0 fp 0x0
-        loadri g1 fp 0x4
-
         # search the maximum value
-        loadqri g2 g0 0x0               # load the first element as the minimum
-        signq g2 g2
+        # load the first element as the minimum
+        loadqri r2 r0 0x0               # min
+        signq r2 r2
 
         .label _std_bmaxq_loop
-        subi g1 g1 STD_QWORDSIZE
-        loadqrr g3 g0 g1
-        signq g3 g3
-        bge g2 g3 _std_bmaxq_continue
-        move g2 g3                      # found a new minimum
+        subi r1 r1 STD_QWORDSIZE
+        loadqrr g0 r0 r1
+        signq g0 g0
+        bge r2 g0 _std_bmaxq_continue
+        move r2 g0                      # found a new minimum
 
         .label _std_bmaxq_continue
-        bnz g1 _std_bmaxq_loop
+        bnz r1 _std_bmaxq_loop
 
         .label _std_bmaxq_ok
-        move g0 g2
+        move g0 r2
         loadi g1 STD_NOERROR
+        ret
+
+        .label _std_bmaxq_einval
+        loadi g1 STD_EINVAL
         ret
 
         .label _std_bmaxq_efault
@@ -534,38 +563,45 @@ STD_FULL
 
 # Maximum unsigned value of a block of memory.
 # IN:  g0 pointer to the block of memory
-# IN:  g1 size in words of the block of memory
+# IN:  g1 size of the block of memory (must be a multiple of STD_WORDSIZE)
 # OUT: g0 maximum value
 # OUT: g1 error status
 #      STD_NOERROR: no errors
+#      STD_EINVAL: size is not valid
 #      STD_EFAULT: the pointer is not valid
 .label std_bmaxu
-        push g0                         # pointer is in fp + 0x0
-        push g1                         # size is in fp + 0x4
+        # check if the size is valid
+        bz g1 _std_bmaxu_einval
+        modi g2 g1 STD_WORDSIZE
+        bnz g2 _std_bmaxu_einval
+
+        move r0 g0                      # pointer
+        move r1 g1                      # size
 
         # check if the block is valid
         call std_address
         bz g0 _std_bmaxu_efault
 
-        # restore the parameters
-        loadri g0 fp 0x0
-        loadri g1 fp 0x4
-
         # search the maximum (unsigned) value
-        loadri g2 g0 0x0                # load the first element as the minimum
+        # load the first element as the minimum
+        loadri r2 r0 0x0                # min
 
         .label _std_bmaxu_loop
-        subi g1 g1 STD_WORDSIZE
-        loadrr g3 g0 g1
-        bgeu g2 g3 _std_bmaxu_continue
-        move g2 g3                      # found a new minimum
+        subi r1 r1 STD_WORDSIZE
+        loadrr g0 r0 r1
+        bgeu r2 g0 _std_bmaxu_continue
+        move r2 g0                      # found a new minimum
 
         .label _std_bmaxu_continue
-        bnz g1 _std_bmaxu_loop
+        bnz r1 _std_bmaxu_loop
 
         .label _std_bmaxu_ok
-        move g0 g2
+        move g0 r2
         loadi g1 STD_NOERROR
+        ret
+
+        .label _std_bmaxu_einval
+        loadi g1 STD_EINVAL
         ret
 
         .label _std_bmaxu_efault
@@ -574,39 +610,45 @@ STD_FULL
 
 # Maximum unsigned value of a block of memory (half words).
 # IN:  g0 pointer to the block of memory
-# IN:  g1 size in half words of the block of memory
+# IN:  g1 size of the block of memory (must be a multiple of STD_HWORDSIZE)
 # OUT: g0 maximum value
 # OUT: g1 error status
 #      STD_NOERROR: no errors
+#      STD_EINVAL: size is not valid
 #      STD_EFAULT: the pointer is not valid
 .label std_bmaxuh
-        push g0                         # pointer is in fp + 0x0
-        push g1                         # size is in fp + 0x4
+        # check if the size is valid
+        bz g1 _std_bmaxuh_einval
+        modi g2 g1 STD_HWORDSIZE
+        bnz g2 _std_bmaxuh_einval
+
+        move r0 g0                      # pointer
+        move r1 g1                      # size
 
         # check if the block is valid
         call std_address
         bz g0 _std_bmaxuh_efault
 
-        # restore the parameters
-        loadri g0 fp 0x0
-        loadri g1 fp 0x4
-
         # search the maximum (unsigned) value
-        loadhri g2 g0 0x0               # load the first element as the minimum
-        signh g2 g2
+        # load the first element as the minimum
+        loadhri r2 r0 0x0               # min
 
         .label _std_bmaxuh_loop
-        subi g1 g1 STD_HWORDSIZE
-        loadhrr g3 g0 g1
-        bgeu g2 g3 _std_bmaxuh_continue
-        move g2 g3                      # found a new minimum
+        subi r1 r1 STD_HWORDSIZE
+        loadhrr g0 r0 r1
+        bgeu r2 g0 _std_bmaxuh_continue
+        move r2 g0                      # found a new minimum
 
         .label _std_bmaxuh_continue
-        bnz g1 _std_bmaxuh_loop
+        bnz r1 _std_bmaxuh_loop
 
         .label _std_bmaxuh_ok
-        move g0 g2
+        move g0 r2
         loadi g1 STD_NOERROR
+        ret
+
+        .label _std_bmaxuh_einval
+        loadi g1 STD_EINVAL
         ret
 
         .label _std_bmaxuh_efault
@@ -615,39 +657,43 @@ STD_FULL
 
 # Maximum unsigned value of a block of memory (quarter words).
 # IN:  g0 pointer to the block of memory
-# IN:  g1 size in quarter words of the block of memory
+# IN:  g1 size of the block of memory
 # OUT: g0 maximum value
 # OUT: g1 error status
 #      STD_NOERROR: no errors
+#      STD_EINVAL: size is not valid
 #      STD_EFAULT: the pointer is not valid
 .label std_bmaxuq
-        push g0                         # pointer is in fp + 0x0
-        push g1                         # size is in fp + 0x4
+        # check if the size is valid
+        bz g1 _std_bmaxuq_einval
+
+        move r0 g0                      # pointer
+        move r1 g1                      # size
 
         # check if the block is valid
         call std_address
         bz g0 _std_bmaxuq_efault
 
-        # restore the parameters
-        loadri g0 fp 0x0
-        loadri g1 fp 0x4
-
         # search the maximum (unsigned) value
-        loadqri g2 g0 0x0               # load the first element as the minimum
-        signq g2 g2
+        # load the first element as the minimum
+        loadqri g2 g0 0x0               # min
 
         .label _std_bmaxuq_loop
-        subi g1 g1 STD_QWORDSIZE
-        loadqrr g3 g0 g1
-        bgeu g2 g3 _std_bmaxuq_continue
-        move g2 g3                      # found a new minimum
+        subi r1 r1 STD_QWORDSIZE
+        loadqrr g0 r0 r1
+        bgeu r2 g0 _std_bmaxuq_continue
+        move r2 g0                      # found a new minimum
 
         .label _std_bmaxuq_continue
-        bnz g1 _std_bmaxuq_loop
+        bnz r1 _std_bmaxuq_loop
 
         .label _std_bmaxuq_ok
-        move g0 g2
+        move g0 r2
         loadi g1 STD_NOERROR
+        ret
+
+        .label _std_bmaxuq_einval
+        loadi g1 STD_EINVAL
         ret
 
         .label _std_bmaxuq_efault
@@ -657,35 +703,41 @@ STD_FULL
 
 # Summation of a block of memory.
 # IN:  g0 pointer to the block of memory
-# IN:  g1 size in words of the block of memory
+# IN:  g1 size of the block of memory (must be a multiple of STD_WORDSIZE)
 # OUT: g0 summation value
 # OUT: g1 error status
 #      STD_NOERROR: no errors
+#      STD_EINVAL: size is not valid
 #      STD_EFAULT: the pointer is not valid
 .label std_bsum
-        push g0                         # pointer is in fp + 0x0
-        push g1                         # size is in fp + 0x4
+        # check if the size is valid
+        bz g1 _std_bsum_einval
+        modi g2 g1 STD_WORDSIZE
+        bnz g2 _std_bsum_einval
+
+        move r0 g0                      # pointer
+        move r1 g1                      # size
 
         # check if the block is valid
         call std_address
         bz g0 _std_bsum_efault
 
-        # restore the parameters
-        loadri g0 fp 0x0
-        loadri g1 fp 0x4
-
         # calculate the summation
-        loadi g2 0x0                    # begin with 0
+        loadi r2 0x0                    # sum
 
         .label _std_bsum_loop
-        subi g1 g1 STD_WORDSIZE
-        loadrr g3 g0 g1
-        add g2 g2 g3
-        bnz g1 _std_bsum_loop
+        subi r1 r1 STD_WORDSIZE
+        loadrr g0 r0 r1
+        add r2 r2 g0
+        bnz r1 _std_bsum_loop
 
         .label _std_bsum_ok
-        move g0 g2
+        move g0 r2
         loadi g1 STD_NOERROR
+        ret
+
+        .label _std_bsum_einval
+        loadi g1 STD_EINVAL
         ret
 
         .label _std_bsum_efault
@@ -694,36 +746,41 @@ STD_FULL
 
 # Summation of a block of memory (half words).
 # IN:  g0 pointer to the block of memory
-# IN:  g1 size in half words of the block of memory
+# IN:  g1 size of the block of memory (must be a multiple of STD_HWORDSIZE)
 # OUT: g0 summation value
 # OUT: g1 error status
 #      STD_NOERROR: no errors
+#      STD_EINVAL: size is not valid
 #      STD_EFAULT: the pointer is not valid
-#      STD_EOVERFLOW: value too large (not implemented)
 .label std_bsumh
-        push g0                         # pointer is in fp + 0x0
-        push g1                         # size is in fp + 0x4
+        # check if the size is valid
+        bz g1 _std_bsumh_einval
+        modi g2 g1 STD_HWORDSIZE
+        bnz g2 _std_bsumh_einval
+
+        move r0 g0                      # pointer
+        move r1 g1                      # size
 
         # check if the block is valid
         call std_address
         bz g0 _std_bsumh_efault
 
-        # restore the parameters
-        loadri g0 fp 0x0
-        loadri g1 fp 0x4
-
         # calculate the summation
-        loadi g2 0x0                    # begin with 0
+        loadi r2 0x0                    # sum
 
         .label _std_bsumh_loop
-        subi g1 g1 STD_HWORDSIZE
-        loadhrr g3 g0 g1
-        add g2 g2 g3
-        bnz g1 _std_bsumh_loop
+        subi r1 r1 STD_HWORDSIZE
+        loadhrr g0 r0 r1
+        add r2 r2 g0
+        bnz r1 _std_bsumh_loop
 
         .label _std_bsumh_ok
-        move g0 g2
+        move g0 r2
         loadi g1 STD_NOERROR
+        ret
+
+        .label _std_bsumh_einval
+        loadi g1 STD_EINVAL
         ret
 
         .label _std_bsumh_efault
@@ -732,36 +789,39 @@ STD_FULL
 
 # Summation of a block of memory (quarter words).
 # IN:  g0 pointer to the block of memory
-# IN:  g1 size in quarter words of the block of memory
+# IN:  g1 size of the block of memory
 # OUT: g0 summation value
 # OUT: g1 error status
 #      STD_NOERROR: no errors
+#      STD_EINVAL: size is not valid
 #      STD_EFAULT: the pointer is not valid
-#      STD_EOVERFLOW: value too large (not implemented)
 .label std_bsumq
-        push g0                         # pointer is in fp + 0x0
-        push g1                         # size is in fp + 0x4
+        # check if the size is valid
+        bz g1 _std_bsumq_einval
+
+        move r0 g0                      # pointer
+        move r1 g1                      # size
 
         # check if the block is valid
         call std_address
         bz g0 _std_bsumq_efault
 
-        # restore the parameters
-        loadri g0 fp 0x0
-        loadri g1 fp 0x4
-
         # calculate the summation
-        loadi g2 0x0                    # begin with 0
+        loadi r2 0x0                    # sum
 
         .label _std_bsumq_loop
-        subi g1 g1 STD_QWORDSIZE
-        loadqrr g3 g0 g1
-        add g2 g2 g3
-        bnz g1 _std_bsumq_loop
+        subi r1 r1 STD_QWORDSIZE
+        loadqrr g0 r0 r1
+        add r2 r2 g0
+        bnz r1 _std_bsumq_loop
 
         .label _std_bsumq_ok
-        move g0 g2
+        move g0 r2
         loadi g1 STD_NOERROR
+        ret
+
+        .label _std_bsumq_einval
+        loadi g1 STD_EINVAL
         ret
 
         .label _std_bsumq_efault
@@ -771,90 +831,81 @@ STD_FULL
 
 # Average (signed) value of a block of memory.
 # IN:  g0 pointer to the block of memory
-# IN:  g1 size in words of the block of memory
+# IN:  g1 size of the block of memory (must be a multiple of STD_WORDSIZE)
 # OUT: g0 average value
 # OUT: g1 error status
 #      STD_NOERROR: no errors
+#      STD_EINVAL: size is not valid
 #      STD_EFAULT: the pointer is not valid
 .label std_bavg
-        push g1                         # size is in fp + 0x0
+        move r0 g1                      # size
 
         # calculate the summation
         call std_bsum
-        bnz g1 _std_bavg_efault
-
-        # restore the parameters
-        loadri g1 fp 0x0
+        bnz g1 _std_bavg_error
 
         # calculate the average value
-        divi g1 g1 STD_WORDSIZE
-        div g0 g0 g1
+        divi r0 r0 STD_WORDSIZE
+        div g0 g0 r0
 
         .label _std_bavg_ok
         loadi g1 STD_NOERROR
         ret
 
-        .label _std_bavg_efault
-        #loadi g1 STD_EFAULT            # not needed because std_bsum already
-                                        # sets it
+        .label _std_bavg_error
+        # use the same error code from std_bsum
         ret
 
 # Average (signed) value of a block of memory (half words).
 # IN:  g0 pointer to the block of memory
-# IN:  g1 size in half words of the block of memory
+# IN:  g1 size of the block of memory (must be a multiple of STD_HWORDSIZE)
 # OUT: g0 average value
 # OUT: g1 error status
 #      STD_NOERROR: no errors
+#      STD_EINVAL: size is not valid
 #      STD_EFAULT: the pointer is not valid
 .label std_bavgh
-        push g1                         # size is in fp + 0x0
+        move r0 g1                      # size
 
         # calculate the summation
         call std_bsumh
-        bnz g1 _std_bavgh_efault
-
-        # restore the parameters
-        loadri g1 fp 0x0
+        bnz g1 _std_bavgh_error
 
         # calculate the average value
-        divi g1 g1 STD_HWORDSIZE 
-        div g0 g0 g1
+        divi r0 r0 STD_HWORDSIZE
+        div g0 g0 r0
 
         .label _std_bavgh_ok
         loadi g1 STD_NOERROR
         ret
 
-        .label _std_bavgh_efault
-        #loadi g1 STD_EFAULT            # not needed because std_bsumh already
-                                        # sets it
+        .label _std_bavgh_error
+        # use the same error code from std_bsum
         ret
 
 # Average (signed) value of a block of memory (quarter words).
 # IN:  g0 pointer to the block of memory
-# IN:  g1 size in quarter words of the block of memory
+# IN:  g1 size of the block of memory
 # OUT: g0 average value
 # OUT: g1 error status
 #      STD_NOERROR: no errors
+#      STD_EINVAL: size is not valid
 #      STD_EFAULT: the pointer is not valid
 .label std_bavgq
-        push g1                         # size is in fp + 0x0
+        move r0 g1                      # size
 
         # calculate the summation
         call std_bsumq
-        bnz g1 _std_bavgq_efault
-
-        # restore the parameters
-        loadri g1 fp 0x0
+        bnz g1 _std_bavgq_error
 
         # calculate the average value
-        #divi g1 g1 STD_QWORDSIZE
-        div g0 g0 g1
+        #divi r0 r0 STD_QWORDSIZE
+        div g0 g0 r0
 
         .label _std_bavgq_ok
         loadi g1 STD_NOERROR
         ret
 
-        .label _std_bavgq_efault
-        #loadi g1 STD_EFAULT            # not needed because std_bsumq already
-                                        # sets it
+        .label _std_bavgq_error
+        # use the same error code from std_bsum
         ret

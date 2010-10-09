@@ -36,22 +36,18 @@
 # OUT: g1 error status
 #      STD_EFAULT: the pointer is not valid
 .label std_jmpset
-        push g0                         # pointer is in fp + 0x0
+        move r0 g0                      # pointer
 
         # check if the pointer is valid
         loadi g1 STD_JMP_STRUCT
         call std_address
         bz g0 _std_jmpset_efault
 
-        loadri g0 fp 0x0
-
-        storeri g0 fp STD_JMP_FP
-
-        loadri g1 fp 0xFFF8
-        storeri g0 g1 STD_JMP_CALLERFP
-
-        loadri g1 fp 0xFFFC
-        storeri g0 g1 STD_JMP_CALLERPC
+        storeri r0 fp STD_JMP_FP
+        loadri g0 fp 0xFFF8
+        storeri r0 g0 STD_JMP_CALLERFP
+        loadri g0 fp 0xFFFC
+        storeri r0 g0 STD_JMP_CALLERPC
 
         loadi g0 0x0
         ret
@@ -70,8 +66,8 @@
         # check if the value is correct
         bz g1 _std_jmp_einval
 
-        push g0                         # pointer is in fp + 0x0
-        push g1                         # value is in fp + 0x4
+        move r0 g0                      # pointer
+        move r1 g1                      # value
 
         # check if the pointer is valid
         loadi g1 STD_JMP_STRUCT
@@ -79,18 +75,13 @@
         bz g0 _std_jmp_efault
 
         # all the parameters must be restored before the fp is changed
-        loadri g0 fp 0x0
-        loadri g1 fp 0x4
+        loadri fp r0 STD_JMP_FP
+        loadri g0 r0 STD_JMP_CALLERFP
+        storeri fp g0 0xFFF8
+        loadri g0 r0 STD_JMP_CALLERPC
+        storeri fp g0 0xFFFC
 
-        loadri fp g0 STD_JMP_FP
-
-        loadri g2 g0 STD_JMP_CALLERFP
-        storeri fp g2 0xFFF8
-
-        loadri g2 g0 STD_JMP_CALLERPC
-        storeri fp g2 0xFFFC
-
-        move g0 g1
+        move g0 r1
         ret
 
         .label _std_jmp_einval

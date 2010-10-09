@@ -57,7 +57,7 @@
 #      STD_NOERROR: no errors
 #      STD_EFAULT: the pointer is not valid.
 .label std_stackfree
-        push g0                         # pointer is in fp + 0x0
+        move r0 g0                      # pointer
 
         # check if the pointer is valid
         loadi g1 _STD_STACK_STRUCT
@@ -65,24 +65,24 @@
         bz g0 _std_stackfree_efault
 
         # free all the nodes
-        loadri g0 fp 0x0
-        loadri g0 g0 _STD_STACK_TOP
-        bz g0 _std_stackfree_free
+        loadri r1 r0 _STD_STACK_TOP     # node
+        bz r1 _std_stackfree_free
 
         .label _std_stackfree_loop
+        move g0 r1
         loadi g1 0x1
         call std_next
         bnz g1 _std_stackfree_free
 
+        move r1 g0
+
         # free the node
-        push g0
         call std_nodefree
-        pop g0
         b _std_stackfree_loop
 
         .label _std_stackfree_free
         # free the list
-        loadri g0 fp 0x0
+        move g0 r0
         call std_free
 
         .label _std_stackfree_ret
@@ -103,7 +103,7 @@
 #      STD_NOERROR: no errors
 #      STD_EFAULT: the pointer is not valid
 .label std_stackempty
-        push g0                         # pointer is in fp + 0x0
+        move r0 g0                      # pointer
 
         # check if the pointer is valid
         loadi g1 _STD_STACK_STRUCT
@@ -111,8 +111,7 @@
         bz g0 _std_stackempty_efault
 
         # check if the stack is empty
-        loadri g0 fp 0x0
-        loadri g0 g0 _STD_STACK_TOP
+        loadri g0 r0 _STD_STACK_TOP
         bz g0 _std_stackempty_empty
         loadi g0 STD_FALSE
         b _std_stackempty_ret
@@ -137,8 +136,8 @@
 #      STD_EFAULT: the pointer is not valid
 #      STD_ENOMEM: there is not memory enough
 .label std_stackpush
-        push g0                         # pointer is in fp + 0x0
-        push g1                         # value is in fp + 0x4
+        move r0 g0                      # pointer
+        move r1 g1                      # value
 
         # check if the pointer is valid
         loadi g1 _STD_STACK_STRUCT
@@ -148,18 +147,15 @@
         # allocate the new node
         # node.prev = STD_NULL
         # node.next = top
-        loadri g0 fp 0x0
-        loadri g1 g0 _STD_STACK_TOP
         loadi g0 STD_NULL
-        loadri g2 fp 0x4
+        loadri g1 r0 _STD_STACK_TOP
+        move g2 r1
         call std_node
         bnz g1 _std_stackpush_enomem
 
         # update the top pointer
         # top = node
-        move g1 g0
-        loadri g0 fp 0x0
-        storeri g0 g1 _STD_STACK_TOP
+        storeri r0 g0 _STD_STACK_TOP
 
         .label _std_stackpush_ret
         loadi g1 STD_NOERROR
@@ -181,7 +177,7 @@
 #      STD_EINVAL: the stack is empty
 #      STD_EFAULT: the pointer is not valid
 .label std_stackpop
-        push g0                         # pointer is in fp + 0x0
+        move r0 g0                      # pointer
 
         # check if the pointer is valid
         loadi g1 _STD_STACK_STRUCT
@@ -189,36 +185,31 @@
         bz g0 _std_stackpop_efault
 
         # check if the stack is empty
-        loadri g0 fp 0x0
-        loadri g0 g0 _STD_STACK_TOP
+        loadri g0 r0 _STD_STACK_TOP
         bz g0 _std_stackpop_einval
 
         # get the node to remove
-        loadri g0 fp 0x0
-        loadri g0 g0 _STD_STACK_TOP
-        push g0                         # removed is in fp + 0x4
+        loadri r1 r0 _STD_STACK_TOP     # removed
 
         # get the data
-        loadri g0 g0 _STD_NODE_DATA
-        push g0                         # data is in fp + 0x8
+        loadri r2 r1 _STD_NODE_DATA     # data
 
         # update the top node
         # top = removed.next
-        loadri g0 fp 0x4
+        move g0 r1
         loadi g1 0x1
         call std_next
         bz g1 _std_stackpop_notempty
         loadi g0 STD_NULL
         .label _std_stackpop_notempty
-        loadri g1 fp 0x0
-        storeri g1 g0 _STD_STACK_TOP
+        storeri r0 g0 _STD_STACK_TOP
 
         # free the node
-        loadri g0 fp 0x4
+        move g0 r1
         call std_nodefree
 
         .label _std_stackpop_ret
-        loadri g0 fp 0x8
+        move g0 r2
         loadi g1 STD_NOERROR
         ret
 

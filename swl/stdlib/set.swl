@@ -72,8 +72,8 @@
 #      STD_EFAULT: the pointer is not valid
 #      STD_ENOMEM: there is not memory enough
 .label std_setinsert
-        push g0                         # pointer is in fp + 0x0
-        push g1                         # value is in fp + 0x4
+        move r0 g0                      # pointer
+        move r1 g1                      # value
 
         # check if the pointer is valid
         loadi g1 _STD_LIST_STRUCT
@@ -81,9 +81,9 @@
         bz g0 _std_setinsert_efault
 
         # check if the value is already in the set
-        loadri g0 fp 0x0
+        move g0 r0
         loadi g1 0x0
-        loadri g2 fp 0x4
+        move g2 r1
         call std_listfind
         bnz g1 _std_setinsert_insert
         loadi g1 STD_NOERROR
@@ -91,9 +91,9 @@
 
         # insert the value
         .label _std_setinsert_insert
-        loadri g0 fp 0x0
+        move g0 r0
         loadi g1 0x0
-        loadri g2 fp 0x4
+        move g2 r1
         call std_listinsert
         ret
 
@@ -109,8 +109,8 @@
 #      STD_EINVAL: the value is not in the set
 #      STD_EFAULT: the pointer is not valid
 .label std_setremove
-        push g0                         # pointer is in fp + 0x0
-        push g1                         # value is in fp + 0x4
+        move r0 g0                      # pointer
+        move r1 g1                      # value
 
         # check if the pointer is valid
         loadi g1 _STD_LIST_STRUCT
@@ -118,9 +118,9 @@
         bz g0 _std_setremove_efault
 
         # search the value in the set
-        loadri g0 fp 0x0
+        move g0 r0
         loadi g1 0x0
-        loadri g2 fp 0x4
+        move g2 r1
         call std_listfind
         bz g1 _std_setremove_remove
         ret
@@ -128,7 +128,7 @@
         # remove the value
         .label _std_setremove_remove
         move g1 g0
-        loadri g0 fp 0x0
+        move g0 r0
         call std_listremove
         ret
 

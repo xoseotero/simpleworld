@@ -38,9 +38,9 @@
 #      STD_NOERROR: no errors
 #      STD_ENOMEM: there is not memory enough
 .label std_node
-        push g0                         # prev is in fp + 0x0
-        push g1                         # next is in fp + 0x4
-        push g2                         # data is in fp + 0x8
+        move r0 g0                      # prev
+        move r1 g1                      # next
+        move r2 g2                      # data
 
         # allocate the memory
         loadi g0 _STD_NODE_STRUCT
@@ -48,14 +48,9 @@
         bnz g1 _std_node_enomem
 
         # set the fields
-        loadri g1 fp 0x0
-        storeri g0 g1 _STD_NODE_PREV
-
-        loadri g1 fp 0x4
-        storeri g0 g1 _STD_NODE_NEXT
-
-        loadri g1 fp 0x8
-        storeri g0 g1 _STD_NODE_DATA
+        storeri g0 r0 _STD_NODE_PREV
+        storeri g0 r1 _STD_NODE_NEXT
+        storeri g0 r2 _STD_NODE_DATA
 
         .label _std_node_ret
         loadi g1 STD_NOERROR
@@ -84,8 +79,8 @@
 #      STD_EINVAL: there are not enough nodes
 #      STD_EFAULT: the pointer is not valid.
 .label std_prev
-        push g0                         # pointer is in fp + 0x0
-        push g1                         # nodes is in fp + 0x4
+        move r0 g0                      # pointer
+        move r1 g1                      # nodes
 
         # check if the pointer is valid
         loadi g1 _STD_NODE_STRUCT
@@ -95,19 +90,16 @@
         # go to the node selected
         .label _std_prev_loop
         # check if this is the desired node
-        loadri g1 fp 0x4
-        bz g1 _std_prev_ret
+        bz r1 _std_prev_ret
 
         # update the counter
-        subi g1 g1 0x1
-        storeri fp g1 0x4
+        subi r1 r1 0x1
 
         # calculate the previous node
-        loadri g0 fp 0x0
-        loadri g0 g0 _STD_NODE_PREV
-        storeri fp g0 0x0
+        loadri r0 r0 _STD_NODE_PREV
 
         # check if the pointer is valid
+        move g0 r0
         loadi g1 _STD_NODE_STRUCT
         call std_address
         bz g0 _std_prev_einval
@@ -115,7 +107,7 @@
         b _std_prev_loop
 
         .label _std_prev_ret
-        loadri g0 fp 0x0
+        move g0 r0
         loadi g1 STD_NOERROR
         ret
 
@@ -136,8 +128,8 @@
 #      STD_EINVAL: there are not enough nodes
 #      STD_EFAULT: the pointer is not valid.
 .label std_next
-        push g0                         # pointer is in fp + 0x0
-        push g1                         # nodes is in fp + 0x4
+        move r0 g0                      # pointer
+        move r1 g1                      # nodes
 
         # check if the pointer is valid
         loadi g1 _STD_NODE_STRUCT
@@ -147,19 +139,16 @@
         # go to the node selected
         .label _std_next_loop
         # check if this is the desired node
-        loadri g1 fp 0x4
-        bz g1 _std_next_ret
+        bz r1 _std_next_ret
 
         # update the counter
-        subi g1 g1 0x1
-        storeri fp g1 0x4
+        subi r1 r1 0x1
 
         # calculate the next node
-        loadri g0 fp 0x0
-        loadri g0 g0 _STD_NODE_NEXT
-        storeri fp g0 0x0
+        loadri r0 r0 _STD_NODE_NEXT
 
         # check if the pointer is valid
+        move g0 r0
         loadi g1 _STD_NODE_STRUCT
         call std_address
         bz g0 _std_next_einval
@@ -167,7 +156,7 @@
         b _std_next_loop
 
         .label _std_next_ret
-        loadri g0 fp 0x0
+        move g0 r0
         loadi g1 STD_NOERROR
         ret
 
@@ -188,7 +177,7 @@
 #      STD_NOERROR: no errors
 #      STD_EFAULT: the pointer is not valid.
 .label std_first
-        push g0                         # pointer is in fp + 0x0
+        move r0 g0                      # pointer
 
         # check if the pointer is valid
         loadi g1 _STD_NODE_STRUCT
@@ -198,14 +187,13 @@
         # go to the first node
         .label _std_first_loop
         # calculate the previous node
-        loadri g0 fp 0x0
-        loadri g0 g0 _STD_NODE_PREV
+        loadri g0 r0 _STD_NODE_PREV
 
         # check if it is the first node
         bz g0 _std_first_ret
 
         # update the node
-        storeri fp g0 0x0
+        move r0 g0
 
         # check if the pointer is valid
         loadi g1 _STD_NODE_STRUCT
@@ -215,7 +203,7 @@
         b _std_first_loop
 
         .label _std_first_ret
-        loadri g0 fp 0x0
+        move g0 r0
         loadi g1 STD_NOERROR
         ret
 
@@ -231,7 +219,7 @@
 #      STD_NOERROR: no errors
 #      STD_EFAULT: the pointer is not valid.
 .label std_last
-        push g0                         # pointer is in fp + 0x0
+        move r0 g0                      # pointer
 
         # check if the pointer is valid
         loadi g1 _STD_NODE_STRUCT
@@ -241,14 +229,13 @@
         # go to the last node
         .label _std_last_loop
         # calculate the next node
-        loadri g0 fp 0x0
-        loadri g0 g0 _STD_NODE_NEXT
+        loadri g0 r0 _STD_NODE_NEXT
 
         # check if it is the last node
         bz g0 _std_first_ret
 
         # update the node
-        storeri fp g0 0x0
+        move r0 g0
 
         # check if the pointer is valid
         loadi g1 _STD_NODE_STRUCT
@@ -258,7 +245,7 @@
         b _std_last_loop
 
         .label _std_last_ret
-        loadri g0 fp 0x0
+        move g0 r0
         loadi g1 STD_NOERROR
         ret
 
