@@ -34,6 +34,7 @@
 namespace sw = simpleworld;
 namespace cpu = simpleworld::cpu;
 
+#include "../common/info.hpp"
 #include "../common/printexc.hpp"
 #include "../common/fakecpu.hpp"
 
@@ -41,11 +42,11 @@ namespace cpu = simpleworld::cpu;
 
 const char* program_short_name = "swlc";
 const char* program_name = "Simple World Language compiler";
-const char* program_version = "1.0b2-git";
-const char* program_years = "2006-2010";
-const char* program_author = "Xosé Otero";
-const char* program_author_email = "xoseotero@gmail.com";
-const char* program_mailbugs = "simpleworld-list@lists.sourceforge.net";
+const char* program_version = VERSION;
+const char* program_years = YEARS;
+const char* program_author = AUTHOR;
+const char* program_author_email = EMAIL;
+const char* program_mailbugs = MAILBUGS;
 
 
 /**

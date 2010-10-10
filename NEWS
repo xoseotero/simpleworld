@@ -1,3 +1,28 @@
+-- Simple World 1.0b2 (2010/10/11) --
+
+The CPU now uses register windows to easy the development. Now there
+are two kinds of registers:
+a) Global registers: registers shared by all the program (pc, sp, fp,
+   cs and g0-g3).
+b) Local registers: registers that only the current function can see
+   (r0-r7).
+By using register windows the code is more compact, uses less stack
+space and is easier to read/change.
+
+The rename and reorder of the registers make this version code and
+binary incompatible with the previous one.
+
+The Simple World Language was improved with the addition of conditional
+code compilation and macros:
+a) A block of code can be compiled or not depending if a given
+   identificator is defined or not. Using ifdef/endif a block is
+   compiled if the given identificator is defined. Using ifndef/endif
+   a block of code is compiles if the given identificator is not
+   defined.
+b) A macro is a block of code linked with a identificator. When the
+   macro is used the optional parameters are substituted by its value.
+
+
 -- Simple World 1.0b1 (2010/03/02) --
 
 Simple World should be more portable now. It was tested (under 

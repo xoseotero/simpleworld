@@ -137,25 +137,25 @@ configure_file(${SimpleWorld_SOURCE_DIR}/simpleworld/config.hpp.cmake
 # Information about the state of the dependencies
 message("Libraries used:")
 if(Boost_FOUND)
-  message("\tboost: external library used")
+  message("	boost:    external library used")
 endif(Boost_FOUND)
 
 if(getopt_USE_INTERNAL)
-  message("\tgetopt:\tinternal library used")
+  message("	getopt:   internal library used")
 else(getopt_USE_INTERNAL)
-  message("\tgetopt:\texternal library used")
+  message("	getopt:   external library used")
 endif(getopt_USE_INTERNAL)
 
 if(SQLite3_USE_INTERNAL)
-  message("\tSQlite3:\tinternal library used")
+  message("	SQlite3:  internal library used")
 else(SQLite3_USE_INTERNAL)
-  message("\tSQlite3:\texternal library used")
+  message("	SQlite3:  external library used")
 endif(SQLite3_USE_INTERNAL)
 
 if(SQLite3x_USE_INTERNAL)
-  message("\tSQLite3x:\tinternal library used")
+  message("	SQLite3x: internal library used")
 else(SQLite3x_USE_INTERNAL)
-  message("\tSQLite3x:\texternal library used")
+  message("	SQLite3x: external library used")
 endif(SQLite3x_USE_INTERNAL)
 
 
