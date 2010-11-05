@@ -2,7 +2,7 @@
  * @file src/food.cpp
  * Command food of Simple World.
  *
- *  Copyright (C) 2008  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2008-2010  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -114,7 +114,7 @@ static void parse_cmd(int argc, char* argv[])
     switch (c)
     {
     case 'p': // position
-      if (sscanf(optarg, "%u,%u", &position.x, &position.y) != 2)
+      if (sscanf(optarg, "%hu,%hu", &position.x, &position.y) != 2)
         usage(boost::str(boost::format("Invalid value for --position (%1%)")
                          % optarg));
       break;

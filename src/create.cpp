@@ -2,7 +2,7 @@
  * @file src/create.cpp
  * Command create of Simple World.
  *
- *  Copyright (C) 2008  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2008-2010  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -181,7 +181,7 @@ static void parse_cmd(int argc, char* argv[])
     switch (c)
     {
     case 's': // size
-      if (sscanf(optarg, "%u,%u", &size.x, &size.y) != 2)
+      if (sscanf(optarg, "%hu,%hu", &size.x, &size.y) != 2)
         usage(boost::str(boost::format("Invalid value for --size (%1%)")
                          % optarg));
       break;
