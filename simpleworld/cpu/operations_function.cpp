@@ -2,7 +2,7 @@
  * @file simpleworld/cpu/operations_function.cpp
  * Function operations of the Simple CPU.
  *
- *  Copyright (C) 2006-2008  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2006-2010  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -167,8 +167,8 @@ Update reti(CPU& cpu, Instruction inst)
   // Update stack pointer
   cpu.set_reg(REGISTER_SP, cpu.get_reg(REGISTER_FP));
 
-  // Restore all the registers
-  for (Sint8 i = 15; i >= 0; i--) {
+  // Restore all the global registers
+  for (Sint8 i = (GLOBAL_REGISTERS - 1); i >= 0; i--) {
     // Update stack pointer
     cpu.set_reg(REGISTER_SP, cpu.get_reg(REGISTER_SP) - 4);
     // Restore the register

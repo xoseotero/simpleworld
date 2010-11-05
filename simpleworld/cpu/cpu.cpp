@@ -30,10 +30,6 @@
 #include "cs.hpp"
 #include "operations.hpp"
 
-#define GLOBAL_REGISTERS        8      // Shared registers
-#define REGISTERS_PER_WINDOW    8      // Registers per window
-#define REGISTER_WINDOWS        16     // Number of register windows
-
 namespace simpleworld
 {
 namespace cpu
@@ -400,12 +396,12 @@ Interrupt thrown:\tcode: 0x%02X, name: %s")
   CS cs(this->registers_->get_word(ADDRESS(REGISTER_CS), false));
   Word handler = this->memory_->get_word(cs.itp + ADDRESS(code));
 
-  // Save all the registers in the stack
-  for (Sint8 i = 0; i < 16; i++) {
+  // Save all the global registers in the stack
+  for (Sint8 i = 0; i < GLOBAL_REGISTERS; i++) {
     // Store a register:
     // Save the register in the top of the stack
     this->memory_->set_word(this->registers_->get_word(ADDRESS(REGISTER_SP)),
-                            this->get_reg(i));
+			    this->registers_->get_word(ADDRESS(i)));
     // Update stack pointer
     this->registers_->set_word(ADDRESS(REGISTER_SP),
                                this->registers_->get_word(ADDRESS(REGISTER_SP)) + sizeof(Word));
