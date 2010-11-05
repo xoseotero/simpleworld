@@ -52,7 +52,7 @@ for i in $(seq ${RUNS}); do
 	echo -n " Adding bugs in $i"
         echo "Adding bugs" >> ${LOGFILE}
         for j in $(seq ${new_bugs}); do
-            ${SIMPLEWORLD} egg --code ${NOTHING} --position=$(random -e 16; echo $?),$(random -e 16; echo $?) --energy 1024 ${DATABASE} >> ${LOGFILE} 2> /dev/null
+            ${SIMPLEWORLD} egg --code ${NOTHING} --position=$(random -e 16; echo $?),$(random -e 16; echo $?) --energy 256 ${DATABASE} >> ${LOGFILE} 2> /dev/null
             ${SIMPLEWORLD} egg --code ${BRAINLESS} --position=$(random -e 16; echo $?),$(random -e 16; echo $?) --energy 1024 ${DATABASE} >> ${LOGFILE} 2> /dev/null
         done
     fi

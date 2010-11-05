@@ -13,13 +13,13 @@ connection = sqlite3.connect(DATABASE)
 
 def bug_energy():
     cursor = connection.cursor()
-    cursor.execute("SELECT SUM(energy) FROM Bug_alive;")
+    cursor.execute("SELECT SUM(energy) FROM AliveBug;")
     energy = cursor.fetchone()[0]
     return energy if energy != None else 0
 
 def code_size():
     cursor = connection.cursor()
-    cursor.execute("SELECT SUM(size) FROM Code WHERE bug_id IN (SELECT id FROM Bug_alive);")
+    cursor.execute("SELECT SUM(length(code)) FROM Bug WHERE id IN (SELECT bug_id FROM AliveBug);");
     size = cursor.fetchone()[0]
     return size if size != None else 0
 

@@ -13,7 +13,7 @@ connection = sqlite3.connect(DATABASE)
 
 def alive_bugs():
     cursor = connection.cursor()
-    cursor.execute("SELECT id FROM Bug_alive;")
+    cursor.execute("SELECT bug_id FROM AliveBug;")
     for row in cursor:
         yield row[0]
 

@@ -20,28 +20,31 @@ WHERE time = (SELECT max(time)
 
 # Bugs alive
 sql_alive="\
-SELECT Bug.id as id, energy, position_x, position_y,
-       (SELECT MAX(time) FROM Environment) - birth as age,
+SELECT Bug.id as id, AliveBug.energy as energy, World.position_x as position_x,
+       World.position_y as position_y,
+       (SELECT MAX(time) FROM Environment) - AliveBug.birth as age,
        COUNT(Mutation.bug_id) as mutations
 FROM Bug
+LEFT JOIN AliveBug
+ON Bug.id = AliveBug.bug_id
+LEFT JOIN World
+ON World.id = AliveBug.world_id
 LEFT JOIN Mutation
 ON Bug.id = Mutation.bug_id
-WHERE dead IS NULL
+WHERE Bug.id IN (SELECT bug_id FROM AliveBug)
 GROUP BY Bug.id
-ORDER BY energy DESC;"
+ORDER BY AliveBug.energy DESC;"
 
 
 # Bugs ordered by age
 sql_age="\
-SELECT id, (SELECT max(time) FROM Environment) - birth AS age
-FROM Bug
-WHERE dead IS NULL
+SELECT bug_id as id, (SELECT max(time) FROM Environment) - birth AS age
+FROM AliveBug
 
 UNION
 
-SELECT id, dead - birth AS age
-FROM Bug
-WHERE dead IS NOT NULL
+SELECT bug_id as id, death - birth AS age
+FROM DeadBug
 
 ORDER BY age DESC
 
@@ -60,7 +63,7 @@ LIMIT 100;"
 # Bugs with more kills
 sql_kills="\
 SELECT killer_id, count(killer_id) AS kills
-FROM Bug
+FROM DeadBug
 WHERE killer_id IS NOT NULL
 GROUP BY killer_id
 ORDER BY kills DESC

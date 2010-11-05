@@ -23,7 +23,7 @@ def father(bug_id):
 
 def birth(bug_id):
     cursor = connection.cursor()
-    cursor.execute("SELECT birth FROM Bug WHERE id = ?", (bug_id, ))
+    cursor.execute("SELECT birth FROM AliveBug WHERE bug_id = ? UNION SELECT birth FROM DeadBug WHERE bug_id = ?", (bug_id, bug_id))
     data = cursor.fetchone()
     return data[0]
 

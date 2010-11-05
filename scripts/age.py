@@ -13,7 +13,7 @@ connection = sqlite3.connect(DATABASE)
 
 def age():
     cursor = connection.cursor()
-    cursor.execute("SELECT SUM((SELECT MAX(time) FROM Environment) - birth) FROM Bug_alive;")
+    cursor.execute("SELECT SUM((SELECT MAX(time) FROM Environment) - birth) FROM AliveBug;")
     size = cursor.fetchone()[0]
     return size if size != None else 0
 
