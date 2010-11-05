@@ -44,6 +44,8 @@ public:
    */
   Memory(Address size = 0);
 
+  Memory(const void* data, Address size);
+
   /**
    * Copy constructor.
    * @param memory memory to copy.
@@ -164,9 +166,9 @@ public:
    */
   Memory& operator =(const Memory& memory) { return this->assign(memory); }
 
-private:
+protected:
   Address size_;
-  Sint8* memory_;
+  Uint8* memory_;
 };
 
 }

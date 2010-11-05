@@ -1,8 +1,8 @@
 /**
  * @file simpleworld/db/egg.hpp
- * Information about a egg.
+ * Information about an egg.
  *
- *  Copyright (C) 2007  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2007-2010  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -21,9 +21,9 @@
 #ifndef SIMPLEWORLD_DB_EGG_HPP
 #define SIMPLEWORLD_DB_EGG_HPP
 
-#include <vector>
-
-#include <simpleworld/db/alivebug.hpp>
+#include <simpleworld/ints.hpp>
+#include <simpleworld/db/types.hpp>
+#include <simpleworld/db/table.hpp>
 
 namespace simpleworld
 {
@@ -31,66 +31,100 @@ namespace db
 {
 
 /**
- * Information about a bug.
+ * Information about an egg.
  */
-class Egg: public AliveBug
+class Egg: public Table
 {
 public:
   /**
    * Constructor.
+   * It's not checked if the id is in the table, only when accessing the data
+   * the id is checked.
    * @param db database.
-   * @param id id of the egg.
-   * @exception DBException if there is a error in the database.
-   * @exception DBException if the ID is not found in the table.
+   * @param bug_id id of the bug.
    */
-  Egg(DB* db, ID id);
+  Egg(DB* db, ID bug_id);
+
 
   /**
-   * Constructor to insert data.
+   * Insert a egg.
    * @param db database.
-   * @exception DBException if there is a error in the database.
+   * @param bug_id id of the bug.
+   * @param world_id id of the world.
+   * @param energy energy.
+   * @param conception when the egg was created.
+   * @return the id of the new row (the same as bug_id).
+   * @exception DBException if there is an error with the insertion.
    */
-  Egg(DB* db);
+  static ID insert(DB* db, ID bug_id, ID world_id, Energy energy,
+                   Time conception);
+
+  /**
+   * Delete a egg.
+   * @param db database.
+   * @param bug_id id of the egg.
+   * @exception DBException if there is an error with the deletion.
+   */
+  static void remove(DB* db, ID bug_id);
 
 
   /**
-   * Convert the egg in a bug.
-   * @return The ID of the new bug.
+   * Get the id of the egg.
+   * @return the id.
+   * @exception DBException if there is an error with the query.
    */
-  virtual ID be_born();
+  ID bug_id() const;
+
+  /**
+   * Set the id of the egg.
+   * @param id the new id.
+   * @exception DBException if there is an error with the update.
+   */
+  void bug_id(ID bug_id);
 
 
   /**
-   * Update the data of the class with the database.
-   * changed is set to false.
-   * @exception DBException if there is an error in the database.
-   * @exception DBException if the ID is not found in the table.
+   * Get the id of the world.
+   * @return the id.
+   * @exception DBException if there is an error with the query.
    */
-  void update();
+  ID world_id() const;
 
   /**
-   * Update the database with the data of the class in changed or force are
-   * true.
-   * changed is set to false.
-   * @param force force the update of the database.
-   * @exception DBException if there is an error in the database.
+   * Set the id of the world.
+   * @param id the new id.
+   * @exception DBException if there is an error with the update.
    */
-  void update_db(bool force = false);
+  void world_id(ID world_id);
+
 
   /**
-   * Insert the data in the database.
-   * The ID is updated.
-   * changed is set to false.
-   * @exception DBException if there is an error in the database.
+   * Get the energy of the egg.
+   * @return the energy.
+   * @exception DBException if there is an error with the query.
    */
-  void insert();
+  Energy energy() const;
 
   /**
-   * Remove the data from the database.
-   * changed is set to false.
-   * @exception DBException if there is an error in the database.
+   * Set the energy of the egg.
+   * @param energy the new energy.
+   * @exception DBException if there is an error with the update.
    */
-  void remove();
+  void energy(Energy energy);
+
+  /**
+   * Get when the egg was created.
+   * @return the time.
+   * @exception DBException if there is an error with the query.
+   */
+  Time conception() const;
+
+  /**
+   * Set when the egg was created.
+   * @param conception the new time.
+   * @exception DBException if there is an error with the update.
+   */
+  void conception(Time conception);
 };
 
 }

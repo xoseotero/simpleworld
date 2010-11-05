@@ -1,8 +1,8 @@
 /**
- * @file simpleworld/db/egg.cpp
- * Information about an egg.
+ * @file simpleworld/db/world.cpp
+ * Information about the world.
  *
- *  Copyright (C) 2007-2010  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2010  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -22,10 +22,8 @@
 
 #include <boost/format.hpp>
 
-#include <sqlite3x.hpp>
-
 #include "exception.hpp"
-#include "egg.hpp"
+#include "world.hpp"
 
 namespace simpleworld
 {
@@ -39,34 +37,33 @@ namespace db
  * @param db database.
  * @param bug_id id of the bug.
  */
-Egg::Egg(DB* db, ID bug_id)
-  : Table("Egg", db, bug_id)
+World::World(DB* db, ID id)
+  : Table("World", db, id)
 {
 }
 
 
 /**
- * Insert a egg.
+ * Insert a element in the world with orientation.
  * @param db database.
- * @param bug_id id of the bug.
- * @param world_id id of the world.
- * @param energy energy.
- * @param conception when the egg was created.
- * @return the id of the new row (the same as bug_id).
+ * @param position_x position in the x coordinate of the element.
+ * @param position_y position in the y coordinate of the element.
+ * @param orientation orientation of the element.
+ * @return the id of the new row.
  * @exception DBException if there is an error with the insertion.
  */
-ID Egg::insert(DB* db, ID bug_id, ID world_id, Energy energy, Time conception)
+ID World::insert(DB* db, Coord position_x, Coord position_y,
+                 Orientation orientation)
 {
   sqlite3x::sqlite3_command sql(*db);
 
   try {
     sql.prepare("\
-INSERT INTO Egg(bug_id, world_id, energy, conception)\n\
-VALUES(?, ?, ?, ?);");
-    sql.bind(1, static_cast<sqlite3x::int64_t>(bug_id));
-    sql.bind(2, static_cast<sqlite3x::int64_t>(world_id));
-    sql.bind(3, static_cast<int>(energy));
-    sql.bind(4, static_cast<int>(conception));
+INSERT INTO World(position_x, position_y, orientation)\n\
+VALUES(?, ?, ?);");
+    sql.bind(1, static_cast<int>(position_x));
+    sql.bind(2, static_cast<int>(position_y));
+    sql.bind(3, static_cast<int>(orientation));
 
     sql.executenonquery();
     return db->insertid();
@@ -77,19 +74,46 @@ VALUES(?, ?, ?, ?);");
 }
 
 /**
- * Delete a egg.
+ * Insert a element in the world without orientation.
  * @param db database.
- * @param bug_id id of the egg.
- * @exception DBException if there is an error with the deletion.
+ * @param position_x position in the x coordinate of the element.
+ * @param position_y position in the y coordinate of the element.
+ * @return the id of the new row.
+ * @exception DBException if there is an error with the insertion.
  */
-void Egg::remove(DB* db, ID id)
+ID World::insert(DB* db, Coord position_x, Coord position_y)
 {
   sqlite3x::sqlite3_command sql(*db);
 
   try {
     sql.prepare("\
-DELETE FROM Egg\n\
-WHERE bug_id = ?;");
+INSERT INTO World(position_x, position_y)\n\
+VALUES(?, ?);");
+    sql.bind(1, static_cast<int>(position_x));
+    sql.bind(2, static_cast<int>(position_y));
+
+    sql.executenonquery();
+    return db->insertid();
+  } catch (const sqlite3x::database_error& e) {
+    throw EXCEPTION(DBException, std::string(e.what()) +
+                    " (" + db->errormsg() + ")");
+  }
+}
+
+/**
+ * Delete a element from the world.
+ * @param db database.
+ * @param id id of the bug.
+ * @exception DBException if there is an error with the deletion.
+ */
+void World::remove(DB* db, ID id)
+{
+  sqlite3x::sqlite3_command sql(*db);
+
+  try {
+    sql.prepare("\
+DELETE FROM World\n\
+WHERE id = ?;");
     sql.bind(1, id);
 
     sql.executenonquery();
@@ -101,30 +125,20 @@ WHERE bug_id = ?;");
 
 
 /**
- * Get the id of the egg.
- * @return the id.
- * @exception DBException if there is an error with the query.
- */
-ID Egg::bug_id() const
-{
-  return this->id_;
-}
-
-/**
- * Set the id of the egg.
- * @param id the new id.
+ * Set the id of the element.
+ * @param bug_id the new id.
  * @exception DBException if there is an error with the update.
  */
-void Egg::bug_id(ID bug_id)
+void World::id(ID id)
 {
   sqlite3x::sqlite3_command sql(*this->db_);
 
   try {
     sql.prepare("\
-UPDATE Egg\n\
-SET bug_id = ?\n\
-WHERE bug_id = ?;");
-    sql.bind(1, static_cast<sqlite3x::int64_t>(bug_id));
+UPDATE World\n\
+SET id = ?\n\
+WHERE id = ?;");
+    sql.bind(1, static_cast<sqlite3x::int64_t>(id));
     sql.bind(2, this->id_);
 
     sql.executenonquery();
@@ -133,84 +147,29 @@ WHERE bug_id = ?;");
                     " (" + this->db()->errormsg() + ")");
   }
 
-  this->id_ = bug_id;
+  this->id_ = id;
 }
 
-
 /**
- * Get the id of the world.
- * @return the id.
+ * Get position in the x coordinate.
+ * @return the position.
  * @exception DBException if there is an error with the query.
  */
-ID Egg::world_id() const
+Coord World::position_x() const
 {
   sqlite3x::sqlite3_command sql(*this->db_);
 
   try {
     sql.prepare("\
-SELECT world_id\n\
-FROM Egg\n\
-WHERE bug_id = ?;");
+SELECT position_x\n\
+FROM World\n\
+WHERE id = ?");
     sql.bind(1, this->id_);
 
     sqlite3x::sqlite3_cursor cursor(sql.executecursor());
     if (! cursor.step())
       throw EXCEPTION(DBException, boost::str(boost::format("\
-id %1% not found in table Egg")
-                                              % this->id_));
-
-    return cursor.getint64(0);
-  } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(DBException, std::string(e.what()) +
-                    " (" + this->db()->errormsg() + ")");
-  }
-}
-
-/**
- * Set the id of the world.
- * @param id the new id.
- * @exception DBException if there is an error with the update.
- */
-void Egg::world_id(ID world_id)
-{
-  sqlite3x::sqlite3_command sql(*this->db_);
-
-  try {
-    sql.prepare("\
-UPDATE Egg\n\
-SET world_id = ?\n\
-WHERE bug_id = ?;");
-    sql.bind(1, static_cast<sqlite3x::int64_t>(world_id));
-    sql.bind(2, this->id_);
-
-    sql.executenonquery();
-  } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(DBException, std::string(e.what()) +
-                    " (" + this->db()->errormsg() + ")");
-  }
-}
-
-
-/**
- * Get the energy of the egg.
- * @return the energy.
- * @exception DBException if there is an error with the query.
- */
-Energy Egg::energy() const
-{
-  sqlite3x::sqlite3_command sql(*this->db_);
-
-  try {
-    sql.prepare("\
-SELECT energy\n\
-FROM Egg\n\
-WHERE bug_id = ?;");
-    sql.bind(1, this->id_);
-
-    sqlite3x::sqlite3_cursor cursor(sql.executecursor());
-    if (! cursor.step())
-      throw EXCEPTION(DBException, boost::str(boost::format("\
-id %1% not found in table Egg")
+id %1% not found in table World")
                                               % this->id_));
 
     return cursor.getint(0);
@@ -221,49 +180,25 @@ id %1% not found in table Egg")
 }
 
 /**
- * Set the energy of the egg.
- * @param energy the new energy.
- * @exception DBException if there is an error with the update.
- */
-void Egg::energy(Energy energy)
-{
-  sqlite3x::sqlite3_command sql(*this->db_);
-
-  try {
-    sql.prepare("\
-UPDATE Egg\n\
-SET energy = ?\n\
-WHERE bug_id = ?;");
-    sql.bind(1, static_cast<int>(energy));
-    sql.bind(2, this->id_);
-
-    sql.executenonquery();
-  } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(DBException, std::string(e.what()) +
-                    " (" + this->db()->errormsg() + ")");
-  }
-}
-
-/**
- * Get when the egg was created.
- * @return the time.
+ * Get position in the y coordinate.
+ * @return the position.
  * @exception DBException if there is an error with the query.
  */
-Time Egg::conception() const
+Coord World::position_y() const
 {
   sqlite3x::sqlite3_command sql(*this->db_);
 
   try {
     sql.prepare("\
-SELECT conception\n\
-FROM Egg\n\
-WHERE bug_id = ?;");
+SELECT position_y\n\
+FROM World\n\
+WHERE id = ?");
     sql.bind(1, this->id_);
 
     sqlite3x::sqlite3_cursor cursor(sql.executecursor());
     if (! cursor.step())
       throw EXCEPTION(DBException, boost::str(boost::format("\
-id %1% not found in table Egg")
+id %1% not found in table World")
                                               % this->id_));
 
     return cursor.getint(0);
@@ -274,20 +209,98 @@ id %1% not found in table Egg")
 }
 
 /**
- * Set when the egg was created.
- * @param conception the new time.
+ * Set position in the x coordinate.
+ * @param bug_id the new position.
  * @exception DBException if there is an error with the update.
  */
-void Egg::conception(Time conception)
+void World::position_x(Coord position_x)
 {
   sqlite3x::sqlite3_command sql(*this->db_);
 
   try {
     sql.prepare("\
-UPDATE Egg\n\
-SET conception = ?\n\
-WHERE bug_id = ?;");
-    sql.bind(1, static_cast<int>(conception));
+UPDATE World\n\
+SET position_x = ?\n\
+WHERE id = ?;");
+    sql.bind(1, static_cast<int>(position_x));
+    sql.bind(2, this->id_);
+
+    sql.executenonquery();
+  } catch (const sqlite3x::database_error& e) {
+    throw EXCEPTION(DBException, std::string(e.what()) +
+                    " (" + this->db()->errormsg() + ")");
+  }
+}
+
+/**
+ * Set position in the y coordinate.
+ * @param bug_id the new position.
+ * @exception DBException if there is an error with the update.
+ */
+void World::position_y(Coord position_y)
+{
+  sqlite3x::sqlite3_command sql(*this->db_);
+
+  try {
+    sql.prepare("\
+UPDATE World\n\
+SET position_y = ?\n\
+WHERE id = ?;");
+    sql.bind(1, static_cast<int>(position_y));
+    sql.bind(2, this->id_);
+
+    sql.executenonquery();
+  } catch (const sqlite3x::database_error& e) {
+    throw EXCEPTION(DBException, std::string(e.what()) +
+                    " (" + this->db()->errormsg() + ")");
+  }
+}
+
+
+/**
+ * Get the orientation.
+ * @return the orientation.
+ * @exception DBException if there is an error with the query.
+ */
+Orientation World::orientation() const
+{
+  sqlite3x::sqlite3_command sql(*this->db_);
+
+  try {
+    sql.prepare("\
+SELECT orientation\n\
+FROM World\n\
+WHERE id = ?");
+    sql.bind(1, this->id_);
+
+    sqlite3x::sqlite3_cursor cursor(sql.executecursor());
+    if (! cursor.step())
+      throw EXCEPTION(DBException, boost::str(boost::format("\
+id %1% not found in table World")
+                                              % this->id_));
+
+    return static_cast<Orientation>(cursor.getint(0));
+  } catch (const sqlite3x::database_error& e) {
+    throw EXCEPTION(DBException, std::string(e.what()) +
+                    " (" + this->db()->errormsg() + ")");
+  }
+}
+
+/**
+ * Set the orientation.
+ * @param bug_id the new orientation.
+ * @exception DBException if there is an error with the update.
+ */
+void World::orientation(Orientation orientation)
+{
+  sqlite3x::sqlite3_command sql(*this->db_);
+
+  try {
+    sql.prepare("\
+UPDATE World\n\
+SET orientation = ?\n\
+WHERE id = ?;");
+    sql.bind(1, static_cast<int>(orientation));
     sql.bind(2, this->id_);
 
     sql.executenonquery();

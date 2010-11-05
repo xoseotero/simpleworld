@@ -2,7 +2,7 @@
  * @file simpleworld/reproduction.hpp
  * Reproduction of bugs.
  *
- *  Copyright (C) 2008  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2008-2010  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -22,20 +22,19 @@
 #define SIMPLEWORLD_REPRODUCTION_HPP
 
 #include <simpleworld/types.hpp>
-#include <simpleworld/db/code.hpp>
+#include <simpleworld/db/bug.hpp>
 
 namespace simpleworld
 {
 
 /**
  * Get a copy of the code but with occasional mutations.
- * @param code the original code.
+ * @param bug bug to mutate.
  * @param probability probability to happen a mutation.
- * @param egg true if it's a egg, false if it's a bug.
  * @param time the current time.
- * @return the copy of the code.
- */
-db::Code mutate(const db::Code& code, float probability, bool egg, Time time);
+ * @return if the code was mutated.
+*/
+bool mutate(db::Bug* bug, float probability, Time time);
 
 }
 

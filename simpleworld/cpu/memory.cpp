@@ -46,6 +46,14 @@ Memory::Memory(Address size)
   this->resize(size);
 }
 
+Memory::Memory(const void* data, Address size)
+  : size_(0), memory_(NULL)
+{
+  this->resize(size);
+
+  std::memcpy(this->memory_, data, size);
+}
+
 /**
  * Copy constructor.
  * @param memory memory to copy.

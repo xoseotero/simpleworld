@@ -2,7 +2,7 @@
  * @file simpleworld/cpu/memory_file.hpp
  * Memory that loads its content from a file.
  *
- *  Copyright (C) 2007  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2007-2010  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -35,15 +35,6 @@ namespace cpu
 {
 
 /**
- * Copy constructor.
- * @param memory memory to copy.
- */
-MemoryFile::MemoryFile(const Memory& memory)
-  : Memory(memory)
-{
-}
-
-/**
  * Constructor.
  * @param filename filename from where to load the code.
  * @exception IOError problem with the file.
@@ -52,6 +43,15 @@ MemoryFile::MemoryFile(const std::string& filename)
   : Memory()
 {
   this->load_file(filename);
+}
+
+/**
+ * Copy constructor.
+ * @param memory memory to copy.
+ */
+MemoryFile::MemoryFile(const Memory& memory)
+  : Memory(memory)
+{
 }
 
 

@@ -2,7 +2,7 @@
  * @file simpleworld/food.hpp
  * Food in Simple World.
  *
- *  Copyright (C) 2007  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2007-2010  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -21,14 +21,16 @@
 #ifndef SIMPLEWORLD_FOOD_HPP
 #define SIMPLEWORLD_FOOD_HPP
 
+#include <simpleworld/element.hpp>
 #include <simpleworld/db/food.hpp>
+#include <simpleworld/db/world.hpp>
 
 namespace simpleworld
 {
 
 class SimpleWorld;
 
-class Food: public db::Food
+class Food: public Element, public db::Food, public db::World
 {
 public:
   /**
@@ -38,6 +40,28 @@ public:
    * @exception DBException if there is a error in the database.
    */
   Food(SimpleWorld* sw, db::ID id);
+
+
+  /**
+   * The id of the table.
+   * @return the ID.
+   */
+  db::ID id() const { return db::Food::id_; }
+  void id(db::ID id) { db::Food::id(id); }
+
+
+  /**
+   * Check if colname is NULL.
+   * @param colname name of the column.
+   * @return true if colname is NULL, else false.
+   */
+  bool is_null(const std::string& colname) const;
+
+  /**
+   * Set colname as NULL.
+   * @param colname name of the column.
+   */
+  void set_null(const std::string& colname);
 };
 
 }

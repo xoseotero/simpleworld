@@ -2,7 +2,7 @@
  * @file simpleworld/bug.cpp
  * A bug in Simple World.
  *
- *  Copyright (C) 2007  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2007-2010  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -29,9 +29,10 @@
 #endif // DEBUG
 
 #include "simpleworld.hpp"
-#include "operations.hpp"
 #include "types.hpp"
 #include "bug.hpp"
+#include "cpu/types.hpp"
+#include "db/bug.hpp"
 
 namespace simpleworld
 {
@@ -43,12 +44,11 @@ namespace simpleworld
  * @exception DBException if there is a error in the database.
  */
 Bug::Bug(SimpleWorld* sw, db::ID id)
-  : db::Bug(sw, id), CPU(&this->cpu.registers, &this->code.code), world(sw)
+  : Element(ElementBug), db::Bug(sw, id), db::AliveBug(sw, id),
+    db::World(sw, this->world_id()), world(sw),
+    regs(db::AliveBug::registers()), mem(db::Bug::code()),
+    cpu(&this->regs, &this->mem, this)
 {
-  this->isa_.add_interrupt(INTERRUPT_WORLDACTION, "InvalidWorldCommand", true);
-  this->isa_.add_interrupt(INTERRUPT_WORLDEVENT, "WorldEvent", false);
-
-  this->isa_.add_instruction(0x58, "world", 0, true, ::simpleworld::world);
 }
 
 
@@ -60,11 +60,11 @@ void Bug::attacked()
 #ifdef DEBUG
   std::cout << boost::str(boost::format("\
 Bug[%1%] attacked")
-                         % this->id_)
+			  % db::Bug::id_)
     << std::endl;
 #endif // DEBUG
 
-  this->interrupt(INTERRUPT_WORLDEVENT, EventAttack);
+  this->cpu.interrupt(INTERRUPT_WORLDEVENT, EventAttack);
 }
 
 /**
@@ -75,11 +75,43 @@ void Bug::mutated()
 #ifdef DEBUG
   std::cout << boost::str(boost::format("\
 Bug[%1%] mutated")
-                         % this->id_)
+			  % db::Bug::id_)
     << std::endl;
 #endif // DEBUG
 
-  this->interrupt(INTERRUPT_WORLDEVENT, EventMutation);
+  this->cpu.interrupt(INTERRUPT_WORLDEVENT, EventMutation);
+}
+
+
+/**
+ * Check if colname is NULL.
+ * @param colname name of the column.
+ * @return true if colname is NULL, else false.
+ */
+bool Bug::is_null(const std::string& colname) const
+{
+  if (colname == "father_id")
+    return db::Bug::is_null(colname);
+  else if (colname == "time_last_action" or colname == "action_time")
+    return db::AliveBug::is_null(colname);
+  else if (colname == "orientation")
+    return db::World::is_null(colname);
+  else
+    return false;
+}
+
+/**
+ * Set colname as NULL.
+ * @param colname name of the column.
+ */
+void Bug::set_null(const std::string& colname)
+{
+  if (colname == "father_id")
+    db::Bug::set_null(colname);
+  else if (colname == "time_last_action" or colname == "action_time")
+    db::AliveBug::set_null(colname);
+  else if (colname == "orientation")
+    db::World::set_null(colname);
 }
 
 }

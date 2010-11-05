@@ -2,7 +2,7 @@
  * @file simpleworld/bug.hpp
  * A bug in Simple World.
  *
- *  Copyright (C) 2007  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2007-2010  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -21,21 +21,21 @@
 #ifndef SIMPLEWORLD_BUG_HPP
 #define SIMPLEWORLD_BUG_HPP
 
-#include <map>
-
-#include <simpleworld/egg.hpp>
-#include <simpleworld/cpu/cpu.hpp>
+#include <simpleworld/element.hpp>
+#include <simpleworld/dbmemory.hpp>
+#include <simpleworld/cpu.hpp>
+#include <simpleworld/db/types.hpp>
 #include <simpleworld/db/bug.hpp>
-
-#define INTERRUPT_WORLDACTION (0x5)
-#define INTERRUPT_WORLDEVENT (0x6)
+#include <simpleworld/db/alivebug.hpp>
+#include <simpleworld/db/world.hpp>
 
 namespace simpleworld
 {
 
 class SimpleWorld;
 
-class Bug: public db::Bug, public cpu::CPU
+class Bug: public Element, public db::Bug, public db::AliveBug,
+           public db::World
 {
 public:
   /**
@@ -45,6 +45,21 @@ public:
    * @exception DBException if there is a error in the database.
    */
   Bug(SimpleWorld* sw, db::ID id);
+
+
+  /**
+   * The id of the table.
+   * @return the ID.
+   */
+  db::ID id() const { return db::Bug::id_; }
+  void id(db::ID id) { db::Bug::id(id); }
+
+
+  db::ID world_id() const { return db::AliveBug::world_id(); }
+  void world_id(db::ID world_id) {
+    db::AliveBug::world_id(world_id);
+    db::World::id_ = world_id;
+  }
 
 
   /**
@@ -58,7 +73,25 @@ public:
   virtual void mutated();
 
 
+  /**
+   * Check if colname is NULL.
+   * @param colname name of the column.
+   * @return true if colname is NULL, else false.
+   */
+  bool is_null(const std::string& colname) const;
+
+  /**
+   * Set colname as NULL.
+   * @param colname name of the column.
+   */
+  void set_null(const std::string& colname);
+
+
   SimpleWorld* world;
+
+  DBMemory regs;
+  DBMemory mem;
+  CPU cpu;
 };
 
 }

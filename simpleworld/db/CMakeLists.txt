@@ -1,16 +1,13 @@
 set(DB_SRCS
-  common.cpp
-  memory.cpp
   table.cpp
+  blob.cpp
   environment.cpp
+  world.cpp
   food.cpp
   mutation.cpp
-  code.cpp
-  bugelement.cpp
-  alivebug.cpp
-  cpu.cpp
   bug.cpp
   egg.cpp
+  alivebug.cpp
   deadbug.cpp
   db.cpp)
 add_library(simpleworld_db SHARED ${DB_SRCS})

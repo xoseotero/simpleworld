@@ -1,8 +1,8 @@
 /**
- * @file simpleworld/db/memory.hpp
- * Accessing words from memory advising when a change was made.
+ * @file simpleworld/dbmemory.hpp
+ * Memory from the database.
  *
- *  Copyright (C) 2007  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2010  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -18,39 +18,26 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef SIMPLEWORLD_DB_MEMORY_HPP
-#define SIMPLEWORLD_DB_MEMORY_HPP
+#ifndef SIMPLEWORLD_DBMEMORY_HPP
+#define SIMPLEWORLD_DBMEMORY_HPP
 
+#include <simpleworld/cpu/types.hpp>
 #include <simpleworld/cpu/memory.hpp>
+#include <simpleworld/db/blob.hpp>
 
 namespace simpleworld
 {
-namespace db
-{
 
-class Memory: public cpu::Memory
+class DBMemory: public cpu::Memory
 {
 public:
-  /**
-   * Constructor.
-   * Memory outside the 16bits range can't be used.
-   * The memory is zeroed after being allocated.
-   * @param changed pointer to the variable used to advise about a change.
-   * @param size bytes of the memory
-   */
-  Memory(bool* changed, cpu::Address size = 0);
-
-  /**
-   * Copy constructor.
-   * @param memory memory to copy.
-   * @param changed pointer to the variable used to advise about a change.
-   */
-  Memory(const Memory& memory, bool* changed);
+  DBMemory(const db::Blob& blob);
 
 
   /**
    * Set the size of the memory.
    * The new memory is zeroed.
+   * @param size new size of the memory.
    */
   void resize(cpu::Address size);
 
@@ -63,31 +50,44 @@ public:
    * @param address address of the word
    * @param value value of the word
    * @param system_endian if the word is in the systen endianness
-   * @exception SimpleWorld::Exception address > (size - 4)
+   * @exception MemoryError if address > (size - 4)
    */
   void set_word(cpu::Address address, cpu::Word value,
                 bool system_endian = true);
 
+  /**
+   * Set the value of a half word.
+   * In big endian systems the system_endian parameter does nothing.
+   * In little endian systems the word is supposed to be in little endian if
+   * system_endian is true and in big endian if system_endian is false.
+   * @param address address of the half word
+   * @param value value of the half word
+   * @param system_endian if the half word is in the systen endianness
+   * @exception MemoryError if address > (size - 2)
+   */
+  void set_halfword(cpu::Address address, cpu::HalfWord value,
+                    bool system_endian = true);
+
+  /**
+   * Set the value of a quarter word.
+   * @param address address of the quarter word
+   * @param value value of the quarter word
+   * @exception MemoryError if address > (size - 1)
+   */
+  void set_quarterword(cpu::Address address, cpu::QuarterWord value);
+
 
   /**
    * Copy the content of other Memory class.
    * @param memory memory to copy.
    * @return a reference to this object.
    */
-  Memory& assign(const cpu::Memory& memory);
-
-  /**
-   * Copy the content of other Memory class.
-   * @param memory memory to copy.
-   * @return a reference to this object.
-   */
-  Memory& operator =(const cpu::Memory& memory) { return this->assign(memory); }
+  DBMemory& assign(const cpu::Memory& memory);
 
 private:
-  bool* changed_;
+  db::Blob blob_;
 };
 
 }
-}
 
-#endif // SIMPLEWORLD_DB_MEMORY_HPP
+#endif // SIMPLEWORLD_DBMEMORY_HPP

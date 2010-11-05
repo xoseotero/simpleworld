@@ -35,7 +35,7 @@ namespace db = simpleworld::db;
 
 
 // Default values
-#define DEFAULT_SIZE {16, 16}
+#define DEFAULT_SIZE sw::Position(16, 16)
 #define DEFAULT_MUTATIONS 0.01
 #define DEFAULT_BIRTH 32
 #define DEFAULT_OLD 16 * 1024
@@ -300,23 +300,8 @@ void sw_create(int argc, char* argv[])
   parse_cmd(argc, argv);
 
   sw::SimpleWorld simpleworld(database_path);
-  db::Environment env(&simpleworld);
-  env.time = 0;
-  env.size = size;
-  env.mutations_probability = mutations;
-  env.time_birth = birth;
-  env.time_mutate = old;
-  env.time_laziness = laziness;
-  env.energy_laziness = elaziness;
-  env.attack_multiplier = multiplier;
-  env.energy_nothing = nothing;
-  env.energy_myself = myself;
-  env.energy_detect = detect;
-  env.energy_info = info;
-  env.energy_move = move;
-  env.energy_turn = turn;
-  env.energy_attack = attack;
-  env.energy_eat = eat;
-  env.energy_egg = egg;
-  env.insert();
+
+  db::Environment::insert(&simpleworld, 0, size.x, size.y, mutations, birth,
+                          old, laziness, elaziness, multiplier, nothing,
+                          myself, detect, info, move, turn, attack, eat, egg);
 }

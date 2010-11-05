@@ -1,8 +1,8 @@
 /**
  * @file simpleworld/db/alivebug.cpp
- * Information about a alive bug.
+ * Information about an alive bug.
  *
- *  Copyright (C) 2007-2008  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2007-2010  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -18,12 +18,15 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <cstring>
+
+#include <boost/format.hpp>
+
 #include <sqlite3x.hpp>
 
-#include <simpleworld/types.hpp>
+#include <simpleworld/ints.hpp>
+#include <simpleworld/cpu/types.hpp>
 #include "exception.hpp"
-#include "food.hpp"
-#include "deadbug.hpp"
 #include "alivebug.hpp"
 
 namespace simpleworld
@@ -33,84 +36,427 @@ namespace db
 
 /**
  * Constructor.
+ * It's not checked if the id is in the table, only when accessing the data
+ * the id is checked.
+ * @param db database.
+ * @param bug_id id of the bug.
+ */
+AliveBug::AliveBug(DB* db, ID bug_id)
+  : Table("AliveBug", db, bug_id)
+{
+}
+
+
+/**
+ * Insert a alive bug.
+ * @param db database.
+ * @param bug_id id of the bug.
+ * @param world_id id of the world.
+ * @param birth birth time.
+ * @param energy energy.
+ * @param registers data stored in the registers.
+ * @param size size of the data.
+ * @return the id of the new row (the same as bug_id).
+ * @exception DBException if there is an error with the insertion.
+ */
+ID AliveBug::insert(DB* db, ID bug_id, ID world_id, Time birth, Energy energy,
+		    const void* registers, Uint32 size)
+{
+  sqlite3x::sqlite3_command sql(*db);
+
+  try {
+    sql.prepare("\
+INSERT INTO AliveBug(bug_id, world_id, birth, energy, registers)\n\
+VALUES(?, ?, ?, ?, ?);");
+    sql.bind(1, static_cast<sqlite3x::int64_t>(bug_id));
+    sql.bind(2, static_cast<sqlite3x::int64_t>(world_id));
+    sql.bind(3, static_cast<int>(birth));
+    sql.bind(4, static_cast<int>(energy));
+    sql.bind(5, registers, size);
+
+    sql.executenonquery();
+    return db->insertid();
+  } catch (const sqlite3x::database_error& e) {
+    throw EXCEPTION(DBException, std::string(e.what()) +
+                    " (" + db->errormsg() + ")");
+  }
+}
+
+/**
+ * Insert a alive bug from a egg.
+ * The egg is deleted.
+ * @param db database.
+ * @param egg egg to convert in a alive bug.
+ * @param birth birth time.
+ * @return the id of the new row (the same as the bug_id of the egg).
+ * @exception DBException if there is an error with the insertion.
+ */
+ID AliveBug::insert(DB* db, Egg* egg, Time birth)
+{
+  sqlite3x::sqlite3_command sql(*db);
+
+  try {
+    sql.prepare("\
+INSERT INTO AliveBug(bug_id, world_id, birth, energy, registers)\n\
+VALUES(?, ?, ?, ?, ?);");
+    sql.bind(1, static_cast<sqlite3x::int64_t>(egg->bug_id()));
+    sql.bind(2, static_cast<sqlite3x::int64_t>(egg->world_id()));
+    sql.bind(3, static_cast<int>(birth));
+    sql.bind(4, static_cast<int>(egg->energy()));
+    Uint32 size = 16 * sizeof(cpu::Word);
+    Uint8* registers = new Uint8[size];
+    std::memset(registers, 0, size);
+    sql.bind(5, registers, size);
+
+    sql.executenonquery();
+    ID id = db->insertid();
+
+    Egg::remove(db, egg->id());
+
+    return id;
+  } catch (const sqlite3x::database_error& e) {
+    throw EXCEPTION(DBException, std::string(e.what()) +
+                    " (" + db->errormsg() + ")");
+  }
+}
+
+/**
+ * Delete a alive bug.
  * @param db database.
  * @param id id of the bug.
- * @param type type of element
- * @param position position of the bug.
- * @exception DBException if there is a error in the database.
- * @exception DBException if the ID is not found in the table.
+ * @exception DBException if there is an error with the deletion.
  */
-AliveBug::AliveBug(DB* db, ID id, ElementType type, Position position)
-  : BugElement(db, id, type, position)
+void AliveBug::remove(DB*db, ID id)
 {
-}
+  sqlite3x::sqlite3_command sql(*db);
 
-/**
- * Constructor to insert data.
- * @param db database.
- * @param type type of element
- * @exception DBException if there is a error in the database.
- */
-AliveBug::AliveBug(DB* db, ElementType type)
-  : BugElement(db, type)
-{
+  try {
+    sql.prepare("\
+DELETE FROM AliveBug\n\
+WHERE bug_id = ?;");
+    sql.bind(1, id);
+
+    sql.executenonquery();
+  } catch (const sqlite3x::database_error& e) {
+    throw EXCEPTION(DBException, std::string(e.what()) +
+                    " (" + db->errormsg() + ")");
+  }
 }
 
 
 /**
- * Convert the alive bug in a dead bug.
- * @param dead When the bug dead.
- * @return The id of the new food.
+ * Get the id of the bug.
+ * @return the id.
+ * @exception DBException if there is an error with the query.
  */
-ID AliveBug::die(Time dead)
+ID AliveBug::bug_id() const
 {
-  Energy energy = this->energy;
-
-  this->energy = 0;
-  this->update_db(true);
-
-  // Convert the alive bug to a dead bug
-  DeadBug deadbug(this->db_, this->id_);
-  deadbug.dead = dead;
-  deadbug.add_null("killer_id");
-  deadbug.update_db(true);
-
-  // Create the food in the position of the dead bug
-  Food food(this->db_);
-  food.position = this->position;
-  food.size = this->code.size + energy;
-  food.insert();
-
-  return food.id();
+  return this->id_;
 }
 
 /**
- * Convert the alive bug in a dead bug.
- * @param dead When the bug dead.
- * @param killer_id Who killed it.
- * @return The id of the new food.
+ * Set the id of the bug.
+ * @param bug_id the new id.
+ * @exception DBException if there is an error with the update.
  */
-ID AliveBug::die(Time dead, ID killer_id)
+void AliveBug::bug_id(ID bug_id)
 {
-  Energy energy = this->energy;
+  sqlite3x::sqlite3_command sql(*this->db_);
 
-  this->energy = 0;
-  this->update_db(true);
+  try {
+    sql.prepare("\
+UPDATE AliveBug\n\
+SET bug_id = ?\n\
+WHERE bug_id = ?;");
+    sql.bind(1, static_cast<sqlite3x::int64_t>(bug_id));
+    sql.bind(2, this->id_);
 
-  // Convert the alive bug to a dead bug
-  DeadBug deadbug(this->db_, this->id_);
-  deadbug.dead = dead;
-  deadbug.remove_null("killer_id");
-  deadbug.killer_id = killer_id;
-  deadbug.update_db(true);
+    sql.executenonquery();
+  } catch (const sqlite3x::database_error& e) {
+    throw EXCEPTION(DBException, std::string(e.what()) +
+                    " (" + this->db()->errormsg() + ")");
+  }
 
-  // Create the food in the position of the dead bug
-  Food food(this->db_);
-  food.position = this->position;
-  food.size = this->code.size + energy;
-  food.insert();
+  this->id_ = bug_id;
+}
 
-  return food.id();
+
+/**
+ * Get the id of the world.
+ * @return the id.
+ * @exception DBException if there is an error with the query.
+ */
+ID AliveBug::world_id() const
+{
+  sqlite3x::sqlite3_command sql(*this->db_);
+
+  try {
+    sql.prepare("\
+SELECT world_id\n\
+FROM AliveBug\n\
+WHERE bug_id = ?;");
+    sql.bind(1, this->id_);
+
+    sqlite3x::sqlite3_cursor cursor(sql.executecursor());
+    if (! cursor.step())
+      throw EXCEPTION(DBException, boost::str(boost::format("\
+id %1% not found in table AliveBug")
+                                              % this->id_));
+
+    return cursor.getint64(0);
+  } catch (const sqlite3x::database_error& e) {
+    throw EXCEPTION(DBException, std::string(e.what()) +
+                    " (" + this->db()->errormsg() + ")");
+  }
+}
+
+/**
+ * Set the id of the world.
+ * @return the new id.
+ * @exception DBException if there is an error with the update.
+ */
+void AliveBug::world_id(ID world_id)
+{
+  sqlite3x::sqlite3_command sql(*this->db_);
+
+  try {
+    sql.prepare("\
+UPDATE AliveBug\n\
+SET world_id = ?\n\
+WHERE bug_id = ?;");
+    sql.bind(1, static_cast<sqlite3x::int64_t>(world_id));
+    sql.bind(2, this->id_);
+
+    sql.executenonquery();
+  } catch (const sqlite3x::database_error& e) {
+    throw EXCEPTION(DBException, std::string(e.what()) +
+                    " (" + this->db()->errormsg() + ")");
+  }
+}
+
+/**
+ * Get the birth of the bug.
+ * @return the birth.
+ * @exception DBException if there is an error with the query.
+ */
+Time AliveBug::birth() const
+{
+  sqlite3x::sqlite3_command sql(*this->db_);
+
+  try {
+    sql.prepare("\
+SELECT birth\n\
+FROM AliveBug\n\
+WHERE bug_id = ?;");
+    sql.bind(1, this->id_);
+
+    sqlite3x::sqlite3_cursor cursor(sql.executecursor());
+    if (! cursor.step())
+      throw EXCEPTION(DBException, boost::str(boost::format("\
+id %1% not found in table AliveBug")
+                                              % this->id_));
+
+    return cursor.getint(0);
+  } catch (const sqlite3x::database_error& e) {
+    throw EXCEPTION(DBException, std::string(e.what()) +
+                    " (" + this->db()->errormsg() + ")");
+  }
+}
+
+/**
+ * Set the birth of the bug.
+ * @param birth the new birth.
+ * @exception DBException if there is an error with the update.
+ */
+void AliveBug::birth(Time birth)
+{
+  sqlite3x::sqlite3_command sql(*this->db_);
+
+  try {
+    sql.prepare("\
+UPDATE AliveBug\n\
+SET birth = ?\n\
+WHERE bug_id = ?;");
+    sql.bind(1, static_cast<int>(birth));
+    sql.bind(2, this->id_);
+
+    sql.executenonquery();
+  } catch (const sqlite3x::database_error& e) {
+    throw EXCEPTION(DBException, std::string(e.what()) +
+                    " (" + this->db()->errormsg() + ")");
+  }
+}
+
+/**
+ * Get the energy of the bug.
+ * @return the energy.
+ * @exception DBException if there is an error with the query.
+ */
+Energy AliveBug::energy() const
+{
+  sqlite3x::sqlite3_command sql(*this->db_);
+
+  try {
+    sql.prepare("\
+SELECT energy\n\
+FROM AliveBug\n\
+WHERE bug_id = ?;");
+    sql.bind(1, this->id_);
+
+    sqlite3x::sqlite3_cursor cursor(sql.executecursor());
+    if (! cursor.step())
+      throw EXCEPTION(DBException, boost::str(boost::format("\
+id %1% not found in table AliveBug")
+                                              % this->id_));
+
+    return cursor.getint(0);
+  } catch (const sqlite3x::database_error& e) {
+    throw EXCEPTION(DBException, std::string(e.what()) +
+                    " (" + this->db()->errormsg() + ")");
+  }
+}
+
+/**
+ * Set the energy of the bug.
+ * @param energy the new energy.
+ * @exception DBException if there is an error with the update.
+ */
+void AliveBug::energy(Energy energy)
+{
+  sqlite3x::sqlite3_command sql(*this->db_);
+
+  try {
+    sql.prepare("\
+UPDATE AliveBug\n\
+SET energy = ?\n\
+WHERE bug_id = ?;");
+    sql.bind(1, static_cast<int>(energy));
+    sql.bind(2, this->id_);
+
+    sql.executenonquery();
+  } catch (const sqlite3x::database_error& e) {
+    throw EXCEPTION(DBException, std::string(e.what()) +
+                    " (" + this->db()->errormsg() + ")");
+  }
+}
+
+
+/**
+ * Get when the bug did the last action.
+ * time_last_action is NULL if no action was done yet.
+ * @return the time.
+ * @exception DBException if there is an error with the query.
+ */
+Time AliveBug::time_last_action() const
+{
+  sqlite3x::sqlite3_command sql(*this->db_);
+
+  try {
+    sql.prepare("\
+SELECT time_last_action\n\
+FROM AliveBug\n\
+WHERE bug_id = ?;");
+    sql.bind(1, this->id_);
+
+    sqlite3x::sqlite3_cursor cursor(sql.executecursor());
+    if (! cursor.step())
+      throw EXCEPTION(DBException, boost::str(boost::format("\
+id %1% not found in table AliveBug")
+                                              % this->id_));
+
+    return cursor.getint(0);
+  } catch (const sqlite3x::database_error& e) {
+    throw EXCEPTION(DBException, std::string(e.what()) +
+                    " (" + this->db()->errormsg() + ")");
+  }
+}
+
+/**
+ * Set when the bug did the last action.
+ * @param time_last_action the new time.
+ * @exception DBException if there is an error with the update.
+ */
+void AliveBug::time_last_action(Time time_last_action)
+{
+  sqlite3x::sqlite3_command sql(*this->db_);
+
+  try {
+    sql.prepare("\
+UPDATE AliveBug\n\
+SET time_last_action = ?\n\
+WHERE bug_id = ?;");
+    sql.bind(1, static_cast<int>(time_last_action));
+    sql.bind(2, this->id_);
+
+    sql.executenonquery();
+  } catch (const sqlite3x::database_error& e) {
+    throw EXCEPTION(DBException, std::string(e.what()) +
+                    " (" + this->db()->errormsg() + ")");
+  }
+}
+
+/**
+ * Get when the bug will finish the current action.
+ * action_time is NULL if the bug is not doing a action.
+ * @return the time.
+ * @exception DBException if there is an error with the query.
+ */
+Time AliveBug::action_time() const
+{
+  sqlite3x::sqlite3_command sql(*this->db_);
+
+  try {
+    sql.prepare("\
+SELECT action_time\n\
+FROM AliveBug\n\
+WHERE bug_id = ?;");
+    sql.bind(1, this->id_);
+
+    sqlite3x::sqlite3_cursor cursor(sql.executecursor());
+    if (! cursor.step())
+      throw EXCEPTION(DBException, boost::str(boost::format("\
+id %1% not found in table AliveBug")
+                                              % this->id_));
+
+    return cursor.getint(0);
+  } catch (const sqlite3x::database_error& e) {
+    throw EXCEPTION(DBException, std::string(e.what()) +
+                    " (" + this->db()->errormsg() + ")");
+  }
+}
+
+/**
+ * Set when the bug will finish the current action.
+ * @param action_time the new time.
+ * @exception DBException if there is an error with the update.
+ */
+void AliveBug::action_time(Time action_time)
+{
+  sqlite3x::sqlite3_command sql(*this->db_);
+
+  try {
+    sql.prepare("\
+UPDATE AliveBug\n\
+SET action_time = ?\n\
+WHERE bug_id = ?;");
+    sql.bind(1, static_cast<int>(action_time));
+    sql.bind(2, this->id_);
+
+    sql.executenonquery();
+  } catch (const sqlite3x::database_error& e) {
+    throw EXCEPTION(DBException, std::string(e.what()) +
+                    " (" + this->db()->errormsg() + ")");
+  }
+}
+
+/**
+ * Get the registers of the bug.
+ * @return the registers.
+ * @exception DBException if there is an error with the query.
+ */
+Blob AliveBug::registers() const
+{
+  return Blob(this->db_, "AliveBug", "registers", this->id_);
 }
 
 }

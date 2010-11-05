@@ -272,43 +272,28 @@ void sw_env(int argc, char* argv[])
   parse_cmd(argc, argv);
 
   sw::SimpleWorld simpleworld(database_path);
-  const db::Environment& old_env = simpleworld.env();
-  mutations = old_env.mutations_probability;
-  birth = old_env.time_birth;
-  old = old_env.time_mutate;
-  laziness = old_env.time_laziness;
-  elaziness = old_env.energy_laziness;
-  multiplier = old_env.attack_multiplier;
-  nothing = old_env.energy_nothing;
-  myself = old_env.energy_myself;
-  detect = old_env.energy_detect;
-  info = old_env.energy_info;
-  move = old_env.energy_move;
-  turn = old_env.energy_turn;
-  attack = old_env.energy_attack;
-  eat = old_env.energy_eat;
-  egg = old_env.energy_egg;
+  mutations = simpleworld.env().mutations_probability();
+  birth = simpleworld.env().time_birth();
+  old = simpleworld.env().time_mutate();
+  laziness = simpleworld.env().time_laziness();
+  elaziness = simpleworld.env().energy_laziness();
+  multiplier = simpleworld.env().attack_multiplier();
+  nothing = simpleworld.env().energy_nothing();
+  myself = simpleworld.env().energy_myself();
+  detect = simpleworld.env().energy_detect();
+  info = simpleworld.env().energy_info();
+  move = simpleworld.env().energy_move();
+  turn = simpleworld.env().energy_turn();
+  attack = simpleworld.env().energy_attack();
+  eat = simpleworld.env().energy_eat();
+  egg = simpleworld.env().energy_egg();
 
   // update the environment
   parse_cmd(argc, argv);
 
-  db::Environment env(&simpleworld);
-  env.time = old_env.time;
-  env.size = old_env.size;
-  env.mutations_probability = mutations;
-  env.time_birth = birth;
-  env.time_mutate = old;
-  env.time_laziness = laziness;
-  env.energy_laziness = elaziness;
-  env.attack_multiplier = multiplier;
-  env.energy_nothing = nothing;
-  env.energy_myself = myself;
-  env.energy_detect = detect;
-  env.energy_info = info;
-  env.energy_move = move;
-  env.energy_turn = turn;
-  env.energy_attack = attack;
-  env.energy_eat = eat;
-  env.energy_egg = egg;
-  env.insert();
+  db::Environment::insert(&simpleworld, simpleworld.env().time(),
+			  simpleworld.env().size_x(),
+			  simpleworld.env().size_y(), mutations, birth, old,
+			  laziness, elaziness, multiplier, nothing, myself,
+			  detect, info, move, turn, attack, eat, egg);
 }

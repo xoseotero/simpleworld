@@ -1,6 +1,6 @@
 /**
- * @file simpleworld/element.hpp
- * A element on the World.
+ * @file simpleworld/cpu.cpp
+ * A CPU in Simple World.
  *
  *  Copyright (C) 2007-2010  Xosé Otero <xoseotero@gmail.com>
  *
@@ -18,48 +18,25 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef SIMPLEWORLD_ELEMENT_HPP
-#define SIMPLEWORLD_ELEMENT_HPP
-
-#include <simpleworld/types.hpp>
+#include "cpu.hpp"
+#include "operations.hpp"
 
 namespace simpleworld
 {
 
 /**
- * A element on the World.
+ * Constructor.
+ * @param registers registers of the CPU.
+ * @param memory memory of the CPU.
+ * @param bug bug owner of the CPU.
  */
-class Element
+CPU::CPU(cpu::Memory* registers, cpu::Memory* memory, Bug* bug)
+  : cpu::CPU(registers, memory), bug(bug)
 {
-public:
-  /**
-   * Constructor.
-   * @param type type of element
-   */
-  Element(ElementType type);
+  this->isa_.add_interrupt(INTERRUPT_WORLDACTION, "InvalidWorldCommand", true);
+  this->isa_.add_interrupt(INTERRUPT_WORLDEVENT, "WorldEvent", false);
 
-  /**
-   * Destructor.
-   */
-  virtual ~Element() {}
-
-
-  /**
-   * Type of element.
-   */
-  ElementType type;
-
-
-  /**
-   * Check if the element can be moved.
-   * @return if the element can be moved.
-   */
-  bool movable() const { return this->movable_; }
-
-private:
-  bool movable_;
-};
-
+  this->isa_.add_instruction(0x58, "world", 0, true, ::simpleworld::world);
 }
 
-#endif // SIMPLEWORLD_ELEMENT_HPP
+}

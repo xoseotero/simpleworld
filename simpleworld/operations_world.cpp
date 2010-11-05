@@ -27,6 +27,7 @@
 #include "types.hpp"
 #include "actionerror.hpp"
 #include "simpleworld.hpp"
+#include "cpu.hpp"
 #include "bug.hpp"
 #include "movement.hpp"
 #include "operations.hpp"
@@ -64,8 +65,8 @@ namespace simpleworld
  */
 cpu::Update world(cpu::CPU& cpu, cpu::Instruction inst)
 {
-  Bug* bug = dynamic_cast<Bug*>(&cpu);
-  const db::Environment& env = bug->world->env();
+  Bug* bug = dynamic_cast<CPU*>(&cpu)->bug;;
+  Time time = bug->world->env().time();
 
   // a action is not done in 1 cycle, it takes ACTION_TIME cycles to be
   // finished
@@ -77,24 +78,18 @@ cpu::Update world(cpu::CPU& cpu, cpu::Instruction inst)
   // interrupt was thrown
 
   // return action-time to the normally
-  if (bug->action_time < env.time) {
-    bug->add_null("action_time");
-    bug->changed = true;
-  }
+  if (bug->action_time() < time)
+    bug->set_null("action_time");
 
   // check the state of the action
   if (bug->is_null("action_time")) {
     // the action begins in this cycle
     // after ACTION_TIME cycles, the action can be finished
-
-    bug->action_time = env.time + ACTION_TIME;
-    bug->remove_null("action_time");
-
-    bug->changed = true;
+    bug->action_time(time + ACTION_TIME);
 
     // the PC can't be updated until the action is finished
     return cpu::UpdateNone;
-  } else if (bug->action_time > env.time) {
+  } else if (bug->action_time() > time) {
     // the action can't be finished in this cycle
 
     // the PC can't be updated until the action is finished
@@ -226,12 +221,8 @@ cpu::Update world(cpu::CPU& cpu, cpu::Instruction inst)
 
 
     // the action is finished
-    if (bug->is_null("time_last_action"))
-        bug->remove_null("time_last_action");
-    bug->time_last_action = env.time;
-    bug->add_null("action_time");
-    bug->changed = true;
-
+    bug->time_last_action(time);
+    bug->set_null("action_time");
 
     return cpu::UpdatePC;
   }

@@ -72,7 +72,6 @@ class CPU
 public:
   /**
    * Constructor.
-   * The registers size can change to allow at least 16 registers.
    * @param registers registers of the CPU.
    * @param memory memory of the CPU.
    */

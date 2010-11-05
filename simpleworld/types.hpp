@@ -35,6 +35,7 @@ typedef Uint16 Coord;
  * Position of a element.
  */
 struct Position {
+  Position(Coord x = 0, Coord y = 0) : x(x), y(y) {}
   Coord x;
   Coord y;
 };

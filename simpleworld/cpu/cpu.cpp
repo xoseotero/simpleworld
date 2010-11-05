@@ -32,7 +32,7 @@
 
 #define GLOBAL_REGISTERS        8      // Shared registers
 #define REGISTERS_PER_WINDOW    8      // Registers per window
-#define REGISTER_WINDOWS        1      // Number of register windows
+#define REGISTER_WINDOWS        16     // Number of register windows
 
 namespace simpleworld
 {
@@ -41,18 +41,15 @@ namespace cpu
 
 /**
  * Constructor.
- * The registers size can change to allow at least 16 registers.
  * @param registers registers of the CPU.
  * @param memory memory of the CPU.
  */
 CPU::CPU(Memory* registers, Memory* memory)
   : registers_(registers), memory_(memory), running_(true)
 {
-  // 16 registers
-  static const Address min_size =
-    sizeof(Word) * (GLOBAL_REGISTERS +
-                    REGISTER_WINDOWS * REGISTERS_PER_WINDOW);
-
+  // space for all the registers (global registers + windowed registers)
+  Address min_size =
+    (GLOBAL_REGISTERS + REGISTERS_PER_WINDOW * REGISTER_WINDOWS) * sizeof(Word);
   if (this->registers_->size() < min_size)
     this->registers_->resize(min_size);
 
@@ -273,11 +270,6 @@ Word CPU::get_reg(Uint8 reg, bool system_endian) const
 {
   if (reg >= GLOBAL_REGISTERS) {
     CS cs(this->registers_->get_word(ADDRESS(REGISTER_CS), false));
-    Address size_needed = sizeof(Word) * (GLOBAL_REGISTERS +
-                                          (cs.cw + 1) * REGISTERS_PER_WINDOW);
-    if (this->registers_->size() < size_needed)
-      this->registers_->resize(size_needed);
-
     reg += cs.cw * REGISTERS_PER_WINDOW;
   }
 
@@ -294,11 +286,6 @@ void CPU::set_reg(Uint8 reg, Word word, bool system_endian)
 {
   if (reg >= GLOBAL_REGISTERS) {
     CS cs(this->registers_->get_word(ADDRESS(REGISTER_CS), false));
-    Address size_needed = sizeof(Word) * (GLOBAL_REGISTERS +
-                                          (cs.cw + 1) * REGISTERS_PER_WINDOW);
-    if (this->registers_->size() < size_needed)
-      this->registers_->resize(size_needed);
-
     reg += cs.cw * REGISTERS_PER_WINDOW;
   }
 
@@ -418,7 +405,7 @@ Interrupt thrown:\tcode: 0x%02X, name: %s")
     // Store a register:
     // Save the register in the top of the stack
     this->memory_->set_word(this->registers_->get_word(ADDRESS(REGISTER_SP)),
-                            this->registers_->get_word(ADDRESS(i)));
+                            this->get_reg(i));
     // Update stack pointer
     this->registers_->set_word(ADDRESS(REGISTER_SP),
                                this->registers_->get_word(ADDRESS(REGISTER_SP)) + sizeof(Word));

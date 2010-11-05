@@ -2,7 +2,7 @@
  * @file simpleworld/db/db.hpp
  * Simple World Database management.
  *
- *  Copyright (C) 2007  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2007-2010  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -66,7 +66,7 @@ public:
    * @return the list of environments.
    * @exception DBException if there is a error in the database.
    */
-  std::vector<Time> environments();
+  std::vector<ID> environments();
 
   /**
    * Get the last environment (change).
@@ -74,15 +74,15 @@ public:
    * @exception DBException if there is a error in the database.
    * @exception DBException if there isn't any environments.
    */
-  Time last_environment();
+  ID last_environment();
 
 
   /**
-   * List of all the bugs, ordered by its birth.
-   * @return the list of bugs.
+   * List of eggs, ordered by its conception time.
+   * @return the list of eggs.
    * @exception DBException if there is a error in the database.
    */
-  std::vector<ID> bugs();
+  std::vector<ID> eggs();
 
   /**
    * List of the alive bugs, ordered by its birth.
@@ -92,11 +92,11 @@ public:
   std::vector<ID> alive_bugs();
 
   /**
-   * List of eggs, ordered by its birth.
-   * @return the list of eggs.
+   * List of the dead bugs, ordered by its death.
+   * @return the list of bugs.
    * @exception DBException if there is a error in the database.
    */
-  std::vector<ID> eggs();
+  std::vector<ID> dead_bugs();
 
 
   /**
@@ -122,7 +122,7 @@ protected:
   void create_tables();
 
 private:
-  Uint8 version_;
+  Uint8 version_;               /**< Version of the database */
 };
 
 }

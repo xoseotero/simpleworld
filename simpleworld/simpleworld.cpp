@@ -7,7 +7,7 @@
  * world. The objective of the project is to observe the evolution of this
  * world and of these bugs.
  *
- *  Copyright (C) 2007-2008  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2007-2010  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -32,6 +32,7 @@
 #include <list>
 #include <cassert>
 
+#include <boost/scoped_array.hpp>
 #include <boost/format.hpp>
 
 #include <sqlite3x.hpp>
@@ -40,9 +41,12 @@
 #include <simpleworld/cpu/exception.hpp>
 #include <simpleworld/db/types.hpp>
 #include <simpleworld/db/exception.hpp>
+#include <simpleworld/db/world.hpp>
 #include <simpleworld/db/food.hpp>
-#include <simpleworld/db/egg.hpp>
 #include <simpleworld/db/bug.hpp>
+#include <simpleworld/db/egg.hpp>
+#include <simpleworld/db/alivebug.hpp>
+#include <simpleworld/db/deadbug.hpp>
 
 #include "simpleworld.hpp"
 #include "worlderror.hpp"
@@ -137,23 +141,23 @@ void SimpleWorld::add_egg(Energy energy,
   // begin a transaction
   sqlite3x::sqlite3_transaction transaction(*this);
 
-  db::Egg egg(this);
+  db::ID id;
   try {
-    egg.position = position;
-    egg.orientation = orientation;
-    egg.birth = this->env_->time + this->env_->time_birth;
-    egg.add_null("father_id");
-    egg.energy = energy;
-    egg.code.size = code.size();
-    egg.code.code = code;
-    egg.insert();
+    boost::scoped_array<cpu::Word> data(new cpu::Word[code.size()]);
+    for (cpu::Address i = 0; i < code.size(); i += sizeof(cpu::Word))
+      data[i / sizeof(cpu::Word)] = code.get_word(i, false);
+
+    id = db::Bug::insert(this, data.get(), code.size());
+    db::ID world_id = db::World::insert(this, position.x, position.y,
+                                        orientation);
+    db::Egg::insert(this, id, world_id, energy, this->env_->time());
   } catch (const db::DBException& e) {
     throw EXCEPTION(WorldError, e.what);
   }
 
-  Egg* ptr = new Egg(this, egg.id());
-  this->eggs_.push_back(ptr);
-  this->world_->add(ptr, ptr->position);
+  Egg* egg = new Egg(this, id);
+  this->eggs_.push_back(egg);
+  this->world_->add(egg, position);
 
   transaction.commit();
 }
@@ -170,18 +174,17 @@ void SimpleWorld::add_food(Position position, Energy size)
   // begin a transaction
   sqlite3x::sqlite3_transaction transaction(*this);
 
-  db::Food food(this);
+  db::ID id;
   try {
-    food.position = position;
-    food.size = size;
-    food.insert();
+    db::ID world_id = db::World::insert(this, position.x, position.y);
+    id = db::Food::insert(this, world_id, size);
   } catch (const db::DBException& e) {
     throw EXCEPTION(WorldError, e.what);
   }
 
-  Food* ptr = new Food(this, food.id());
-  this->foods_.push_back(ptr);
-  this->world_->add(ptr, ptr->position);
+  Food* food = new Food(this, id);
+  this->foods_.push_back(food);
+  this->world_->add(food, position);
 
   transaction.commit();
 }
@@ -198,18 +201,15 @@ void SimpleWorld::run(Time cycles)
     sqlite3x::sqlite3_transaction transaction(*this);
 
     // update the time of the environment
-    this->env_->time++;
-    this->env_->update_db(true);
+    Time time = this->env_->time() + 1;
+    this->env_->time(time);
 
     this->bugs_mutate();
-    if (this->env_->time % 64 == 0)
+    if (time % 64 == 0)
       this->bugs_timer();
     this->bugs_run();
     this->bugs_laziness();
     this->eggs_birth();
-
-    // update the database
-    this->update_db();
 
     transaction.commit();
   }
@@ -229,8 +229,7 @@ void SimpleWorld::nothing(Bug* bug)
     << std::endl;
 #endif // DEBUG
 
-  this->substract_energy(bug, this->env_->energy_nothing);
-  bug->changed = true;
+  this->substract_energy(bug, this->env_->energy_nothing());
 }
 
 /**
@@ -249,25 +248,24 @@ cpu::Word SimpleWorld::myself(Bug* bug, Info info, cpu::Word* ypos)
     << std::endl;
 #endif // DEBUG
 
-  this->substract_energy(bug, this->env_->energy_myself);
-  bug->changed = true;
+  this->substract_energy(bug, this->env_->energy_myself());
 
   switch (info) {
   case InfoID:
     return static_cast<cpu::Word>(bug->id());
 
   case InfoSize:
-    return static_cast<cpu::Word>(bug->code.size);
+    return static_cast<cpu::Word>(bug->code().size());
 
   case InfoEnergy:
-    return static_cast<cpu::Word>(bug->energy);
+    return static_cast<cpu::Word>(bug->energy());
 
   case InfoPosition:
-    *ypos = static_cast<cpu::Word>(bug->position.y);
-    return static_cast<cpu::Word>(bug->position.x);
+    *ypos = static_cast<cpu::Word>(bug->position_y());
+    return static_cast<cpu::Word>(bug->position_x());
 
   case InfoOrientation:
-    return static_cast<cpu::Word>(bug->orientation);
+    return static_cast<cpu::Word>(bug->orientation());
 
   default:
     throw EXCEPTION(ActionError, boost::str(boost::format(\
@@ -290,8 +288,7 @@ ElementType SimpleWorld::detect(Bug* bug)
     << std::endl;
 #endif // DEBUG
 
-  this->substract_energy(bug, this->env_->energy_detect);
-  bug->changed = true;
+  this->substract_energy(bug, this->env_->energy_detect());
 
   Position front = this->front(bug);
   try {
@@ -317,8 +314,7 @@ cpu::Word SimpleWorld::information(Bug* bug, Info info, cpu::Word* ypos)
     << std::endl;
 #endif // DEBUG
 
-  this->substract_energy(bug, this->env_->energy_info);
-  bug->changed = true;
+  this->substract_energy(bug, this->env_->energy_info());
 
   Position front = this->front(bug);
   Element* target;
@@ -336,23 +332,32 @@ There is nothing in (%1%, %2%)")
 
   switch (info) {
   case InfoID:  // Only eggs and bugs
-    return static_cast<cpu::Word>(static_cast< db::BugElement* >(target)->id());
+    if (target->type == ElementEgg or target->type == ElementBug)
+      return static_cast<cpu::Word>(static_cast<Bug*>(target)->id());
+    else
+      throw EXCEPTION(ActionError, "Food has no id");
 
   case InfoSize: // Every element
     if (target->type == ElementFood)
-      return static_cast<cpu::Word>(static_cast<Food*>(target)->size);
+      return static_cast<cpu::Word>(static_cast<Food*>(target)->size());
     else
-      return static_cast<cpu::Word>(static_cast< db::BugElement* >(target)->code.size);
+      return static_cast<cpu::Word>(static_cast<Bug*>(target)->code().size());
 
   case InfoEnergy: // Only eggs and bugs
-    return static_cast<cpu::Word>(static_cast< db::AliveBug* >(target)->energy);
+    if (target->type == ElementEgg or target->type == ElementBug)
+      return static_cast<cpu::Word>(static_cast<Bug*>(target)->energy());
+    else
+      throw EXCEPTION(ActionError, "Food has no energy");
 
   case InfoPosition: // Every element
-    *ypos = static_cast<cpu::Word>(target->position.y);
-    return static_cast<cpu::Word>(target->position.x);
+    *ypos = static_cast<cpu::Word>(front.y);
+    return static_cast<cpu::Word>(front.x);
 
   case InfoOrientation: // Only eggs and bugs
-    return static_cast<cpu::Word>(static_cast< db::BugElement* >(target)->orientation);
+    if (target->type == ElementEgg or target->type == ElementBug)
+      return static_cast<cpu::Word>(static_cast<Bug*>(target)->orientation());
+    else
+      throw EXCEPTION(ActionError, "Food has no orientation");
 
   default:
     throw EXCEPTION(ActionError, boost::str(boost::format(\
@@ -375,20 +380,19 @@ void SimpleWorld::move(Bug* bug, Movement movement)
     << std::endl;
 #endif // DEBUG
 
-  this->substract_energy(bug, this->env_->energy_move);
-  bug->changed = true;
+  this->substract_energy(bug, this->env_->energy_move());
 
   try {
-    this->world_->move(bug->position, this->front(bug));
+    Position current(bug->position_x(), bug->position_y());
+    Position front = this->front(bug);
+    this->world_->move(current, front);
+    if (current.x != front.x)
+      bug->position_x(front.x);
+    else
+      bug->position_y(front.y);
   } catch (const Exception& e) {
     throw EXCEPTION(ActionError, e.what);
   }
-
-  // the movement of the bugs must be sent to the database immediately to
-  // prevent constraints in the database about used positions
-  // this database constraint is thrown because the database still has the
-  // new position of this bug, but the World
-  bug->update_db();
 }
 
 /**
@@ -405,11 +409,10 @@ void SimpleWorld::turn(Bug* bug, Turn turn)
     << std::endl;
 #endif // DEBUG
 
-  this->substract_energy(bug, this->env_->energy_turn);
-  bug->changed = true;
+  this->substract_energy(bug, this->env_->energy_turn());
 
   try {
-    bug->orientation = ::simpleworld::turn(bug->orientation, turn);
+    bug->orientation(::simpleworld::turn(bug->orientation(), turn));
   } catch (const Exception& e) {
     throw EXCEPTION(ActionError, e.what);
   }
@@ -429,8 +432,7 @@ void SimpleWorld::attack(Bug* bug, Energy energy)
     << std::endl;
 #endif // DEBUG
 
-  this->substract_energy(bug, this->env_->energy_attack);
-  bug->changed = true;
+  this->substract_energy(bug, this->env_->energy_attack());
 
   // search the target of the attack
   Position front = this->front(bug);
@@ -458,9 +460,8 @@ There is not a egg/bug in (%1%, %2%)")
     Bug* bug_target = dynamic_cast<Bug*>(target);
     try {
       this->substract_energy(bug_target,
-                             energy * this->env_->attack_multiplier);
+                             energy * this->env_->attack_multiplier());
       bug_target->attacked();
-      bug_target->changed = true;
     } catch (const BugDeath& e) {
       // the bug is death
       this->kill(bug_target, bug->id());
@@ -469,8 +470,7 @@ There is not a egg/bug in (%1%, %2%)")
     Egg* egg_target = dynamic_cast<Egg*>(target);
     try {
       this->substract_energy(egg_target,
-                             energy * this->env_->attack_multiplier);
-      egg_target->changed = true;
+                             energy * this->env_->attack_multiplier());
     } catch (const BugDeath& e) {
       // the egg is death
       this->kill(egg_target, bug->id());
@@ -495,8 +495,7 @@ Energy SimpleWorld::eat(Bug* bug)
     << std::endl;
 #endif // DEBUG
 
-  this->substract_energy(bug, this->env_->energy_eat);
-  bug->changed = true;
+  this->substract_energy(bug, this->env_->energy_eat());
 
   Position front = this->front(bug);
   Element* target;
@@ -519,12 +518,12 @@ There is nothing to eat in (%1%, %2%")
                                             % front.y));
 
   Food* food_target = dynamic_cast<Food*>(target);
-  Energy energy = food_target->size;
-  bug->energy += energy;
-  bug->changed = true;
+  Energy energy = food_target->size();
+  bug->energy(bug->energy() + energy);
 
-  food_target->remove();
-  this->world_->remove(food_target->position);
+  db::World::remove(this, food_target->world_id());
+  db::Food::remove(this, food_target->id());
+  this->world_->remove(front);
   this->foods_.remove(food_target);
   delete food_target;
 
@@ -545,8 +544,7 @@ void SimpleWorld::egg(Bug* bug, Energy energy)
     << std::endl;
 #endif // DEBUG
 
-  this->substract_energy(bug, this->env_->energy_egg);
-  bug->changed = true;
+  this->substract_energy(bug, this->env_->energy_egg());
 
   Position front = this->front(bug);
   if (this->world_->used(front))
@@ -556,29 +554,63 @@ Position used (%1%, %2%)")
                                             % front.y));
 
 
-  db::Egg egg(this);
-  egg.position = front;
-  // the egg is looking to the father
-  egg.orientation = ::simpleworld::turn(::simpleworld::turn(bug->orientation,
-                                                            TurnLeft),
-                                        TurnLeft);
-  egg.birth = this->env_->time + this->env_->time_birth;
-  egg.father_id = bug->id();
-  egg.energy = std::min(bug->energy, energy);
-  egg.code = mutate(bug->code,
-                    this->env_->mutations_probability,
-                    true,
-                    this->env_->time);
-  // Substracts the size of the egg
-  this->substract_energy(bug, egg.code.size);
-  egg.insert();
+  // savepoint
+  sqlite3x::sqlite3_command sql(*this);
 
-  Egg* ptr = new Egg(this, egg.id());
+  try {
+    sql.prepare("SAVEPOINT egg;");
+
+    sql.executenonquery();
+  } catch (const sqlite3x::database_error& e) {
+    throw EXCEPTION(db::DBException, std::string(e.what()) +
+                    " (" + this->errormsg() + ")");
+  }
+
+  // the egg is looking to the father
+  db::ID world_id = db::World::insert(this, front.x, front.y,
+                                      ::simpleworld::turn(::simpleworld::turn(bug->orientation(),
+                                                                              TurnLeft),
+                                                          TurnLeft));
+  Uint32 size;
+  boost::shared_array<Uint8> code = bug->code().read(&size);
+  db::ID egg_id = db::Bug::insert(this, bug->id(), code.get(), size);
+  db::Egg::insert(this, egg_id, world_id, std::min(bug->energy(), energy),
+                  this->env_->time());
+  Egg* ptr = new Egg(this, egg_id);
+  mutate(ptr, this->env_->mutations_probability(), this->env_->time());
+
+  try {
+    // Substracts the size of the egg
+    this->substract_energy(bug, db::Bug(this, egg_id).code().size());
+  } catch (const BugDeath& e) {
+    try {
+      sql.prepare("ROLLBACK TO egg;");
+      sql.executenonquery();
+      sql.prepare("RELEASE egg;");
+      sql.executenonquery();
+    } catch (const sqlite3x::database_error& e) {
+      throw EXCEPTION(db::DBException, std::string(e.what()) +
+                      " (" + this->errormsg() + ")");
+    }
+
+    throw;
+  }
+
   this->eggs_.push_back(ptr);
-  this->world_->add(ptr, ptr->position);
+  this->world_->add(ptr, Position(ptr->position_x(), ptr->position_y()));
 
   // Substracts the energy of the egg
   this->substract_energy(bug, energy);
+
+  // savepoint
+  try {
+    sql.prepare("RELEASE egg;");
+
+    sql.executenonquery();
+  } catch (const sqlite3x::database_error& e) {
+    throw EXCEPTION(db::DBException, std::string(e.what()) +
+                    " (" + this->errormsg() + ")");
+  }
 }
 
 
@@ -593,35 +625,20 @@ void SimpleWorld::on_open()
 
   // Load the environment
   if (this->environments().empty()) {
-    this->env_ = new db::Environment(this);
-    this->env_->time = 0;
-    this->env_->size = DEFAULT_SIZE;
-
-    this->env_->mutations_probability = DEFAULT_MUTATIONS_PROBABILITY;
-    this->env_->time_birth = DEFAULT_TIME_BIRTH;
-    this->env_->time_mutate = DEFAULT_TIME_MUTATE;
-
-    this->env_->time_laziness = DEFAULT_TIME_LAZINESS;
-    this->env_->energy_laziness = DEFAULT_ENERGY_LAZINESS;
-
-    this->env_->attack_multiplier = DEFAULT_ATTACK_MULTIPLIER;
-
-    this->env_->energy_nothing = DEFAULT_ENERGY_NOTHING;
-    this->env_->energy_myself = DEFAULT_ENERGY_MYSELF;
-    this->env_->energy_detect = DEFAULT_ENERGY_DETECT;
-    this->env_->energy_info = DEFAULT_ENERGY_INFO;
-    this->env_->energy_move = DEFAULT_ENERGY_MOVE;
-    this->env_->energy_turn = DEFAULT_ENERGY_TURN;
-    this->env_->energy_attack = DEFAULT_ENERGY_ATTACK;
-    this->env_->energy_eat = DEFAULT_ENERGY_EAT;
-    this->env_->energy_egg = DEFAULT_ENERGY_EGG;
-    this->env_->insert();
-  } else {
-    this->env_ = new db::Environment(this,
-      this->last_environment());
+    db::Environment::insert(this, 0, DEFAULT_SIZE.x, DEFAULT_SIZE.y,
+                            DEFAULT_MUTATIONS_PROBABILITY, DEFAULT_TIME_BIRTH,
+                            DEFAULT_TIME_MUTATE, DEFAULT_TIME_LAZINESS,
+                            DEFAULT_ENERGY_LAZINESS, DEFAULT_ATTACK_MULTIPLIER,
+                            DEFAULT_ENERGY_NOTHING, DEFAULT_ENERGY_MYSELF,
+                            DEFAULT_ENERGY_DETECT, DEFAULT_ENERGY_INFO,
+                            DEFAULT_ENERGY_MOVE, DEFAULT_ENERGY_TURN,
+                            DEFAULT_ENERGY_ATTACK, DEFAULT_ENERGY_EAT,
+                            DEFAULT_ENERGY_EGG);
   }
 
-  this->world_ = new World(this->env_->size);
+  this->env_ = new db::Environment(this, this->last_environment());
+
+  this->world_ = new World(Position(this->env_->size_x(), this->env_->size_y()));
 
 
   // Load the elements of the world
@@ -633,7 +650,7 @@ void SimpleWorld::on_open()
        ++iter) {
     Food* ptr = new Food(this, *iter);
     this->foods_.push_back(ptr);
-    this->world_->add(ptr, ptr->position);
+    this->world_->add(ptr, Position(ptr->position_x(), ptr->position_y()));
   }
 
   ids = this->eggs();
@@ -642,7 +659,7 @@ void SimpleWorld::on_open()
        ++iter) {
     Egg* ptr = new Egg(this, *iter);
     this->eggs_.push_back(ptr);
-    this->world_->add(ptr, ptr->position);
+    this->world_->add(ptr, Position(ptr->position_x(), ptr->position_y()));
   }
 
   ids = this->alive_bugs();
@@ -651,7 +668,7 @@ void SimpleWorld::on_open()
        ++iter) {
     Bug* ptr = new Bug(this, *iter);
     this->bugs_.push_back(ptr);
-    this->world_->add(ptr, ptr->position);
+    this->world_->add(ptr, Position(ptr->position_x(), ptr->position_y()));
   }
 }
 
@@ -662,8 +679,9 @@ void SimpleWorld::on_open()
  */
 Position SimpleWorld::front(Bug* bug)
 {
-  return ::simpleworld::move(bug->position, bug->orientation,
-                             MoveForward, this->world_->size());
+  return ::simpleworld::move(Position(bug->position_x(), bug->position_y()),
+                             bug->orientation(), MoveForward,
+                             this->world_->size());
 }
 
 
@@ -676,18 +694,9 @@ void SimpleWorld::eggs_birth()
   std::list<Egg*> eggs = this->eggs_;
   for (std::list<Egg*>::iterator egg = eggs.begin();
        egg != eggs.end();
-       ++egg) {
-    if ((*egg)->birth <= this->env_->time) {
-      // convert the egg to a bug
-      Bug* bug = new Bug(this, (*egg)->be_born());
-
-      this->world_->remove((*egg)->position);
-      this->world_->add(bug, bug->position);
-      this->bugs_.push_back(bug);
-      this->eggs_.remove(*egg);
-      delete (*egg);
-    }
-  }
+       ++egg)
+    if (((*egg)->conception() + this->env_->time_birth()) <= this->env_->time())
+      this->birth(*egg);
 }
 
 /**
@@ -696,33 +705,25 @@ void SimpleWorld::eggs_birth()
 void SimpleWorld::bugs_mutate()
 {
   // check that time_mutate is not zero to prevent a float point exception
-  if (this->env_->time_mutate == 0)
+  if (this->env_->time_mutate() == 0)
     return;
 
   // check if the bug is old enough
   for (std::list<Bug*>::iterator bug = this->bugs_.begin();
        bug != this->bugs_.end();
        ++bug) {
-    Time age = this->env_->time - (*bug)->birth;
-    if ((age > 0) and (age % this->env_->time_mutate == 0)) {
-      int mutations = (*bug)->code.mutations.size();
-
-      (*bug)->code = mutate((*bug)->code,
-                            this->env_->mutations_probability,
-                            false,
-                            this->env_->time);
-      if (mutations != (*bug)->code.mutations.size()) {
+    Time age = this->env_->time() - (*bug)->birth();
+    if ((age > 0) and (age % this->env_->time_mutate() == 0))
+      if (mutate((*bug), this->env_->mutations_probability(),
+          this->env_->time())) {
         (*bug)->mutated();
-        (*bug)->code.changed = true;
-      }
 
 #ifdef DEBUG
-  std::cout << boost::format("The code of bug %1% has been mutated %2% words")
+  std::cout << boost::format("The code of bug %1% has been mutated")
     % (*bug)->id()
-    % ((*bug)->code.mutations.size() - mutations)
     << std::endl;
 #endif // DEBUG
-    }
+        }
   }
 }
 
@@ -738,7 +739,7 @@ void SimpleWorld::bugs_timer()
        ++bug) {
     try {
       // throw the interrupt
-      (*bug)->timer_interrupt();
+      (*bug)->cpu.timer_interrupt();
     } catch (const cpu::CPUException& e) {
       // some critical error
       this->kill(*bug);
@@ -755,12 +756,12 @@ void SimpleWorld::bugs_timer()
  */
 void SimpleWorld::substract_energy(Egg* egg, Energy energy)
 {
-  if (egg->energy <= energy)
+  if (egg->energy() <= energy)
     throw EXCEPTION(BugDeath, boost::str(boost::format("\
 Egg %1% is death")
                                          % egg->id()));
 
-  egg->energy -= energy;
+  egg->energy(egg->energy() - energy);
 }
 
 /**
@@ -772,12 +773,36 @@ Egg %1% is death")
  */
 void SimpleWorld::substract_energy(Bug* bug, Energy energy)
 {
-  if (bug->energy <= energy)
+  if (bug->energy() <= energy)
     throw EXCEPTION(BugDeath, boost::str(boost::format("\
 Bug %1% is death")
                                          % bug->id()));
 
-  bug->energy -= energy;
+  bug->energy(bug->energy() - energy);
+}
+
+/**
+ * Convert a egg into a bug.
+ * @param egg The egg.
+ */
+void SimpleWorld::birth(Egg* egg)
+{
+  // Convert the egg into a bug
+  db::ID id = db::AliveBug::insert(this, egg, this->env_->time());
+  Bug* bug = new Bug(this, id);
+
+  Position position(bug->position_x(), bug->position_y());
+  this->world_->remove(position);
+  this->world_->add(bug, position);
+  this->bugs_.push_back(bug);
+#ifdef DEBUG
+  std::cout << boost::str(boost::format("\
+Bug[%1%] born")
+                          % bug->id())
+            << std::endl;
+#endif // DEBUG
+  this->eggs_.remove(egg);
+  delete egg;
 }
 
 /**
@@ -787,30 +812,33 @@ Bug %1% is death")
 void SimpleWorld::kill(Egg* egg)
 {
   // Convert the egg in food
-  Food* food = new Food(this, egg->die(this->env_->time));
+  db::ID id = db::Food::insert(this, egg->world_id(), egg->code().size());
+  db::DeadBug::insert(this, egg, this->env_->time());
+
+  Food* food = new Food(this, id);
+  Position position(food->position_x(), food->position_y());
   this->foods_.push_back(food);
-  this->world_->remove(egg->position);
-  this->world_->add(food, food->position);
+  this->world_->remove(position);
+  this->world_->add(food, position);
 #ifdef DEBUG
   std::cout << boost::format("\
 Food[%1%] added at (%2%, %3%) with a size of %4%")
     % food->id()
-    % food->position.x
-    % food->position.y
-    % food->size
+    % food->position_x()
+    % food->position_y()
+    % food->size()
             << std::endl;
 #endif // DEBUG
 
   // Remove the dead bug
   this->eggs_.remove(egg);
-  delete egg;
-
 #ifdef DEBUG
   std::cout << boost::str(boost::format("\
 Egg[%1%] died")
                           % egg->id())
             << std::endl;
 #endif // DEBUG
+  delete egg;
 }
 
 /**
@@ -821,30 +849,33 @@ Egg[%1%] died")
 void SimpleWorld::kill(Egg* egg, db::ID killer_id)
 {
   // Convert the egg in food
-  Food* food = new Food(this, egg->die(this->env_->time, killer_id));
+  db::ID id = db::Food::insert(this, egg->world_id(), egg->code().size());
+  db::DeadBug::insert(this, egg, this->env_->time(), killer_id);
+
+  Food* food = new Food(this, id);
+  Position position(food->position_x(), food->position_y());
   this->foods_.push_back(food);
-  this->world_->remove(egg->position);
-  this->world_->add(food, food->position);
+  this->world_->remove(position);
+  this->world_->add(food, position);
 #ifdef DEBUG
   std::cout << boost::format("\
 Food[%1%] added at (%2%, %3%) with a size of %4%")
     % food->id()
-    % food->position.x
-    % food->position.y
-    % food->size
-    << std::endl;
+    % food->position_x()
+    % food->position_y()
+    % food->size()
+            << std::endl;
 #endif // DEBUG
 
   // Remove the dead bug
   this->eggs_.remove(egg);
-  delete egg;
-
 #ifdef DEBUG
   std::cout << boost::str(boost::format("\
 Egg[%1%] died")
                           % egg->id())
-    << std::endl;
+            << std::endl;
 #endif // DEBUG
+  delete egg;
 }
 
 /**
@@ -854,30 +885,33 @@ Egg[%1%] died")
 void SimpleWorld::kill(Bug* bug)
 {
   // Convert the bug in food
-  Food* food = new Food(this, bug->die(this->env_->time));
+  db::ID id = db::Food::insert(this, bug->world_id(), bug->code().size());
+  db::DeadBug::insert(this, bug, this->env_->time());
+
+  Food* food = new Food(this, id);
+  Position position(food->position_x(), food->position_y());
   this->foods_.push_back(food);
-  this->world_->remove(bug->position);
-  this->world_->add(food, food->position);
+  this->world_->remove(position);
+  this->world_->add(food, position);
 #ifdef DEBUG
   std::cout << boost::format("\
 Food[%1%] added at (%2%, %3%) with a size of %4%")
     % food->id()
-    % food->position.x
-    % food->position.y
-    % food->size
+    % food->position_x()
+    % food->position_y()
+    % food->size()
             << std::endl;
 #endif // DEBUG
 
   // Remove the dead bug
   this->bugs_.remove(bug);
-  delete bug;
-
 #ifdef DEBUG
   std::cout << boost::str(boost::format("\
 Bug[%1%] died")
                           % bug->id())
             << std::endl;
 #endif // DEBUG
+  delete bug;
 }
 
 /**
@@ -888,30 +922,33 @@ Bug[%1%] died")
 void SimpleWorld::kill(Bug* bug, db::ID killer_id)
 {
   // Convert the bug in food
-  Food* food = new Food(this, bug->die(this->env_->time, killer_id));
+  db::ID id = db::Food::insert(this, bug->world_id(), bug->code().size());
+  db::DeadBug::insert(this, bug, this->env_->time(), killer_id);
+
+  Food* food = new Food(this, id);
+  Position position(food->position_x(), food->position_y());
   this->foods_.push_back(food);
-  this->world_->remove(bug->position);
-  this->world_->add(food, food->position);
+  this->world_->remove(position);
+  this->world_->add(food, position);
 #ifdef DEBUG
   std::cout << boost::format("\
 Food[%1%] added at (%2%, %3%) with a size of %4%")
     % food->id()
-    % food->position.x
-    % food->position.y
-    % food->size
-    << std::endl;
+    % food->position_x()
+    % food->position_y()
+    % food->size()
+            << std::endl;
 #endif // DEBUG
 
   // Remove the dead bug
   this->bugs_.remove(bug);
-  delete bug;
-
 #ifdef DEBUG
   std::cout << boost::str(boost::format("\
 Bug[%1%] died")
                           % bug->id())
-    << std::endl;
+            << std::endl;
 #endif // DEBUG
+  delete bug;
 }
 
 /**
@@ -931,7 +968,7 @@ void SimpleWorld::bugs_run()
 
     try {
       // execute a instruction
-      (*bug)->next();
+      (*bug)->cpu.next();
     } catch (const cpu::CPUException& e) {
       // some uncaught error in the CPU (CPU stopped)
       this->kill(*bug);
@@ -955,11 +992,11 @@ void SimpleWorld::bugs_laziness()
     // calculate the time since the last action
     Time time;
     if ((*bug)->is_null("time_last_action"))
-      time = this->env_->time - (*bug)->birth;
+      time = this->env_->time() - (*bug)->birth();
     else
-      time = this->env_->time - (*bug)->time_last_action;
+      time = this->env_->time() - (*bug)->time_last_action();
 
-    if (time > 0 and time % this->env_->time_laziness == 0) {
+    if (time > 0 and time % this->env_->time_laziness() == 0) {
 #ifdef DEBUG
   std::cout << boost::format("Bug %1% is lazy")
     % (*bug)->id()
@@ -967,38 +1004,13 @@ void SimpleWorld::bugs_laziness()
 #endif // DEBUG
 
       try {
-        this->substract_energy((*bug), this->env_->energy_laziness);
-        (*bug)->changed = true;
+        this->substract_energy((*bug), this->env_->energy_laziness());
       } catch (const BugDeath& e) {
         // the bug is death
         this->kill(*bug);
       }
     }
   }
-}
-
-/**
- * Update the elements of the World in the database.
- */
-void SimpleWorld::update_db()
-{
-  // update the eggs
-  for (std::list<Food*>::iterator food = this->foods_.begin();
-       food != this->foods_.end();
-       ++food)
-    (*food)->update_db();
-
-  // update the eggs
-  for (std::list<Egg*>::iterator egg = this->eggs_.begin();
-       egg != this->eggs_.end();
-       ++egg)
-    (*egg)->update_db();
-
-  // update the bugs
-  for (std::list<Bug*>::iterator bug = this->bugs_.begin();
-       bug != this->bugs_.end();
-       ++bug)
-    (*bug)->update_db();
 }
 
 }

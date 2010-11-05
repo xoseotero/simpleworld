@@ -2,7 +2,7 @@
  * @file tests/simpleworld/movement_test.cpp
  * Unit test for movement.hpp.
  *
- *  Copyright (C) 2007  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2007-2010  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -93,16 +93,16 @@ BOOST_AUTO_TEST_CASE(movement_turn)
  */
 BOOST_AUTO_TEST_CASE(movement_move)
 {
-  sw::Position p = {4, 4};
-  sw::Position front_north = {3, 4};
-  sw::Position behind_north = {5, 4};
-  sw::Position front_east = {4, 5};
-  sw::Position behind_east = {4, 3};
-  sw::Position front_south = {5, 4};
-  sw::Position behind_south = {3, 4};
-  sw::Position front_west = {4, 3};
-  sw::Position behind_west = {4, 5};
-  sw::Position max = {8, 8};
+  sw::Position p(4, 4);
+  sw::Position front_north(3, 4);
+  sw::Position behind_north(5, 4);
+  sw::Position front_east(4, 5);
+  sw::Position behind_east(4, 3);
+  sw::Position front_south(5, 4);
+  sw::Position behind_south(3, 4);
+  sw::Position front_west(4, 3);
+  sw::Position behind_west(4, 5);
+  sw::Position max(8, 8);
 
   BOOST_CHECK_EQUAL(sw::move(p, sw::OrientationNorth, sw::MoveForward, max),
                     front_north);

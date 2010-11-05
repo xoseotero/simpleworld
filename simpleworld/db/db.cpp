@@ -2,7 +2,7 @@
  * @file simpleworld/db/db.cpp
  * Simple World database.
  *
- *  Copyright (C) 2006-2008  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2006-2010  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -57,9 +57,9 @@ DB::DB(std::string filename)
  * @return the list of environments.
  * @exception DBException if there is a error in the database.
  */
-std::vector<Time> DB::environments()
+std::vector<ID> DB::environments()
 {
-  std::vector<Time> ids;
+  std::vector<ID> ids;
   sqlite3x::sqlite3_command sql(*this);
 
   try {
@@ -69,7 +69,7 @@ FROM Environment\n\
 ORDER BY time;");
     sqlite3x::sqlite3_cursor cursor = sql.executecursor();
     while (cursor.step())
-      ids.push_back(cursor.getint(0));
+      ids.push_back(cursor.getint64(0));
   } catch (const sqlite3x::database_error& e) {
     throw EXCEPTION(DBException, std::string(e.what()) +
                     " (" + this->errormsg() + ")");
@@ -84,7 +84,7 @@ ORDER BY time;");
  * @exception DBException if there is a error in the database.
  * @exception DBException if there isn't any environments.
  */
-Time DB::last_environment()
+ID DB::last_environment()
 {
   sqlite3x::sqlite3_command sql(*this);
 
@@ -98,7 +98,7 @@ ORDER BY id DESC\n\
 LIMIT 1;");
     sqlite3x::sqlite3_cursor cursor = sql.executecursor();
     if (cursor.step())
-      return cursor.getint(0);
+      return cursor.getint64(0);
     else
       throw EXCEPTION(DBException, "Table Environment is empty");
   } catch (const sqlite3x::database_error& e) {
@@ -109,20 +109,20 @@ LIMIT 1;");
 
 
 /**
- * List of all the bugs, ordered by its birth.
- * @return the list of bugs.
+ * List of eggs, ordered by its conception time.
+ * @return the list of eggs.
  * @exception DBException if there is a error in the database.
  */
-std::vector<ID> DB::bugs()
+std::vector<ID> DB::eggs()
 {
   std::vector<ID> ids;
   sqlite3x::sqlite3_command sql(*this);
 
   try {
     sql.prepare("\
-SELECT id\n\
-FROM Bug\n\
-ORDER BY birth, id;");
+SELECT bug_id\n\
+FROM Egg\n\
+ORDER BY conception, bug_id;");
     sqlite3x::sqlite3_cursor cursor = sql.executecursor();
     while (cursor.step())
       ids.push_back(cursor.getint64(0));
@@ -146,9 +146,9 @@ std::vector<ID> DB::alive_bugs()
 
   try {
     sql.prepare("\
-SELECT id\n\
-FROM Bug_alive\n\
-ORDER BY birth, id;");
+SELECT bug_id\n\
+FROM AliveBug\n\
+ORDER BY birth, bug_id;");
     sqlite3x::sqlite3_cursor cursor = sql.executecursor();
     while (cursor.step())
       ids.push_back(cursor.getint64(0));
@@ -161,20 +161,20 @@ ORDER BY birth, id;");
 }
 
 /**
- * List of eggs, ordered by its birth.
- * @return the list of eggs.
+ * List of the dead bugs, ordered by its death.
+ * @return the list of bugs.
  * @exception DBException if there is a error in the database.
  */
-std::vector<ID> DB::eggs()
+std::vector<ID> DB::dead_bugs()
 {
   std::vector<ID> ids;
   sqlite3x::sqlite3_command sql(*this);
 
   try {
     sql.prepare("\
-SELECT id\n\
-FROM Bug_egg\n\
-ORDER BY birth, id;");
+SELECT bug_id\n\
+FROM DeadBug\n\
+ORDER BY death, bug_id;");
     sqlite3x::sqlite3_cursor cursor = sql.executecursor();
     while (cursor.step())
       ids.push_back(cursor.getint64(0));
@@ -224,6 +224,9 @@ void DB::on_open()
 {
   sqlite3x::sqlite3_connection::on_open();
 
+  this->executenonquery("PRAGMA journal_mode = WAL;");
+  this->executenonquery("PRAGMA foreign_keys = ON;");
+
   // user_version is used for know if the database was new (user_version is 0
   // by default) and the version of the database (user_version is set to
   // DATABASE_VERSION) to check if the database is compatible
@@ -253,7 +256,7 @@ void DB::create_tables()
   const char* sql_commands[] = {
     /*******************
      * Environment
-    */
+     */
     "\
 CREATE TABLE Environment\n\
 (\n\
@@ -261,7 +264,7 @@ CREATE TABLE Environment\n\
 \n\
   time INTEGER NOT NULL,\n\
 \n\
-  -- the rest of the rows can't change\n\
+  -- the rest of the rows shouldn't change\n\
   size_x INTEGER NOT NULL,\n\
   size_y INTEGER NOT NULL,\n\
 \n\
@@ -307,7 +310,8 @@ CREATE INDEX Environment_index ON Environment(time);",
 CREATE TRIGGER Environment_insert_time\n\
 BEFORE INSERT\n\
 ON Environment\n\
-FOR EACH ROW BEGIN\n\
+FOR EACH ROW\n\
+BEGIN\n\
   SELECT RAISE(ROLLBACK, 'There is a older time')\n\
   WHERE (SELECT max(time)\n\
          FROM Environment) > NEW.time;\n\
@@ -317,10 +321,11 @@ END;",
 CREATE TRIGGER Environment_update_time\n\
 BEFORE UPDATE\n\
 ON Environment\n\
-FOR EACH ROW BEGIN\n\
+FOR EACH ROW\n\
+BEGIN\n\
   SELECT RAISE(ROLLBACK, 'There is a older time')\n\
   WHERE (SELECT max(time)\n\
-         FROM Environment) >= NEW.time;\n\
+         FROM Environment) > NEW.time;\n\
 END;",
 
     /* The size of the World can't change */
@@ -330,40 +335,88 @@ BEFORE INSERT\n\
 ON Environment\n\
 FOR EACH ROW\n\
 BEGIN\n\
-  SELECT RAISE(ROLLBACK, \"The size of the World can't change\")\n\
+  SELECT RAISE(ROLLBACK, 'The size of the World can''t change')\n\
   WHERE (SELECT count(id)\n\
          FROM Environment) > 0\n\
-	      AND\n\
+	AND\n\
         (SELECT id\n\
          FROM Environment\n\
-         WHERE size_x = NEW.size_x AND size_y = NEW.size_y) IS NULL;\n\
+         WHERE size_x=NEW.size_x AND size_y=NEW.size_y) IS NULL;\n\
 END;",
 
-    /* Only time can change */
+
+    /*******************
+     * World
+     */
     "\
-CREATE TRIGGER Environment_update\n\
-BEFORE UPDATE\n\
-ON Environment\n\
+CREATE TABLE World\n\
+(\n\
+  id INTEGER NOT NULL,\n\
+\n\
+  position_x INTEGER NOT NULL,\n\
+  position_y INTEGER NOT NULL,\n\
+  orientation INTEGER,\n\
+\n\
+  PRIMARY KEY(id),\n\
+  UNIQUE(position_x, position_y),\n\
+  CHECK(position_x >= 0 AND position_y >= 0),\n\
+  CHECK(orientation IS NULL OR\n\
+        (orientation >= 0 AND orientation <= 3)) -- 4 possible orientations\n\
+);",
+
+    /* positions must be less than the size of the world */
+    "\
+CREATE TRIGGER World_insert_position_x\n\
+BEFORE INSERT\n\
+ON World\n\
 FOR EACH ROW\n\
-WHEN OLD.size_x != NEW.size_x OR\n\
-     OLD.size_y != NEW.size_y OR\n\
-     OLD.mutations_probability != NEW.mutations_probability OR\n\
-     OLD.time_birth != NEW.time_birth OR\n\
-     OLD.time_mutate != NEW.time_mutate OR\n\
-     OLD.time_laziness != NEW.time_laziness OR\n\
-     OLD.energy_laziness != NEW.energy_laziness OR\n\
-     OLD.attack_multiplier != NEW.attack_multiplier OR\n\
-     OLD.energy_nothing != NEW.energy_nothing OR\n\
-     OLD.energy_myself != NEW.energy_myself OR\n\
-     OLD.energy_detect != NEW.energy_detect OR\n\
-     OLD.energy_info != NEW.energy_info OR\n\
-     OLD.energy_move != NEW.energy_move OR\n\
-     OLD.energy_turn != NEW.energy_turn OR\n\
-     OLD.energy_attack != NEW.energy_attack OR\n\
-     OLD.energy_eat != NEW.energy_eat OR\n\
-     OLD.energy_egg != NEW.energy_egg\n\
 BEGIN\n\
-  SELECT RAISE(ROLLBACK, 'changed invalid col');\n\
+  SELECT RAISE(ROLLBACK, 'position_x is out of the World')\n\
+  WHERE (SELECT size_x\n\
+         FROM Environment\n\
+         WHERE time=(SELECT max(time)\n\
+                     FROM Environment)) <= NEW.position_x;\n\
+END;",
+
+    "\
+CREATE TRIGGER World_insert_position_y\n\
+BEFORE INSERT\n\
+ON World\n\
+FOR EACH ROW\n\
+BEGIN\n\
+  SELECT RAISE(ROLLBACK, 'position_y is out of the World')\n\
+  WHERE (SELECT size_x\n\
+         FROM Environment\n\
+         WHERE time=(SELECT max(time)\n\
+                     FROM Environment)) <= NEW.position_x;\n\
+END;",
+
+    "\
+CREATE TRIGGER World_update_position_x\n\
+BEFORE UPDATE\n\
+ON World\n\
+FOR EACH ROW\n\
+WHEN OLD.position_x <> NEW.position_x\n\
+BEGIN\n\
+  SELECT RAISE(ROLLBACK, 'position_x is out of the World')\n\
+  WHERE (SELECT size_x\n\
+         FROM Environment\n\
+         WHERE time=(SELECT max(time)\n\
+                     FROM Environment)) <= NEW.position_x;\n\
+END;",
+
+    "\
+CREATE TRIGGER World_update_position_y\n\
+BEFORE UPDATE\n\
+ON World\n\
+FOR EACH ROW\n\
+WHEN OLD.position_y <> NEW.position_y\n\
+BEGIN\n\
+  SELECT RAISE(ROLLBACK, 'position_y is out of the World')\n\
+  WHERE (SELECT size_x\n\
+         FROM Environment\n\
+         WHERE time=(SELECT max(time)\n\
+                     FROM Environment)) <= NEW.position_x;\n\
 END;",
 
 
@@ -375,171 +428,90 @@ CREATE TABLE Bug\n\
 (\n\
   id INTEGER NOT NULL,\n\
 \n\
-  energy INTEGER NOT NULL,\n\
+  father_id INTEGER,                    -- NULL if the bug is added manually\n\
 \n\
-  position_x INTEGER NOT NULL,\n\
-  position_y INTEGER NOT NULL,\n\
-  orientation INTEGER NOT NULL,\n\
+  /* The blob is the last col for performance */\n\
+  code BLOB NOT NULL,\n\
+\n\
+  PRIMARY KEY(id),\n\
+  FOREIGN KEY(father_id) REFERENCES Bug(id) ON UPDATE CASCADE ON DELETE SET NULL,\n\
+  CHECK(father_id),\n\
+  CHECK(length(code) >= 0 AND (length(code) % 4 = 0))\n\
+);",
+
+    "\
+CREATE INDEX Bug_index ON Bug(father_id);",
+
+
+    /*******************
+     * Egg
+     */
+    "\
+CREATE TABLE Egg\n\
+(\n\
+  bug_id INTEGER NOT NULL,\n\
+\n\
+  world_id INTEGER NOT NULL,\n\
+  energy INTEGER NOT NULL,\n\
+  conception INTEGER NOT NULL,\n\
+\n\
+  PRIMARY KEY(bug_id),\n\
+  FOREIGN KEY(bug_id) REFERENCES Bug(id) ON UPDATE CASCADE ON DELETE CASCADE,\n\
+  FOREIGN KEY(world_id) REFERENCES World(id) ON UPDATE CASCADE ON DELETE CASCADE,\n\
+  UNIQUE(world_id),\n\
+  CHECK(energy > 0),\n\
+  CHECK(conception >= 0)\n\
+);",
+
+    /* conception must be in the current time */
+    "\
+CREATE TRIGGER Egg_insert_conception\n\
+BEFORE INSERT\n\
+ON Egg\n\
+FOR EACH ROW\n\
+BEGIN\n\
+  SELECT RAISE(ROLLBACK, 'conception is not now')\n\
+  WHERE (SELECT max(time)\n\
+         FROM Environment) <> NEW.conception;\n\
+END;",
+
+
+    /*******************
+     * Alive bug
+     */
+    "\
+CREATE TABLE AliveBug\n\
+(\n\
+  bug_id INTEGER NOT NULL,\n\
+\n\
+  world_id INTEGER NOT NULL,\n\
+  birth INTEGER NOT NULL,\n\
+  energy INTEGER NOT NULL,\n\
 \n\
   time_last_action INTEGER,             -- NULL if no action was done yet\n\
   action_time INTEGER,                  -- NULL if the bug is not doing a\n\
                                         -- action\n\
 \n\
-  birth INTEGER NOT NULL,\n\
-  dead INTEGER,                         -- NULL if alive\n\
+  /* The blob is the last col for performance */\n\
+  registers BLOB NOT NULL,\n\
 \n\
-  father_id INTEGER,                    -- NULL if developed bug\n\
-  killer_id INTEGER,                    -- NULL if alive\n\
-\n\
-  PRIMARY KEY(id),\n\
-  FOREIGN KEY(killer_id) REFERENCES Bug(id),\n\
-  FOREIGN KEY(father_id) REFERENCES Bug(id),\n\
-  CHECK(position_x >= 0 AND position_y >= 0),\n\
-  CHECK(orientation >= 0 AND orientation <= 3), -- 4 possible orientations\n\
+  PRIMARY KEY(bug_id),\n\
+  FOREIGN KEY(bug_id) REFERENCES Bug(id) ON UPDATE CASCADE ON DELETE CASCADE,\n\
+  FOREIGN KEY(world_id) REFERENCES World(id) ON UPDATE CASCADE ON DELETE CASCADE,\n\
+  UNIQUE(world_id),\n\
   CHECK(time_last_action IS NULL OR time_last_action >= 0),\n\
   CHECK(action_time IS NULL OR action_time > 0),\n\
   CHECK(birth >= 0),\n\
-  CHECK(dead IS NULL OR (birth <= dead)), -- If dead IS NOT NULL\n\
-  CHECK(killer_id IS NULL OR (killer_id IS NOT NULL AND dead IS NOT NULL))\n\
+  CHECK(energy > 0)\n\
 );",
-
-    "\
-CREATE INDEX Bug_position_index ON Bug(position_x, position_y);",
-
-    "\
-CREATE INDEX Bug_dead_index ON Bug(dead);",
-
-    "\
-CREATE VIEW Bug_egg AS\n\
-  SELECT id, energy, position_x, position_y, orientation,\n\
-         birth, father_id\n\
-  FROM Bug\n\
-  WHERE dead IS NULL AND birth > (SELECT max(time)\n\
-                                  FROM Environment);",
-
-    "\
-CREATE VIEW Bug_alive AS\n\
-  SELECT id, energy, position_x, position_y, orientation,\n\
-         birth, father_id\n\
-  FROM Bug\n\
-  WHERE dead IS NULL AND birth <= (SELECT max(time)\n\
-                                   FROM Environment);",
-
-    "\
-CREATE VIEW Bug_dead AS\n\
-  SELECT id, position_x, position_y, orientation,\n\
-         birth, dead, father_id, killer_id\n\
-  FROM Bug\n\
-  WHERE dead IS NOT NULL;",
-
-    /* Check if the id will change */
-    "\
-CREATE TRIGGER Bug_id_trigger\n\
-BEFORE UPDATE\n\
-ON Bug\n\
-FOR EACH ROW\n\
-WHEN OLD.id != NEW.id\n\
-BEGIN\n\
-  SELECT RAISE(ROLLBACK, 'id changed');\n\
-END;",
-
-    /* Check if the bug is alive before update */
-    "\
-CREATE TRIGGER Bug_alive_trigger\n\
-BEFORE UPDATE\n\
-ON Bug\n\
-FOR EACH ROW BEGIN\n\
-  SELECT RAISE(ROLLBACK, 'Bug dead')\n\
-  WHERE (SELECT id\n\
-         FROM Bug\n\
-         WHERE id=NEW.id AND dead IS NULL)\n\
-        IS NULL;\n\
-END;",
-
-    /* Check if father_id is a valid id */
-    "\
-CREATE TRIGGER Bug_insert_father_trigger\n\
-BEFORE INSERT\n\
-ON Bug\n\
-FOR EACH ROW\n\
-WHEN NEW.father_id IS NOT NULL\n\
-BEGIN\n\
-  SELECT RAISE(ROLLBACK, 'Father not found or dead')\n\
-  WHERE (SELECT id\n\
-         FROM Bug\n\
-         WHERE id=NEW.father_id AND dead IS NULL) IS NULL;\n\
-END;",
-
-    "\
-CREATE TRIGGER Bug_update_father_trigger\n\
-BEFORE UPDATE\n\
-ON Bug\n\
-FOR EACH ROW\n\
-WHEN OLD.father_id != NEW.father_id\n\
-BEGIN\n\
-  SELECT RAISE(ROLLBACK, \"Father can't change\");\n\
-END;",
-
-    /* Check if killer_id is a valid id */
-    "\
-CREATE TRIGGER Bug_insert_killer_trigger\n\
-BEFORE INSERT\n\
-ON Bug\n\
-FOR EACH ROW BEGIN\n\
-  SELECT RAISE(ROLLBACK, 'Killer not found')\n\
-  WHERE NEW.killer_id IS NOT NULL\n\
-        AND\n\
-        (SELECT id\n\
-         FROM Bug\n\
-         WHERE id=NEW.killer_id AND dead IS NULL) IS NULL;\n\
-END;",
-
-    "\
-CREATE TRIGGER Bug_update_killer_trigger\n\
-BEFORE UPDATE\n\
-ON Bug\n\
-FOR EACH ROW BEGIN\n\
-  SELECT RAISE(ROLLBACK, 'Killer not found')\n\
-  WHERE NEW.killer_id IS NOT NULL\n\
-        AND\n\
-        (SELECT id\n\
-         FROM Bug\n\
-         WHERE id=NEW.killer_id AND dead IS NULL) IS NULL;\n\
-END;",
-
-    /* Check that two bugs are not in the same position */
-    "\
-CREATE TRIGGER Bug_insert_position_trigger\n\
-BEFORE INSERT\n\
-ON Bug\n\
-FOR EACH ROW BEGIN\n\
-  SELECT RAISE(ROLLBACK, 'There is a bug in the same position')\n\
-  WHERE (SELECT id\n\
-         FROM Bug\n\
-         WHERE dead IS NULL AND position_x=NEW.position_x AND position_y=NEW.position_y)\n\
-        IS NOT NULL;\n\
-END;",
-
-    "\
-CREATE TRIGGER Bug_update_position_trigger\n\
-BEFORE UPDATE\n\
-ON Bug\n\
-FOR EACH ROW\n\
-WHEN OLD.id != NEW.id\n\
-BEGIN\n\
-  SELECT RAISE(ROLLBACK, 'There is a bug in the same position')\n\
-  WHERE (SELECT id\n\
-         FROM Bug\n\
-         WHERE dead IS NULL AND position_x=NEW.position_x AND position_y=NEW.position_y)\n\
-        IS NOT NULL;\n\
-END;",
 
     /* Check that the time_last_action isn't in the future */
     "\
-CREATE TRIGGER Bug_insert_time_last_action_trigger\n\
+CREATE TRIGGER AliveBug_insert_time_last_action\n\
 BEFORE INSERT\n\
-ON Bug\n\
-FOR EACH ROW BEGIN\n\
+ON AliveBug\n\
+FOR EACH ROW\n\
+BEGIN\n\
   SELECT RAISE(ROLLBACK, 'The time_last_action is in the future')\n\
   WHERE (SELECT max(time)\n\
          FROM Environment)\n\
@@ -547,36 +519,24 @@ FOR EACH ROW BEGIN\n\
 END;",
 
     "\
-CREATE TRIGGER Bug_update_time_last_action_trigger\n\
+CREATE TRIGGER AliveBug_update_time_last_action\n\
 BEFORE UPDATE\n\
-ON Bug\n\
+ON AliveBug\n\
 FOR EACH ROW\n\
-WHEN OLD.time_last_action != NEW.time_last_action\n\
+WHEN OLD.time_last_action <> NEW.time_last_action\n\
 BEGIN\n\
   SELECT RAISE(ROLLBACK, 'The time_last_action is in the future')\n\
   WHERE (SELECT max(time)\n\
          FROM Environment)\n\
-	      < NEW.time_last_action;\n\
+        < NEW.time_last_action;\n\
 END;",
 
     /* Check that the action_time isn't in the past */
     "\
-CREATE TRIGGER Bug_insert_action_time_trigger\n\
+CREATE TRIGGER AliveBug_insert_action_time\n\
 BEFORE INSERT\n\
-ON Bug\n\
-FOR EACH ROW BEGIN\n\
-  SELECT RAISE(ROLLBACK, 'The action_time is in the past')\n\
-  WHERE (SELECT max(time)\n\
-         FROM Environment)\n\
-        > NEW.action_time;\n\
-END;",
-
-    "\
-CREATE TRIGGER Bug_update_action_time_trigger\n\
-BEFORE UPDATE\n\
-ON Bug\n\
+ON AliveBug\n\
 FOR EACH ROW\n\
-WHEN OLD.action_time != NEW.action_time\n\
 BEGIN\n\
   SELECT RAISE(ROLLBACK, 'The action_time is in the past')\n\
   WHERE (SELECT max(time)\n\
@@ -584,190 +544,43 @@ BEGIN\n\
         > NEW.action_time;\n\
 END;",
 
-    /* Propagate the dead */
     "\
-CREATE TRIGGER Bug_update_dead_trigger\n\
+CREATE TRIGGER AliveBug_update_action_time\n\
 BEFORE UPDATE\n\
-ON Bug\n\
+ON AliveBug\n\
 FOR EACH ROW\n\
-WHEN OLD.dead IS NULL AND NEW.dead IS NOT NULL\n\
+WHEN OLD.action_time <> NEW.action_time\n\
 BEGIN\n\
-  DELETE FROM CPU WHERE bug_id = OLD.id;\n\
-END;",
-
-    /* Propagate the deletion */
-    "\
-CREATE TRIGGER Bug_delete_trigger\n\
-BEFORE DELETE\n\
-ON Bug\n\
-FOR EACH ROW BEGIN\n\
-  DELETE FROM Code WHERE bug_id = OLD.id;\n\
-  DELETE FROM CPU WHERE bug_id = OLD.id;\n\
+  SELECT RAISE(ROLLBACK, 'The action_time is in the past')\n\
+  WHERE (SELECT max(time)\n\
+         FROM Environment)\n\
+        > NEW.action_time;\n\
 END;",
 
 
     /*******************
-     * Code
+     * Dead bug
      */
     "\
-CREATE TABLE Code\n\
+CREATE TABLE DeadBug\n\
 (\n\
   bug_id INTEGER NOT NULL,\n\
 \n\
-  size INTEGER NOT NULL,\n\
+  birth INTEGER,                        -- NULL if it was a egg when it died\n\
+  death INTEGER NOT NULL,\n\
 \n\
-  /* The blob is the last col for performance */\n\
-  code BLOB NOT NULL,\n\
+  killer_id INTEGER,                    -- NULL if the bug wasted his energy\n\
 \n\
   PRIMARY KEY(bug_id),\n\
-  FOREIGN KEY(bug_id) REFERENCES Bug(id),\n\
-  CHECK(size >= 0 AND (size % 4 == 0)),\n\
-  CHECK(length(code) % 4 == 0),\n\
-  CHECK(size == length(code))\n\
+  FOREIGN KEY(bug_id) REFERENCES Bug(id) ON UPDATE CASCADE ON DELETE CASCADE,\n\
+  FOREIGN KEY(killer_id) REFERENCES Bug(id) ON UPDATE CASCADE ON DELETE SET NULL,\n\
+  CHECK(birth IS NULL OR birth >= 0),\n\
+  CHECK(birth IS NULL OR birth <= death),\n\
+  CHECK(bug_id <> killer_id)\n\
 );",
 
-    /* Check if the id will change */
     "\
-CREATE TRIGGER Code_update_id_trigger\n\
-BEFORE UPDATE\n\
-ON Code\n\
-FOR EACH ROW\n\
-WHEN OLD.bug_id != NEW.bug_id\n\
-BEGIN\n\
-  SELECT RAISE(ROLLBACK, 'id changed');\n\
-END;",
-
-    /* Make sure that the bug_id is valid */
-    "\
-CREATE TRIGGER Code_insert_valid_trigger\n\
-BEFORE INSERT\n\
-ON Code\n\
-FOR EACH ROW BEGIN\n\
-  SELECT RAISE(ROLLBACK, 'id of bug not found')\n\
-  WHERE (SELECT id\n\
-         FROM Bug\n\
-         WHERE id=NEW.bug_id AND dead IS NULL) IS NULL;\n\
-END;",
-
-    "\
-CREATE TRIGGER Code_update_valid_trigger\n\
-BEFORE UPDATE\n\
-ON Code\n\
-FOR EACH ROW BEGIN\n\
-  SELECT RAISE(ROLLBACK, 'id of bug not found')\n\
-  WHERE (SELECT id\n\
-         FROM Bug\n\
-         WHERE id=NEW.bug_id AND dead IS NULL) IS NULL;\n\
-END;",
-
-    /* Make sure that the bug_id is unique */
-    "\
-CREATE TRIGGER Code_insert_uniq_trigger\n\
-BEFORE INSERT\n\
-ON Code\n\
-FOR EACH ROW BEGIN\n\
-  SELECT RAISE(ROLLBACK, 'id of bug already in table')\n\
-  WHERE (SELECT count(bug_id)\n\
-         FROM Code\n\
-         WHERE bug_id=NEW.bug_id) != 0;\n\
-END;",
-
-    "\
-CREATE TRIGGER Code_update_uniq_trigger\n\
-BEFORE UPDATE\n\
-ON Code\n\
-FOR EACH ROW\n\
-WHEN OLD.bug_id != NEW.bug_id\n\
-BEGIN\n\
-  SELECT RAISE(ROLLBACK, 'id of bug already in table')\n\
-  WHERE (SELECT count(bug_id)\n\
-         FROM Code\n\
-         WHERE bug_id=NEW.bug_id) != 0;\n\
-END;",
-
-    /* Propagate the deletion */
-    "\
-CREATE TRIGGER Code_delete_trigger\n\
-BEFORE DELETE\n\
-ON Code\n\
-FOR EACH ROW BEGIN\n\
-  DELETE FROM Mutation WHERE bug_id = OLD.id;\n\
-END;",
-
-
-    /*******************
-     * CPU
-     */
-    "\
-CREATE TABLE CPU\n\
-(\n\
-  bug_id INTEGER NOT NULL,\n\
-\n\
-  /* The blob is the last col for performance */\n\
-  registers BLOB NOT NULL,\n\
-\n\
-  PRIMARY KEY(bug_id),\n\
-  FOREIGN KEY(bug_id) REFERENCES Bug(id)\n\
-);"
-
-    /* Check if the id will change */
-    "\
-CREATE TRIGGER CPU_update_id_trigger\n\
-BEFORE UPDATE\n\
-ON CPU\n\
-FOR EACH ROW\n\
-WHEN OLD.bug_id != NEW.bug_id\n\
-BEGIN\n\
-  SELECT RAISE(ROLLBACK, 'id changed');\n\
-END;",
-
-    /* Make sure that the bug_id is valid */
-    "\
-CREATE TRIGGER CPU_insert_valid_trigger\n\
-BEFORE INSERT\n\
-ON CPU\n\
-FOR EACH ROW BEGIN\n\
-  SELECT RAISE(ROLLBACK, 'id of bug not found')\n\
-  WHERE (SELECT id\n\
-         FROM Bug\n\
-         WHERE id=NEW.bug_id AND dead IS NULL) IS NULL;\n\
-END;",
-
-    "\
-CREATE TRIGGER CPU_update_valid_trigger\n\
-BEFORE UPDATE\n\
-ON CPU\n\
-FOR EACH ROW BEGIN\n\
-  SELECT RAISE(ROLLBACK, 'id of bug not found')\n\
-  WHERE (SELECT id\n\
-         FROM Bug\n\
-         WHERE id=NEW.bug_id AND dead IS NULL) IS NULL;\n\
-END;",
-
-    /* Make sure that the bug_id is unique */
-    "\
-CREATE TRIGGER CPU_insert_uniq_trigger\n\
-BEFORE INSERT\n\
-ON CPU\n\
-FOR EACH ROW BEGIN\n\
-  SELECT RAISE(ROLLBACK, 'id of bug already in table')\n\
-  WHERE (SELECT count(bug_id)\n\
-         FROM CPU\n\
-         WHERE bug_id=NEW.bug_id) != 0;\n\
-END;",
-
-    "\
-CREATE TRIGGER CPU_update_uniq_trigger\n\
-BEFORE UPDATE\n\
-ON CPU\n\
-FOR EACH ROW\n\
-WHEN OLD.bug_id != NEW.bug_id\n\
-BEGIN\n\
-  SELECT RAISE(ROLLBACK, 'id of bug already in table')\n\
-  WHERE (SELECT count(bug_id)\n\
-         FROM CPU\n\
-         WHERE bug_id=NEW.bug_id) != 0;\n\
-END;",
+CREATE INDEX DeadBug_index ON DeadBug(killer_id);",
 
 
     /*******************
@@ -778,46 +591,24 @@ CREATE TABLE Mutation\n\
 (\n\
   id INTEGER NOT NULL,\n\
 \n\
+  bug_id INTEGER NOT NULL,\n\
+\n\
   time INTEGER NOT NULL,\n\
+\n\
   position INTEGER NOT NULL,\n\
   /* original and mutated can't be NULL at same time */\n\
   original INTEGER,                     -- NULL if new code was added\n\
   mutated INTEGER,                      -- NULL if code was deleted\n\
 \n\
-  bug_id INTEGER NOT NULL,\n\
-\n\
   PRIMARY KEY(id),\n\
-  FOREIGN KEY(bug_id) REFERENCES Bug(id),\n\
+  FOREIGN KEY(bug_id) REFERENCES Bug(id) ON UPDATE CASCADE ON DELETE CASCADE,\n\
   CHECK(time >= 0),\n\
   CHECK(position >= 0),\n\
-  CHECK((original IS NOT NULL) or (mutated IS NOT NULL))\n\
+  CHECK((original IS NOT NULL) OR (mutated IS NOT NULL))\n\
 );",
 
     "\
 CREATE INDEX Mutation_index ON Mutation(bug_id);",
-
-    /* Make sure that the bug_id is valid */
-    "\
-CREATE TRIGGER Mutation_insert_trigger\n\
-BEFORE INSERT\n\
-ON Mutation\n\
-FOR EACH ROW BEGIN\n\
-  SELECT RAISE(ROLLBACK, 'id of bug not found')\n\
-  WHERE (SELECT id\n\
-         FROM Bug\n\
-         WHERE id=NEW.bug_id AND dead IS NULL) IS NULL;\n\
-END;",
-
-    "\
-CREATE TRIGGER Mutation_update_trigger\n\
-BEFORE UPDATE\n\
-ON Mutation\n\
-FOR EACH ROW BEGIN\n\
-  SELECT RAISE(ROLLBACK, 'id of bug not found')\n\
-  WHERE (SELECT id\n\
-         FROM Bug\n\
-         WHERE id=NEW.bug_id AND dead IS NULL) IS NULL;\n\
-END;",
 
 
     /*******************
@@ -828,41 +619,15 @@ CREATE TABLE Food\n\
 (\n\
   id INTEGER NOT NULL,\n\
 \n\
-\n\
-  position_x INTEGER NOT NULL,\n\
-  position_y INTEGER NOT NULL,\n\
-\n\
+  world_id INTEGER NOT NULL,\n\
   size INTEGER NOT NULL,\n\
 \n\
   PRIMARY KEY(id),\n\
-  CHECK(position_x >= 0 AND position_y >= 0),\n\
+  FOREIGN KEY(world_id) REFERENCES World(id) ON UPDATE CASCADE ON DELETE CASCADE,\n\
+  UNIQUE(world_id),\n\
   CHECK(size >= 0)\n\
 );",
 
-    /* Check that two food elements are not in the same position */
-    "\
-CREATE TRIGGER Food_insert_position_trigger\n\
-BEFORE INSERT\n\
-ON Food\n\
-FOR EACH ROW BEGIN\n\
-  SELECT RAISE(ROLLBACK, 'There is food in the same position')\n\
-  WHERE (SELECT id\n\
-         FROM Food\n\
-         WHERE position_x=NEW.position_x AND position_y=NEW.position_y)\n\
-        IS NOT NULL;\n\
-END;"
-
-    "\
-CREATE TRIGGER Food_update_position_trigger\n\
-BEFORE UPDATE\n\
-ON Food\n\
-FOR EACH ROW BEGIN\n\
-  SELECT RAISE(ROLLBACK, 'There is food in the same position')\n\
-  WHERE (SELECT id\n\
-         FROM Food\n\
-         WHERE position_x=NEW.position_x AND position_y=NEW.position_y)\n\
-        IS NOT NULL;\n\
-END;",
 
     NULL
   };

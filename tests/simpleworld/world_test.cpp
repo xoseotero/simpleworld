@@ -2,7 +2,7 @@
  * @file tests/simpleworld/world_test.cpp
  * Unit test for World.
  *
- *  Copyright (C) 2007  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2007-2010  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -84,9 +84,9 @@ BOOST_AUTO_TEST_CASE(world_initialization)
 BOOST_AUTO_TEST_CASE(world_add)
 {
   sw::World world(16, 16);
-  sw::Position p0 = {0, 0}, p1 = {15, 15};
-  sw::Element e0(sw::ElementEgg, p0);
-  sw::Element e1(sw::ElementBug, p1);
+  sw::Position p0(0, 0), p1(15, 15);
+  sw::Element e0(sw::ElementEgg);
+  sw::Element e1(sw::ElementBug);
 
   world.add(&e0, p0);
   world.add(&e1, p1);
@@ -97,8 +97,6 @@ BOOST_AUTO_TEST_CASE(world_add)
   BOOST_CHECK_EQUAL(world.get(p1), &e1);
   BOOST_CHECK_EQUAL(world.get(p0)->type, sw::ElementEgg);
   BOOST_CHECK_EQUAL(world.get(p1)->type, sw::ElementBug);
-  BOOST_CHECK_EQUAL(world.get(p0)->position, p0);
-  BOOST_CHECK_EQUAL(world.get(p1)->position, p1);
 }
 
 /**
@@ -107,8 +105,8 @@ BOOST_AUTO_TEST_CASE(world_add)
 BOOST_AUTO_TEST_CASE(world_add_outside)
 {
   sw::World world(16, 32);
-  sw::Position p0 = {0, 32}, p1 = {16, 0};
-  sw::Element e(sw::ElementFood, p0);
+  sw::Position p0(0, 32), p1(16, 0);
+  sw::Element e(sw::ElementFood);
 
   BOOST_CHECK_THROW(world.add(&e, p0), sw::WorldError);
   BOOST_CHECK_THROW(world.add(&e, p1), sw::WorldError);
@@ -120,9 +118,9 @@ BOOST_AUTO_TEST_CASE(world_add_outside)
 BOOST_AUTO_TEST_CASE(world_add_used)
 {
   sw::World world(16, 16);
-  sw::Position p = {0, 0};
-  sw::Element e0(sw::ElementFood, p);
-  sw::Element e1(sw::ElementFood, p);
+  sw::Position p(0, 0);
+  sw::Element e0(sw::ElementFood);
+  sw::Element e1(sw::ElementFood);
 
   world.add(&e0, p);
   BOOST_CHECK_THROW(world.add(&e1, p), sw::WorldError);
@@ -134,8 +132,8 @@ BOOST_AUTO_TEST_CASE(world_add_used)
 BOOST_AUTO_TEST_CASE(world_remove)
 {
   sw::World world(16, 16);
-  sw::Position p = {0, 0};
-  sw::Element e(sw::ElementFood, p);
+  sw::Position p(0, 0);
+  sw::Element e(sw::ElementFood);
 
   world.add(&e, p);
   world.remove(p);
@@ -150,7 +148,7 @@ BOOST_AUTO_TEST_CASE(world_remove)
 BOOST_AUTO_TEST_CASE(world_remove_notused)
 {
   sw::World world(16, 16);
-  sw::Position p = {0, 0};
+  sw::Position p(0, 0);
 
   BOOST_CHECK_THROW(world.remove(p), sw::WorldError);
 }
@@ -161,8 +159,8 @@ BOOST_AUTO_TEST_CASE(world_remove_notused)
 BOOST_AUTO_TEST_CASE(world_move)
 {
   sw::World world(16, 16);
-  sw::Position p0 = {0, 0}, p1 = {1, 2};
-  sw::Element e(sw::ElementBug, p0);
+  sw::Position p0(0, 0), p1(1, 2);
+  sw::Element e(sw::ElementBug);
 
   world.add(&e, p0);
   world.move(p0, p1);
@@ -170,7 +168,6 @@ BOOST_AUTO_TEST_CASE(world_move)
   BOOST_CHECK_EQUAL(world.used(p0), false);
   BOOST_CHECK_EQUAL(world.used(p1), true);
   BOOST_CHECK_EQUAL(world.get(p1), &e);
-  BOOST_CHECK_EQUAL(e.position, p1);
 }
 
 /**
@@ -179,10 +176,10 @@ BOOST_AUTO_TEST_CASE(world_move)
 BOOST_AUTO_TEST_CASE(world_move_no_movable)
 {
   sw::World world(16, 16);
-  sw::Position p0 = {0, 0}, p1 = {1, 2};
-  sw::Element e0(sw::ElementNothing, p0);
-  sw::Element e1(sw::ElementFood, p0);
-  sw::Element e2(sw::ElementEgg, p0);
+  sw::Position p0(0, 0), p1(1, 2);
+  sw::Element e0(sw::ElementNothing);
+  sw::Element e1(sw::ElementFood);
+  sw::Element e2(sw::ElementEgg);
 
   world.add(&e0, p0);
   BOOST_CHECK_THROW(world.move(p0, p1), sw::WorldError);
@@ -202,8 +199,8 @@ BOOST_AUTO_TEST_CASE(world_move_no_movable)
 // BOOST_AUTO_TEST_CASE(world_move_outside)
 // {
 //   sw::World world(16, 16);
-//   sw::Position p0 = {0, 0}, p1 = {0, 16}, p2 = {16, 0};
-//   sw::Element e(sw::ElementFood, p0);
+//   sw::Position p0(0, 0), p1(0, 16), p2(16, 0);
+//   sw::Element e(sw::ElementFood);
 
 //   world.add(&e, p0);
 
@@ -218,7 +215,7 @@ BOOST_AUTO_TEST_CASE(world_move_no_movable)
 BOOST_AUTO_TEST_CASE(world_move_notexist)
 {
   sw::World world(16, 16);
-  sw::Position p0 = {0, 0}, p1 = {1, 2};
+  sw::Position p0(0, 0), p1(1, 2);
 
   BOOST_CHECK_THROW(world.move(p0, p1);, sw::WorldError);
 }

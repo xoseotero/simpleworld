@@ -7,7 +7,7 @@
  * world. The objective of the project is to observe the evolution of this
  * world and of these bugs.
  *
- *  Copyright (C) 2007-2008  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2007-2010  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -223,6 +223,12 @@ protected:
   void substract_energy(Bug* bug, Energy energy);
 
   /**
+   * Convert a egg into a bug.
+   * @param egg The egg.
+   */
+  void birth(Egg* egg);
+
+  /**
    * Kill the egg and convert it into food.
    * @param egg The egg.
    */
@@ -258,10 +264,6 @@ protected:
    */
   void bugs_laziness();
 
-  /**
-   * Update the elements of the World in the database.
-   */
-  void update_db();
 
   World* world_;
   db::Environment* env_;

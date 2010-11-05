@@ -2,7 +2,7 @@
  * @file simpleworld/element.cpp
  * A element on the World
  *
- *  Copyright (C) 2007  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2007-2010  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -26,10 +26,9 @@ namespace simpleworld
 /**
  * Constructor.
  * @param type type of element
- * @param position position of the element.
  */
-Element::Element(ElementType type, Position position)
-  : type(type), position(position)
+Element::Element(ElementType type)
+  : type(type)
 {
   if (type == ElementBug)
     this->movable_ = true;

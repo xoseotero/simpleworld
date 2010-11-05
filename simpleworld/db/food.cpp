@@ -2,7 +2,7 @@
  * @file simpleworld/db/food.cpp
  * Information about the food
  *
- *  Copyright (C) 2007  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2007-2010  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -32,43 +32,107 @@ namespace db
 
 /**
  * Constructor.
+ * It's not checked if the id is in the table, only when accessing the data
+ * the id is checked.
  * @param db database.
- * @param id id of the food.
- * @exception DBException if there is a error in the database.
- * @exception DBException if the ID is not found in the table.
+ * @param bug_id id of the bug.
  */
 Food::Food(DB* db, ID id)
-  // The position at this moment is unknown
-  : Table(db, id), Element(ElementFood, this->position)
+  : Table("Food", db, id)
 {
-  this->update();
 }
 
+
 /**
- * Constructor to insert data.
+ * Insert a food.
  * @param db database.
- * @exception DBException if there is a error in the database.
+ * @param world_id id of the world.
+ * @param size size.
+ * @return the id of the new row.
+ * @exception DBException if there is an error with the insertion.
  */
-Food::Food(DB* db)
-  // The position at this moment is unknown
-  : Table(db), Element(ElementFood, this->position)
+ID Food::insert(DB* db, ID world_id, Energy size)
 {
+  sqlite3x::sqlite3_command sql(*db);
+
+  try {
+    sql.prepare("\
+INSERT INTO Food(world_id, size)\n\
+VALUES(?, ?);");
+    sql.bind(1, static_cast<sqlite3x::int64_t>(world_id));
+    sql.bind(2, static_cast<int>(size));
+
+    sql.executenonquery();
+    return db->insertid();
+  } catch (const sqlite3x::database_error& e) {
+    throw EXCEPTION(DBException, std::string(e.what()) +
+                    " (" + db->errormsg() + ")");
+  }
+}
+
+/**
+ * Delete a food.
+ * @param db database.
+ * @param id id of the food.
+ * @exception DBException if there is an error with the deletion.
+ */
+void Food::remove(DB* db, ID id)
+{
+  sqlite3x::sqlite3_command sql(*db);
+
+  try {
+    sql.prepare("\
+DELETE FROM Food\n\
+WHERE id = ?;");
+    sql.bind(1, id);
+
+    sql.executenonquery();
+  } catch (const sqlite3x::database_error& e) {
+    throw EXCEPTION(DBException, std::string(e.what()) +
+                    " (" + db->errormsg() + ")");
+  }
 }
 
 
 /**
- * Update the data of the class with the database.
- * changed is set to false.
- * @exception DBException if there is an error in the database.
- * @exception DBException if the ID is not found in the table.
+ * Set the id of the food.
+ * @param id the new id.
+ * @exception DBException if there is an error with the update.
  */
-void Food::update()
+void Food::id(ID id)
 {
   sqlite3x::sqlite3_command sql(*this->db_);
 
   try {
     sql.prepare("\
-SELECT position_x, position_y, size\n\
+UPDATE Food\n\
+SET id = ?\n\
+WHERE id = ?;");
+    sql.bind(1, static_cast<sqlite3x::int64_t>(id));
+    sql.bind(2, this->id_);
+
+    sql.executenonquery();
+  } catch (const sqlite3x::database_error& e) {
+    throw EXCEPTION(DBException, std::string(e.what()) +
+                    " (" + this->db()->errormsg() + ")");
+  }
+
+  this->id_ = id;
+}
+
+
+/**
+ * Get the id of the world.
+ * @return the id.
+ * @exception DBException if there is an error with the query.
+ */
+ID Food::world_id() const
+{
+  sqlite3x::sqlite3_command sql(*this->db_);
+
+  try {
+    sql.prepare("\
+SELECT world_id\n\
 FROM Food\n\
 WHERE id = ?;");
     sql.bind(1, this->id_);
@@ -79,103 +143,89 @@ WHERE id = ?;");
 id %1% not found in table Food")
                                               % this->id_));
 
-    this->position.x = cursor.getint(0);
-    this->position.y = cursor.getint(1);
-    this->size = cursor.getint(2);
+    return cursor.getint64(0);
   } catch (const sqlite3x::database_error& e) {
     throw EXCEPTION(DBException, std::string(e.what()) +
                     " (" + this->db()->errormsg() + ")");
   }
-
-
-  Table::update();
 }
 
 /**
- * Update the database with the data of the class in changed or force are
- * true.
- * changed is set to false.
- * @param force force the update of the database.
- * @exception DBException if there is an error in the database.
+ * Set the id of the world.
+ * @param world_id the new id.
+ * @exception DBException if there is an error with the update.
  */
-void Food::update_db(bool force)
-{
-  if (this->changed or force) {
-    sqlite3x::sqlite3_command sql(*this->db_);
-
-    try {
-      sql.prepare("\
-UPDATE Food\n\
-SET position_x = ?, position_y = ?, size = ?\n\
-WHERE id = ?;");
-      sql.bind(1, static_cast<int>(this->position.x));
-      sql.bind(2, static_cast<int>(this->position.y));
-      sql.bind(3, static_cast<int>(this->size));
-      sql.bind(4, this->id_);
-
-      sql.executenonquery();
-    } catch (const sqlite3x::database_error& e) {
-      throw EXCEPTION(DBException, std::string(e.what()) +
-                      " (" + this->db()->errormsg() + ")");
-    }
-  }
-
-
-  Table::update_db(force);
-}
-
-/**
- * Insert the data in the database.
- * The ID is updated.
- * changed is set to false.
- * @exception DBException if there is an error in the database.
- */
-void Food::insert()
+void Food::world_id(ID world_id)
 {
   sqlite3x::sqlite3_command sql(*this->db_);
 
   try {
     sql.prepare("\
-INSERT INTO Food(position_x, position_y, size)\n\
-VALUES(?, ?, ?);");
-    sql.bind(1, static_cast<int>(this->position.x));
-    sql.bind(2, static_cast<int>(this->position.y));
-    sql.bind(3, static_cast<int>(this->size));
+UPDATE Food\n\
+SET world_id = ?\n\
+WHERE id = ?;");
+    sql.bind(1, static_cast<sqlite3x::int64_t>(world_id));
+    sql.bind(2, this->id_);
 
     sql.executenonquery();
-    this->id_ = this->db_->insertid();
   } catch (const sqlite3x::database_error& e) {
     throw EXCEPTION(DBException, std::string(e.what()) +
                     " (" + this->db()->errormsg() + ")");
   }
-
-
-  Table::insert();
 }
 
+
 /**
- * Remove the data from the database.
- * changed is set to false.
- * @exception DBException if there is an error in the database.
+ * Get the size of the food.
+ * @return the size.
+ * @exception DBException if there is an error with the query.
  */
-void Food::remove()
+Energy Food::size() const
 {
   sqlite3x::sqlite3_command sql(*this->db_);
 
   try {
     sql.prepare("\
-DELETE FROM Food\n\
+SELECT size\n\
+FROM Food\n\
 WHERE id = ?;");
     sql.bind(1, this->id_);
 
+    sqlite3x::sqlite3_cursor cursor(sql.executecursor());
+    if (! cursor.step())
+      throw EXCEPTION(DBException, boost::str(boost::format("\
+id %1% not found in table Food")
+                                              % this->id_));
+
+    return cursor.getint(0);
+  } catch (const sqlite3x::database_error& e) {
+    throw EXCEPTION(DBException, std::string(e.what()) +
+                    " (" + this->db()->errormsg() + ")");
+  }
+}
+
+/**
+ * Set the size of the food.
+ * @param size the new size.
+ * @exception DBException if there is an error with the update.
+ */
+void Food::size(Energy size)
+{
+  sqlite3x::sqlite3_command sql(*this->db_);
+
+  try {
+    sql.prepare("\
+UPDATE Food\n\
+SET size = ?\n\
+WHERE id = ?;");
+    sql.bind(1, static_cast<int>(size));
+    sql.bind(2, this->id_);
+
     sql.executenonquery();
   } catch (const sqlite3x::database_error& e) {
     throw EXCEPTION(DBException, std::string(e.what()) +
                     " (" + this->db()->errormsg() + ")");
   }
-
-
-  Table::remove();
 }
 
 }

@@ -2,7 +2,7 @@
  * @file simpleworld/world.cpp
  * Simple World World.
  *
- *  Copyright (C) 2007  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2007-2010  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -111,12 +111,8 @@ void World::add(Element* element, Position position)
   CHECK_OUTOFRANGE(position, this->size_);
   CHECK_USED(this->terrain_, position);
 
-  if (element != NULL) {
+  if (element != NULL)
     this->num_elements_++;
-
-    // make sure the element has the correct position
-    element->position = position;
-  }
 
   this->terrain_[position.x][position.y] = element;
 }
@@ -192,9 +188,6 @@ void World::move(Position oldposition, Position newposition)
   // Update the World
   this->terrain_[oldposition.x][oldposition.y] = NULL;
   this->terrain_[newposition.x][newposition.y] = element;
-
-  // Update the element
-  element->position = newposition;
 }
 
 }

@@ -2,7 +2,7 @@
  * @file simpleworld/db/table.hpp
  * Base clase for the tables.
  *
- *  Copyright (C) 2007  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2007-2010  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -41,28 +41,17 @@ class Table
 public:
   /**
    * Constructor.
+   * @param name name of the table.
    * @param db database.
    * @param id id of the row.
-   * @exception DBException if there is a error in the database.
-   * @exception DBException if the ID is not found in the table.
    */
-  Table(DB* db, ID id);
+  Table(const std::string& name, DB* db, ID id);
+
 
   /**
-   * Constructor to insert data.
-   * insert(id) must be called before any call to update(), update_db() or
-   * remove().
-   * inserted is set to false.
-   * @param db database.
-   * @exception DBException if there is a error in the database.
+   * Name of the table.
    */
-  Table(DB* db);
-
-  /**
-   * Destructor.
-  */
-  virtual ~Table();
-
+  std::string name() const { return this->name_; }
 
   /**
    * The database of the table.
@@ -78,103 +67,22 @@ public:
 
 
   /**
-   * Update the data of the class with the database.
-   * inserted is set to true.
-   * changed is set to false.
-   * @exception DBException if there is a error in the database.
-   * @exception DBException if the ID is not found in the table.
-   */
-  virtual void update();
-
-  /**
-   * Update the database with the data of the class in changed or force are
-   * true.
-   * changed is set to false.
-   * @param force force the update of the database.
-   * @exception DBException if there is a error in the database.
-   */
-  virtual void update_db(bool force = false);
-
-  /**
-   * Insert the data in the database.
-   * The ID is updated.
-   * inserted is set to true.
-   * changed is set to false.
-   * @exception DBException if there is an error in the database.
-   */
-  virtual void insert();
-
-  /**
-   * Insert the data in the database with a specific id.
-   * The ID is updated.
-   * inserted is set to true.
-   * changed is set to false.
-   * @param id id of the row.
-   * @exception DBException if there is an error in the database.
-   */
-  virtual void insert(ID id);
-
-  /**
-   * Remove the data from the database.
-   * inserted is set to false.
-   * changed is set to false.
-   * @exception DBException if there is an error in the database.
-   */
-  virtual void remove();
-
-
-  /**
    * Check if colname is NULL.
    * @param colname name of the column.
    * @return true if colname is NULL, else false.
    */
-  bool is_null(std::string colname) const
-  {
-    return std::find(this->null.begin(),
-                     this->null.end(),
-                     colname) != this->null.end();
-  }
+  bool is_null(const std::string& colname) const;
 
   /**
-   * Add colname as NULL.
+   * Set colname as NULL.
    * @param colname name of the column.
    */
-  void add_null(std::string colname)
-  {
-    this->null.push_back(colname);
-  }
-
-  /**
-   * Remove colname as NULL.
-   * @param colname name of the column.
-   */
-  void remove_null(std::string colname)
-  {
-    this->null.erase(std::find(this->null.begin(),
-                               this->null.end(),
-                               colname));
-  }
-
-
-  /**
-   * Cols with NULL value.
-   * This can be used directly of via *null() functions.
-   */
-  std::vector<std::string> null;
-
-  /**
-   * If the data is/was in the database.
-   */
-  bool inserted;
-
-  /**
-   * If the data has changed.
-   */
-  bool changed;
+  void set_null(const std::string& colname);
 
 protected:
+  std::string name_;            /**< Name of the table */
   DB* db_;                      /**< DB connection */
-  ID id_;                       /**< ID of the table */
+  ID id_;                       /**< ID of the row */
 };
 
 }

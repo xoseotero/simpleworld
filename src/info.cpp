@@ -2,7 +2,7 @@
  * @file src/info.cpp
  * Command info of Simple World.
  *
- *  Copyright (C) 2008  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2008-2010  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -29,9 +29,11 @@
 
 #include <boost/format.hpp>
 
+#include <simpleworld/ints.hpp>
 #include <simpleworld/types.hpp>
 #include <simpleworld/element.hpp>
 #include <simpleworld/simpleworld.hpp>
+#include <simpleworld/cpu/memory.hpp>
 #include <simpleworld/cpu/memory_file.hpp>
 #include <simpleworld/db/types.hpp>
 #include <simpleworld/db/exception.hpp>
@@ -40,7 +42,6 @@
 #include <simpleworld/db/egg.hpp>
 #include <simpleworld/db/bug.hpp>
 #include <simpleworld/db/deadbug.hpp>
-#include <simpleworld/db/code.hpp>
 #include <simpleworld/db/mutation.hpp>
 namespace sw = simpleworld;
 namespace cpu = simpleworld::cpu;
@@ -300,8 +301,8 @@ static void show_bugs(sw::SimpleWorld& sw)
 {
   sqlite3x::sqlite3_command sql(sw, "\
 SELECT *\n\
-FROM Bug_alive\n\
-ORDER BY id;");
+FROM AliveBug\n\
+ORDER BY bug_id;");
   show_query_column(true, 10, "NULL", sql.executecursor());
 }
 
@@ -313,8 +314,8 @@ static void show_eggs(sw::SimpleWorld& sw)
 {
   sqlite3x::sqlite3_command sql(sw, "\
 SELECT *\n\
-FROM Bug_egg\n\
-ORDER BY id;");
+FROM Egg\n\
+ORDER BY bug_id;");
   show_query_column(true, 10, "NULL", sql.executecursor());
 }
 
@@ -338,9 +339,9 @@ ORDER BY id;");
 static void show_sortenergy(sw::SimpleWorld& sw)
 {
   sqlite3x::sqlite3_command sql(sw, "\
-SELECT id, energy\n\
-FROM Bug_alive\n\
-ORDER BY energy DESC, id;");
+SELECT bug_id, energy\n\
+FROM AliveBug\n\
+ORDER BY energy DESC, bug_id;");
   show_query_column(true, 10, "NULL", sql.executecursor());
 }
 
@@ -351,11 +352,11 @@ ORDER BY energy DESC, id;");
 static void show_sortage(sw::SimpleWorld& sw)
 {
   sqlite3x::sqlite3_command sql(sw, "\
-SELECT id, (SELECT max(time) FROM Environment) - birth AS age\n\
-FROM Bug_alive\n\
+SELECT bug_id, (SELECT max(time) FROM Environment) - birth AS age\n\
+FROM AliveBug\n\
 UNION\n\
-SELECT id, dead - birth AS age\n\
-FROM Bug_dead\n\
+SELECT bug_id, dead - birth AS age\n\
+FROM DeadBug\n\
 ORDER BY age DESC, id;");
   show_query_column(true, 10, "NULL", sql.executecursor());
 }
@@ -383,7 +384,7 @@ static void show_sortkills(sw::SimpleWorld& sw)
 {
   sqlite3x::sqlite3_command sql(sw, "\
 SELECT killer_id, count(killer_id) AS kills\n\
-FROM Bug\n\
+FROM DeadBug\n\
 WHERE killer_id IS NOT NULL\n\
 GROUP BY killer_id\n\
 ORDER BY kills DESC, id;");
@@ -426,7 +427,7 @@ static void show_bug(sw::SimpleWorld& sw)
 {
   sqlite3x::sqlite3_command sql(sw, "\
 SELECT *\n\
-FROM Bug\n\
+FROM AliveBug\n\
 WHERE id = ?;");
   sql.bind(1, bug_id);
   show_query_line(true, "NULL", sql.executecursor());
@@ -438,42 +439,18 @@ WHERE id = ?;");
  */
 static void extract_code(sw::SimpleWorld& sw)
 {
-  // the bug can be in several stages: egg, bug or dead bug
-  bool bug_found = false;
-
   try {
-    // is the bug a egg?
-    db::Egg egg(&sw, code_id);
-    bug_found = true;
-    cpu::MemoryFile code(egg.code.code);
-    code.save_file(boost::str(boost::format("%1%.swo") % code_id));
-  } catch (const db::DBException& e) {
-  }
-
-  try {
-    // is the bug a alive bug?
     db::Bug bug(&sw, code_id);
-    bug_found = true;
-    cpu::MemoryFile code(bug.code.code);
+    sw::Uint32 size;
+    boost::shared_array<sw::Uint8> data = bug.code().read(&size);
+    cpu::MemoryFile code(cpu::Memory(data.get(), size));
     code.save_file(boost::str(boost::format("%1%.swo") % code_id));
   } catch (const db::DBException& e) {
-  }
-
-  try {
-    // is the bug a dead bug?
-    db::DeadBug deadbug(&sw, code_id);
-    bug_found = true;
-    cpu::MemoryFile code(deadbug.code.code);
-    code.save_file(boost::str(boost::format("%1%.swo") % code_id));
-  } catch (const db::DBException& e) {
-  }
-
-  if (not bug_found)
-    // no, it was a error
     std::cerr << boost::format("\
 Bug[%1%] not found")
       % code_id
       << std::endl;
+  }
 }
 
 /**
@@ -535,35 +512,25 @@ static void show_hierarchy(sw::SimpleWorld& sw)
  */
 static void show_mutation(const db::Mutation& mutation)
 {
-  switch (mutation.type) {
-  case db::Mutation::addition:
+  if (mutation.is_null("original"))
     std::cout << boost::format("Position %d(%d):\tNULL\t->\t0x%08x")
-      % mutation.position
-      % mutation.time
-      % mutation.mutated
+      % mutation.position()
+      % mutation.time()
+      % mutation.mutated()
       << std::endl;
-    break;
-
-  case db::Mutation::deletion:
+  else if (mutation.is_null("mutated"))
     std::cout << boost::format("Position %d(%d):\t0x%08x\t->\tNULL")
-      % mutation.position
-      % mutation.time
-      % mutation.original
+      % mutation.position()
+      % mutation.time()
+      % mutation.original()
       << std::endl;
-    break;
-
-  case db::Mutation::mutation:
+  else
     std::cout << boost::format("Position %d(%d):\t0x%08x\t->\t0x%08x")
-      % mutation.position
-      % mutation.time
-      % mutation.original
-      % mutation.mutated
+      % mutation.position()
+      % mutation.time()
+      % mutation.original()
+      % mutation.mutated()
       << std::endl;
-    break;
-
-  default:
-    std::cout << "default" << std::endl;
-  }
 }
 
 /**
@@ -575,11 +542,11 @@ static void show_mutations(sw::SimpleWorld& sw)
   std::deque<db::ID> hierarchy = bug_hierarchy(sw, bug_id);
   std::deque<db::ID>::const_iterator bug = hierarchy.begin();
   while (bug != hierarchy.end()) {
-    db::Code code(&sw, *bug);
-    std::vector<db::Mutation>::const_iterator mutation = 
-      code.mutations.begin();
-    while (mutation != code.mutations.end()) {
-      show_mutation(*mutation);
+    std::vector<db::ID> mutations = db::Bug(&sw, *bug).mutations();
+    std::vector<db::ID>::const_iterator mutation = 
+      mutations.begin();
+    while (mutation != mutations.end()) {
+      show_mutation(db::Mutation(&sw, *mutation));
 
       ++mutation;
     }

@@ -2,7 +2,7 @@
  * @file simpleworld/db/mutation.hpp
  * A mutation of a bug.
  *
- *  Copyright (C) 2007  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2007-2010  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -21,11 +21,7 @@
 #ifndef SIMPLEWORLD_DB_MUTATION_HPP
 #define SIMPLEWORLD_DB_MUTATION_HPP
 
-#include <vector>
-
-#include <simpleworld/types.hpp>
 #include <simpleworld/ints.hpp>
-#include <simpleworld/cpu/types.hpp>
 #include <simpleworld/db/types.hpp>
 #include <simpleworld/db/db.hpp>
 #include <simpleworld/db/table.hpp>
@@ -43,71 +39,151 @@ class Mutation: public Table
 public:
   /**
    * Constructor.
+   * It's not checked if the id is in the table, only when accessing the data
+   * the id is checked.
    * @param db database.
-   * @param id id of the mutation.
-   * @exception DBException if there is a error in the database.
-   * @exception DBException if the ID is not found in the table.
+   * @param bug_id id of the bug.
    */
   Mutation(DB* db, ID id);
 
+
   /**
-   * Constructor to insert data.
+   * Insert a mutation of code.
    * @param db database.
-   * @exception DBException if there is a error in the database.
-   */
-  Mutation(DB* db);
-
-
-  /**
-   * Update the data of the class with the database.
-   * changed is set to false.
-   * @exception DBException if there is a error in the database.
-   * @exception DBException if the ID is not found in the table.
-   */
-  void update();
-
-  /**
-   * Update the database with the data of the class in changed or force are
-   * true.
-   * changed is set to false.
-   * @param force force the update of the database.
-   * @exception DBException if there is a error in the database.
-   */
-  void update_db(bool force = false);
-
-  /**
-   * Insert the data in the database with a specific id.
-   * The ID is updated.
-   * changed is set to false.
    * @param bug_id id of the bug.
-   * @exception DBException if there is an error in the database.
+   * @param time when the mutation happened.
+   * @param positon where the mutation happened.
+   * @param original the previous value of the code.
+   * @param mutated the new value of the code.
+   * @return the id of the new row.
+   * @exception DBException if there is an error with the insertion.
    */
-  void insert(ID bug_id);
+  static ID insert(DB* db, ID bug_id, Time time, Uint32 position,
+                   Uint32 original, Uint32 mutated);
 
   /**
-   * Remove the data from the database.
-   * changed is set to false.
-   * @exception DBException if there is an error in the database.
+   * Insert a addition of code.
+   * @param db database.
+   * @param bug_id id of the bug.
+   * @param time when the mutation happened.
+   * @param positon where the mutation happened.
+   * @param mutated the new word.
+   * @return the id of the new row.
+   * @exception DBException if there is an error with the insertion.
    */
-  void remove();
+  static ID insert_addition(DB* db, ID bug_id, Time time, Uint32 position,
+                            Uint32 mutated);
+
+  /**
+   * Insert a deletion of code.
+   * @param db database.
+   * @param bug_id id of the bug.
+   * @param time when the mutation happened.
+   * @param positon where the mutation happened.
+   * @param original the deleted word.
+   * @return the id of the new row.
+   * @exception DBException if there is an error with the insertion.
+   */
+  static ID insert_deletion(DB* db, ID bug_id, Time time, Uint32 position,
+                            Uint32 original);
+
+  /**
+   * Delete a mutation.
+   * @param db database.
+   * @param id id of the mutation.
+   * @exception DBException if there is an error with the deletion.
+   */
+  static void remove(DB* db, ID id);
 
 
-  // Data
-  Time time;
-  Uint16 position;
+  /**
+   * Get the id of the mutation.
+   * @return the id of the mutation.
+   * @exception DBException if there is an error with the query.
+   */
+  ID id() const { return db::Table::id(); }
 
-  enum {
-    mutation,
-    addition,
-    deletion
-  } type;
+  /**
+   * Set the id of the mutation.
+   * @param id the new id.
+   * @exception DBException if there is an error with the update.
+   */
+  void id(ID id);
 
-  // If type is addition, then the value of original is garbage.
-  cpu::Word original;
-  // If type is deletion, then the value of mutated is garbage.
-  cpu::Word mutated;
 
-  ID bug_id;
+  /**
+   * Get the id of the bug.
+   * @return the id of the bug.
+   * @exception DBException if there is an error with the query.
+   */
+  ID bug_id() const;
+
+  /**
+   * Set the id of the bug.
+   * @param world_id the new id.
+   * @exception DBException if there is an error with the update.
+   */
+  void bug_id(ID bug_id);
+
+
+  /**
+   * Get when the mutation happened.
+   * @return the time.
+   * @exception DBException if there is an error with the query.
+   */
+  Time time() const;
+
+  /**
+   * Set when the mutation happened.
+   * @param size the new size.
+   * @exception DBException if there is an error with the update.
+   */
+  void time(Time time);
+
+
+  /**
+   * Get where the mutation happened.
+   * @return the position.
+   * @exception DBException if there is an error with the query.
+   */
+  Uint32 position() const;
+
+  /**
+   * Set where the mutation happened.
+   * @param position the new position.
+   * @exception DBException if there is an error with the update.
+   */
+  void position(Uint32 position);
+
+  /**
+   * Get the previous value of the code.
+   * original is NULL if the mutation is the addition of code.
+   * @return the previous value.
+   * @exception DBException if there is an error with the query.
+   */
+  Uint32 original() const;
+
+  /**
+   * Set the previous value of the code.
+   * @param original the previous value.
+   * @exception DBException if there is an error with the query.
+   */
+  void original(Uint32 original);
+
+  /**
+   * Get the new value of the code.
+   * mutated is NULL if the mutation is the deletion of code.
+   * @return the new value.
+   * @exception DBException if there is an error with the query.
+   */
+  Uint32 mutated() const;
+
+  /**
+   * Set the new value of the code.
+   * @param mutated the new value.
+   * @exception DBException if there is an error with the query.
+   */
+  void mutated(Uint32 mutated);
 };
 
 }

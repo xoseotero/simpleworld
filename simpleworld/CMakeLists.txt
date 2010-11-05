@@ -3,6 +3,8 @@ set(SIMPLEWORLD_SRCS
   movement.cpp
   world.cpp
   operations_world.cpp
+  dbmemory.cpp
+  cpu.cpp
   bug.cpp
   egg.cpp
   food.cpp

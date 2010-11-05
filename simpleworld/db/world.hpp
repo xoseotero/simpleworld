@@ -1,8 +1,8 @@
 /**
- * @file simpleworld/db/bug.hpp
- * Information about a Bug.
+ * @file simpleworld/db/world.hpp
+ * Information about the world.
  *
- *  Copyright (C) 2007-2010  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2010  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -18,17 +18,12 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef SIMPLEWORLD_DB_BUG_HPP
-#define SIMPLEWORLD_DB_BUG_HPP
-
-#include <vector>
+#ifndef SIMPLEWORLD_DB_WORLD_HPP
+#define SIMPLEWORLD_DB_WORLD_HPP
 
 #include <simpleworld/ints.hpp>
-#include <simpleworld/types.hpp>
 #include <simpleworld/db/types.hpp>
-#include <simpleworld/db/db.hpp>
 #include <simpleworld/db/table.hpp>
-#include <simpleworld/db/blob.hpp>
 
 namespace simpleworld
 {
@@ -36,9 +31,9 @@ namespace db
 {
 
 /**
- * Information about a bug.
+ * Information about the world.
  */
-class Bug: public Table
+class World: public Table
 {
 public:
   /**
@@ -48,32 +43,33 @@ public:
    * @param db database.
    * @param bug_id id of the bug.
    */
-  Bug(DB* db, ID id);
+  World(DB* db, ID id);
 
 
   /**
-   * Insert a bug with father.
+   * Insert a element in the world with orientation.
    * @param db database.
-   * @param father_id id of the father.
-   * @param code code of the bug.
-   * @param size size of the code.
+   * @param position_x position in the x coordinate of the element.
+   * @param position_y position in the y coordinate of the element.
+   * @param orientation orientation of the element.
    * @return the id of the new row.
    * @exception DBException if there is an error with the insertion.
    */
-  static ID insert(DB* db, ID father_id, const void* code, Uint32 size);
+  static ID insert(DB* db, Coord position_x, Coord position_y,
+                   Orientation orientation);
 
   /**
-   * Insert a bug without father.
+   * Insert a element in the world without orientation.
    * @param db database.
-   * @param code code of the bug.
-   * @param size size of the code.
+   * @param position_x position in the x coordinate of the element.
+   * @param position_y position in the y coordinate of the element.
    * @return the id of the new row.
    * @exception DBException if there is an error with the insertion.
    */
-  static ID insert(DB* db, const void* code, Uint32 size);
+  static ID insert(DB* db, Coord position_x, Coord position_y);
 
   /**
-   * Delete a bug.
+   * Delete a element from the world.
    * @param db database.
    * @param id id of the bug.
    * @exception DBException if there is an error with the deletion.
@@ -82,53 +78,65 @@ public:
 
 
   /**
-   * Get the id of the bug.
-   * @return the id of the food.
+   * Get the id of the element.
+   * @return the id.
    * @exception DBException if there is an error with the query.
    */
   ID id() const { return db::Table::id(); }
 
   /**
-   * Set the id of the bug.
-   * @param id the new id.
+   * Set the id of the element.
+   * @param bug_id the new id.
    * @exception DBException if there is an error with the update.
    */
   void id(ID id);
 
 
   /**
-   * Get the id of the father.
-   * father_id is NULL if the bug hasn't got a father.
-   * @return the id of the father.
+   * Get position in the x coordinate.
+   * @return the position.
    * @exception DBException if there is an error with the query.
    */
-  ID father_id() const;
+  Coord position_x() const;
 
   /**
-   * Set the id of the father.
-   * @param father_id the id of the father.
+   * Get position in the y coordinate.
+   * @return the position.
    * @exception DBException if there is an error with the query.
    */
-  void father_id(ID father_id);
+  Coord position_y() const;
+
+  /**
+   * Set position in the x coordinate.
+   * @param bug_id the new position.
+   * @exception DBException if there is an error with the update.
+   */
+  void position_x(Coord position_x);
+
+  /**
+   * Set position in the y coordinate.
+   * @param bug_id the new position.
+   * @exception DBException if there is an error with the update.
+   */
+  void position_y(Coord position_y);
 
 
   /**
-   * Get the code of the bug.
-   * @return the code of the bug.
+   * Get the orientation.
+   * @return the orientation.
    * @exception DBException if there is an error with the query.
    */
-  Blob code() const;
-
+  Orientation orientation() const;
 
   /**
-   * Get the mutations of the bug.
-   * @return the mutations.
-   * @exception DBException if there is an error with the query.
+   * Set the orientation.
+   * @param bug_id the new orientation.
+   * @exception DBException if there is an error with the update.
    */
-  std::vector<ID> mutations() const;
+  void orientation(Orientation orientation);
 };
 
 }
 }
 
-#endif // SIMPLEWORLD_DB_BUG_HPP
+#endif // SIMPLEWORLD_DB_WORLD_HPP

@@ -2,7 +2,7 @@
  * @file simpleworld/db/bug.cpp
  * Information about a bug.
  *
- *  Copyright (C) 2007-2008  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2007-2010  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -18,14 +18,9 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <string>
-
 #include <boost/format.hpp>
 
 #include <sqlite3x.hpp>
-
-#include <simpleworld/cpu/types.hpp>
-#include <simpleworld/cpu/memory.hpp>
 
 #include "exception.hpp"
 #include "bug.hpp"
@@ -37,61 +32,135 @@ namespace db
 
 /**
  * Constructor.
+ * It's not checked if the id is in the table, only when accessing the data
+ * the id is checked.
  * @param db database.
- * @param id id of the bug.
- * @exception DBException if there is a error in the database.
- * @exception DBException if the ID is not found in the table.
+ * @param bug_id id of the bug.
  */
 Bug::Bug(DB* db, ID id)
-  // The position at this moment is unknown
-  : AliveBug(db, id, ElementBug, this->position), cpu(db, id)
+  : Table("Bug", db, id)
 {
-  this->update();
 }
 
 
 /**
- * Convert the alive bug in a dead bug.
- * @param dead When the bug dead.
- * @return The id of the new food.
+ * Insert a bug with father.
+ * @param db database.
+ * @param father_id id of the father.
+ * @param code code of the bug.
+ * @param size size of the code.
+ * @return the id of the new row.
+ * @exception DBException if there is an error with the insertion.
  */
-ID Bug::die(Time dead)
+ID Bug::insert(DB* db, ID father_id, const void* code, Uint32 size)
 {
-  this->cpu.remove();
+  sqlite3x::sqlite3_command sql(*db);
 
-  return AliveBug::die(dead);
+  try {
+    sql.prepare("\
+INSERT INTO Bug(father_id, code)\n\
+VALUES(?, ?);");
+    sql.bind(1, static_cast<sqlite3x::int64_t>(father_id));
+    sql.bind(2, code, size);
+
+    sql.executenonquery();
+    return db->insertid();
+  } catch (const sqlite3x::database_error& e) {
+    throw EXCEPTION(DBException, std::string(e.what()) +
+                    " (" + db->errormsg() + ")");
+  }
 }
 
 /**
- * Convert the alive bug in a dead bug.
- * @param dead When the bug dead.
- * @param killer_id Who killed it.
- * @return The id of the new food.
+ * Insert a bug without father.
+ * @param db database.
+ * @param code code of the bug.
+ * @param size size of the code.
+ * @return the id of the new row.
+ * @exception DBException if there is an error with the insertion.
  */
-ID Bug::die(Time dead, ID killer_id)
+ID Bug::insert(DB* db, const void* code, Uint32 size)
 {
-  this->cpu.remove();
+  sqlite3x::sqlite3_command sql(*db);
 
-  return AliveBug::die(dead, killer_id);
+  try {
+    sql.prepare("\
+INSERT INTO Bug(code)\n\
+VALUES(?);");
+    sql.bind(1, code, size);
+
+    sql.executenonquery();
+    return db->insertid();
+  } catch (const sqlite3x::database_error& e) {
+    throw EXCEPTION(DBException, std::string(e.what()) +
+                    " (" + db->errormsg() + ")");
+  }
+}
+
+/**
+ * Delete a bug.
+ * @param db database.
+ * @param id id of the bug.
+ * @exception DBException if there is an error with the deletion.
+ */
+void Bug::remove(DB* db, ID id)
+{
+  sqlite3x::sqlite3_command sql(*db);
+
+  try {
+    sql.prepare("\
+DELETE FROM Bug\n\
+WHERE id = ?;");
+    sql.bind(1, id);
+
+    sql.executenonquery();
+  } catch (const sqlite3x::database_error& e) {
+    throw EXCEPTION(DBException, std::string(e.what()) +
+                    " (" + db->errormsg() + ")");
+  }
 }
 
 
 /**
- * Update the data of the class with the database.
- * changed is set to false.
- * The update() is propagated to the cpu.
- * @exception DBException if there is an error in the database.
- * @exception DBException if the ID is not found in the table.
+ * Set the id of the bug.
+ * @param id the new id.
+ * @exception DBException if there is an error with the update.
  */
-void Bug::update()
+void Bug::id(ID id)
 {
   sqlite3x::sqlite3_command sql(*this->db_);
 
-  try{
+  try {
     sql.prepare("\
-SELECT energy, position_x, position_y, orientation,\n\
-       time_last_action, action_time,\n\
-       birth, father_id\n\
+UPDATE Bug\n\
+SET id = ?\n\
+WHERE id = ?;");
+    sql.bind(1, static_cast<sqlite3x::int64_t>(id));
+    sql.bind(2, this->id_);
+
+    sql.executenonquery();
+  } catch (const sqlite3x::database_error& e) {
+    throw EXCEPTION(DBException, std::string(e.what()) +
+                    " (" + this->db()->errormsg() + ")");
+  }
+
+  this->id_ = id;
+}
+
+
+/**
+ * Get the id of the father.
+ * father_id is NULL if the bug hasn't got a father.
+ * @return the id of the father.
+ * @exception DBException if there is an error with the query.
+ */
+ID Bug::father_id() const
+{
+  sqlite3x::sqlite3_command sql(*this->db_);
+
+  try {
+    sql.prepare("\
+SELECT father_id\n\
 FROM Bug\n\
 WHERE id = ?;");
     sql.bind(1, this->id_);
@@ -102,112 +171,75 @@ WHERE id = ?;");
 id %1% not found in table Bug")
                                               % this->id_));
 
-    this->energy = cursor.getint(0);
-    this->position.x = cursor.getint(1);
-    this->position.y = cursor.getint(2);
-    this->orientation = static_cast<Orientation>(cursor.getint(3));
-    this->time_last_action = cursor.getint(4);
-    this->action_time = cursor.getint(5);
-    this->birth = cursor.getint(6);
-    this->father_id = cursor.getint64(7);
-
-    if (cursor.isnull(4))
-      this->add_null("time_last_action");
-    if (cursor.isnull(5))
-      this->add_null("action_time");
-    if (cursor.isnull(6))
-      this->add_null("father_id");
+    return cursor.getint64(0);
   } catch (const sqlite3x::database_error& e) {
     throw EXCEPTION(DBException, std::string(e.what()) +
                     " (" + this->db()->errormsg() + ")");
   }
-
-
-  this->cpu.update();
-
-  AliveBug::update();
 }
 
 /**
- * Update the database with the data of the class in changed or force are
- * true.
- * changed is set to false.
- * The update_db() is propagated to the cpu but without force. If the
- * update_db() in the cpu must be forced, a explicit call to
- * cpu::update_db(true) must be made.
- * @param force force the update of the database.
- * @exception DBException if there is an error in the database.
+ * Set the id of the father.
+ * @param father_id the id of the father.
+ * @exception DBException if there is an error with the query.
  */
-void Bug::update_db(bool force)
-{
-  if (this->changed or force) {
-    sqlite3x::sqlite3_command sql(*this->db_);
-
-    try {
-      sql.prepare("\
-UPDATE Bug\n\
-SET energy = ?, position_x = ?, position_y = ?, orientation = ?,\n\
-    time_last_action = ?, action_time = ?,\n\
-    birth = ?, father_id = ?\n\
-WHERE id = ?;");
-      sql.bind(1, static_cast<int>(this->energy));
-      sql.bind(2, static_cast<int>(this->position.x));
-      sql.bind(3, static_cast<int>(this->position.y));
-      sql.bind(4, static_cast<int>(this->orientation));
-      if (this->is_null("time_last_action"))
-        sql.bind(5);
-      else
-        sql.bind(5, static_cast<int>(this->time_last_action));
-      if (this->is_null("action_time"))
-        sql.bind(6);
-      else
-        sql.bind(6, static_cast<int>(this->action_time));
-      sql.bind(7, static_cast<int>(this->birth));
-      if (this->is_null("father_id"))
-        sql.bind(8);
-      else
-        sql.bind(8, static_cast<sqlite3x::int64_t>(this->father_id));
-      sql.bind(9, this->id_);
-
-      sql.executenonquery();
-    } catch (const sqlite3x::database_error& e) {
-      throw EXCEPTION(DBException, std::string(e.what()) +
-                      " (" + this->db()->errormsg() + ")");
-    }
-  }
-
-  this->cpu.update_db();
-
-  AliveBug::update_db(force);
-}
-
-/**
- * Remove the data from the database.
- * changed is set to false.
- * The remove() is propagated to the code.
- * @exception DBException if there is an error in the database.
- */
-void Bug::remove()
+void Bug::father_id(ID father_id)
 {
   sqlite3x::sqlite3_command sql(*this->db_);
 
   try {
     sql.prepare("\
-DELETE FROM Bug\n\
+UPDATE Bug\n\
+SET father_id = ?\n\
 WHERE id = ?;");
-    sql.bind(1, this->id_);
+    sql.bind(1, static_cast<sqlite3x::int64_t>(father_id));
+    sql.bind(2, this->id_);
 
     sql.executenonquery();
   } catch (const sqlite3x::database_error& e) {
     throw EXCEPTION(DBException, std::string(e.what()) +
                     " (" + this->db()->errormsg() + ")");
   }
+}
 
 
-  // It's not needed to propagate the remove because the database do it
-  // this->cpu.remove();
+/**
+ * Get the code of the bug.
+ * @return the code of the bug.
+ * @exception DBException if there is an error with the query.
+ */
+Blob Bug::code() const
+{
+  return Blob(this->db_, "Bug", "code", this->id_);
+}
 
-  AliveBug::remove();
+
+/**
+ * Get the mutations of the bug.
+ * @return the mutations.
+ * @exception DBException if there is an error with the query.
+ */
+std::vector<ID> Bug::mutations() const
+{
+  std::vector<ID> ids;
+  sqlite3x::sqlite3_command sql(*this->db_);
+
+  try {
+    sql.prepare("\
+SELECT id\n\
+FROM Mutation\n\
+WHERE bug_id = ?;");
+    sql.bind(1, this->id_);
+
+    sqlite3x::sqlite3_cursor cursor = sql.executecursor();
+    while (cursor.step())
+      ids.push_back(cursor.getint64(0));
+  } catch (const sqlite3x::database_error& e) {
+    throw EXCEPTION(DBException, std::string(e.what()) +
+                    " (" + this->db()->errormsg() + ")");
+  }
+
+  return ids;
 }
 
 }

@@ -2,7 +2,7 @@
  * @file simpleworld/db/food.hpp
  * Information about the food
  *
- *  Copyright (C) 2007  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2007-2010  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -21,7 +21,6 @@
 #ifndef SIMPLEWORLD_DB_FOOD_HPP
 #define SIMPLEWORLD_DB_FOOD_HPP
 
-#include <simpleworld/element.hpp>
 #include <simpleworld/db/types.hpp>
 #include <simpleworld/db/db.hpp>
 #include <simpleworld/db/table.hpp>
@@ -34,61 +33,81 @@ namespace db
 /**
  * Information about the food
  */
-class Food: public Table, public Element
+class Food: public Table
 {
 public:
   /**
    * Constructor.
+   * It's not checked if the id is in the table, only when accessing the data
+   * the id is checked.
    * @param db database.
-   * @param id id of the food.
-   * @exception DBException if there is a error in the database.
-   * @exception DBException if the ID is not found in the table.
+   * @param bug_id id of the bug.
    */
   Food(DB* db, ID id);
 
+
   /**
-   * Constructor to insert data.
+   * Insert a food.
    * @param db database.
-   * @exception DBException if there is a error in the database.
+   * @param world_id id of the world.
+   * @param size size.
+   * @return the id of the new row.
+   * @exception DBException if there is an error with the insertion.
    */
-  Food(DB* db);
+  static ID insert(DB* db, ID world_id, Energy size);
+
+  /**
+   * Delete a food.
+   * @param db database.
+   * @param id id of the food.
+   * @exception DBException if there is an error with the deletion.
+   */
+  static void remove(DB* db, ID id);
 
 
   /**
-   * Update the data of the class with the database.
-   * changed is set to false.
-   * @exception DBException if there is an error in the database.
-   * @exception DBException if the ID is not found in the table.
+   * Get the id of the food.
+   * @return the id.
+   * @exception DBException if there is an error with the query.
    */
-  void update();
+  ID id() const { return db::Table::id(); }
 
   /**
-   * Update the database with the data of the class in changed or force are
-   * true.
-   * changed is set to false.
-   * @param force force the update of the database.
-   * @exception DBException if there is an error in the database.
+   * Set the id of the food.
+   * @param id the new id.
+   * @exception DBException if there is an error with the update.
    */
-  void update_db(bool force = false);
+  void id(ID id);
+
 
   /**
-   * Insert the data in the database.
-   * The ID is updated.
-   * changed is set to false.
-   * @exception DBException if there is an error in the database.
+   * Get the id of the world.
+   * @return the id.
+   * @exception DBException if there is an error with the query.
    */
-  void insert();
+  ID world_id() const;
 
   /**
-   * Remove the data from the database.
-   * changed is set to false.
-   * @exception DBException if there is an error in the database.
+   * Set the id of the world.
+   * @param world_id the new id.
+   * @exception DBException if there is an error with the update.
    */
-  void remove();
+  void world_id(ID world_id);
 
 
-  // Data
-  Energy size;
+  /**
+   * Get the size of the food.
+   * @return the size.
+   * @exception DBException if there is an error with the query.
+   */
+  Energy size() const;
+
+  /**
+   * Set the size of the food.
+   * @param size the new size.
+   * @exception DBException if there is an error with the update.
+   */
+  void size(Energy s);
 };
 
 }
