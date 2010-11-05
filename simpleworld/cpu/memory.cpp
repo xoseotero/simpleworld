@@ -19,6 +19,7 @@
  */
 
 #include <algorithm>
+#include <cstring>
 
 #include <boost/format.hpp>
 
@@ -54,8 +55,7 @@ Memory::Memory(const Memory& memory)
 {
   this->resize(memory.size_);
 
-  for (Address i = 0; i < this->size_; i++)
-    this->memory_[i] = memory.memory_[i];
+  std::memcpy(this->memory_, memory.memory_, this->size_);
 }
 
 /**
@@ -75,18 +75,15 @@ Memory::~Memory()
  */
 void Memory::resize(Address size)
 {
-  Sint8* tmp = NULL;
+  Uint8* tmp = NULL;
   if (size != 0)
-    tmp = new Sint8[size];
+    tmp = new Uint8[size];
 
   Address limit = std::min(this->size_, size);
   // Copy old memory
-  for (Address i = 0; i < limit; i++)
-    tmp[i] = this->memory_[i];
-
+  std::memcpy(tmp, this->memory_, limit);
   // Zeroed new memory
-  for (Address i = limit; i < size; i++)
-    tmp[i] = 0;
+  std::memset(tmp + limit, 0, size - limit);
 
   this->size_ = size;
   if (this->memory_ != NULL)
@@ -259,8 +256,7 @@ Memory& Memory::assign(const Memory& memory)
 {
   this->resize(memory.size_);
 
-  for (Address i = 0; i < this->size_; i++)
-    this->memory_[i] = memory.memory_[i];
+  std::memcpy(this->memory_, memory.memory_, this->size_);
 
   return *this;
 }
