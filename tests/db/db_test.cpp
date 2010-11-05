@@ -1,8 +1,8 @@
 /**
  * @file tests/db/db_test.cpp
- * Unit test for DB::DB.
+ * Unit test for db::DB.
  *
- *  Copyright (C) 2007  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2007-2010  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -38,8 +38,79 @@ namespace db = simpleworld::db;
  */
 BOOST_AUTO_TEST_CASE(db_version)
 {
-  db::DB sw(DB_SAVE);
-  sw::Uint8 version = sw.version();
+  db::DB sw(DB_FILE);
 
-  BOOST_CHECK_EQUAL(version, db::DB(DB_SAVE).version());
+  BOOST_CHECK_EQUAL(sw.version(), db::DB(DB_SAVE).version());
 }
+
+/**
+ * Get the environments.
+ */
+BOOST_AUTO_TEST_CASE(db_environments)
+{
+  db::DB sw(DB_FILE);
+  std::vector<db::ID> envs = sw.environments();
+
+  BOOST_CHECK_EQUAL(envs.size(), 1);
+  BOOST_CHECK_EQUAL(envs[0], 1);
+}
+
+/**
+ * Get the last environment.
+ */
+BOOST_AUTO_TEST_CASE(db_last_environment)
+{
+  db::DB sw(DB_FILE);
+  db::ID env = sw.last_environment();
+
+  BOOST_CHECK_EQUAL(env, 1);
+}
+
+/**
+ * Get the eggs.
+ */
+BOOST_AUTO_TEST_CASE(db_eggs)
+{
+  db::DB sw(DB_FILE);
+  std::vector<db::ID> eggs = sw.eggs();
+
+  BOOST_CHECK_EQUAL(eggs.size(), 1);
+  BOOST_CHECK_EQUAL(eggs[0], 3);
+}
+
+/**
+ * Get the alive bugs.
+ */
+BOOST_AUTO_TEST_CASE(db_alive_bugs)
+{
+  db::DB sw(DB_FILE);
+  std::vector<db::ID> alivebugs = sw.alive_bugs();
+
+  BOOST_CHECK_EQUAL(alivebugs.size(), 1);
+  BOOST_CHECK_EQUAL(alivebugs[0], 1);
+}
+
+/**
+ * Get the dead bugs.
+ */
+BOOST_AUTO_TEST_CASE(db_dead_bugs)
+{
+  db::DB sw(DB_FILE);
+  std::vector<db::ID> deadbugs = sw.dead_bugs();
+
+  BOOST_CHECK_EQUAL(deadbugs.size(), 1);
+  BOOST_CHECK_EQUAL(deadbugs[0], 2);
+}
+
+/**
+ * Get the food.
+ */
+BOOST_AUTO_TEST_CASE(db_food)
+{
+  db::DB sw(DB_FILE);
+  std::vector<db::ID> food = sw.food();
+
+  BOOST_CHECK_EQUAL(food.size(), 1);
+  BOOST_CHECK_EQUAL(food[0], 1);
+}
+
