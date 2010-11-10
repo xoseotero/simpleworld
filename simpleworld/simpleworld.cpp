@@ -546,6 +546,9 @@ void SimpleWorld::egg(Bug* bug, Energy energy)
 
   this->substract_energy(bug, this->env_->energy_egg());
 
+  if (energy == 0)
+    throw EXCEPTION(ActionError, "Trying to create a egg without energy");
+
   Position front = this->front(bug);
   if (this->world_->used(front))
     throw EXCEPTION(ActionError, boost::str(boost::format("\
