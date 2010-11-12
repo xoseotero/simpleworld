@@ -27,6 +27,7 @@
 
 #include <simpleworld/types.hpp>
 #include <simpleworld/simpleworld.hpp>
+#include <simpleworld/world.hpp>
 #include <simpleworld/cpu/memory_file.hpp>
 namespace sw = simpleworld;
 namespace cpu = simpleworld::cpu;
@@ -178,13 +179,21 @@ static void parse_cmd(int argc, char* argv[])
  */
 void sw_egg(int argc, char* argv[])
 {
-  // set a random position and orientation as the default
   parse_cmd(argc, argv);
   sw::SimpleWorld simpleworld(database_path);
-  position = random_position(simpleworld.world().size());
+  sw::World world(simpleworld.world());
+  if (world.num_elements() == world.size().x * world.size().y) {
+    std::cerr << "Can't add a egg because the world is full" << std::endl;
+    std::exit(1);
+  }
+
+  // set a random position and orientation as the default
+  do {
+    position = random_position(world.size());
+  } while (world.used(position));
   orientation = random_orientation();
 
   parse_cmd(argc, argv);
   simpleworld.add_egg(energy, position, orientation,
-                      cpu::MemoryFile(code_path));
+		      cpu::MemoryFile(code_path));
 }
