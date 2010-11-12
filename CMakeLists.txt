@@ -1,4 +1,5 @@
 project(SimpleWorld)
+set(SIMPLEWORLD_VERSION "\"1.0b3-git\"")
 
 cmake_minimum_required(VERSION 2.6)
 
@@ -109,9 +110,15 @@ if(UNIT_TESTS)
 endif(UNIT_TESTS)
 
 
-# config.hpp
+# Doxyfile
+configure_file(${SimpleWorld_SOURCE_DIR}/Doxyfile.cmake
+  ${SimpleWorld_SOURCE_DIR}/Doxyfile)
+# simpleworld/config.hpp
 configure_file(${SimpleWorld_SOURCE_DIR}/simpleworld/config.hpp.cmake
   ${SimpleWorld_SOURCE_DIR}/simpleworld/config.hpp)
+# src/common/info.hpp
+configure_file(${SimpleWorld_SOURCE_DIR}/src/common/info.hpp.cmake
+  ${SimpleWorld_SOURCE_DIR}/src/common/info.hpp)
 
 
 # Information about the state of the dependencies

@@ -21,7 +21,7 @@
 #ifndef CONFIG_HPP
 #define CONFIG_HPP
 
-#define VERSION "1.0b3-git"
+#define VERSION @SIMPLEWORLD_VERSION@
 #define YEARS "2006-2010"
 #define AUTHOR "Xosé Otero"
 #define EMAIL "xoseotero@gmail.com"

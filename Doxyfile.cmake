@@ -3,7 +3,7 @@
 #---------------------------------------------------------------------------
 DOXYFILE_ENCODING      = UTF-8
 PROJECT_NAME           = "Simple World"
-PROJECT_NUMBER         = 1.0b1-svn
+PROJECT_NUMBER         = @SIMPLEWORLD_VERSION@
 OUTPUT_DIRECTORY       = doc
 CREATE_SUBDIRS         = NO
 OUTPUT_LANGUAGE        = English
