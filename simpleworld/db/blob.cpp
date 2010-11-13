@@ -138,8 +138,10 @@ boost::shared_array<Uint8> Blob::read(Uint32 n, Uint32 offset) const
     throw EXCEPTION(DBException, this->db_->errormsg());
   boost::shared_array<Uint8> data(new Uint8[n]);
   if (sqlite3_blob_read(blob, data.get(), n, offset)) {
+    // sqlite3_errmsg() must be called just after the error
+    std::string error(this->db_->errormsg());
     sqlite3_blob_close(blob);
-    throw EXCEPTION(DBException, this->db_->errormsg());
+    throw EXCEPTION(DBException, error);
   }
   if (sqlite3_blob_close(blob))
     throw EXCEPTION(DBException, this->db_->errormsg());
@@ -192,8 +194,10 @@ void Blob::write(const void* data, Uint32 n, Uint32 offset)
 			this->column_.c_str(), this->id_, 1, &blob))
     throw EXCEPTION(DBException, this->db_->errormsg());
   if (sqlite3_blob_write(blob, data, n, offset)) {
+    // sqlite3_errmsg() must be called just after the error
+    std::string error(this->db_->errormsg());
     sqlite3_blob_close(blob);
-    throw EXCEPTION(DBException, this->db_->errormsg());
+    throw EXCEPTION(DBException, error);
   }
   if (sqlite3_blob_close(blob))
     throw EXCEPTION(DBException, this->db_->errormsg());

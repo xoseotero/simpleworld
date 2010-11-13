@@ -21,6 +21,8 @@
 #ifndef SIMPLEWORLD_DB_BLOB_HPP
 #define SIMPLEWORLD_DB_BLOB_HPP
 
+#include <string>
+
 #include <boost/shared_array.hpp>
 
 #include <simpleworld/ints.hpp>
