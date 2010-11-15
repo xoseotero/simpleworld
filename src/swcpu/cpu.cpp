@@ -38,8 +38,11 @@ namespace cpu = simpleworld::cpu;
 CPU::CPU(const std::string& filename) throw ()
   : FakeCPU(&this->registers_, &this->memory_),
     cpu::Object(cpu::CPU::isa_, filename),
-    registers_(sizeof(cpu::Word) * 16), memory_(filename, &last_access)
+    memory_(filename, &last_access)
 {
+  this->registers_.resize((GLOBAL_REGISTERS +
+			   REGISTERS_PER_WINDOW * REGISTER_WINDOWS) *
+			  sizeof(cpu::Word));
 }
 
 /**
