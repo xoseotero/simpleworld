@@ -156,7 +156,7 @@ static bool change_word(db::Bug* bug, cpu::Memory& mutated,
  */
 bool mutate(db::Bug* bug, float probability, Time time)
 {
-  bool ret = false;
+  bool mutation = false;
 
   // savepoint
   sqlite3x::sqlite3_command sql(*bug->db());
@@ -205,7 +205,7 @@ bool mutate(db::Bug* bug, float probability, Time time)
         break;
       }
 
-      ret = true;
+      mutation = true;
     } else {
       // same as original
       mutated.set_word(mutated_pos, original.get_word(original_pos, false),
@@ -219,10 +219,11 @@ bool mutate(db::Bug* bug, float probability, Time time)
   // addition of a random word at the end of the code
   if (randint(0, 1 / probability) == 0) {
     add_word(bug, mutated, mutated_pos, time);
-    ret = true;
+    mutation = true;
   }
 
-  original.assign(mutated);
+  if (mutation)
+    original.assign(mutated);
 
   // Release savepoint
   try {
@@ -234,7 +235,7 @@ bool mutate(db::Bug* bug, float probability, Time time)
                     " (" + bug->db()->errormsg() + ")");
   }
 
-  return ret;
+  return mutation;
 }
 
 }
