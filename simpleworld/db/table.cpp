@@ -20,6 +20,8 @@
 
 #include <boost/format.hpp>
 
+#include <sqlite3.h>
+
 #include "exception.hpp"
 #include "table.hpp"
 
@@ -47,31 +49,28 @@ Table::Table(const std::string& name, DB* db, ID id)
  */
 bool Table::is_null(const std::string& colname) const
 {
-  sqlite3x::sqlite3_command sql(*this->db_);
-
-  try {
-    // In sqlite3 prepared statments ? can only be used in parameters not
-    // instead of tables/columns
-    std::string query(boost::str(boost::format("\
+  // In sqlite3 prepared statments ? can only be used in parameters not
+  // instead of tables/columns
+  std::string query(boost::str(boost::format("\
 SELECT %1%\n\
 FROM %2%\n\
 WHERE _ROWID_ = ?;")
-				 % colname
-				 % this->name_));
-    sql.prepare(query);
-    sql.bind(1, this->id_);
+			       % colname
+			       % this->name_));
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(this->db_->db(), query.c_str(), query.size(), &stmt,
+			 NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_bind_int64(stmt, 1, this->id_);
+  if (sqlite3_step(stmt) != SQLITE_ROW)
+    throw EXCEPTION(DBException, boost::str(boost::format("\
+id %1% not found in table %2%")
+					    % this->id_
+					    % colname));
+  bool is_null = sqlite3_column_type(stmt, 0) == SQLITE_NULL;
+  sqlite3_finalize(stmt);
 
-    sqlite3x::sqlite3_cursor cursor(sql.executecursor());
-    if (! cursor.step())
-      throw EXCEPTION(DBException, boost::str(boost::format("\
-id %1% not found in table AliveBug")
-                                              % this->id_));
-
-    return cursor.isnull(0);
-  } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(DBException, std::string(e.what()) +
-                    " (" + this->db()->errormsg() + ")");
-  }
+  return is_null;
 }
 
 /**
@@ -80,26 +79,26 @@ id %1% not found in table AliveBug")
  */
 void Table::set_null(const std::string& colname)
 {
-  sqlite3x::sqlite3_command sql(*this->db_);
-
-  try {
-    // In sqlite3 prepared statments ? can only be used in parameters not
-    // instead of tables/columns
-    std::string query(boost::str(boost::format("\
+  // In sqlite3 prepared statments ? can only be used in parameters not
+  // instead of tables/columns
+  std::string query(boost::str(boost::format("\
 UPDATE %1%\n\
 SET %2% = ?\n\
 WHERE _ROWID_ = ?;")
-				 % this->name_
-				 % colname));
-    sql.prepare(query);
-    sql.bind(1);
-    sql.bind(2, this->id_);
-
-    sql.executenonquery();
-  } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(DBException, std::string(e.what()) +
-                    " (" + this->db()->errormsg() + ")");
-  }
+			       % this->name_
+			       % colname));
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(this->db_->db(), query.c_str(), query.size(), &stmt,
+			 NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_bind_null(stmt, 1);
+  sqlite3_bind_int64(stmt, 2, this->id_);
+  if (sqlite3_step(stmt) != SQLITE_DONE)
+    throw EXCEPTION(DBException, boost::str(boost::format("\
+id %1% not found in table %2%")
+					    % this->id_
+					    % colname));
+  sqlite3_finalize(stmt);
 }
 
 }

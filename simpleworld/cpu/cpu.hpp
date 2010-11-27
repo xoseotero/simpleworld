@@ -33,6 +33,8 @@
 #define GLOBAL_REGISTERS        8      // Shared registers
 #define REGISTERS_PER_WINDOW    8      // Registers per window
 #define REGISTER_WINDOWS        16     // Number of register windows
+#define TOTAL_REGISTERS (GLOBAL_REGISTERS + \
+			 REGISTERS_PER_WINDOW * REGISTER_WINDOWS)
 
 #define REGISTER_PC 0x0
 #define REGISTER_SP 0x1

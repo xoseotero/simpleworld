@@ -2,7 +2,7 @@
  * @file src/table.hpp
  * Show a SQL query as a table.
  *
- *  Copyright (C) 2008  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2008-2010  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -23,23 +23,25 @@
 
 #include <string>
 
-#include <sqlite3x.hpp>
+#include <sqlite3.h>
 
 /**
  * Show a SQL query as a table with one column per line.
  * @param showHeader True to show column names in List or Column mode.
+ * @param colWidth Requested width of each column when in column mode.
  * @param nullvalue The text to print when a NULL comes back from the database.
+ * @param stmt Prepared statement.
  */
 void show_query_column(bool showHeader, int colWidth, std::string nullvalue,
-                       sqlite3x::sqlite3_cursor cursor);
+                       sqlite3_stmt* stmt);
 
 /**
  * Show a SQL query as a table with one record per line.
  * @param showHeader True to show column names in List or Column mode.
- * @param colWidth Requested width of each column when in column mode.
  * @param nullvalue The text to print when a NULL comes back from the database.
+ * @param stmt Prepared statement.
  */
-void show_query_line(bool showHeader, std::string nullvalue,
-                     sqlite3x::sqlite3_cursor cursor);
+void show_query_line(bool showHeader, std::string nullvalue, 
+                     sqlite3_stmt* stmt);
 
 #endif // SRC_TABLE_HPP

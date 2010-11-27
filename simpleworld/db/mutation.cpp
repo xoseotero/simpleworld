@@ -22,6 +22,8 @@
 
 #include <boost/format.hpp>
 
+#include <sqlite3.h>
+
 #include "exception.hpp"
 #include "mutation.hpp"
 #include <boost/concept_check.hpp>
@@ -58,24 +60,21 @@ Mutation::Mutation(DB* db, ID bug_id)
 ID Mutation::insert(DB* db, ID bug_id, Time time, Uint32 position,
                     Uint32 original, Uint32 mutated)
 {
-  sqlite3x::sqlite3_command sql(*db);
-
-  try {
-    sql.prepare("\
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(db->db(), "\
 INSERT INTO Mutation(bug_id, time, position, original, mutated)\n\
-VALUES(?, ?, ?, ?, ?);");
-    sql.bind(1, static_cast<sqlite3x::int64_t>(bug_id));
-    sql.bind(2, static_cast<int>(time));
-    sql.bind(3, static_cast<int>(position));
-    sql.bind(4, static_cast<int>(original));
-    sql.bind(5, static_cast<int>(mutated));
+VALUES(?, ?, ?, ?, ?);", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(db->db()));
+  sqlite3_bind_int64(stmt, 1, bug_id);
+  sqlite3_bind_int(stmt, 2, time);
+  sqlite3_bind_int(stmt, 3, position);
+  sqlite3_bind_int(stmt, 4, original);
+  sqlite3_bind_int(stmt, 5, mutated);
+  if (sqlite3_step(stmt) != SQLITE_DONE)
+    throw EXCEPTION(DBException, sqlite3_errmsg(db->db()));
+  sqlite3_finalize(stmt);
 
-    sql.executenonquery();
-    return db->insertid();
-  } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(DBException, std::string(e.what()) +
-                    " (" + db->errormsg() + ")");
-  }
+  return sqlite3_last_insert_rowid(db->db());
 }
 
 /**
@@ -91,23 +90,20 @@ VALUES(?, ?, ?, ?, ?);");
 ID Mutation::insert_addition(DB* db, ID bug_id, Time time, Uint32 position,
                              Uint32 mutated)
 {
-  sqlite3x::sqlite3_command sql(*db);
-
-  try {
-    sql.prepare("\
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(db->db(), "\
 INSERT INTO Mutation(bug_id, time, position, mutated)\n\
-VALUES(?, ?, ?, ?);");
-    sql.bind(1, static_cast<sqlite3x::int64_t>(bug_id));
-    sql.bind(2, static_cast<int>(time));
-    sql.bind(3, static_cast<int>(position));
-    sql.bind(4, static_cast<int>(mutated));
+VALUES(?, ?, ?, ?);", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(db->db()));
+  sqlite3_bind_int64(stmt, 1, bug_id);
+  sqlite3_bind_int(stmt, 2, time);
+  sqlite3_bind_int(stmt, 3, position);
+  sqlite3_bind_int(stmt, 4, mutated);
+  if (sqlite3_step(stmt) != SQLITE_DONE)
+    throw EXCEPTION(DBException, sqlite3_errmsg(db->db()));
+  sqlite3_finalize(stmt);
 
-    sql.executenonquery();
-    return db->insertid();
-  } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(DBException, std::string(e.what()) +
-                    " (" + db->errormsg() + ")");
-  }
+  return sqlite3_last_insert_rowid(db->db());
 }
 
 /**
@@ -123,23 +119,20 @@ VALUES(?, ?, ?, ?);");
 ID Mutation::insert_deletion(DB* db, ID bug_id, Time time, Uint32 position,
                              Uint32 original)
 {
-  sqlite3x::sqlite3_command sql(*db);
-
-  try {
-    sql.prepare("\
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(db->db(), "\
 INSERT INTO Mutation(bug_id, time, position, original)\n\
-VALUES(?, ?, ?, ?);");
-    sql.bind(1, static_cast<sqlite3x::int64_t>(bug_id));
-    sql.bind(2, static_cast<int>(time));
-    sql.bind(3, static_cast<int>(position));
-    sql.bind(4, static_cast<int>(original));
+VALUES(?, ?, ?, ?);", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(db->db()));
+  sqlite3_bind_int64(stmt, 1, bug_id);
+  sqlite3_bind_int(stmt, 2, time);
+  sqlite3_bind_int(stmt, 3, position);
+  sqlite3_bind_int(stmt, 4, original);
+  if (sqlite3_step(stmt) != SQLITE_DONE)
+    throw EXCEPTION(DBException, sqlite3_errmsg(db->db()));
+  sqlite3_finalize(stmt);
 
-    sql.executenonquery();
-    return db->insertid();
-  } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(DBException, std::string(e.what()) +
-                    " (" + db->errormsg() + ")");
-  }
+  return sqlite3_last_insert_rowid(db->db());
 }
 
 /**
@@ -150,19 +143,15 @@ VALUES(?, ?, ?, ?);");
  */
 void Mutation::remove(DB* db, ID id)
 {
-  sqlite3x::sqlite3_command sql(*db);
-
-  try {
-    sql.prepare("\
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(db->db(), "\
 DELETE FROM Mutation\n\
-WHERE id = ?;");
-    sql.bind(1, id);
-
-    sql.executenonquery();
-  } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(DBException, std::string(e.what()) +
-                    " (" + db->errormsg() + ")");
-  }
+WHERE id = ?;", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(db->db()));
+  sqlite3_bind_int64(stmt, 1, id);
+  if (sqlite3_step(stmt) != SQLITE_DONE)
+    throw EXCEPTION(DBException, sqlite3_errmsg(db->db()));
+  sqlite3_finalize(stmt);
 }
 
 
@@ -173,21 +162,17 @@ WHERE id = ?;");
  */
 void Mutation::id(ID id)
 {
-  sqlite3x::sqlite3_command sql(*this->db_);
-
-  try {
-    sql.prepare("\
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(this->db_->db(), "\
 UPDATE Mutation\n\
 SET id = ?\n\
-WHERE id = ?;");
-    sql.bind(1, static_cast<sqlite3x::int64_t>(id));
-    sql.bind(2, this->id_);
-
-    sql.executenonquery();
-  } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(DBException, std::string(e.what()) +
-                    " (" + this->db()->errormsg() + ")");
-  }
+WHERE id = ?;", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_bind_int64(stmt, 1, id);
+  sqlite3_bind_int64(stmt, 2, this->id_);
+  if (sqlite3_step(stmt) != SQLITE_DONE)
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_finalize(stmt);
 
   this->id_ = id;
 }
@@ -200,26 +185,21 @@ WHERE id = ?;");
  */
 ID Mutation::bug_id() const
 {
-  sqlite3x::sqlite3_command sql(*this->db_);
-
-  try {
-    sql.prepare("\
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(this->db_->db(), "\
 SELECT bug_id\n\
 FROM Mutation\n\
-WHERE id = ?;");
-    sql.bind(1, this->id_);
-
-    sqlite3x::sqlite3_cursor cursor(sql.executecursor());
-    if (! cursor.step())
-      throw EXCEPTION(DBException, boost::str(boost::format("\
+WHERE id = ?;", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_bind_int64(stmt, 1, this->id_);
+  if (sqlite3_step(stmt) != SQLITE_ROW)
+    throw EXCEPTION(DBException, boost::str(boost::format("\
 id %1% not found in table Mutation")
-                                              % this->id_));
+					    % this->id_));
+  ID id = sqlite3_column_int64(stmt, 0);
+  sqlite3_finalize(stmt);
 
-    return cursor.getint64(0);
-  } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(DBException, std::string(e.what()) +
-                    " (" + this->db_->errormsg() + ")");
-  }
+  return id;
 }
 
 /**
@@ -229,21 +209,17 @@ id %1% not found in table Mutation")
  */
 void Mutation::bug_id(ID bug_id)
 {
-  sqlite3x::sqlite3_command sql(*this->db_);
-
-  try {
-    sql.prepare("\
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(this->db_->db(), "\
 UPDATE Mutation\n\
 SET bug_id = ?\n\
-WHERE id = ?;");
-    sql.bind(1, static_cast<sqlite3x::int64_t>(bug_id));
-    sql.bind(2, this->id_);
-
-    sql.executenonquery();
-  } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(DBException, std::string(e.what()) +
-		    " (" + this->db_->errormsg() + ")");
-  }
+WHERE id = ?;", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_bind_int64(stmt, 1, bug_id);
+  sqlite3_bind_int64(stmt, 2, this->id_);
+  if (sqlite3_step(stmt) != SQLITE_DONE)
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_finalize(stmt);
 }
 
 
@@ -254,26 +230,21 @@ WHERE id = ?;");
  */
 Time Mutation::time() const
 {
-  sqlite3x::sqlite3_command sql(*this->db_);
-
-  try {
-    sql.prepare("\
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(this->db_->db(), "\
 SELECT time\n\
 FROM Mutation\n\
-WHERE id = ?;");
-    sql.bind(1, this->id_);
-
-    sqlite3x::sqlite3_cursor cursor(sql.executecursor());
-    if (! cursor.step())
-      throw EXCEPTION(DBException, boost::str(boost::format("\
+WHERE id = ?;", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_bind_int64(stmt, 1, this->id_);
+  if (sqlite3_step(stmt) != SQLITE_ROW)
+    throw EXCEPTION(DBException, boost::str(boost::format("\
 id %1% not found in table Mutation")
-                                              % this->id_));
+					    % this->id_));
+  Time time = sqlite3_column_int(stmt, 0);
+  sqlite3_finalize(stmt);
 
-    return cursor.getint(0);
-  } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(DBException, std::string(e.what()) +
-                    " (" + this->db_->errormsg() + ")");
-  }
+  return time;
 }
 
 /**
@@ -283,21 +254,17 @@ id %1% not found in table Mutation")
  */
 void Mutation::time(Time time)
 {
-  sqlite3x::sqlite3_command sql(*this->db_);
-
-  try {
-    sql.prepare("\
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(this->db_->db(), "\
 UPDATE Mutation\n\
 SET time = ?\n\
-WHERE id = ?;");
-    sql.bind(1, static_cast<int>(time));
-    sql.bind(2, this->id_);
-
-    sql.executenonquery();
-  } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(DBException, std::string(e.what()) +
-		    " (" + this->db_->errormsg() + ")");
-  }
+WHERE id = ?;", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_bind_int(stmt, 1, time);
+  sqlite3_bind_int64(stmt, 2, this->id_);
+  if (sqlite3_step(stmt) != SQLITE_DONE)
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_finalize(stmt);
 }
 
 
@@ -308,26 +275,21 @@ WHERE id = ?;");
  */
 Uint32 Mutation::position() const
 {
-  sqlite3x::sqlite3_command sql(*this->db_);
-
-  try {
-    sql.prepare("\
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(this->db_->db(), "\
 SELECT position\n\
 FROM Mutation\n\
-WHERE id = ?;");
-    sql.bind(1, this->id_);
-
-    sqlite3x::sqlite3_cursor cursor(sql.executecursor());
-    if (! cursor.step())
-      throw EXCEPTION(DBException, boost::str(boost::format("\
+WHERE id = ?;", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_bind_int64(stmt, 1, this->id_);
+  if (sqlite3_step(stmt) != SQLITE_ROW)
+    throw EXCEPTION(DBException, boost::str(boost::format("\
 id %1% not found in table Mutation")
-                                              % this->id_));
+					    % this->id_));
+  Uint32 position = sqlite3_column_int(stmt, 0);
+  sqlite3_finalize(stmt);
 
-    return cursor.getint(0);
-  } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(DBException, std::string(e.what()) +
-                    " (" + this->db_->errormsg() + ")");
-  }
+  return position;
 }
 
 /**
@@ -337,21 +299,17 @@ id %1% not found in table Mutation")
  */
 void Mutation::position(Uint32 position)
 {
-  sqlite3x::sqlite3_command sql(*this->db_);
-
-  try {
-    sql.prepare("\
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(this->db_->db(), "\
 UPDATE Mutation\n\
 SET position = ?\n\
-WHERE id = ?;");
-    sql.bind(1, static_cast<int>(position));
-    sql.bind(2, this->id_);
-
-    sql.executenonquery();
-  } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(DBException, std::string(e.what()) +
-		    " (" + this->db_->errormsg() + ")");
-  }
+WHERE id = ?;", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_bind_int(stmt, 1, position);
+  sqlite3_bind_int64(stmt, 2, this->id_);
+  if (sqlite3_step(stmt) != SQLITE_DONE)
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_finalize(stmt);
 }
 
 /**
@@ -362,26 +320,21 @@ WHERE id = ?;");
  */
 Uint32 Mutation::original() const
 {
-  sqlite3x::sqlite3_command sql(*this->db_);
-
-  try {
-    sql.prepare("\
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(this->db_->db(), "\
 SELECT original\n\
 FROM Mutation\n\
-WHERE id = ?;");
-    sql.bind(1, this->id_);
-
-    sqlite3x::sqlite3_cursor cursor(sql.executecursor());
-    if (! cursor.step())
-      throw EXCEPTION(DBException, boost::str(boost::format("\
+WHERE id = ?;", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_bind_int64(stmt, 1, this->id_);
+  if (sqlite3_step(stmt) != SQLITE_ROW)
+    throw EXCEPTION(DBException, boost::str(boost::format("\
 id %1% not found in table Mutation")
-                                              % this->id_));
+					    % this->id_));
+  Uint32 original = sqlite3_column_int(stmt, 0);
+  sqlite3_finalize(stmt);
 
-    return cursor.getint(0);
-  } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(DBException, std::string(e.what()) +
-                    " (" + this->db_->errormsg() + ")");
-  }
+  return original;
 }
 
 /**
@@ -391,21 +344,17 @@ id %1% not found in table Mutation")
  */
 void Mutation::original(Uint32 original)
 {
-  sqlite3x::sqlite3_command sql(*this->db_);
-
-  try {
-    sql.prepare("\
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(this->db_->db(), "\
 UPDATE Mutation\n\
 SET original = ?\n\
-WHERE id = ?;");
-    sql.bind(1, static_cast<int>(original));
-    sql.bind(2, this->id_);
-
-    sql.executenonquery();
-  } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(DBException, std::string(e.what()) +
-		    " (" + this->db_->errormsg() + ")");
-  }
+WHERE id = ?;", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_bind_int(stmt, 1, original);
+  sqlite3_bind_int64(stmt, 2, this->id_);
+  if (sqlite3_step(stmt) != SQLITE_DONE)
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_finalize(stmt);
 }
 
 /**
@@ -416,26 +365,21 @@ WHERE id = ?;");
  */
 Uint32 Mutation::mutated() const
 {
-  sqlite3x::sqlite3_command sql(*this->db_);
-
-  try {
-    sql.prepare("\
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(this->db_->db(), "\
 SELECT mutated\n\
 FROM Mutation\n\
-WHERE id = ?;");
-    sql.bind(1, this->id_);
-
-    sqlite3x::sqlite3_cursor cursor(sql.executecursor());
-    if (! cursor.step())
-      throw EXCEPTION(DBException, boost::str(boost::format("\
+WHERE id = ?;", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_bind_int64(stmt, 1, this->id_);
+  if (sqlite3_step(stmt) != SQLITE_ROW)
+    throw EXCEPTION(DBException, boost::str(boost::format("\
 id %1% not found in table Mutation")
-                                              % this->id_));
+					    % this->id_));
+  Uint32 mutated = sqlite3_column_int(stmt, 0);
+  sqlite3_finalize(stmt);
 
-    return cursor.getint(0);
-  } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(DBException, std::string(e.what()) +
-                    " (" + this->db_->errormsg() + ")");
-  }
+  return mutated;
 }
 
 /**
@@ -445,21 +389,17 @@ id %1% not found in table Mutation")
  */
 void Mutation::mutated(Uint32 mutated)
 {
-  sqlite3x::sqlite3_command sql(*this->db_);
-
-  try {
-    sql.prepare("\
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(this->db_->db(), "\
 UPDATE Mutation\n\
 SET mutated = ?\n\
-WHERE id = ?;");
-    sql.bind(1, static_cast<int>(mutated));
-    sql.bind(2, this->id_);
-
-    sql.executenonquery();
-  } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(DBException, std::string(e.what()) +
-		    " (" + this->db_->errormsg() + ")");
-  }
+WHERE id = ?;", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_bind_int(stmt, 1, mutated);
+  sqlite3_bind_int64(stmt, 2, this->id_);
+  if (sqlite3_step(stmt) != SQLITE_DONE)
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_finalize(stmt);
 }
 
 }

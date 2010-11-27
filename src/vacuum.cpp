@@ -25,6 +25,8 @@
 
 #include <boost/format.hpp>
 
+#include <sqlite3.h>
+
 #include <simpleworld/types.hpp>
 #include <simpleworld/element.hpp>
 #include <simpleworld/simpleworld.hpp>
@@ -140,6 +142,5 @@ void sw_vacuum(int argc, char* argv[])
 {
   parse_cmd(argc, argv);
   sw::SimpleWorld simpleworld(database_path);
-  sqlite3x::sqlite3_command sql(simpleworld, "VACUUM;");
-  sql.executenonquery();
+  sqlite3_exec(simpleworld.db(), "VACUUM;", NULL, NULL, NULL);
 }

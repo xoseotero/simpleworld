@@ -2,7 +2,7 @@
  * @file src/table.cpp
  * Show a SQL query as a table.
  *
- *  Copyright (C) 2008  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2008-2010  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -57,9 +57,10 @@
  * @param showHeader True to show column names in List or Column mode.
  * @param colWidth Requested width of each column when in column mode.
  * @param nullvalue The text to print when a NULL comes back from the database.
+ * @param stmt Prepared statement.
  */
 void show_query_column(bool showHeader, int colWidth, std::string nullvalue,
-                       sqlite3x::sqlite3_cursor cursor)
+                       sqlite3_stmt* stmt)
 {
   int cnt = 0;         /**< Number of records displayed so far */
   int actualWidth[100];/**< Actual width of each column */
@@ -67,29 +68,29 @@ void show_query_column(bool showHeader, int colWidth, std::string nullvalue,
     actualWidth[i] = 0;
   int i;
 
-  while (cursor.step()) {
+  while (sqlite3_step(stmt) == SQLITE_ROW) {
     if(cnt++ == 0) {
-      for(i = 0; i < cursor.colcount(); i++) {
+      for(i = 0; i < sqlite3_column_count(stmt); i++) {
         int w = colWidth, n;
         if(w <= 0) {
-          w = cursor.getcolname(i).size();
+          w = sqlite3_column_bytes(stmt, i);
           if(w < 10)
             w = 10;
-          if (cursor.isnull(i))
+          if (sqlite3_column_type(stmt, i) == SQLITE_NULL)
             n = nullvalue.size();
           else
-            n = cursor.getstring(i).size();
+            n = sqlite3_column_bytes(stmt, i);
           if(w < n)
             w = n;
         }
         if(i < ArraySize(actualWidth))
           actualWidth[i] = w;
         if(showHeader)
-          std::printf("%-*.*s%s", w, w, cursor.getcolname(i).c_str(),
-                      i == cursor.colcount() - 1 ? "\n": "  ");
+          std::printf("%-*.*s%s", w, w, sqlite3_column_name(stmt, i),
+                      i == sqlite3_column_count(stmt) - 1 ? "\n": "  ");
       }
       if(showHeader)
-        for(i = 0; i < cursor.colcount(); i++) {
+        for(i = 0; i < sqlite3_column_count(stmt); i++) {
           int w;
           if(i < ArraySize(actualWidth))
             w = actualWidth[i];
@@ -98,19 +99,19 @@ void show_query_column(bool showHeader, int colWidth, std::string nullvalue,
           std::printf("%-*.*s%s", w, w,
                       "-----------------------------------"
                       "----------------------------------------------------------",
-                      i == cursor.colcount() - 1 ? "\n": "  ");
+                      i == sqlite3_column_count(stmt) - 1 ? "\n": "  ");
         }
     }
-    for(i = 0; i < cursor.colcount(); i++) {
+    for(i = 0; i < sqlite3_column_count(stmt); i++) {
       int w;
       if(i < ArraySize(actualWidth))
         w = actualWidth[i];
       else
         w = 10;
       std::printf("%-*.*s%s", w, w,
-                  cursor.isnull(i) ?
-                  nullvalue.c_str() : cursor.getstring(i).c_str(),
-                  i == cursor.colcount() - 1 ? "\n": "  ");
+                  sqlite3_column_type(stmt, i) == SQLITE_NULL ?
+                  nullvalue.c_str() : reinterpret_cast<const char*>(sqlite3_column_text(stmt, i)),
+                  i == sqlite3_column_count(stmt) - 1 ? "\n": "  ");
     }
   }
 }
@@ -120,26 +121,27 @@ void show_query_column(bool showHeader, int colWidth, std::string nullvalue,
  * Create a table with one record per line.
  * @param showHeader True to show column names in List or Column mode.
  * @param nullvalue The text to print when a NULL comes back from the database.
+ * @param stmt Prepared statement.
  */
 void show_query_line(bool showHeader, std::string nullvalue,
-                     sqlite3x::sqlite3_cursor cursor)
+                     sqlite3_stmt* stmt)
 {
   int cnt = 0;         /**< Number of records displayed so far */
   int i;
 
-  while (cursor.step()) {
+  while (sqlite3_step(stmt) == SQLITE_ROW) {
     int w = 5;
-    for(i = 0; i < cursor.colcount(); i++) {
-      int len = cursor.getcolname(i).size();
+    for(i = 0; i < sqlite3_column_count(stmt); i++) {
+      int len = sqlite3_column_bytes(stmt, i);
       if(len > w)
         w = len;
     }
     if(cnt++ > 0)
       std::printf("\n");
-    for(i = 0; i < cursor.colcount(); i++) {
-      std::printf("%*s = %s\n", w, cursor.getcolname(i).c_str(),
-                  cursor.isnull(i) ?
-                  nullvalue.c_str() : cursor.getstring(i).c_str());
+    for(i = 0; i < sqlite3_column_count(stmt); i++) {
+      std::printf("%*s = %s\n", w, sqlite3_column_name(stmt, i),
+                  sqlite3_column_type(stmt, i) == SQLITE_NULL ?
+                  nullvalue.c_str() : reinterpret_cast<const char*>(sqlite3_column_text(stmt, i)));
     }
   }
 }

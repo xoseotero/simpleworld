@@ -22,6 +22,8 @@
 
 #include <boost/format.hpp>
 
+#include <sqlite3.h>
+
 #include "exception.hpp"
 #include "world.hpp"
 
@@ -55,22 +57,19 @@ World::World(DB* db, ID id)
 ID World::insert(DB* db, Coord position_x, Coord position_y,
                  Orientation orientation)
 {
-  sqlite3x::sqlite3_command sql(*db);
-
-  try {
-    sql.prepare("\
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(db->db(), "\
 INSERT INTO World(position_x, position_y, orientation)\n\
-VALUES(?, ?, ?);");
-    sql.bind(1, static_cast<int>(position_x));
-    sql.bind(2, static_cast<int>(position_y));
-    sql.bind(3, static_cast<int>(orientation));
+VALUES(?, ?, ?);", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(db->db()));
+  sqlite3_bind_int(stmt, 1, position_x);
+  sqlite3_bind_int(stmt, 2, position_y);
+  sqlite3_bind_int(stmt, 3, orientation);
+  if (sqlite3_step(stmt) != SQLITE_DONE)
+    throw EXCEPTION(DBException, sqlite3_errmsg(db->db()));
+  sqlite3_finalize(stmt);
 
-    sql.executenonquery();
-    return db->insertid();
-  } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(DBException, std::string(e.what()) +
-                    " (" + db->errormsg() + ")");
-  }
+  return sqlite3_last_insert_rowid(db->db());
 }
 
 /**
@@ -83,21 +82,18 @@ VALUES(?, ?, ?);");
  */
 ID World::insert(DB* db, Coord position_x, Coord position_y)
 {
-  sqlite3x::sqlite3_command sql(*db);
-
-  try {
-    sql.prepare("\
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(db->db(), "\
 INSERT INTO World(position_x, position_y)\n\
-VALUES(?, ?);");
-    sql.bind(1, static_cast<int>(position_x));
-    sql.bind(2, static_cast<int>(position_y));
+VALUES(?, ?);", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(db->db()));
+  sqlite3_bind_int(stmt, 1, position_x);
+  sqlite3_bind_int(stmt, 2, position_y);
+  if (sqlite3_step(stmt) != SQLITE_DONE)
+    throw EXCEPTION(DBException, sqlite3_errmsg(db->db()));
+  sqlite3_finalize(stmt);
 
-    sql.executenonquery();
-    return db->insertid();
-  } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(DBException, std::string(e.what()) +
-                    " (" + db->errormsg() + ")");
-  }
+  return sqlite3_last_insert_rowid(db->db());
 }
 
 /**
@@ -108,19 +104,15 @@ VALUES(?, ?);");
  */
 void World::remove(DB* db, ID id)
 {
-  sqlite3x::sqlite3_command sql(*db);
-
-  try {
-    sql.prepare("\
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(db->db(), "\
 DELETE FROM World\n\
-WHERE id = ?;");
-    sql.bind(1, id);
-
-    sql.executenonquery();
-  } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(DBException, std::string(e.what()) +
-                    " (" + db->errormsg() + ")");
-  }
+WHERE id = ?;", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(db->db()));
+  sqlite3_bind_int64(stmt, 1, id);
+  if (sqlite3_step(stmt) != SQLITE_DONE)
+    throw EXCEPTION(DBException, sqlite3_errmsg(db->db()));
+  sqlite3_finalize(stmt);
 }
 
 
@@ -131,21 +123,17 @@ WHERE id = ?;");
  */
 void World::id(ID id)
 {
-  sqlite3x::sqlite3_command sql(*this->db_);
-
-  try {
-    sql.prepare("\
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(this->db_->db(), "\
 UPDATE World\n\
 SET id = ?\n\
-WHERE id = ?;");
-    sql.bind(1, static_cast<sqlite3x::int64_t>(id));
-    sql.bind(2, this->id_);
-
-    sql.executenonquery();
-  } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(DBException, std::string(e.what()) +
-                    " (" + this->db()->errormsg() + ")");
-  }
+WHERE id = ?;", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_bind_int64(stmt, 1, id);
+  sqlite3_bind_int64(stmt, 2, this->id_);
+  if (sqlite3_step(stmt) != SQLITE_DONE)
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_finalize(stmt);
 
   this->id_ = id;
 }
@@ -157,26 +145,21 @@ WHERE id = ?;");
  */
 Coord World::position_x() const
 {
-  sqlite3x::sqlite3_command sql(*this->db_);
-
-  try {
-    sql.prepare("\
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(this->db_->db(), "\
 SELECT position_x\n\
 FROM World\n\
-WHERE id = ?");
-    sql.bind(1, this->id_);
-
-    sqlite3x::sqlite3_cursor cursor(sql.executecursor());
-    if (! cursor.step())
-      throw EXCEPTION(DBException, boost::str(boost::format("\
+WHERE id = ?", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_bind_int64(stmt, 1, this->id_);
+  if (sqlite3_step(stmt) != SQLITE_ROW)
+    throw EXCEPTION(DBException, boost::str(boost::format("\
 id %1% not found in table World")
-                                              % this->id_));
+					    % this->id_));
+  Coord position_x = sqlite3_column_int(stmt, 0);
+  sqlite3_finalize(stmt);
 
-    return cursor.getint(0);
-  } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(DBException, std::string(e.what()) +
-                    " (" + this->db()->errormsg() + ")");
-  }
+  return position_x;
 }
 
 /**
@@ -186,26 +169,21 @@ id %1% not found in table World")
  */
 Coord World::position_y() const
 {
-  sqlite3x::sqlite3_command sql(*this->db_);
-
-  try {
-    sql.prepare("\
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(this->db_->db(), "\
 SELECT position_y\n\
 FROM World\n\
-WHERE id = ?");
-    sql.bind(1, this->id_);
-
-    sqlite3x::sqlite3_cursor cursor(sql.executecursor());
-    if (! cursor.step())
-      throw EXCEPTION(DBException, boost::str(boost::format("\
+WHERE id = ?", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_bind_int64(stmt, 1, this->id_);
+  if (sqlite3_step(stmt) != SQLITE_ROW)
+    throw EXCEPTION(DBException, boost::str(boost::format("\
 id %1% not found in table World")
-                                              % this->id_));
+					    % this->id_));
+  Coord position_y = sqlite3_column_int(stmt, 0);
+  sqlite3_finalize(stmt);
 
-    return cursor.getint(0);
-  } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(DBException, std::string(e.what()) +
-                    " (" + this->db()->errormsg() + ")");
-  }
+  return position_y;
 }
 
 /**
@@ -215,21 +193,17 @@ id %1% not found in table World")
  */
 void World::position_x(Coord position_x)
 {
-  sqlite3x::sqlite3_command sql(*this->db_);
-
-  try {
-    sql.prepare("\
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(this->db_->db(), "\
 UPDATE World\n\
 SET position_x = ?\n\
-WHERE id = ?;");
-    sql.bind(1, static_cast<int>(position_x));
-    sql.bind(2, this->id_);
-
-    sql.executenonquery();
-  } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(DBException, std::string(e.what()) +
-                    " (" + this->db()->errormsg() + ")");
-  }
+WHERE id = ?;", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_bind_int(stmt, 1, position_x);
+  sqlite3_bind_int64(stmt, 2, this->id_);
+  if (sqlite3_step(stmt) != SQLITE_DONE)
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_finalize(stmt);
 }
 
 /**
@@ -239,21 +213,17 @@ WHERE id = ?;");
  */
 void World::position_y(Coord position_y)
 {
-  sqlite3x::sqlite3_command sql(*this->db_);
-
-  try {
-    sql.prepare("\
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(this->db_->db(), "\
 UPDATE World\n\
 SET position_y = ?\n\
-WHERE id = ?;");
-    sql.bind(1, static_cast<int>(position_y));
-    sql.bind(2, this->id_);
-
-    sql.executenonquery();
-  } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(DBException, std::string(e.what()) +
-                    " (" + this->db()->errormsg() + ")");
-  }
+WHERE id = ?;", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_bind_int(stmt, 1, position_y);
+  sqlite3_bind_int64(stmt, 2, this->id_);
+  if (sqlite3_step(stmt) != SQLITE_DONE)
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_finalize(stmt);
 }
 
 
@@ -264,26 +234,22 @@ WHERE id = ?;");
  */
 Orientation World::orientation() const
 {
-  sqlite3x::sqlite3_command sql(*this->db_);
-
-  try {
-    sql.prepare("\
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(this->db_->db(), "\
 SELECT orientation\n\
 FROM World\n\
-WHERE id = ?");
-    sql.bind(1, this->id_);
-
-    sqlite3x::sqlite3_cursor cursor(sql.executecursor());
-    if (! cursor.step())
-      throw EXCEPTION(DBException, boost::str(boost::format("\
+WHERE id = ?", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_bind_int64(stmt, 1, this->id_);
+  if (sqlite3_step(stmt) != SQLITE_ROW)
+    throw EXCEPTION(DBException, boost::str(boost::format("\
 id %1% not found in table World")
-                                              % this->id_));
+					    % this->id_));
+  Orientation orientation =
+    static_cast<Orientation>(sqlite3_column_int(stmt, 0));
+  sqlite3_finalize(stmt);
 
-    return static_cast<Orientation>(cursor.getint(0));
-  } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(DBException, std::string(e.what()) +
-                    " (" + this->db()->errormsg() + ")");
-  }
+  return orientation;
 }
 
 /**
@@ -293,21 +259,17 @@ id %1% not found in table World")
  */
 void World::orientation(Orientation orientation)
 {
-  sqlite3x::sqlite3_command sql(*this->db_);
-
-  try {
-    sql.prepare("\
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(this->db_->db(), "\
 UPDATE World\n\
 SET orientation = ?\n\
-WHERE id = ?;");
-    sql.bind(1, static_cast<int>(orientation));
-    sql.bind(2, this->id_);
-
-    sql.executenonquery();
-  } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(DBException, std::string(e.what()) +
-                    " (" + this->db()->errormsg() + ")");
-  }
+WHERE id = ?;", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_bind_int(stmt, 1, static_cast<int>(orientation));
+  sqlite3_bind_int64(stmt, 2, this->id_);
+  if (sqlite3_step(stmt) != SQLITE_DONE)
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_finalize(stmt);
 }
 
 }

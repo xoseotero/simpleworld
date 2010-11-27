@@ -175,13 +175,6 @@ public:
 
 protected:
   /**
-   * This function is called when open() succeeds. Subclasses
-   * which wish to do custom db initialization or sanity checks
-   * may do them here.
-   */
-  virtual void on_open();
-
-  /**
    * Position in front of a given bug.
    * @param bug The bug.
    * @return Position in front of the bug.

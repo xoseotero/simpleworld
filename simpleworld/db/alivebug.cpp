@@ -22,10 +22,11 @@
 
 #include <boost/format.hpp>
 
-#include <sqlite3x.hpp>
+#include <sqlite3.h>
 
 #include <simpleworld/ints.hpp>
 #include <simpleworld/cpu/types.hpp>
+#include <simpleworld/cpu/cpu.hpp>
 #include "exception.hpp"
 #include "alivebug.hpp"
 
@@ -62,24 +63,21 @@ AliveBug::AliveBug(DB* db, ID bug_id)
 ID AliveBug::insert(DB* db, ID bug_id, ID world_id, Time birth, Energy energy,
 		    const void* registers, Uint32 size)
 {
-  sqlite3x::sqlite3_command sql(*db);
-
-  try {
-    sql.prepare("\
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(db->db(), "\
 INSERT INTO AliveBug(bug_id, world_id, birth, energy, registers)\n\
-VALUES(?, ?, ?, ?, ?);");
-    sql.bind(1, static_cast<sqlite3x::int64_t>(bug_id));
-    sql.bind(2, static_cast<sqlite3x::int64_t>(world_id));
-    sql.bind(3, static_cast<int>(birth));
-    sql.bind(4, static_cast<int>(energy));
-    sql.bind(5, registers, size);
+VALUES(?, ?, ?, ?, ?);", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(db->db()));
+  sqlite3_bind_int64(stmt, 1, bug_id);
+  sqlite3_bind_int64(stmt, 2, world_id);
+  sqlite3_bind_int(stmt, 3, birth);
+  sqlite3_bind_int(stmt, 4, energy);
+  sqlite3_bind_blob(stmt, 5, registers, size, SQLITE_TRANSIENT);
+  if (sqlite3_step(stmt) != SQLITE_DONE)
+    throw EXCEPTION(DBException, sqlite3_errmsg(db->db()));
+  sqlite3_finalize(stmt);
 
-    sql.executenonquery();
-    return db->insertid();
-  } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(DBException, std::string(e.what()) +
-                    " (" + db->errormsg() + ")");
-  }
+  return sqlite3_last_insert_rowid(db->db());
 }
 
 /**
@@ -93,31 +91,24 @@ VALUES(?, ?, ?, ?, ?);");
  */
 ID AliveBug::insert(DB* db, Egg* egg, Time birth)
 {
-  sqlite3x::sqlite3_command sql(*db);
-
-  try {
-    sql.prepare("\
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(db->db(), "\
 INSERT INTO AliveBug(bug_id, world_id, birth, energy, registers)\n\
-VALUES(?, ?, ?, ?, ?);");
-    sql.bind(1, static_cast<sqlite3x::int64_t>(egg->bug_id()));
-    sql.bind(2, static_cast<sqlite3x::int64_t>(egg->world_id()));
-    sql.bind(3, static_cast<int>(birth));
-    sql.bind(4, static_cast<int>(egg->energy()));
-    Uint32 size = 16 * sizeof(cpu::Word);
-    Uint8* registers = new Uint8[size];
-    std::memset(registers, 0, size);
-    sql.bind(5, registers, size);
+VALUES(?, ?, ?, ?, ?);", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(db->db()));
+  sqlite3_bind_int64(stmt, 1, egg->bug_id());
+  sqlite3_bind_int64(stmt, 2, egg->world_id());
+  sqlite3_bind_int(stmt, 3, birth);
+  sqlite3_bind_int(stmt, 4, egg->energy());
+  sqlite3_bind_zeroblob(stmt, 5, TOTAL_REGISTERS * sizeof(cpu::Word));
+  if (sqlite3_step(stmt) != SQLITE_DONE)
+    throw EXCEPTION(DBException, sqlite3_errmsg(db->db()));
+  sqlite3_finalize(stmt);
+  ID id = sqlite3_last_insert_rowid(db->db());
 
-    sql.executenonquery();
-    ID id = db->insertid();
+  Egg::remove(db, egg->id());
 
-    Egg::remove(db, egg->id());
-
-    return id;
-  } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(DBException, std::string(e.what()) +
-                    " (" + db->errormsg() + ")");
-  }
+  return id;
 }
 
 /**
@@ -128,19 +119,15 @@ VALUES(?, ?, ?, ?, ?);");
  */
 void AliveBug::remove(DB*db, ID id)
 {
-  sqlite3x::sqlite3_command sql(*db);
-
-  try {
-    sql.prepare("\
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(db->db(), "\
 DELETE FROM AliveBug\n\
-WHERE bug_id = ?;");
-    sql.bind(1, id);
-
-    sql.executenonquery();
-  } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(DBException, std::string(e.what()) +
-                    " (" + db->errormsg() + ")");
-  }
+WHERE bug_id = ?;", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(db->db()));
+  sqlite3_bind_int64(stmt, 1, id);
+  if (sqlite3_step(stmt) != SQLITE_DONE)
+    throw EXCEPTION(DBException, sqlite3_errmsg(db->db()));
+  sqlite3_finalize(stmt);
 }
 
 
@@ -161,21 +148,17 @@ ID AliveBug::bug_id() const
  */
 void AliveBug::bug_id(ID bug_id)
 {
-  sqlite3x::sqlite3_command sql(*this->db_);
-
-  try {
-    sql.prepare("\
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(this->db_->db(), "\
 UPDATE AliveBug\n\
 SET bug_id = ?\n\
-WHERE bug_id = ?;");
-    sql.bind(1, static_cast<sqlite3x::int64_t>(bug_id));
-    sql.bind(2, this->id_);
-
-    sql.executenonquery();
-  } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(DBException, std::string(e.what()) +
-                    " (" + this->db()->errormsg() + ")");
-  }
+WHERE bug_id = ?;", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_bind_int64(stmt, 1, bug_id);
+  sqlite3_bind_int64(stmt, 2, this->id_);
+  if (sqlite3_step(stmt) != SQLITE_DONE)
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_finalize(stmt);
 
   this->id_ = bug_id;
 }
@@ -188,26 +171,21 @@ WHERE bug_id = ?;");
  */
 ID AliveBug::world_id() const
 {
-  sqlite3x::sqlite3_command sql(*this->db_);
-
-  try {
-    sql.prepare("\
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(this->db_->db(), "\
 SELECT world_id\n\
 FROM AliveBug\n\
-WHERE bug_id = ?;");
-    sql.bind(1, this->id_);
-
-    sqlite3x::sqlite3_cursor cursor(sql.executecursor());
-    if (! cursor.step())
-      throw EXCEPTION(DBException, boost::str(boost::format("\
+WHERE bug_id = ?;", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_bind_int64(stmt, 1, this->id_);
+  if (sqlite3_step(stmt) != SQLITE_ROW)
+    throw EXCEPTION(DBException, boost::str(boost::format("\
 id %1% not found in table AliveBug")
-                                              % this->id_));
+					    % this->id_));
+  ID world_id = sqlite3_column_int64(stmt, 0);
+  sqlite3_finalize(stmt);
 
-    return cursor.getint64(0);
-  } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(DBException, std::string(e.what()) +
-                    " (" + this->db()->errormsg() + ")");
-  }
+  return world_id;
 }
 
 /**
@@ -217,21 +195,17 @@ id %1% not found in table AliveBug")
  */
 void AliveBug::world_id(ID world_id)
 {
-  sqlite3x::sqlite3_command sql(*this->db_);
-
-  try {
-    sql.prepare("\
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(this->db_->db(), "\
 UPDATE AliveBug\n\
 SET world_id = ?\n\
-WHERE bug_id = ?;");
-    sql.bind(1, static_cast<sqlite3x::int64_t>(world_id));
-    sql.bind(2, this->id_);
-
-    sql.executenonquery();
-  } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(DBException, std::string(e.what()) +
-                    " (" + this->db()->errormsg() + ")");
-  }
+WHERE bug_id = ?;", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_bind_int64(stmt, 1, world_id);
+  sqlite3_bind_int64(stmt, 2, this->id_);
+  if (sqlite3_step(stmt) != SQLITE_DONE)
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_finalize(stmt);
 }
 
 /**
@@ -241,26 +215,21 @@ WHERE bug_id = ?;");
  */
 Time AliveBug::birth() const
 {
-  sqlite3x::sqlite3_command sql(*this->db_);
-
-  try {
-    sql.prepare("\
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(this->db_->db(), "\
 SELECT birth\n\
 FROM AliveBug\n\
-WHERE bug_id = ?;");
-    sql.bind(1, this->id_);
-
-    sqlite3x::sqlite3_cursor cursor(sql.executecursor());
-    if (! cursor.step())
-      throw EXCEPTION(DBException, boost::str(boost::format("\
+WHERE bug_id = ?;", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_bind_int64(stmt, 1, this->id_);
+  if (sqlite3_step(stmt) != SQLITE_ROW)
+    throw EXCEPTION(DBException, boost::str(boost::format("\
 id %1% not found in table AliveBug")
-                                              % this->id_));
+					    % this->id_));
+  Time birth = sqlite3_column_int(stmt, 0);
+  sqlite3_finalize(stmt);
 
-    return cursor.getint(0);
-  } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(DBException, std::string(e.what()) +
-                    " (" + this->db()->errormsg() + ")");
-  }
+  return birth;
 }
 
 /**
@@ -270,21 +239,17 @@ id %1% not found in table AliveBug")
  */
 void AliveBug::birth(Time birth)
 {
-  sqlite3x::sqlite3_command sql(*this->db_);
-
-  try {
-    sql.prepare("\
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(this->db_->db(), "\
 UPDATE AliveBug\n\
 SET birth = ?\n\
-WHERE bug_id = ?;");
-    sql.bind(1, static_cast<int>(birth));
-    sql.bind(2, this->id_);
-
-    sql.executenonquery();
-  } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(DBException, std::string(e.what()) +
-                    " (" + this->db()->errormsg() + ")");
-  }
+WHERE bug_id = ?;", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_bind_int(stmt, 1, birth);
+  sqlite3_bind_int64(stmt, 2, this->id_);
+  if (sqlite3_step(stmt) != SQLITE_DONE)
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_finalize(stmt);
 }
 
 /**
@@ -294,26 +259,21 @@ WHERE bug_id = ?;");
  */
 Energy AliveBug::energy() const
 {
-  sqlite3x::sqlite3_command sql(*this->db_);
-
-  try {
-    sql.prepare("\
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(this->db_->db(), "\
 SELECT energy\n\
 FROM AliveBug\n\
-WHERE bug_id = ?;");
-    sql.bind(1, this->id_);
-
-    sqlite3x::sqlite3_cursor cursor(sql.executecursor());
-    if (! cursor.step())
-      throw EXCEPTION(DBException, boost::str(boost::format("\
+WHERE bug_id = ?;", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_bind_int64(stmt, 1, this->id_);
+  if (sqlite3_step(stmt) != SQLITE_ROW)
+    throw EXCEPTION(DBException, boost::str(boost::format("\
 id %1% not found in table AliveBug")
-                                              % this->id_));
+					    % this->id_));
+  Energy energy = sqlite3_column_int(stmt, 0);
+  sqlite3_finalize(stmt);
 
-    return cursor.getint(0);
-  } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(DBException, std::string(e.what()) +
-                    " (" + this->db()->errormsg() + ")");
-  }
+  return energy;
 }
 
 /**
@@ -323,21 +283,17 @@ id %1% not found in table AliveBug")
  */
 void AliveBug::energy(Energy energy)
 {
-  sqlite3x::sqlite3_command sql(*this->db_);
-
-  try {
-    sql.prepare("\
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(this->db_->db(), "\
 UPDATE AliveBug\n\
 SET energy = ?\n\
-WHERE bug_id = ?;");
-    sql.bind(1, static_cast<int>(energy));
-    sql.bind(2, this->id_);
-
-    sql.executenonquery();
-  } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(DBException, std::string(e.what()) +
-                    " (" + this->db()->errormsg() + ")");
-  }
+WHERE bug_id = ?;", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_bind_int(stmt, 1, energy);
+  sqlite3_bind_int64(stmt, 2, this->id_);
+  if (sqlite3_step(stmt) != SQLITE_DONE)
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_finalize(stmt);
 }
 
 
@@ -349,26 +305,21 @@ WHERE bug_id = ?;");
  */
 Time AliveBug::time_last_action() const
 {
-  sqlite3x::sqlite3_command sql(*this->db_);
-
-  try {
-    sql.prepare("\
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(this->db_->db(), "\
 SELECT time_last_action\n\
 FROM AliveBug\n\
-WHERE bug_id = ?;");
-    sql.bind(1, this->id_);
-
-    sqlite3x::sqlite3_cursor cursor(sql.executecursor());
-    if (! cursor.step())
-      throw EXCEPTION(DBException, boost::str(boost::format("\
+WHERE bug_id = ?;", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_bind_int64(stmt, 1, this->id_);
+  if (sqlite3_step(stmt) != SQLITE_ROW)
+    throw EXCEPTION(DBException, boost::str(boost::format("\
 id %1% not found in table AliveBug")
-                                              % this->id_));
+					    % this->id_));
+  Time time_last_action = sqlite3_column_int(stmt, 0);
+  sqlite3_finalize(stmt);
 
-    return cursor.getint(0);
-  } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(DBException, std::string(e.what()) +
-                    " (" + this->db()->errormsg() + ")");
-  }
+  return time_last_action;
 }
 
 /**
@@ -378,21 +329,17 @@ id %1% not found in table AliveBug")
  */
 void AliveBug::time_last_action(Time time_last_action)
 {
-  sqlite3x::sqlite3_command sql(*this->db_);
-
-  try {
-    sql.prepare("\
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(this->db_->db(), "\
 UPDATE AliveBug\n\
 SET time_last_action = ?\n\
-WHERE bug_id = ?;");
-    sql.bind(1, static_cast<int>(time_last_action));
-    sql.bind(2, this->id_);
-
-    sql.executenonquery();
-  } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(DBException, std::string(e.what()) +
-                    " (" + this->db()->errormsg() + ")");
-  }
+WHERE bug_id = ?;", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_bind_int(stmt, 1, time_last_action);
+  sqlite3_bind_int64(stmt, 2, this->id_);
+  if (sqlite3_step(stmt) != SQLITE_DONE)
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_finalize(stmt);
 }
 
 /**
@@ -403,26 +350,21 @@ WHERE bug_id = ?;");
  */
 Time AliveBug::action_time() const
 {
-  sqlite3x::sqlite3_command sql(*this->db_);
-
-  try {
-    sql.prepare("\
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(this->db_->db(), "\
 SELECT action_time\n\
 FROM AliveBug\n\
-WHERE bug_id = ?;");
-    sql.bind(1, this->id_);
-
-    sqlite3x::sqlite3_cursor cursor(sql.executecursor());
-    if (! cursor.step())
-      throw EXCEPTION(DBException, boost::str(boost::format("\
+WHERE bug_id = ?;", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_bind_int64(stmt, 1, this->id_);
+  if (sqlite3_step(stmt) != SQLITE_ROW)
+    throw EXCEPTION(DBException, boost::str(boost::format("\
 id %1% not found in table AliveBug")
-                                              % this->id_));
+					    % this->id_));
+  Time action_time = sqlite3_column_int(stmt, 0);
+  sqlite3_finalize(stmt);
 
-    return cursor.getint(0);
-  } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(DBException, std::string(e.what()) +
-                    " (" + this->db()->errormsg() + ")");
-  }
+  return action_time;
 }
 
 /**
@@ -432,21 +374,17 @@ id %1% not found in table AliveBug")
  */
 void AliveBug::action_time(Time action_time)
 {
-  sqlite3x::sqlite3_command sql(*this->db_);
-
-  try {
-    sql.prepare("\
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(this->db_->db(), "\
 UPDATE AliveBug\n\
 SET action_time = ?\n\
-WHERE bug_id = ?;");
-    sql.bind(1, static_cast<int>(action_time));
-    sql.bind(2, this->id_);
-
-    sql.executenonquery();
-  } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(DBException, std::string(e.what()) +
-                    " (" + this->db()->errormsg() + ")");
-  }
+WHERE bug_id = ?;", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_bind_int(stmt, 1, action_time);
+  sqlite3_bind_int64(stmt, 2, this->id_);
+  if (sqlite3_step(stmt) != SQLITE_DONE)
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_finalize(stmt);
 }
 
 /**

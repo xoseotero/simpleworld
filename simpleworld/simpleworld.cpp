@@ -35,12 +35,11 @@
 #include <boost/scoped_array.hpp>
 #include <boost/format.hpp>
 
-#include <sqlite3x.hpp>
-
 #include <simpleworld/cpu/types.hpp>
 #include <simpleworld/cpu/exception.hpp>
 #include <simpleworld/db/types.hpp>
 #include <simpleworld/db/exception.hpp>
+#include <simpleworld/db/transaction.hpp>
 #include <simpleworld/db/world.hpp>
 #include <simpleworld/db/food.hpp>
 #include <simpleworld/db/bug.hpp>
@@ -88,7 +87,53 @@ namespace simpleworld
 SimpleWorld::SimpleWorld(std::string filename)
   : DB(filename)
 {
-  this->on_open();
+  // Load the environment
+  if (this->environments().empty()) {
+    db::Environment::insert(this, 0, DEFAULT_SIZE.x, DEFAULT_SIZE.y,
+			    DEFAULT_MUTATIONS_PROBABILITY, DEFAULT_TIME_BIRTH,
+			    DEFAULT_TIME_MUTATE, DEFAULT_TIME_LAZINESS,
+			    DEFAULT_ENERGY_LAZINESS, DEFAULT_ATTACK_MULTIPLIER,
+			    DEFAULT_ENERGY_NOTHING, DEFAULT_ENERGY_MYSELF,
+			    DEFAULT_ENERGY_DETECT, DEFAULT_ENERGY_INFO,
+			    DEFAULT_ENERGY_MOVE, DEFAULT_ENERGY_TURN,
+			    DEFAULT_ENERGY_ATTACK, DEFAULT_ENERGY_EAT,
+			    DEFAULT_ENERGY_EGG);
+  }
+
+  this->env_ = new db::Environment(this, this->last_environment());
+
+  this->world_ = new World(Position(this->env_->size_x(), this->env_->size_y()));
+
+
+  // Load the elements of the world
+  std::vector< db::ID > ids;
+
+  ids = this->food();
+  for (std::vector< db::ID >::const_iterator iter = ids.begin();
+       iter != ids.end();
+       ++iter) {
+    Food* ptr = new Food(this, *iter);
+    this->foods_.push_back(ptr);
+    this->world_->add(ptr, Position(ptr->position_x(), ptr->position_y()));
+  }
+
+  ids = this->eggs();
+  for (std::vector< db::ID >::const_iterator iter = ids.begin();
+       iter != ids.end();
+       ++iter) {
+    Egg* ptr = new Egg(this, *iter);
+    this->eggs_.push_back(ptr);
+    this->world_->add(ptr, Position(ptr->position_x(), ptr->position_y()));
+  }
+
+  ids = this->alive_bugs();
+  for (std::vector< db::ID >::const_iterator iter = ids.begin();
+       iter != ids.end();
+       ++iter) {
+    Bug* ptr = new Bug(this, *iter);
+    this->bugs_.push_back(ptr);
+    this->world_->add(ptr, Position(ptr->position_x(), ptr->position_y()));
+  }
 }
 
 /**
@@ -139,7 +184,7 @@ void SimpleWorld::add_egg(Energy energy,
                           const cpu::Memory& code)
 {
   // begin a transaction
-  sqlite3x::sqlite3_transaction transaction(*this);
+  db::Transaction transaction(this, db::Transaction::immediate);
 
   db::ID id;
   try {
@@ -172,7 +217,7 @@ void SimpleWorld::add_egg(Energy energy,
 void SimpleWorld::add_food(Position position, Energy size)
 {
   // begin a transaction
-  sqlite3x::sqlite3_transaction transaction(*this);
+  db::Transaction transaction(this, db::Transaction::immediate);
 
   db::ID id;
   try {
@@ -198,7 +243,7 @@ void SimpleWorld::run(Time cycles)
 {
   for (; cycles > 0; cycles--) {
     // execute each cycle in a transaction
-    sqlite3x::sqlite3_transaction transaction(*this);
+    db::Transaction transaction(this, db::Transaction::immediate);
 
     // update the time of the environment
     Time time = this->env_->time() + 1;
@@ -558,16 +603,8 @@ Position used (%1%, %2%)")
 
 
   // savepoint
-  sqlite3x::sqlite3_command sql(*this);
-
-  try {
-    sql.prepare("SAVEPOINT egg;");
-
-    sql.executenonquery();
-  } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(db::DBException, std::string(e.what()) +
-                    " (" + this->errormsg() + ")");
-  }
+  db::Transaction transaction(this);
+  transaction.savepoint("egg;");
 
   // the egg is looking to the father
   db::ID world_id = db::World::insert(this, front.x, front.y,
@@ -586,15 +623,7 @@ Position used (%1%, %2%)")
     // Substracts the size of the egg
     this->substract_energy(bug, db::Bug(this, egg_id).code().size());
   } catch (const BugDeath& e) {
-    try {
-      sql.prepare("ROLLBACK TO egg;");
-      sql.executenonquery();
-      sql.prepare("RELEASE egg;");
-      sql.executenonquery();
-    } catch (const sqlite3x::database_error& e) {
-      throw EXCEPTION(db::DBException, std::string(e.what()) +
-                      " (" + this->errormsg() + ")");
-    }
+    transaction.rollback("egg;");
 
     throw;
   }
@@ -606,74 +635,9 @@ Position used (%1%, %2%)")
   this->substract_energy(bug, energy);
 
   // savepoint
-  try {
-    sql.prepare("RELEASE egg;");
-
-    sql.executenonquery();
-  } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(db::DBException, std::string(e.what()) +
-                    " (" + this->errormsg() + ")");
-  }
+  transaction.release("egg;");
 }
 
-
-/**
- * This function is called when open() succeeds. Subclasses
- * which wish to do custom db initialization or sanity checks
- * may do them here.
- */
-void SimpleWorld::on_open()
-{
-  DB::on_open();
-
-  // Load the environment
-  if (this->environments().empty()) {
-    db::Environment::insert(this, 0, DEFAULT_SIZE.x, DEFAULT_SIZE.y,
-                            DEFAULT_MUTATIONS_PROBABILITY, DEFAULT_TIME_BIRTH,
-                            DEFAULT_TIME_MUTATE, DEFAULT_TIME_LAZINESS,
-                            DEFAULT_ENERGY_LAZINESS, DEFAULT_ATTACK_MULTIPLIER,
-                            DEFAULT_ENERGY_NOTHING, DEFAULT_ENERGY_MYSELF,
-                            DEFAULT_ENERGY_DETECT, DEFAULT_ENERGY_INFO,
-                            DEFAULT_ENERGY_MOVE, DEFAULT_ENERGY_TURN,
-                            DEFAULT_ENERGY_ATTACK, DEFAULT_ENERGY_EAT,
-                            DEFAULT_ENERGY_EGG);
-  }
-
-  this->env_ = new db::Environment(this, this->last_environment());
-
-  this->world_ = new World(Position(this->env_->size_x(), this->env_->size_y()));
-
-
-  // Load the elements of the world
-  std::vector< db::ID > ids;
-
-  ids = this->food();
-  for (std::vector< db::ID >::const_iterator iter = ids.begin();
-       iter != ids.end();
-       ++iter) {
-    Food* ptr = new Food(this, *iter);
-    this->foods_.push_back(ptr);
-    this->world_->add(ptr, Position(ptr->position_x(), ptr->position_y()));
-  }
-
-  ids = this->eggs();
-  for (std::vector< db::ID >::const_iterator iter = ids.begin();
-       iter != ids.end();
-       ++iter) {
-    Egg* ptr = new Egg(this, *iter);
-    this->eggs_.push_back(ptr);
-    this->world_->add(ptr, Position(ptr->position_x(), ptr->position_y()));
-  }
-
-  ids = this->alive_bugs();
-  for (std::vector< db::ID >::const_iterator iter = ids.begin();
-       iter != ids.end();
-       ++iter) {
-    Bug* ptr = new Bug(this, *iter);
-    this->bugs_.push_back(ptr);
-    this->world_->add(ptr, Position(ptr->position_x(), ptr->position_y()));
-  }
-}
 
 /**
  * Position in front of a given bug.

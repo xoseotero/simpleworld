@@ -113,4 +113,3 @@ BOOST_AUTO_TEST_CASE(db_food)
   BOOST_CHECK_EQUAL(food.size(), 1);
   BOOST_CHECK_EQUAL(food[0], 1);
 }
-

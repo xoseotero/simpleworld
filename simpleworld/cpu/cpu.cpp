@@ -44,8 +44,7 @@ CPU::CPU(Memory* registers, Memory* memory)
   : registers_(registers), memory_(memory), running_(true)
 {
   // space for all the registers (global registers + windowed registers)
-  Address min_size =
-    (GLOBAL_REGISTERS + REGISTERS_PER_WINDOW * REGISTER_WINDOWS) * sizeof(Word);
+  Address min_size = (TOTAL_REGISTERS) * sizeof(Word);
   if (this->registers_->size() < min_size)
     this->registers_->resize(min_size);
 

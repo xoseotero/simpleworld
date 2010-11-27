@@ -20,13 +20,12 @@
 
 #include <cstdlib>
 
-#include <sqlite3x.hpp>
-
 #include <simpleworld/cpu/types.hpp>
 #include <simpleworld/cpu/word.hpp>
 #include <simpleworld/cpu/memory.hpp>
 #include <simpleworld/db/types.hpp>
 #include <simpleworld/db/exception.hpp>
+#include <simpleworld/db/transaction.hpp>
 #include <simpleworld/db/mutation.hpp>
 
 #include "dbmemory.hpp"
@@ -159,16 +158,8 @@ bool mutate(db::Bug* bug, float probability, Time time)
   bool mutation = false;
 
   // savepoint
-  sqlite3x::sqlite3_command sql(*bug->db());
-
-  try {
-    sql.prepare("SAVEPOINT mutation;");
-
-    sql.executenonquery();
-  } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(db::DBException, std::string(e.what()) +
-                    " (" + bug->db()->errormsg() + ")");
-  }
+  db::Transaction transaction(bug->db());
+  transaction.savepoint("mutation;");
 
   DBMemory original(bug->code());
   cpu::Memory mutated(original.size());
@@ -226,14 +217,7 @@ bool mutate(db::Bug* bug, float probability, Time time)
     original.assign(mutated);
 
   // Release savepoint
-  try {
-    sql.prepare("RELEASE mutation;");
-
-    sql.executenonquery();
-  } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(db::DBException, std::string(e.what()) +
-                    " (" + bug->db()->errormsg() + ")");
-  }
+  transaction.release("mutation;");
 
   return mutation;
 }

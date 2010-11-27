@@ -280,7 +280,8 @@ static void parse_cmd(int argc, char* argv[])
  */
 static void show_env(sw::SimpleWorld& sw)
 {
-  sqlite3x::sqlite3_command sql(sw, "\
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(sw.db(), "\
 SELECT time, size_x, size_y,\n\
        mutations_probability, time_birth, time_mutate, time_laziness,\n\
        energy_laziness, attack_multiplier,\n\
@@ -289,8 +290,10 @@ SELECT time, size_x, size_y,\n\
 FROM Environment\n\
 WHERE id = (SELECT max(id)\n\
             FROM Environment)\n\
-ORDER BY id;");
-  show_query_line(true, "NULL", sql.executecursor());
+ORDER BY id;", -1, &stmt, NULL))
+    throw EXCEPTION(db::DBException, sqlite3_errmsg(sw.db()));
+  show_query_line(true, "NULL", stmt);
+  sqlite3_finalize(stmt);
 }
 
 /**
@@ -299,11 +302,14 @@ ORDER BY id;");
  */
 static void show_bugs(sw::SimpleWorld& sw)
 {
-  sqlite3x::sqlite3_command sql(sw, "\
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(sw.db(), "\
 SELECT *\n\
 FROM AliveBug\n\
-ORDER BY bug_id;");
-  show_query_column(true, 10, "NULL", sql.executecursor());
+ORDER BY bug_id;", -1, &stmt, NULL))
+    throw EXCEPTION(db::DBException, sqlite3_errmsg(sw.db()));
+  show_query_column(true, 10, "NULL", stmt);
+  sqlite3_finalize(stmt);
 }
 
 /**
@@ -312,11 +318,14 @@ ORDER BY bug_id;");
  */
 static void show_eggs(sw::SimpleWorld& sw)
 {
-  sqlite3x::sqlite3_command sql(sw, "\
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(sw.db(), "\
 SELECT *\n\
 FROM Egg\n\
-ORDER BY bug_id;");
-  show_query_column(true, 10, "NULL", sql.executecursor());
+ORDER BY bug_id;", -1, &stmt, NULL))
+    throw EXCEPTION(db::DBException, sqlite3_errmsg(sw.db()));
+  show_query_column(true, 10, "NULL", stmt);
+  sqlite3_finalize(stmt);
 }
 
 /**
@@ -325,11 +334,14 @@ ORDER BY bug_id;");
  */
 static void show_foods(sw::SimpleWorld& sw)
 {
-  sqlite3x::sqlite3_command sql(sw, "\
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(sw.db(), "\
 SELECT *\n\
 FROM Food\n\
-ORDER BY id;");
-  show_query_column(true, 10, "NULL", sql.executecursor());
+ORDER BY id;", -1, &stmt, NULL))
+    throw EXCEPTION(db::DBException, sqlite3_errmsg(sw.db()));
+  show_query_column(true, 10, "NULL", stmt);
+  sqlite3_finalize(stmt);
 }
 
 /**
@@ -338,11 +350,14 @@ ORDER BY id;");
  */
 static void show_sortenergy(sw::SimpleWorld& sw)
 {
-  sqlite3x::sqlite3_command sql(sw, "\
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(sw.db(), "\
 SELECT bug_id, energy\n\
 FROM AliveBug\n\
-ORDER BY energy DESC, bug_id;");
-  show_query_column(true, 10, "NULL", sql.executecursor());
+ORDER BY energy DESC, bug_id;", -1, &stmt, NULL))
+    throw EXCEPTION(db::DBException, sqlite3_errmsg(sw.db()));
+  show_query_column(true, 10, "NULL", stmt);
+  sqlite3_finalize(stmt);
 }
 
 /**
@@ -351,14 +366,17 @@ ORDER BY energy DESC, bug_id;");
  */
 static void show_sortage(sw::SimpleWorld& sw)
 {
-  sqlite3x::sqlite3_command sql(sw, "\
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(sw.db(), "\
 SELECT bug_id, (SELECT max(time) FROM Environment) - birth AS age\n\
 FROM AliveBug\n\
 UNION\n\
 SELECT bug_id, dead - birth AS age\n\
 FROM DeadBug\n\
-ORDER BY age DESC, id;");
-  show_query_column(true, 10, "NULL", sql.executecursor());
+ORDER BY age DESC, id;", -1, &stmt, NULL))
+    throw EXCEPTION(db::DBException, sqlite3_errmsg(sw.db()));
+  show_query_column(true, 10, "NULL", stmt);
+  sqlite3_finalize(stmt);
 }
 
 /**
@@ -367,13 +385,16 @@ ORDER BY age DESC, id;");
  */
 static void show_sortsons(sw::SimpleWorld& sw)
 {
-  sqlite3x::sqlite3_command sql(sw, "\
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(sw.db(), "\
 SELECT father_id, count(father_id) AS sons\n\
 FROM Bug\n\
 WHERE father_id IS NOT NULL\n\
 GROUP BY father_id\n\
-ORDER BY sons DESC;");
-  show_query_column(true, 10, "NULL", sql.executecursor());
+ORDER BY sons DESC;", -1, &stmt, NULL))
+    throw EXCEPTION(db::DBException, sqlite3_errmsg(sw.db()));
+  show_query_column(true, 10, "NULL", stmt);
+  sqlite3_finalize(stmt);
 }
 
 /**
@@ -382,13 +403,16 @@ ORDER BY sons DESC;");
  */
 static void show_sortkills(sw::SimpleWorld& sw)
 {
-  sqlite3x::sqlite3_command sql(sw, "\
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(sw.db(), "\
 SELECT killer_id, count(killer_id) AS kills\n\
 FROM DeadBug\n\
 WHERE killer_id IS NOT NULL\n\
 GROUP BY killer_id\n\
-ORDER BY kills DESC, id;");
-  show_query_column(true, 10, "NULL", sql.executecursor());
+ORDER BY kills DESC, id;", -1, &stmt, NULL))
+    throw EXCEPTION(db::DBException, sqlite3_errmsg(sw.db()));
+  show_query_column(true, 10, "NULL", stmt);
+  sqlite3_finalize(stmt);
 }
 
 /**
@@ -397,12 +421,15 @@ ORDER BY kills DESC, id;");
  */
 static void show_sortmutations(sw::SimpleWorld& sw)
 {
-  sqlite3x::sqlite3_command sql(sw, "\
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(sw.db(), "\
 SELECT bug_id, count(position) AS mutations\n\
 FROM Mutation\n\
 GROUP BY bug_id\n\
-ORDER BY mutations DESC, id;");
-  show_query_column(true, 10, "NULL", sql.executecursor());
+ORDER BY mutations DESC, id;", -1, &stmt, NULL))
+    throw EXCEPTION(db::DBException, sqlite3_errmsg(sw.db()));
+  show_query_column(true, 10, "NULL", stmt);
+  sqlite3_finalize(stmt);
 }
 
 /**
@@ -411,12 +438,15 @@ ORDER BY mutations DESC, id;");
  */
 static void show_food(sw::SimpleWorld& sw)
 {
-  sqlite3x::sqlite3_command sql(sw, "\
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(sw.db(), "\
 SELECT *\n\
 FROM Food\n\
-WHERE id = ?;");
-  sql.bind(1, food_id);
-  show_query_line(true, "NULL", sql.executecursor());
+WHERE id = ?;", -1, &stmt, NULL))
+    throw EXCEPTION(db::DBException, sqlite3_errmsg(sw.db()));
+  sqlite3_bind_int64(stmt, 1, food_id);
+  show_query_line(true, "NULL", stmt);
+  sqlite3_finalize(stmt);
 }
 
 /**
@@ -425,12 +455,15 @@ WHERE id = ?;");
  */
 static void show_bug(sw::SimpleWorld& sw)
 {
-  sqlite3x::sqlite3_command sql(sw, "\
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(sw.db(), "\
 SELECT *\n\
 FROM AliveBug\n\
-WHERE id = ?;");
-  sql.bind(1, bug_id);
-  show_query_line(true, "NULL", sql.executecursor());
+WHERE id = ?;", -1, &stmt, NULL))
+    throw EXCEPTION(db::DBException, sqlite3_errmsg(sw.db()));
+  sqlite3_bind_int64(stmt, 1, bug_id);
+  show_query_line(true, "NULL", stmt);
+  sqlite3_finalize(stmt);
 }
 
 /**
@@ -462,17 +495,24 @@ Bug[%1%] not found")
  */
 static bool bug_father(sw::SimpleWorld& sw, db::ID bug, db::ID* father)
 {
-  sqlite3x::sqlite3_command sql(sw, "\
-SELECT father_id\n\
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(sw.db(), "\
+SSELECT father_id\n\
 FROM Bug\n\
-WHERE id = ?;");
-  sql.bind(1, bug);
-  sqlite3x::sqlite3_cursor cursor = sql.executecursor();
-  if (! cursor.step())// or cursor.isnull(0))
+WHERE id = ?;", -1, &stmt, NULL))
+    throw EXCEPTION(db::DBException, sqlite3_errmsg(sw.db()));
+  sqlite3_bind_int64(stmt, 1, bug);
+  switch(sqlite3_step(stmt)) {
+  case SQLITE_DONE:
+    sqlite3_finalize(stmt);
     return false;
-  else {
-    *father = cursor.getint64(0);
+  case SQLITE_ROW:
+    *father = sqlite3_column_int64(stmt, 0);
+    sqlite3_finalize(stmt);
     return true;
+  default:
+    sqlite3_finalize(stmt);
+    throw EXCEPTION(db::DBException, sqlite3_errmsg(sw.db()));
   }
 }
 
@@ -561,9 +601,12 @@ static void show_mutations(sw::SimpleWorld& sw)
  */
 static void show_version(sw::SimpleWorld& sw)
 {
-  sqlite3x::sqlite3_command sql(sw, "\
-PRAGMA user_version;");
-  show_query_line(true, "NULL", sql.executecursor());
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(sw.db(), "\
+PRAGMA user_version;", -1, &stmt, NULL))
+    throw EXCEPTION(db::DBException, sqlite3_errmsg(sw.db()));
+  show_query_line(true, "NULL", stmt);
+  sqlite3_finalize(stmt);
 }
 
 /**

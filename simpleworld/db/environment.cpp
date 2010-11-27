@@ -22,6 +22,8 @@
 
 #include <boost/format.hpp>
 
+#include <sqlite3.h>
+
 #include "exception.hpp"
 #include "environment.hpp"
 
@@ -77,10 +79,8 @@ ID Environment::insert(DB* db, Time time, Coord size_x, Coord size_y,
 		       Energy energy_attack, Energy energy_eat,
 		       Energy energy_egg)
 {
-  sqlite3x::sqlite3_command sql(*db);
-
-  try {
-    sql.prepare("\
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(db->db(), "\
 INSERT INTO Environment(time, size_x, size_y,\n\
                         mutations_probability, time_birth, time_mutate,\n\
                         time_laziness, energy_laziness,\n\
@@ -88,36 +88,31 @@ INSERT INTO Environment(time, size_x, size_y,\n\
                         energy_nothing, energy_myself, energy_detect,\n\
                         energy_info, energy_move, energy_turn,\n\
                         energy_attack, energy_eat, energy_egg)\n\
-VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
-    sql.bind(1, static_cast<int>(time));
-    sql.bind(2, static_cast<int>(size_x));
-    sql.bind(3, static_cast<int>(size_y));
+VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(db->db()));
+  sqlite3_bind_int(stmt, 1, time);
+  sqlite3_bind_int(stmt, 2, size_x);
+  sqlite3_bind_int(stmt, 3, size_y);
+  sqlite3_bind_double(stmt, 4, mutations_probability);
+  sqlite3_bind_int(stmt, 5, time_birth);
+  sqlite3_bind_int(stmt, 6, time_mutate);
+  sqlite3_bind_int(stmt, 7, time_laziness);
+  sqlite3_bind_int(stmt, 8, energy_laziness);
+  sqlite3_bind_double(stmt, 9, attack_multiplier);
+  sqlite3_bind_int(stmt, 10, energy_nothing);
+  sqlite3_bind_int(stmt, 11, energy_myself);
+  sqlite3_bind_int(stmt, 12, energy_detect);
+  sqlite3_bind_int(stmt, 13, energy_info);
+  sqlite3_bind_int(stmt, 14, energy_move);
+  sqlite3_bind_int(stmt, 15, energy_turn);
+  sqlite3_bind_int(stmt, 16, energy_attack);
+  sqlite3_bind_int(stmt, 17, energy_eat);
+  sqlite3_bind_int(stmt, 18, energy_egg);
+  if (sqlite3_step(stmt) != SQLITE_DONE)
+    throw EXCEPTION(DBException, sqlite3_errmsg(db->db()));
+  sqlite3_finalize(stmt);
 
-    sql.bind(4, mutations_probability);
-    sql.bind(5, static_cast<int>(time_birth));
-    sql.bind(6, static_cast<int>(time_mutate));
-
-    sql.bind(7, static_cast<int>(time_laziness));
-    sql.bind(8, static_cast<int>(energy_laziness));
-
-    sql.bind(9, attack_multiplier);
-
-    sql.bind(10, static_cast<int>(energy_nothing));
-    sql.bind(11, static_cast<int>(energy_myself));
-    sql.bind(12, static_cast<int>(energy_detect));
-    sql.bind(13, static_cast<int>(energy_info));
-    sql.bind(14, static_cast<int>(energy_move));
-    sql.bind(15, static_cast<int>(energy_turn));
-    sql.bind(16, static_cast<int>(energy_attack));
-    sql.bind(17, static_cast<int>(energy_eat));
-    sql.bind(18, static_cast<int>(energy_egg));
-
-    sql.executenonquery();
-    return db->insertid();
-  } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(DBException, std::string(e.what()) +
-                    " (" + db->errormsg() + ")");
-  }
+  return sqlite3_last_insert_rowid(db->db());
 }
 
 /**
@@ -128,19 +123,15 @@ VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
  */
 void Environment::remove(DB* db, ID id)
 {
-  sqlite3x::sqlite3_command sql(*db);
-
-  try {
-    sql.prepare("\
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(db->db(), "\
 DELETE FROM Environment\n\
-WHERE id = ?;");
-    sql.bind(1, id);
-
-    sql.executenonquery();
-  } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(DBException, std::string(e.what()) +
-                    " (" + db->errormsg() + ")");
-  }
+WHERE id = ?;", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(db->db()));
+  sqlite3_bind_int64(stmt, 1, id);
+  if (sqlite3_step(stmt) != SQLITE_DONE)
+    throw EXCEPTION(DBException, sqlite3_errmsg(db->db()));
+  sqlite3_finalize(stmt);
 }
 
 
@@ -151,21 +142,17 @@ WHERE id = ?;");
  */
 void Environment::id(ID id)
 {
-  sqlite3x::sqlite3_command sql(*this->db_);
-
-  try {
-    sql.prepare("\
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(this->db_->db(), "\
 UPDATE Environment\n\
 SET id = ?\n\
-WHERE id = ?;");
-    sql.bind(1, static_cast<sqlite3x::int64_t>(id));
-    sql.bind(2, this->id_);
-
-    sql.executenonquery();
-  } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(DBException, std::string(e.what()) +
-                    " (" + this->db()->errormsg() + ")");
-  }
+WHERE id = ?;", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_bind_int64(stmt, 1, id);
+  sqlite3_bind_int64(stmt, 2, this->id_);
+  if (sqlite3_step(stmt) != SQLITE_DONE)
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_finalize(stmt);
 
   this->id_ = id;
 }
@@ -178,26 +165,21 @@ WHERE id = ?;");
  */
 Time Environment::time() const
 {
-  sqlite3x::sqlite3_command sql(*this->db_);
-
-  try {
-    sql.prepare("\
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(this->db_->db(), "\
 SELECT time\n\
 FROM Environment\n\
-WHERE id = ?;");
-    sql.bind(1, this->id_);
+WHERE id = ?;", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_bind_int64(stmt, 1, this->id_);
+  if (sqlite3_step(stmt) != SQLITE_ROW)
+    throw EXCEPTION(DBException, boost::str(boost::format("\
+id %1% not found in table Environment")
+					    % this->id_));
+  Time time = sqlite3_column_int(stmt, 0);
+  sqlite3_finalize(stmt);
 
-    sqlite3x::sqlite3_cursor cursor(sql.executecursor());
-    if (! cursor.step())
-      throw EXCEPTION(DBException, boost::str(boost::format("\
-time %1% not found in table Environment")
-                                              % this->id_));
-
-    return cursor.getint(0);
-  } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(DBException, std::string(e.what()) +
-                    " (" + this->db()->errormsg() + ")");
-  }
+  return time;
 }
 
 /**
@@ -207,21 +189,17 @@ time %1% not found in table Environment")
  */
 void Environment::time(Time time)
 {
-  sqlite3x::sqlite3_command sql(*this->db_);
-
-  try {
-    sql.prepare("\
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(this->db_->db(), "\
 UPDATE Environment\n\
 SET time = ?\n\
-WHERE id = ?;");
-    sql.bind(1, static_cast<int>(time));
-    sql.bind(2, this->id_);
-
-    sql.executenonquery();
-  } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(DBException, std::string(e.what()) +
-                    " (" + this->db()->errormsg() + ")");
-  }
+WHERE id = ?;", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_bind_int(stmt, 1, time);
+  sqlite3_bind_int64(stmt, 2, this->id_);
+  if (sqlite3_step(stmt) != SQLITE_DONE)
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_finalize(stmt);
 }
 
 
@@ -232,26 +210,21 @@ WHERE id = ?;");
  */
 Coord Environment::size_x() const
 {
-  sqlite3x::sqlite3_command sql(*this->db_);
-
-  try {
-    sql.prepare("\
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(this->db_->db(), "\
 SELECT size_x\n\
 FROM Environment\n\
-WHERE id = ?;");
-    sql.bind(1, this->id_);
+WHERE id = ?;", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_bind_int64(stmt, 1, this->id_);
+  if (sqlite3_step(stmt) != SQLITE_ROW)
+    throw EXCEPTION(DBException, boost::str(boost::format("\
+id %1% not found in table Environment")
+					    % this->id_));
+  Coord size_x = sqlite3_column_int(stmt, 0);
+  sqlite3_finalize(stmt);
 
-    sqlite3x::sqlite3_cursor cursor(sql.executecursor());
-    if (! cursor.step())
-      throw EXCEPTION(DBException, boost::str(boost::format("\
-time %1% not found in table Environment")
-                                              % this->id_));
-
-    return cursor.getint(0);
-  } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(DBException, std::string(e.what()) +
-                    " (" + this->db()->errormsg() + ")");
-  }
+  return size_x;
 }
 
 /**
@@ -261,26 +234,21 @@ time %1% not found in table Environment")
  */
 Coord Environment::size_y() const
 {
-  sqlite3x::sqlite3_command sql(*this->db_);
-
-  try {
-    sql.prepare("\
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(this->db_->db(), "\
 SELECT size_y\n\
 FROM Environment\n\
-WHERE id = ?;");
-    sql.bind(1, this->id_);
+WHERE id = ?;", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_bind_int64(stmt, 1, this->id_);
+  if (sqlite3_step(stmt) != SQLITE_ROW)
+    throw EXCEPTION(DBException, boost::str(boost::format("\
+id %1% not found in table Environment")
+					    % this->id_));
+  Coord size_y = sqlite3_column_int(stmt, 0);
+  sqlite3_finalize(stmt);
 
-    sqlite3x::sqlite3_cursor cursor(sql.executecursor());
-    if (! cursor.step())
-      throw EXCEPTION(DBException, boost::str(boost::format("\
-time %1% not found in table Environment")
-                                              % this->id_));
-
-    return cursor.getint(0);
-  } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(DBException, std::string(e.what()) +
-                    " (" + this->db()->errormsg() + ")");
-  }
+  return size_y;
 }
 
 /**
@@ -290,21 +258,17 @@ time %1% not found in table Environment")
  */
 void Environment::size_x(Coord size_x)
 {
-  sqlite3x::sqlite3_command sql(*this->db_);
-
-  try {
-    sql.prepare("\
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(this->db_->db(), "\
 UPDATE Environment\n\
 SET size_x = ?\n\
-WHERE id = ?;");
-    sql.bind(1, static_cast<int>(size_x));
-    sql.bind(2, this->id_);
-
-    sql.executenonquery();
-  } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(DBException, std::string(e.what()) +
-                    " (" + this->db()->errormsg() + ")");
-  }
+WHERE id = ?;", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_bind_int(stmt, 1, size_x);
+  sqlite3_bind_int64(stmt, 2, this->id_);
+  if (sqlite3_step(stmt) != SQLITE_DONE)
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_finalize(stmt);
 }
 
 /**
@@ -314,21 +278,17 @@ WHERE id = ?;");
  */
 void Environment::size_y(Coord size_y)
 {
-  sqlite3x::sqlite3_command sql(*this->db_);
-
-  try {
-    sql.prepare("\
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(this->db_->db(), "\
 UPDATE Environment\n\
 SET size_y = ?\n\
-WHERE id = ?;");
-    sql.bind(1, static_cast<int>(size_y));
-    sql.bind(2, this->id_);
-
-    sql.executenonquery();
-  } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(DBException, std::string(e.what()) +
-                    " (" + this->db()->errormsg() + ")");
-  }
+WHERE id = ?;", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_bind_int(stmt, 1, size_y);
+  sqlite3_bind_int64(stmt, 2, this->id_);
+  if (sqlite3_step(stmt) != SQLITE_DONE)
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_finalize(stmt);
 }
 
 
@@ -339,26 +299,21 @@ WHERE id = ?;");
  */
 double Environment::mutations_probability() const
 {
-  sqlite3x::sqlite3_command sql(*this->db_);
-
-  try {
-    sql.prepare("\
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(this->db_->db(), "\
 SELECT mutations_probability\n\
 FROM Environment\n\
-WHERE id = ?;");
-    sql.bind(1, this->id_);
+WHERE id = ?;", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_bind_int64(stmt, 1, this->id_);
+  if (sqlite3_step(stmt) != SQLITE_ROW)
+    throw EXCEPTION(DBException, boost::str(boost::format("\
+id %1% not found in table Environment")
+					    % this->id_));
+  double mutations_probability = sqlite3_column_double(stmt, 0);
+  sqlite3_finalize(stmt);
 
-    sqlite3x::sqlite3_cursor cursor(sql.executecursor());
-    if (! cursor.step())
-      throw EXCEPTION(DBException, boost::str(boost::format("\
-time %1% not found in table Environment")
-                                              % this->id_));
-
-    return cursor.getdouble(0);
-  } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(DBException, std::string(e.what()) +
-                    " (" + this->db()->errormsg() + ")");
-  }
+  return mutations_probability;
 }
 
 /**
@@ -368,21 +323,17 @@ time %1% not found in table Environment")
  */
 void Environment::mutations_probability(double mutations_probability)
 {
-  sqlite3x::sqlite3_command sql(*this->db_);
-
-  try {
-    sql.prepare("\
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(this->db_->db(), "\
 UPDATE Environment\n\
 SET mutations_probability = ?\n\
-WHERE id = ?;");
-    sql.bind(1, mutations_probability);
-    sql.bind(2, this->id_);
-
-    sql.executenonquery();
-  } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(DBException, std::string(e.what()) +
-                    " (" + this->db()->errormsg() + ")");
-  }
+WHERE id = ?;", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_bind_double(stmt, 1, mutations_probability);
+  sqlite3_bind_int64(stmt, 2, this->id_);
+  if (sqlite3_step(stmt) != SQLITE_DONE)
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_finalize(stmt);
 }
 
 
@@ -393,26 +344,21 @@ WHERE id = ?;");
  */
 Time Environment::time_birth() const
 {
-  sqlite3x::sqlite3_command sql(*this->db_);
-
-  try {
-    sql.prepare("\
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(this->db_->db(), "\
 SELECT time_birth\n\
 FROM Environment\n\
-WHERE id = ?;");
-    sql.bind(1, this->id_);
+WHERE id = ?;", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_bind_int64(stmt, 1, this->id_);
+  if (sqlite3_step(stmt) != SQLITE_ROW)
+    throw EXCEPTION(DBException, boost::str(boost::format("\
+id %1% not found in table Environment")
+					    % this->id_));
+  Time time_birth = sqlite3_column_int(stmt, 0);
+  sqlite3_finalize(stmt);
 
-    sqlite3x::sqlite3_cursor cursor(sql.executecursor());
-    if (! cursor.step())
-      throw EXCEPTION(DBException, boost::str(boost::format("\
-time %1% not found in table Environment")
-                                              % this->id_));
-
-    return cursor.getint(0);
-  } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(DBException, std::string(e.what()) +
-                    " (" + this->db()->errormsg() + ")");
-  }
+  return time_birth;
 }
 
 /**
@@ -422,21 +368,17 @@ time %1% not found in table Environment")
  */
 void Environment::time_birth(Time time_birth)
 {
-  sqlite3x::sqlite3_command sql(*this->db_);
-
-  try {
-    sql.prepare("\
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(this->db_->db(), "\
 UPDATE Environment\n\
 SET time_birth = ?\n\
-WHERE id = ?;");
-    sql.bind(1, static_cast<int>(time_birth));
-    sql.bind(2, this->id_);
-
-    sql.executenonquery();
-  } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(DBException, std::string(e.what()) +
-                    " (" + this->db()->errormsg() + ")");
-  }
+WHERE id = ?;", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_bind_int(stmt, 1, time_birth);
+  sqlite3_bind_int64(stmt, 2, this->id_);
+  if (sqlite3_step(stmt) != SQLITE_DONE)
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_finalize(stmt);
 }
 
 
@@ -447,26 +389,21 @@ WHERE id = ?;");
  */
 Time Environment::time_mutate() const
 {
-  sqlite3x::sqlite3_command sql(*this->db_);
-
-  try {
-    sql.prepare("\
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(this->db_->db(), "\
 SELECT time_mutate\n\
 FROM Environment\n\
-WHERE id = ?;");
-    sql.bind(1, this->id_);
+WHERE id = ?;", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_bind_int64(stmt, 1, this->id_);
+  if (sqlite3_step(stmt) != SQLITE_ROW)
+    throw EXCEPTION(DBException, boost::str(boost::format("\
+id %1% not found in table Environment")
+					    % this->id_));
+  Time time_mutate = sqlite3_column_int(stmt, 0);
+  sqlite3_finalize(stmt);
 
-    sqlite3x::sqlite3_cursor cursor(sql.executecursor());
-    if (! cursor.step())
-      throw EXCEPTION(DBException, boost::str(boost::format("\
-time %1% not found in table Environment")
-                                              % this->id_));
-
-    return cursor.getint(0);
-  } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(DBException, std::string(e.what()) +
-                    " (" + this->db()->errormsg() + ")");
-  }
+  return time_mutate;
 }
 
 /**
@@ -476,21 +413,17 @@ time %1% not found in table Environment")
  */
 void Environment::time_mutate(Time time_mutate)
 {
-  sqlite3x::sqlite3_command sql(*this->db_);
-
-  try {
-    sql.prepare("\
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(this->db_->db(), "\
 UPDATE Environment\n\
 SET time_mutate = ?\n\
-WHERE id = ?;");
-    sql.bind(1, static_cast<int>(time_mutate));
-    sql.bind(2, this->id_);
-
-    sql.executenonquery();
-  } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(DBException, std::string(e.what()) +
-                    " (" + this->db()->errormsg() + ")");
-  }
+WHERE id = ?;", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_bind_int(stmt, 1, time_mutate);
+  sqlite3_bind_int64(stmt, 2, this->id_);
+  if (sqlite3_step(stmt) != SQLITE_DONE)
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_finalize(stmt);
 }
 
 
@@ -501,26 +434,21 @@ WHERE id = ?;");
  */
 Time Environment::time_laziness() const
 {
-  sqlite3x::sqlite3_command sql(*this->db_);
-
-  try {
-    sql.prepare("\
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(this->db_->db(), "\
 SELECT time_laziness\n\
 FROM Environment\n\
-WHERE id = ?;");
-    sql.bind(1, this->id_);
+WHERE id = ?;", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_bind_int64(stmt, 1, this->id_);
+  if (sqlite3_step(stmt) != SQLITE_ROW)
+    throw EXCEPTION(DBException, boost::str(boost::format("\
+id %1% not found in table Environment")
+					    % this->id_));
+  Time time_laziness = sqlite3_column_int(stmt, 0);
+  sqlite3_finalize(stmt);
 
-    sqlite3x::sqlite3_cursor cursor(sql.executecursor());
-    if (! cursor.step())
-      throw EXCEPTION(DBException, boost::str(boost::format("\
-time %1% not found in table Environment")
-                                              % this->id_));
-
-    return cursor.getint(0);
-  } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(DBException, std::string(e.what()) +
-                    " (" + this->db()->errormsg() + ")");
-  }
+  return time_laziness;
 }
 
 /**
@@ -530,21 +458,17 @@ time %1% not found in table Environment")
  */
 void Environment::time_laziness(Time time_laziness)
 {
-  sqlite3x::sqlite3_command sql(*this->db_);
-
-  try {
-    sql.prepare("\
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(this->db_->db(), "\
 UPDATE Environment\n\
 SET time_laziness = ?\n\
-WHERE id = ?;");
-    sql.bind(1, static_cast<int>(time_laziness));
-    sql.bind(2, this->id_);
-
-    sql.executenonquery();
-  } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(DBException, std::string(e.what()) +
-                    " (" + this->db()->errormsg() + ")");
-  }
+WHERE id = ?;", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_bind_int(stmt, 1, time_laziness);
+  sqlite3_bind_int64(stmt, 2, this->id_);
+  if (sqlite3_step(stmt) != SQLITE_DONE)
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_finalize(stmt);
 }
 
 
@@ -555,26 +479,21 @@ WHERE id = ?;");
  */
 Energy Environment::energy_laziness() const
 {
-  sqlite3x::sqlite3_command sql(*this->db_);
-
-  try {
-    sql.prepare("\
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(this->db_->db(), "\
 SELECT energy_laziness\n\
 FROM Environment\n\
-WHERE id = ?;");
-    sql.bind(1, this->id_);
+WHERE id = ?;", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_bind_int64(stmt, 1, this->id_);
+  if (sqlite3_step(stmt) != SQLITE_ROW)
+    throw EXCEPTION(DBException, boost::str(boost::format("\
+id %1% not found in table Environment")
+					    % this->id_));
+  Energy energy_laziness = sqlite3_column_int(stmt, 0);
+  sqlite3_finalize(stmt);
 
-    sqlite3x::sqlite3_cursor cursor(sql.executecursor());
-    if (! cursor.step())
-      throw EXCEPTION(DBException, boost::str(boost::format("\
-time %1% not found in table Environment")
-                                              % this->id_));
-
-    return cursor.getint(0);
-  } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(DBException, std::string(e.what()) +
-                    " (" + this->db()->errormsg() + ")");
-  }
+  return energy_laziness;
 }
 
 /**
@@ -584,21 +503,17 @@ time %1% not found in table Environment")
  */
 void Environment::energy_laziness(Energy energy_laziness)
 {
-  sqlite3x::sqlite3_command sql(*this->db_);
-
-  try {
-    sql.prepare("\
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(this->db_->db(), "\
 UPDATE Environment\n\
 SET energy_laziness = ?\n\
-WHERE id = ?;");
-    sql.bind(1, static_cast<int>(energy_laziness));
-    sql.bind(2, this->id_);
-
-    sql.executenonquery();
-  } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(DBException, std::string(e.what()) +
-                    " (" + this->db()->errormsg() + ")");
-  }
+WHERE id = ?;", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_bind_int(stmt, 1, energy_laziness);
+  sqlite3_bind_int64(stmt, 2, this->id_);
+  if (sqlite3_step(stmt) != SQLITE_DONE)
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_finalize(stmt);
 }
 
 
@@ -609,26 +524,21 @@ WHERE id = ?;");
  */
 double Environment::attack_multiplier() const
 {
-  sqlite3x::sqlite3_command sql(*this->db_);
-
-  try {
-    sql.prepare("\
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(this->db_->db(), "\
 SELECT attack_multiplier\n\
 FROM Environment\n\
-WHERE id = ?;");
-    sql.bind(1, this->id_);
+WHERE id = ?;", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_bind_int64(stmt, 1, this->id_);
+  if (sqlite3_step(stmt) != SQLITE_ROW)
+    throw EXCEPTION(DBException, boost::str(boost::format("\
+id %1% not found in table Environment")
+					    % this->id_));
+  double attack_multiplier = sqlite3_column_double(stmt, 0);
+  sqlite3_finalize(stmt);
 
-    sqlite3x::sqlite3_cursor cursor(sql.executecursor());
-    if (! cursor.step())
-      throw EXCEPTION(DBException, boost::str(boost::format("\
-time %1% not found in table Environment")
-                                              % this->id_));
-
-    return cursor.getdouble(0);
-  } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(DBException, std::string(e.what()) +
-                    " (" + this->db()->errormsg() + ")");
-  }
+  return attack_multiplier;
 }
 
 /**
@@ -638,21 +548,17 @@ time %1% not found in table Environment")
  */
 void Environment::attack_multiplier(double attack_multiplier)
 {
-  sqlite3x::sqlite3_command sql(*this->db_);
-
-  try {
-    sql.prepare("\
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(this->db_->db(), "\
 UPDATE Environment\n\
 SET attack_multiplier = ?\n\
-WHERE id = ?;");
-    sql.bind(1, attack_multiplier);
-    sql.bind(2, this->id_);
-
-    sql.executenonquery();
-  } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(DBException, std::string(e.what()) +
-                    " (" + this->db()->errormsg() + ")");
-  }
+WHERE id = ?;", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_bind_double(stmt, 1, attack_multiplier);
+  sqlite3_bind_int64(stmt, 2, this->id_);
+  if (sqlite3_step(stmt) != SQLITE_DONE)
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_finalize(stmt);
 }
 
 
@@ -663,26 +569,21 @@ WHERE id = ?;");
  */
 Energy Environment::energy_nothing() const
 {
-  sqlite3x::sqlite3_command sql(*this->db_);
-
-  try {
-    sql.prepare("\
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(this->db_->db(), "\
 SELECT energy_nothing\n\
 FROM Environment\n\
-WHERE id = ?;");
-    sql.bind(1, this->id_);
+WHERE id = ?;", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_bind_int64(stmt, 1, this->id_);
+  if (sqlite3_step(stmt) != SQLITE_ROW)
+    throw EXCEPTION(DBException, boost::str(boost::format("\
+id %1% not found in table Environment")
+					    % this->id_));
+  Energy energy_nothing = sqlite3_column_int(stmt, 0);
+  sqlite3_finalize(stmt);
 
-    sqlite3x::sqlite3_cursor cursor(sql.executecursor());
-    if (! cursor.step())
-      throw EXCEPTION(DBException, boost::str(boost::format("\
-time %1% not found in table Environment")
-                                              % this->id_));
-
-    return cursor.getint(0);
-  } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(DBException, std::string(e.what()) +
-                    " (" + this->db()->errormsg() + ")");
-  }
+  return energy_nothing;
 }
 
 /**
@@ -692,21 +593,17 @@ time %1% not found in table Environment")
  */
 void Environment::energy_nothing(Energy energy_nothing)
 {
-  sqlite3x::sqlite3_command sql(*this->db_);
-
-  try {
-    sql.prepare("\
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(this->db_->db(), "\
 UPDATE Environment\n\
 SET energy_nothing = ?\n\
-WHERE id = ?;");
-    sql.bind(1, static_cast<int>(energy_nothing));
-    sql.bind(2, this->id_);
-
-    sql.executenonquery();
-  } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(DBException, std::string(e.what()) +
-                    " (" + this->db()->errormsg() + ")");
-  }
+WHERE id = ?;", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_bind_int(stmt, 1, energy_nothing);
+  sqlite3_bind_int64(stmt, 2, this->id_);
+  if (sqlite3_step(stmt) != SQLITE_DONE)
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_finalize(stmt);
 }
 
 
@@ -717,26 +614,21 @@ WHERE id = ?;");
  */
 Energy Environment::energy_myself() const
 {
-  sqlite3x::sqlite3_command sql(*this->db_);
-
-  try {
-    sql.prepare("\
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(this->db_->db(), "\
 SELECT energy_myself\n\
 FROM Environment\n\
-WHERE id = ?;");
-    sql.bind(1, this->id_);
+WHERE id = ?;", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_bind_int64(stmt, 1, this->id_);
+  if (sqlite3_step(stmt) != SQLITE_ROW)
+    throw EXCEPTION(DBException, boost::str(boost::format("\
+id %1% not found in table Environment")
+					    % this->id_));
+  Energy energy_myself = sqlite3_column_int(stmt, 0);
+  sqlite3_finalize(stmt);
 
-    sqlite3x::sqlite3_cursor cursor(sql.executecursor());
-    if (! cursor.step())
-      throw EXCEPTION(DBException, boost::str(boost::format("\
-time %1% not found in table Environment")
-                                              % this->id_));
-
-    return cursor.getint(0);
-  } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(DBException, std::string(e.what()) +
-                    " (" + this->db()->errormsg() + ")");
-  }
+  return energy_myself;
 }
 
 /**
@@ -746,21 +638,17 @@ time %1% not found in table Environment")
  */
 void Environment::energy_myself(Energy energy_myself)
 {
-  sqlite3x::sqlite3_command sql(*this->db_);
-
-  try {
-    sql.prepare("\
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(this->db_->db(), "\
 UPDATE Environment\n\
 SET energy_myself = ?\n\
-WHERE id = ?;");
-    sql.bind(1, static_cast<int>(energy_myself));
-    sql.bind(2, this->id_);
-
-    sql.executenonquery();
-  } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(DBException, std::string(e.what()) +
-                    " (" + this->db()->errormsg() + ")");
-  }
+WHERE id = ?;", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_bind_int(stmt, 1, energy_myself);
+  sqlite3_bind_int64(stmt, 2, this->id_);
+  if (sqlite3_step(stmt) != SQLITE_DONE)
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_finalize(stmt);
 }
 
 
@@ -771,26 +659,21 @@ WHERE id = ?;");
  */
 Energy Environment::energy_detect() const
 {
-  sqlite3x::sqlite3_command sql(*this->db_);
-
-  try {
-    sql.prepare("\
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(this->db_->db(), "\
 SELECT energy_detect\n\
 FROM Environment\n\
-WHERE id = ?;");
-    sql.bind(1, this->id_);
+WHERE id = ?;", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_bind_int64(stmt, 1, this->id_);
+  if (sqlite3_step(stmt) != SQLITE_ROW)
+    throw EXCEPTION(DBException, boost::str(boost::format("\
+id %1% not found in table Environment")
+					    % this->id_));
+  Energy energy_detect = sqlite3_column_int(stmt, 0);
+  sqlite3_finalize(stmt);
 
-    sqlite3x::sqlite3_cursor cursor(sql.executecursor());
-    if (! cursor.step())
-      throw EXCEPTION(DBException, boost::str(boost::format("\
-time %1% not found in table Environment")
-                                              % this->id_));
-
-    return cursor.getint(0);
-  } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(DBException, std::string(e.what()) +
-                    " (" + this->db()->errormsg() + ")");
-  }
+  return energy_detect;
 }
 
 /**
@@ -800,21 +683,17 @@ time %1% not found in table Environment")
  */
 void Environment::energy_detect(Energy energy_detect)
 {
-  sqlite3x::sqlite3_command sql(*this->db_);
-
-  try {
-    sql.prepare("\
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(this->db_->db(), "\
 UPDATE Environment\n\
 SET energy_detect = ?\n\
-WHERE id = ?;");
-    sql.bind(1, static_cast<int>(energy_detect));
-    sql.bind(2, this->id_);
-
-    sql.executenonquery();
-  } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(DBException, std::string(e.what()) +
-                    " (" + this->db()->errormsg() + ")");
-  }
+WHERE id = ?;", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_bind_int(stmt, 1, energy_detect);
+  sqlite3_bind_int64(stmt, 2, this->id_);
+  if (sqlite3_step(stmt) != SQLITE_DONE)
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_finalize(stmt);
 }
 
 
@@ -825,26 +704,21 @@ WHERE id = ?;");
  */
 Energy Environment::energy_info() const
 {
-  sqlite3x::sqlite3_command sql(*this->db_);
-
-  try {
-    sql.prepare("\
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(this->db_->db(), "\
 SELECT energy_info\n\
 FROM Environment\n\
-WHERE id = ?;");
-    sql.bind(1, this->id_);
+WHERE id = ?;", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_bind_int64(stmt, 1, this->id_);
+  if (sqlite3_step(stmt) != SQLITE_ROW)
+    throw EXCEPTION(DBException, boost::str(boost::format("\
+id %1% not found in table Environment")
+					    % this->id_));
+  Energy energy_info = sqlite3_column_int(stmt, 0);
+  sqlite3_finalize(stmt);
 
-    sqlite3x::sqlite3_cursor cursor(sql.executecursor());
-    if (! cursor.step())
-      throw EXCEPTION(DBException, boost::str(boost::format("\
-time %1% not found in table Environment")
-                                              % this->id_));
-
-    return cursor.getint(0);
-  } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(DBException, std::string(e.what()) +
-                    " (" + this->db()->errormsg() + ")");
-  }
+  return energy_info;
 }
 
 /**
@@ -854,21 +728,17 @@ time %1% not found in table Environment")
  */
 void Environment::energy_info(Energy energy_info)
 {
-  sqlite3x::sqlite3_command sql(*this->db_);
-
-  try {
-    sql.prepare("\
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(this->db_->db(), "\
 UPDATE Environment\n\
 SET energy_info = ?\n\
-WHERE id = ?;");
-    sql.bind(1, static_cast<int>(energy_info));
-    sql.bind(2, this->id_);
-
-    sql.executenonquery();
-  } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(DBException, std::string(e.what()) +
-                    " (" + this->db()->errormsg() + ")");
-  }
+WHERE id = ?;", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_bind_int(stmt, 1, energy_info);
+  sqlite3_bind_int64(stmt, 2, this->id_);
+  if (sqlite3_step(stmt) != SQLITE_DONE)
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_finalize(stmt);
 }
 
 
@@ -879,26 +749,21 @@ WHERE id = ?;");
  */
 Energy Environment::energy_move() const
 {
-  sqlite3x::sqlite3_command sql(*this->db_);
-
-  try {
-    sql.prepare("\
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(this->db_->db(), "\
 SELECT energy_move\n\
 FROM Environment\n\
-WHERE id = ?;");
-    sql.bind(1, this->id_);
+WHERE id = ?;", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_bind_int64(stmt, 1, this->id_);
+  if (sqlite3_step(stmt) != SQLITE_ROW)
+    throw EXCEPTION(DBException, boost::str(boost::format("\
+id %1% not found in table Environment")
+					    % this->id_));
+  Energy energy_move = sqlite3_column_int(stmt, 0);
+  sqlite3_finalize(stmt);
 
-    sqlite3x::sqlite3_cursor cursor(sql.executecursor());
-    if (! cursor.step())
-      throw EXCEPTION(DBException, boost::str(boost::format("\
-time %1% not found in table Environment")
-                                              % this->id_));
-
-    return cursor.getint(0);
-  } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(DBException, std::string(e.what()) +
-                    " (" + this->db()->errormsg() + ")");
-  }
+  return energy_move;
 }
 
 /**
@@ -908,21 +773,17 @@ time %1% not found in table Environment")
  */
 void Environment::energy_move(Energy energy_move)
 {
-  sqlite3x::sqlite3_command sql(*this->db_);
-
-  try {
-    sql.prepare("\
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(this->db_->db(), "\
 UPDATE Environment\n\
 SET energy_move = ?\n\
-WHERE id = ?;");
-    sql.bind(1, static_cast<int>(energy_move));
-    sql.bind(2, this->id_);
-
-    sql.executenonquery();
-  } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(DBException, std::string(e.what()) +
-                    " (" + this->db()->errormsg() + ")");
-  }
+WHERE id = ?;", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_bind_int(stmt, 1, energy_move);
+  sqlite3_bind_int64(stmt, 2, this->id_);
+  if (sqlite3_step(stmt) != SQLITE_DONE)
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_finalize(stmt);
 }
 
 
@@ -933,26 +794,21 @@ WHERE id = ?;");
  */
 Energy Environment::energy_turn() const
 {
-  sqlite3x::sqlite3_command sql(*this->db_);
-
-  try {
-    sql.prepare("\
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(this->db_->db(), "\
 SELECT energy_turn\n\
 FROM Environment\n\
-WHERE id = ?;");
-    sql.bind(1, this->id_);
+WHERE id = ?;", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_bind_int64(stmt, 1, this->id_);
+  if (sqlite3_step(stmt) != SQLITE_ROW)
+    throw EXCEPTION(DBException, boost::str(boost::format("\
+id %1% not found in table Environment")
+					    % this->id_));
+  Energy energy_turn = sqlite3_column_int(stmt, 0);
+  sqlite3_finalize(stmt);
 
-    sqlite3x::sqlite3_cursor cursor(sql.executecursor());
-    if (! cursor.step())
-      throw EXCEPTION(DBException, boost::str(boost::format("\
-time %1% not found in table Environment")
-                                              % this->id_));
-
-    return cursor.getint(0);
-  } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(DBException, std::string(e.what()) +
-                    " (" + this->db()->errormsg() + ")");
-  }
+  return energy_turn;
 }
 
 /**
@@ -962,21 +818,17 @@ time %1% not found in table Environment")
  */
 void Environment::energy_turn(Energy energy_turn)
 {
-  sqlite3x::sqlite3_command sql(*this->db_);
-
-  try {
-    sql.prepare("\
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(this->db_->db(), "\
 UPDATE Environment\n\
 SET energy_turn = ?\n\
-WHERE id = ?;");
-    sql.bind(1, static_cast<int>(energy_turn));
-    sql.bind(2, this->id_);
-
-    sql.executenonquery();
-  } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(DBException, std::string(e.what()) +
-                    " (" + this->db()->errormsg() + ")");
-  }
+WHERE id = ?;", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_bind_int(stmt, 1, energy_turn);
+  sqlite3_bind_int64(stmt, 2, this->id_);
+  if (sqlite3_step(stmt) != SQLITE_DONE)
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_finalize(stmt);
 }
 
 
@@ -987,26 +839,21 @@ WHERE id = ?;");
  */
 Energy Environment::energy_attack() const
 {
-  sqlite3x::sqlite3_command sql(*this->db_);
-
-  try {
-    sql.prepare("\
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(this->db_->db(), "\
 SELECT energy_attack\n\
 FROM Environment\n\
-WHERE id = ?;");
-    sql.bind(1, this->id_);
+WHERE id = ?;", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_bind_int64(stmt, 1, this->id_);
+  if (sqlite3_step(stmt) != SQLITE_ROW)
+    throw EXCEPTION(DBException, boost::str(boost::format("\
+id %1% not found in table Environment")
+					    % this->id_));
+  Energy energy_attack = sqlite3_column_int(stmt, 0);
+  sqlite3_finalize(stmt);
 
-    sqlite3x::sqlite3_cursor cursor(sql.executecursor());
-    if (! cursor.step())
-      throw EXCEPTION(DBException, boost::str(boost::format("\
-time %1% not found in table Environment")
-                                              % this->id_));
-
-    return cursor.getint(0);
-  } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(DBException, std::string(e.what()) +
-                    " (" + this->db()->errormsg() + ")");
-  }
+  return energy_attack;
 }
 
 /**
@@ -1016,21 +863,17 @@ time %1% not found in table Environment")
  */
 void Environment::energy_attack(Energy energy_attack)
 {
-  sqlite3x::sqlite3_command sql(*this->db_);
-
-  try {
-    sql.prepare("\
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(this->db_->db(), "\
 UPDATE Environment\n\
 SET energy_attack = ?\n\
-WHERE id = ?;");
-    sql.bind(1, static_cast<int>(energy_attack));
-    sql.bind(2, this->id_);
-
-    sql.executenonquery();
-  } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(DBException, std::string(e.what()) +
-                    " (" + this->db()->errormsg() + ")");
-  }
+WHERE id = ?;", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_bind_int(stmt, 1, energy_attack);
+  sqlite3_bind_int64(stmt, 2, this->id_);
+  if (sqlite3_step(stmt) != SQLITE_DONE)
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_finalize(stmt);
 }
 
 
@@ -1041,26 +884,21 @@ WHERE id = ?;");
  */
 Energy Environment::energy_eat() const
 {
-  sqlite3x::sqlite3_command sql(*this->db_);
-
-  try {
-    sql.prepare("\
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(this->db_->db(), "\
 SELECT energy_eat\n\
 FROM Environment\n\
-WHERE id = ?;");
-    sql.bind(1, this->id_);
+WHERE id = ?;", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_bind_int64(stmt, 1, this->id_);
+  if (sqlite3_step(stmt) != SQLITE_ROW)
+    throw EXCEPTION(DBException, boost::str(boost::format("\
+id %1% not found in table Environment")
+					    % this->id_));
+  Energy energy_eat = sqlite3_column_int(stmt, 0);
+  sqlite3_finalize(stmt);
 
-    sqlite3x::sqlite3_cursor cursor(sql.executecursor());
-    if (! cursor.step())
-      throw EXCEPTION(DBException, boost::str(boost::format("\
-time %1% not found in table Environment")
-                                              % this->id_));
-
-    return cursor.getint(0);
-  } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(DBException, std::string(e.what()) +
-                    " (" + this->db()->errormsg() + ")");
-  }
+  return energy_eat;
 }
 
 /**
@@ -1070,21 +908,17 @@ time %1% not found in table Environment")
  */
 void Environment::energy_eat(Energy energy_eat)
 {
-  sqlite3x::sqlite3_command sql(*this->db_);
-
-  try {
-    sql.prepare("\
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(this->db_->db(), "\
 UPDATE Environment\n\
 SET energy_eat = ?\n\
-WHERE id = ?;");
-    sql.bind(1, static_cast<int>(energy_eat));
-    sql.bind(2, this->id_);
-
-    sql.executenonquery();
-  } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(DBException, std::string(e.what()) +
-                    " (" + this->db()->errormsg() + ")");
-  }
+WHERE id = ?;", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_bind_int(stmt, 1, energy_eat);
+  sqlite3_bind_int64(stmt, 2, this->id_);
+  if (sqlite3_step(stmt) != SQLITE_DONE)
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_finalize(stmt);
 }
 
 
@@ -1095,26 +929,21 @@ WHERE id = ?;");
  */
 Energy Environment::energy_egg() const
 {
-  sqlite3x::sqlite3_command sql(*this->db_);
-
-  try {
-    sql.prepare("\
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(this->db_->db(), "\
 SELECT energy_egg\n\
 FROM Environment\n\
-WHERE id = ?;");
-    sql.bind(1, this->id_);
+WHERE id = ?;", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_bind_int64(stmt, 1, this->id_);
+  if (sqlite3_step(stmt) != SQLITE_ROW)
+    throw EXCEPTION(DBException, boost::str(boost::format("\
+id %1% not found in table Environment")
+					    % this->id_));
+  Energy energy_egg = sqlite3_column_int(stmt, 0);
+  sqlite3_finalize(stmt);
 
-    sqlite3x::sqlite3_cursor cursor(sql.executecursor());
-    if (! cursor.step())
-      throw EXCEPTION(DBException, boost::str(boost::format("\
-time %1% not found in table Environment")
-                                              % this->id_));
-
-    return cursor.getint(0);
-  } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(DBException, std::string(e.what()) +
-                    " (" + this->db()->errormsg() + ")");
-  }
+  return energy_egg;
 }
 
 /**
@@ -1124,21 +953,17 @@ time %1% not found in table Environment")
  */
 void Environment::energy_egg(Energy energy_egg)
 {
-  sqlite3x::sqlite3_command sql(*this->db_);
-
-  try {
-    sql.prepare("\
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(this->db_->db(), "\
 UPDATE Environment\n\
 SET energy_egg = ?\n\
-WHERE id = ?;");
-    sql.bind(1, static_cast<int>(energy_egg));
-    sql.bind(2, this->id_);
-
-    sql.executenonquery();
-  } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(DBException, std::string(e.what()) +
-                    " (" + this->db()->errormsg() + ")");
-  }
+WHERE id = ?;", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_bind_int(stmt, 1, energy_egg);
+  sqlite3_bind_int64(stmt, 2, this->id_);
+  if (sqlite3_step(stmt) != SQLITE_DONE)
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_finalize(stmt);
 }
 
 }

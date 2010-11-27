@@ -24,7 +24,7 @@
 #include <string>
 #include <vector>
 
-#include <sqlite3x.hpp>
+#include <sqlite3.h>
 
 #include <simpleworld/ints.hpp>
 #include <simpleworld/types.hpp>
@@ -41,7 +41,7 @@ namespace db
 /**
  * Simple World Data Base management.
  */
-class DB: public sqlite3x::sqlite3_connection
+class DB
 {
 public:
   /**
@@ -53,6 +53,16 @@ public:
    */
   DB(std::string filename);
 
+  /**
+   * Destructor.
+   */
+  ~DB();
+
+
+  /**
+   * Get the sqlite3 database connection handler.
+   */
+  sqlite3* db() const { return this->db_; }
 
   /**
    * Version of the data base.
@@ -106,22 +116,8 @@ public:
    */
   std::vector<ID> food();
 
-protected:
-  /**
-   * This function is called when open() succeeds. Subclasses
-   * which wish to do custom db initialization or sanity checks
-   * may do them here.
-   * @exception WrongVersion if the database version is not supported.
-   */
-  void on_open();
-
-  /**
-   * Create the tables.
-   * @exception DBException The tables can't be created.
-   */
-  void create_tables();
-
 private:
+  sqlite3* db_;                 /**< Database connection */
   Uint8 version_;               /**< Version of the database */
 };
 

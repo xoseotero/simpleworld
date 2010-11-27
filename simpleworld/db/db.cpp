@@ -23,6 +23,8 @@
 #include "exception.hpp"
 #include "wrongversion.hpp"
 #include "db.hpp"
+#include "transaction.hpp"
+#include "environment.hpp"
 
 #define DATABASE_VERSION 2
 
@@ -32,226 +34,11 @@ namespace db
 {
 
 /**
- * Constructor.
- * @param filename File name of the database.
- * @exception DBException if the database can't be opened.
- * @exception DBException if there is a error in the database.
- * @exception WrongVersion if the database version is not supported.
- */
-DB::DB(std::string filename)
-  : sqlite3x::sqlite3_connection()
-{
-  try {
-    this->open(filename);
-  } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(DBException, std::string(e.what()) +
-                    " (" + this->errormsg() + ")");
-  }
-
-  this->setbusytimeout(60000);
-}
-
-
-/**
- * List of all the environments (changes), ordered by it's time.
- * @return the list of environments.
- * @exception DBException if there is a error in the database.
- */
-std::vector<ID> DB::environments()
-{
-  std::vector<ID> ids;
-  sqlite3x::sqlite3_command sql(*this);
-
-  try {
-    sql.prepare("\
-SELECT id\n\
-FROM Environment\n\
-ORDER BY time;");
-    sqlite3x::sqlite3_cursor cursor = sql.executecursor();
-    while (cursor.step())
-      ids.push_back(cursor.getint64(0));
-  } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(DBException, std::string(e.what()) +
-                    " (" + this->errormsg() + ")");
-  }
-
-  return ids;
-}
-
-/**
- * Get the last environment (change).
- * @return the environment.
- * @exception DBException if there is a error in the database.
- * @exception DBException if there isn't any environments.
- */
-ID DB::last_environment()
-{
-  sqlite3x::sqlite3_command sql(*this);
-
-  try {
-    sql.prepare("\
-SELECT id\n\
-FROM Environment\n\
-WHERE time = (SELECT max(time)\n\
-              FROM Environment)\n\
-ORDER BY id DESC\n\
-LIMIT 1;");
-    sqlite3x::sqlite3_cursor cursor = sql.executecursor();
-    if (cursor.step())
-      return cursor.getint64(0);
-    else
-      throw EXCEPTION(DBException, "Table Environment is empty");
-  } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(DBException, std::string(e.what()) +
-                    " (" + this->errormsg() + ")");
-  }
-}
-
-
-/**
- * List of eggs, ordered by its conception time.
- * @return the list of eggs.
- * @exception DBException if there is a error in the database.
- */
-std::vector<ID> DB::eggs()
-{
-  std::vector<ID> ids;
-  sqlite3x::sqlite3_command sql(*this);
-
-  try {
-    sql.prepare("\
-SELECT bug_id\n\
-FROM Egg\n\
-ORDER BY conception, bug_id;");
-    sqlite3x::sqlite3_cursor cursor = sql.executecursor();
-    while (cursor.step())
-      ids.push_back(cursor.getint64(0));
-  } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(DBException, std::string(e.what()) +
-                    " (" + this->errormsg() + ")");
-  }
-
-  return ids;
-}
-
-/**
- * List of the alive bugs, ordered by its birth.
- * @return the list of bugs.
- * @exception DBException if there is a error in the database.
- */
-std::vector<ID> DB::alive_bugs()
-{
-  std::vector<ID> ids;
-  sqlite3x::sqlite3_command sql(*this);
-
-  try {
-    sql.prepare("\
-SELECT bug_id\n\
-FROM AliveBug\n\
-ORDER BY birth, bug_id;");
-    sqlite3x::sqlite3_cursor cursor = sql.executecursor();
-    while (cursor.step())
-      ids.push_back(cursor.getint64(0));
-  } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(DBException, std::string(e.what()) +
-                    " (" + this->errormsg() + ")");
-  }
-
-  return ids;
-}
-
-/**
- * List of the dead bugs, ordered by its death.
- * @return the list of bugs.
- * @exception DBException if there is a error in the database.
- */
-std::vector<ID> DB::dead_bugs()
-{
-  std::vector<ID> ids;
-  sqlite3x::sqlite3_command sql(*this);
-
-  try {
-    sql.prepare("\
-SELECT bug_id\n\
-FROM DeadBug\n\
-ORDER BY death, bug_id;");
-    sqlite3x::sqlite3_cursor cursor = sql.executecursor();
-    while (cursor.step())
-      ids.push_back(cursor.getint64(0));
-  } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(DBException, std::string(e.what()) +
-                    " (" + this->errormsg() + ")");
-  }
-
-  return ids;
-}
-
-
-/**
- * List of the food.
- * @return the list of food.
- * @exception DBException if there is a error in the database.
- */
-std::vector<ID> DB::food()
-{
-  std::vector<ID> ids;
-  sqlite3x::sqlite3_command sql(*this);
-
-  try {
-    sql.prepare("\
-SELECT id\n\
-FROM Food\n\
-ORDER BY id;");
-    sqlite3x::sqlite3_cursor cursor = sql.executecursor();
-    while (cursor.step())
-      ids.push_back(cursor.getint64(0));
-  } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(DBException, std::string(e.what()) +
-                    " (" + this->errormsg() + ")");
-  }
-
-  return ids;
-}
-
-
-/**
- * This function is called when open() succeeds. Subclasses
- * which wish to do custom db initialization or sanity checks
- * may do them here.
- * @exception WrongVersion if the database version is not supported.
- */
-void DB::on_open()
-{
-  sqlite3x::sqlite3_connection::on_open();
-
-  this->executenonquery("PRAGMA journal_mode = WAL;");
-  this->executenonquery("PRAGMA foreign_keys = ON;");
-
-  // user_version is used for know if the database was new (user_version is 0
-  // by default) and the version of the database (user_version is set to
-  // DATABASE_VERSION) to check if the database is compatible
-  this->version_ = this->executeint("PRAGMA user_version;");
-  if (this->version_ == 0) {    // Data base was created now
-    //sqlite3x::sqlite3_command sql(*this, "PRAGMA user_version = ?;");
-    //sql.bind(1, static_cast<int>(DATABASE_VERSION));
-    sqlite3x::sqlite3_command sql(*this, boost::str(boost::format("\
-PRAGMA user_version = %1%;")
-                                                    % DATABASE_VERSION));
-    sql.executenonquery();
-    this->version_ = DATABASE_VERSION;
-
-    this->create_tables();
-  } else if (this->version_ != DATABASE_VERSION)
-    throw EXCEPTION(WrongVersion, boost::str(boost::format("\
-Database version %1% not supported")
-                                             % this->version_));
-}
-
-/**
  * Create the tables.
+ * @param db database connection.
  * @exception DBException The tables can't be created.
  */
-void DB::create_tables()
+static void create_tables(DB* db)
 {
   const char* sql_commands[] = {
     /*******************
@@ -632,23 +419,266 @@ CREATE TABLE Food\n\
     NULL
   };
 
+ Transaction transaction(db, Transaction::immediate);
+ char* errmsg;
+ for (int i = 0; sql_commands[i] != NULL; i++)
+   if (sqlite3_exec(db->db(), sql_commands[i], NULL, NULL, &errmsg)) {
+     std::string error(errmsg);
+     sqlite3_free(errmsg);
+     throw EXCEPTION(DBException, error);
+   }
+ transaction.commit();
+}
 
-  sqlite3x::sqlite3_command sql(*this);
 
-  try {
-    // begin a transaction
-    sqlite3x::sqlite3_transaction transaction(*this);
+/**
+ * Constructor.
+ * @param filename File name of the database.
+ * @exception DBException if the database can't be opened.
+ * @exception DBException if there is a error in the database.
+ * @exception WrongVersion if the database version is not supported.
+ */
+DB::DB(std::string filename)
+{
+  if (sqlite3_open(filename.c_str(), &this->db_))
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_));
 
-    for (int i = 0; sql_commands[i] != NULL; i++) {
-      sql.prepare(sql_commands[i], -1);
-      sql.executenonquery();
+  // user_version is used for know if the database was new (user_version is 0
+  // by default) and the version of the database (user_version is set to
+  // DATABASE_VERSION) to check if the database is compatible
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(this->db(), "PRAGMA user_version;", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db()));
+  if (sqlite3_step(stmt) != SQLITE_ROW)
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db()));
+  this->version_ = sqlite3_column_int(stmt, 0);
+  sqlite3_finalize(stmt);
+  if (this->version_ == 0) {
+    sqlite3_exec(this->db_,
+		 boost::str(boost::format("PRAGMA user_version = %1%;")
+			    % DATABASE_VERSION).c_str(), NULL, NULL, NULL);
+    this->version_ = DATABASE_VERSION;
+
+    create_tables(this);
+  } else if (this->version_ != DATABASE_VERSION)
+    throw EXCEPTION(WrongVersion, boost::str(boost::format("\
+Database version %1% not supported")
+					     % this->version_));
+
+  // From http://sqlite.org/c3ref/step.html:
+  // SQLITE_BUSY means that the database engine was unable to acquire the
+  // database locks it needs to do its job. If the statement is a COMMIT or
+  // occurs outside of an explicit transaction, then you can retry the
+  // statement. If the statement is not a COMMIT and occurs within a explicit
+  // transaction then you should rollback the transaction before continuing.
+  //
+  // It's seems easier to set a big busy timeout and treat SQLITE_BUSY as an
+  // error than trying to handle it.
+  sqlite3_busy_timeout(this->db_, 60000);
+
+  sqlite3_exec(this->db_, "PRAGMA journal_mode = WAL;", NULL, NULL, NULL);
+  sqlite3_exec(this->db_, "PRAGMA foreign_keys = ON;", NULL, NULL, NULL);
+}
+
+/**
+ * Destructor.
+ */
+DB::~DB()
+{
+  sqlite3_close(this->db_);
+}
+
+
+/**
+ * List of all the environments (changes), ordered by it's time.
+ * @return the list of environments.
+ * @exception DBException if there is a error in the database.
+ */
+std::vector<ID> DB::environments()
+{
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(this->db(), "\
+SELECT id\n\
+FROM Environment\n\
+ORDER BY time;", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db()));
+
+  bool done = false;
+  std::vector<ID> ids;
+  while (not done)
+    switch (sqlite3_step(stmt)) {
+    case SQLITE_DONE:
+      done = true;
+      break;
+    case SQLITE_ROW:
+      ids.push_back(sqlite3_column_int64(stmt, 0));
+      break;
+    default:
+      throw EXCEPTION(DBException, sqlite3_errmsg(this->db()));
     }
 
-    transaction.commit();
-  } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(DBException, std::string(e.what()) +
-                    " (" + this->errormsg() + ")");
-  }
+  sqlite3_finalize(stmt);
+
+  return ids;
+}
+
+/**
+ * Get the last environment (change).
+ * @return the environment.
+ * @exception DBException if there is a error in the database.
+ * @exception DBException if there isn't any environments.
+ */
+ID DB::last_environment()
+{
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(this->db(), "\
+SELECT id\n\
+FROM Environment\n\
+WHERE time = (SELECT max(time)\n\
+              FROM Environment)\n\
+ORDER BY id DESC\n\
+LIMIT 1;", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db()));
+  if (sqlite3_step(stmt) != SQLITE_ROW)
+    throw EXCEPTION(DBException, "Table Environment is empty");
+  ID id = sqlite3_column_int64(stmt, 0);
+  sqlite3_finalize(stmt);
+
+  return id;
+}
+
+
+/**
+ * List of eggs, ordered by its conception time.
+ * @return the list of eggs.
+ * @exception DBException if there is a error in the database.
+ */
+std::vector<ID> DB::eggs()
+{
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(this->db(), "\
+SELECT bug_id\n\
+FROM Egg\n\
+ORDER BY conception, bug_id;", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db()));
+
+  bool done = false;
+  std::vector<ID> ids;
+  while (not done)
+    switch (sqlite3_step(stmt)) {
+    case SQLITE_DONE:
+      done = true;
+      break;
+    case SQLITE_ROW:
+      ids.push_back(sqlite3_column_int64(stmt, 0));
+      break;
+    default:
+      throw EXCEPTION(DBException, sqlite3_errmsg(this->db()));
+    }
+
+  sqlite3_finalize(stmt);
+
+  return ids;
+}
+
+/**
+ * List of the alive bugs, ordered by its birth.
+ * @return the list of bugs.
+ * @exception DBException if there is a error in the database.
+ */
+std::vector<ID> DB::alive_bugs()
+{
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(this->db(), "\
+SELECT bug_id\n\
+FROM AliveBug\n\
+ORDER BY birth, bug_id;", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db()));
+
+  bool done = false;
+  std::vector<ID> ids;
+  while (not done)
+    switch (sqlite3_step(stmt)) {
+    case SQLITE_DONE:
+      done = true;
+      break;
+    case SQLITE_ROW:
+      ids.push_back(sqlite3_column_int64(stmt, 0));
+      break;
+    default:
+      throw EXCEPTION(DBException, sqlite3_errmsg(this->db()));
+    }
+
+  sqlite3_finalize(stmt);
+
+  return ids;
+}
+
+/**
+ * List of the dead bugs, ordered by its death.
+ * @return the list of bugs.
+ * @exception DBException if there is a error in the database.
+ */
+std::vector<ID> DB::dead_bugs()
+{
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(this->db(), "\
+SELECT bug_id\n\
+FROM DeadBug\n\
+ORDER BY death, bug_id;", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db()));
+
+  bool done = false;
+  std::vector<ID> ids;
+  while (not done)
+    switch (sqlite3_step(stmt)) {
+    case SQLITE_DONE:
+      done = true;
+      break;
+    case SQLITE_ROW:
+      ids.push_back(sqlite3_column_int64(stmt, 0));
+      break;
+    default:
+      throw EXCEPTION(DBException, sqlite3_errmsg(this->db()));
+    }
+
+  sqlite3_finalize(stmt);
+
+  return ids;
+}
+
+
+/**
+ * List of the food.
+ * @return the list of food.
+ * @exception DBException if there is a error in the database.
+ */
+std::vector<ID> DB::food()
+{
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(this->db(), "\
+SELECT id\n\
+FROM Food\n\
+ORDER BY id;", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db()));
+
+  bool done = false;
+  std::vector<ID> ids;
+  while (not done)
+    switch (sqlite3_step(stmt)) {
+    case SQLITE_DONE:
+      done = true;
+      break;
+    case SQLITE_ROW:
+      ids.push_back(sqlite3_column_int64(stmt, 0));
+      break;
+    default:
+      throw EXCEPTION(DBException, sqlite3_errmsg(this->db()));
+    }
+
+  sqlite3_finalize(stmt);
+
+  return ids;
 }
 
 }

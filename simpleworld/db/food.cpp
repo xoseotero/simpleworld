@@ -22,6 +22,8 @@
 
 #include <boost/format.hpp>
 
+#include <sqlite3.h>
+
 #include "exception.hpp"
 #include "food.hpp"
 
@@ -53,21 +55,18 @@ Food::Food(DB* db, ID id)
  */
 ID Food::insert(DB* db, ID world_id, Energy size)
 {
-  sqlite3x::sqlite3_command sql(*db);
-
-  try {
-    sql.prepare("\
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(db->db(), "\
 INSERT INTO Food(world_id, size)\n\
-VALUES(?, ?);");
-    sql.bind(1, static_cast<sqlite3x::int64_t>(world_id));
-    sql.bind(2, static_cast<int>(size));
+VALUES(?, ?);", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(db->db()));
+  sqlite3_bind_int64(stmt, 1, world_id);
+  sqlite3_bind_int(stmt, 2, size);
+  if (sqlite3_step(stmt) != SQLITE_DONE)
+    throw EXCEPTION(DBException, sqlite3_errmsg(db->db()));
+  sqlite3_finalize(stmt);
 
-    sql.executenonquery();
-    return db->insertid();
-  } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(DBException, std::string(e.what()) +
-                    " (" + db->errormsg() + ")");
-  }
+  return sqlite3_last_insert_rowid(db->db());
 }
 
 /**
@@ -78,19 +77,15 @@ VALUES(?, ?);");
  */
 void Food::remove(DB* db, ID id)
 {
-  sqlite3x::sqlite3_command sql(*db);
-
-  try {
-    sql.prepare("\
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(db->db(), "\
 DELETE FROM Food\n\
-WHERE id = ?;");
-    sql.bind(1, id);
-
-    sql.executenonquery();
-  } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(DBException, std::string(e.what()) +
-                    " (" + db->errormsg() + ")");
-  }
+WHERE id = ?;", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(db->db()));
+  sqlite3_bind_int64(stmt, 1, id);
+  if (sqlite3_step(stmt) != SQLITE_DONE)
+    throw EXCEPTION(DBException, sqlite3_errmsg(db->db()));
+  sqlite3_finalize(stmt);
 }
 
 
@@ -101,21 +96,17 @@ WHERE id = ?;");
  */
 void Food::id(ID id)
 {
-  sqlite3x::sqlite3_command sql(*this->db_);
-
-  try {
-    sql.prepare("\
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(this->db_->db(), "\
 UPDATE Food\n\
 SET id = ?\n\
-WHERE id = ?;");
-    sql.bind(1, static_cast<sqlite3x::int64_t>(id));
-    sql.bind(2, this->id_);
-
-    sql.executenonquery();
-  } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(DBException, std::string(e.what()) +
-                    " (" + this->db()->errormsg() + ")");
-  }
+WHERE id = ?;", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_bind_int64(stmt, 1, id);
+  sqlite3_bind_int64(stmt, 2, this->id_);
+  if (sqlite3_step(stmt) != SQLITE_DONE)
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_finalize(stmt);
 
   this->id_ = id;
 }
@@ -128,26 +119,21 @@ WHERE id = ?;");
  */
 ID Food::world_id() const
 {
-  sqlite3x::sqlite3_command sql(*this->db_);
-
-  try {
-    sql.prepare("\
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(this->db_->db(), "\
 SELECT world_id\n\
 FROM Food\n\
-WHERE id = ?;");
-    sql.bind(1, this->id_);
-
-    sqlite3x::sqlite3_cursor cursor(sql.executecursor());
-    if (! cursor.step())
-      throw EXCEPTION(DBException, boost::str(boost::format("\
+WHERE id = ?;", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_bind_int64(stmt, 1, this->id_);
+  if (sqlite3_step(stmt) != SQLITE_ROW)
+    throw EXCEPTION(DBException, boost::str(boost::format("\
 id %1% not found in table Food")
-                                              % this->id_));
+					    % this->id_));
+  ID world_id = sqlite3_column_int64(stmt, 0);
+  sqlite3_finalize(stmt);
 
-    return cursor.getint64(0);
-  } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(DBException, std::string(e.what()) +
-                    " (" + this->db()->errormsg() + ")");
-  }
+  return world_id;
 }
 
 /**
@@ -157,21 +143,17 @@ id %1% not found in table Food")
  */
 void Food::world_id(ID world_id)
 {
-  sqlite3x::sqlite3_command sql(*this->db_);
-
-  try {
-    sql.prepare("\
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(this->db_->db(), "\
 UPDATE Food\n\
 SET world_id = ?\n\
-WHERE id = ?;");
-    sql.bind(1, static_cast<sqlite3x::int64_t>(world_id));
-    sql.bind(2, this->id_);
-
-    sql.executenonquery();
-  } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(DBException, std::string(e.what()) +
-                    " (" + this->db()->errormsg() + ")");
-  }
+WHERE id = ?;", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_bind_int64(stmt, 1, world_id);
+  sqlite3_bind_int64(stmt, 2, this->id_);
+  if (sqlite3_step(stmt) != SQLITE_DONE)
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_finalize(stmt);
 }
 
 
@@ -182,26 +164,21 @@ WHERE id = ?;");
  */
 Energy Food::size() const
 {
-  sqlite3x::sqlite3_command sql(*this->db_);
-
-  try {
-    sql.prepare("\
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(this->db_->db(), "\
 SELECT size\n\
 FROM Food\n\
-WHERE id = ?;");
-    sql.bind(1, this->id_);
-
-    sqlite3x::sqlite3_cursor cursor(sql.executecursor());
-    if (! cursor.step())
-      throw EXCEPTION(DBException, boost::str(boost::format("\
+WHERE id = ?;", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_bind_int64(stmt, 1, this->id_);
+  if (sqlite3_step(stmt) != SQLITE_ROW)
+    throw EXCEPTION(DBException, boost::str(boost::format("\
 id %1% not found in table Food")
-                                              % this->id_));
+					    % this->id_));
+  Energy size = sqlite3_column_int(stmt, 0);
+  sqlite3_finalize(stmt);
 
-    return cursor.getint(0);
-  } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(DBException, std::string(e.what()) +
-                    " (" + this->db()->errormsg() + ")");
-  }
+  return size;
 }
 
 /**
@@ -211,21 +188,17 @@ id %1% not found in table Food")
  */
 void Food::size(Energy size)
 {
-  sqlite3x::sqlite3_command sql(*this->db_);
-
-  try {
-    sql.prepare("\
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(this->db_->db(), "\
 UPDATE Food\n\
 SET size = ?\n\
-WHERE id = ?;");
-    sql.bind(1, static_cast<int>(size));
-    sql.bind(2, this->id_);
-
-    sql.executenonquery();
-  } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(DBException, std::string(e.what()) +
-                    " (" + this->db()->errormsg() + ")");
-  }
+WHERE id = ?;", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_bind_int(stmt, 1, size);
+  sqlite3_bind_int64(stmt, 2, this->id_);
+  if (sqlite3_step(stmt) != SQLITE_DONE)
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_finalize(stmt);
 }
 
 }

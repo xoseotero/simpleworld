@@ -40,9 +40,7 @@ CPU::CPU(const std::string& filename) throw ()
     cpu::Object(cpu::CPU::isa_, filename),
     memory_(filename, &last_access)
 {
-  this->registers_.resize((GLOBAL_REGISTERS +
-			   REGISTERS_PER_WINDOW * REGISTER_WINDOWS) *
-			  sizeof(cpu::Word));
+  this->registers_.resize(TOTAL_REGISTERS * sizeof(cpu::Word));
 }
 
 /**

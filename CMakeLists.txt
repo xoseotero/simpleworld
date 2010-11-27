@@ -86,26 +86,6 @@ else(NOT SQLite3_FOUND OR SQLite3_USE_INTERNAL)
 endif(NOT SQLite3_FOUND OR SQLite3_USE_INTERNAL)
 
 
-# SQLite3x
-option(SQLite3x_USE_INTERNAL "Use internal SQLite3x library" OFF)
-
-if(NOT SQLite3x_USE_INTERNAL)
-  find_package(SQLite3x)
-endif(NOT SQLite3x_USE_INTERNAL)
-
-if(NOT SQLite3x_FOUND OR SQLite3x_USE_INTERNAL)
-  set(SQLite3x_USE_INTERNAL 1)
-
-  include_directories("${CMAKE_SOURCE_DIR}/sqlite3x")
-  set(SQLite3x_LIB "sqlite3x")
-else(NOT SQLite3x_FOUND OR SQLite3x_USE_INTERNAL)
-  set(SQLite3x_USE_INTERNAL 0)
-
-  include_directories(${SQLite3x_INCLUDE_DIRS})
-  set(SQLite3x_LIB ${SQLite3x_LIBRARIES})
-endif(NOT SQLite3x_FOUND OR SQLite3x_USE_INTERNAL)
-
-
 check_cxx_accepts_flag("-Wall" CXX_ACCEPTS_WALL)
 if(CXX_ACCEPTS_WALL)
   add_definitions("-Wall")
@@ -152,16 +132,9 @@ else(SQLite3_USE_INTERNAL)
   message("	SQlite3:  external library used")
 endif(SQLite3_USE_INTERNAL)
 
-if(SQLite3x_USE_INTERNAL)
-  message("	SQLite3x: internal library used")
-else(SQLite3x_USE_INTERNAL)
-  message("	SQLite3x: external library used")
-endif(SQLite3x_USE_INTERNAL)
-
 
 add_subdirectory(getopt)
 add_subdirectory(sqlite3)
-add_subdirectory(sqlite3x)
 add_subdirectory(simpleworld)
 add_subdirectory(src)
 add_subdirectory(tests)

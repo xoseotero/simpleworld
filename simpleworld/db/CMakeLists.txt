@@ -9,6 +9,7 @@ set(DB_SRCS
   egg.cpp
   alivebug.cpp
   deadbug.cpp
+  transaction.cpp
   db.cpp)
 add_library(simpleworld_db SHARED ${DB_SRCS})
 

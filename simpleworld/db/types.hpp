@@ -21,14 +21,14 @@
 #ifndef SIMPLEWORLD_DB_TYPES_HPP
 #define SIMPLEWORLD_DB_TYPES_HPP
 
-#include <sqlite3x.hpp>
+#include <sqlite3.h>
 
 namespace simpleworld
 {
 namespace db
 {
 
-typedef sqlite3x::int64_t ID;
+typedef sqlite3_int64 ID;
 
 }
 }

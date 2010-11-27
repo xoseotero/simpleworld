@@ -26,8 +26,8 @@
 #include <boost/format.hpp>
 
 #include <simpleworld/types.hpp>
+#include <simpleworld/db/db.hpp>
 #include <simpleworld/simpleworld.hpp>
-#include <simpleworld/db/environment.hpp>
 namespace sw = simpleworld;
 namespace db = simpleworld::db;
 
@@ -302,6 +302,6 @@ void sw_create(int argc, char* argv[])
   sw::SimpleWorld simpleworld(database_path);
 
   db::Environment::insert(&simpleworld, 0, size.x, size.y, mutations, birth,
-                          old, laziness, elaziness, multiplier, nothing,
-                          myself, detect, info, move, turn, attack, eat, egg);
+			  old, laziness, elaziness, multiplier, nothing,
+			  myself, detect, info, move, turn, attack, eat, egg);
 }

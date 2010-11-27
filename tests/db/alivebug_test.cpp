@@ -24,6 +24,7 @@
 
 #include <simpleworld/ints.hpp>
 #include <simpleworld/cpu/types.hpp>
+#include <simpleworld/cpu/cpu.hpp>
 #include <simpleworld/db/types.hpp>
 #include <simpleworld/db/exception.hpp>
 #include <simpleworld/db/db.hpp>
@@ -135,8 +136,8 @@ BOOST_AUTO_TEST_CASE(alivebug_insert_egg)
   BOOST_CHECK_EQUAL(alivebug.energy(), 74);
   BOOST_CHECK_EQUAL(alivebug.is_null("time_last_action"), true);
   BOOST_CHECK_EQUAL(alivebug.is_null("action_time"), true);
-  BOOST_CHECK_EQUAL(size, 16 * sizeof(cpu::Word));
-  for (int i = 0; i < 16 * sizeof(cpu::Word); i++)
+  BOOST_CHECK_EQUAL(size, TOTAL_REGISTERS * sizeof(cpu::Word));
+  for (int i = 0; i < TOTAL_REGISTERS * sizeof(cpu::Word); i++)
     BOOST_CHECK_EQUAL(registers[i], 0x0);
 }
 

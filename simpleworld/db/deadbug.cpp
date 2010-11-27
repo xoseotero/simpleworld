@@ -22,7 +22,7 @@
 
 #include <boost/format.hpp>
 
-#include <sqlite3x.hpp>
+#include <sqlite3.h>
 
 #include "exception.hpp"
 #include "bug.hpp"
@@ -56,21 +56,18 @@ DeadBug::DeadBug(DB* db, ID bug_id)
  */
 ID DeadBug::insert(DB* db, ID bug_id, Time death)
 {
-  sqlite3x::sqlite3_command sql(*db);
-
-  try {
-    sql.prepare("\
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(db->db(), "\
 INSERT INTO DeadBug(bug_id, death)\n\
-VALUES(?, ?);");
-    sql.bind(1, static_cast<sqlite3x::int64_t>(bug_id));
-    sql.bind(2, static_cast<int>(death));
+VALUES(?, ?);", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(db->db()));
+  sqlite3_bind_int64(stmt, 1, bug_id);
+  sqlite3_bind_int(stmt, 2, death);
+  if (sqlite3_step(stmt) != SQLITE_DONE)
+    throw EXCEPTION(DBException, sqlite3_errmsg(db->db()));
+  sqlite3_finalize(stmt);
 
-    sql.executenonquery();
-    return db->insertid();
-  } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(DBException, std::string(e.what()) +
-                    " (" + db->errormsg() + ")");
-  }
+  return sqlite3_last_insert_rowid(db->db());
 }
 
 /**
@@ -84,22 +81,19 @@ VALUES(?, ?);");
  */
 ID DeadBug::insert(DB* db, ID bug_id, Time birth, Time death)
 {
-  sqlite3x::sqlite3_command sql(*db);
-
-  try {
-    sql.prepare("\
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(db->db(), "\
 INSERT INTO DeadBug(bug_id, birth, death)\n\
-VALUES(?, ?, ?);");
-    sql.bind(1, static_cast<sqlite3x::int64_t>(bug_id));
-    sql.bind(2, static_cast<int>(birth));
-    sql.bind(3, static_cast<int>(death));
+VALUES(?, ?, ?);", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(db->db()));
+  sqlite3_bind_int64(stmt, 1, bug_id);
+  sqlite3_bind_int(stmt, 2, birth);
+  sqlite3_bind_int(stmt, 3, death);
+  if (sqlite3_step(stmt) != SQLITE_DONE)
+    throw EXCEPTION(DBException, sqlite3_errmsg(db->db()));
+  sqlite3_finalize(stmt);
 
-    sql.executenonquery();
-    return db->insertid();
-  } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(DBException, std::string(e.what()) +
-                    " (" + db->errormsg() + ")");
-  }
+  return sqlite3_last_insert_rowid(db->db());
 }
 
 /**
@@ -113,22 +107,19 @@ VALUES(?, ?, ?);");
  */
 ID DeadBug::insert(DB* db, ID bug_id, Time death, ID killer_id)
 {
-  sqlite3x::sqlite3_command sql(*db);
-
-  try {
-    sql.prepare("\
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(db->db(), "\
 INSERT INTO DeadBug(bug_id, death, killer_id)\n\
-VALUES(?, ?, ?);");
-    sql.bind(1, static_cast<sqlite3x::int64_t>(bug_id));
-    sql.bind(2, static_cast<int>(death));
-    sql.bind(3, static_cast<sqlite3x::int64_t>(killer_id));
+VALUES(?, ?, ?);", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(db->db()));
+  sqlite3_bind_int64(stmt, 1, bug_id);
+  sqlite3_bind_int(stmt, 2, death);
+  sqlite3_bind_int64(stmt, 3, killer_id);
+  if (sqlite3_step(stmt) != SQLITE_DONE)
+    throw EXCEPTION(DBException, sqlite3_errmsg(db->db()));
+  sqlite3_finalize(stmt);
 
-    sql.executenonquery();
-    return db->insertid();
-  } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(DBException, std::string(e.what()) +
-                    " (" + db->errormsg() + ")");
-  }
+  return sqlite3_last_insert_rowid(db->db());
 }
 
 /**
@@ -143,23 +134,20 @@ VALUES(?, ?, ?);");
  */
 ID DeadBug::insert(DB* db, ID bug_id, Time birth, Time death, ID killer_id)
 {
-  sqlite3x::sqlite3_command sql(*db);
-
-  try {
-    sql.prepare("\
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(db->db(), "\
 INSERT INTO DeadBug(bug_id, birth, death, killer_id)\n\
-VALUES(?, ?, ?, ?);");
-    sql.bind(1, static_cast<sqlite3x::int64_t>(bug_id));
-    sql.bind(2, static_cast<int>(birth));
-    sql.bind(3, static_cast<int>(death));
-    sql.bind(4, static_cast<sqlite3x::int64_t>(killer_id));
+VALUES(?, ?, ?, ?);", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(db->db()));
+  sqlite3_bind_int64(stmt, 1, bug_id);
+  sqlite3_bind_int(stmt, 2, birth);
+  sqlite3_bind_int(stmt, 3, death);
+  sqlite3_bind_int64(stmt, 4, killer_id);
+  if (sqlite3_step(stmt) != SQLITE_DONE)
+    throw EXCEPTION(DBException, sqlite3_errmsg(db->db()));
+  sqlite3_finalize(stmt);
 
-    sql.executenonquery();
-    return db->insertid();
-  } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(DBException, std::string(e.what()) +
-                    " (" + db->errormsg() + ")");
-  }
+  return sqlite3_last_insert_rowid(db->db());
 }
 
 /**
@@ -173,25 +161,21 @@ VALUES(?, ?, ?, ?);");
  */
 ID DeadBug::insert(DB* db, Egg* egg, Time death)
 {
-  sqlite3x::sqlite3_command sql(*db);
-
-  try {
-    sql.prepare("\
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(db->db(), "\
 INSERT INTO DeadBug(bug_id, death)\n\
-VALUES(?, ?);");
-    sql.bind(1, static_cast<sqlite3x::int64_t>(egg->bug_id()));
-    sql.bind(2, static_cast<int>(death));
+VALUES(?, ?);", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(db->db()));
+  sqlite3_bind_int64(stmt, 1, egg->bug_id());
+  sqlite3_bind_int(stmt, 2, death);
+  if (sqlite3_step(stmt) != SQLITE_DONE)
+    throw EXCEPTION(DBException, sqlite3_errmsg(db->db()));
+  sqlite3_finalize(stmt);
+  ID id = sqlite3_last_insert_rowid(db->db());
 
-    sql.executenonquery();
-    ID id = db->insertid();
+  Egg::remove(db, egg->id());
 
-    Egg::remove(db, egg->id());
-
-    return id;
-  } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(DBException, std::string(e.what()) +
-                    " (" + db->errormsg() + ")");
-  }
+  return id;
 }
 
 /**
@@ -206,26 +190,22 @@ VALUES(?, ?);");
  */
 ID DeadBug::insert(DB* db, Egg* egg, Time death, ID killer_id)
 {
-  sqlite3x::sqlite3_command sql(*db);
-
-  try {
-    sql.prepare("\
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(db->db(), "\
 INSERT INTO DeadBug(bug_id, death, killer_id)\n\
-VALUES(?, ?, ?);");
-    sql.bind(1, static_cast<sqlite3x::int64_t>(egg->bug_id()));
-    sql.bind(2, static_cast<int>(death));
-    sql.bind(3, static_cast<sqlite3x::int64_t>(killer_id));
+VALUES(?, ?, ?);", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(db->db()));
+  sqlite3_bind_int64(stmt, 1, egg->bug_id());
+  sqlite3_bind_int(stmt, 2, death);
+  sqlite3_bind_int64(stmt, 3, killer_id);
+  if (sqlite3_step(stmt) != SQLITE_DONE)
+    throw EXCEPTION(DBException, sqlite3_errmsg(db->db()));
+  sqlite3_finalize(stmt);
+  ID id = sqlite3_last_insert_rowid(db->db());
 
-    sql.executenonquery();
-    ID id = db->insertid();
+  Egg::remove(db, egg->id());
 
-    Egg::remove(db, egg->id());
-
-    return id;
-  } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(DBException, std::string(e.what()) +
-                    " (" + db->errormsg() + ")");
-  }
+  return id;
 }
 
 /**
@@ -239,26 +219,22 @@ VALUES(?, ?, ?);");
  */
 ID DeadBug::insert(DB* db, AliveBug* alivebug, Time death)
 {
-  sqlite3x::sqlite3_command sql(*db);
-
-  try {
-    sql.prepare("\
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(db->db(), "\
 INSERT INTO DeadBug(bug_id, birth, death)\n\
-VALUES(?, ?, ?);");
-    sql.bind(1, static_cast<sqlite3x::int64_t>(alivebug->bug_id()));
-    sql.bind(2, static_cast<int>(alivebug->birth()));
-    sql.bind(3, static_cast<int>(death));
+VALUES(?, ?, ?);", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(db->db()));
+  sqlite3_bind_int64(stmt, 1, alivebug->bug_id());
+  sqlite3_bind_int(stmt, 2, alivebug->birth());
+  sqlite3_bind_int(stmt, 3, death);
+  if (sqlite3_step(stmt) != SQLITE_DONE)
+    throw EXCEPTION(DBException, sqlite3_errmsg(db->db()));
+  sqlite3_finalize(stmt);
+  ID id = sqlite3_last_insert_rowid(db->db());
 
-    sql.executenonquery();
-    ID id = db->insertid();
+  AliveBug::remove(db, alivebug->id());
 
-    AliveBug::remove(db, alivebug->id());
-
-    return id;
-  } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(DBException, std::string(e.what()) +
-                    " (" + db->errormsg() + ")");
-  }
+  return id;
 }
 
 /**
@@ -273,27 +249,23 @@ VALUES(?, ?, ?);");
  */
 ID DeadBug::insert(DB* db, AliveBug* alivebug, Time death, ID killer_id)
 {
-  sqlite3x::sqlite3_command sql(*db);
-
-  try {
-    sql.prepare("\
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(db->db(), "\
 INSERT INTO DeadBug(bug_id, birth, death, killer_id)\n\
-VALUES(?, ?, ?, ?);");
-    sql.bind(1, static_cast<sqlite3x::int64_t>(alivebug->bug_id()));
-    sql.bind(2, static_cast<int>(alivebug->birth()));
-    sql.bind(3, static_cast<int>(death));
-    sql.bind(4, static_cast<sqlite3x::int64_t>(killer_id));
+VALUES(?, ?, ?, ?);", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(db->db()));
+  sqlite3_bind_int64(stmt, 1, alivebug->bug_id());
+  sqlite3_bind_int(stmt, 2, alivebug->birth());
+  sqlite3_bind_int(stmt, 3, death);
+  sqlite3_bind_int64(stmt, 4, killer_id);
+  if (sqlite3_step(stmt) != SQLITE_DONE)
+    throw EXCEPTION(DBException, sqlite3_errmsg(db->db()));
+  sqlite3_finalize(stmt);
+  ID id = sqlite3_last_insert_rowid(db->db());
 
-    sql.executenonquery();
-    ID id = db->insertid();
+  AliveBug::remove(db, alivebug->id());
 
-    AliveBug::remove(db, alivebug->id());
-
-    return id;
-  } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(DBException, std::string(e.what()) +
-                    " (" + db->errormsg() + ")");
-  }
+  return id;
 }
 
 /**
@@ -304,19 +276,15 @@ VALUES(?, ?, ?, ?);");
  */
 void DeadBug::remove(DB* db, ID bug_id)
 {
-  sqlite3x::sqlite3_command sql(*db);
-
-  try {
-    sql.prepare("\
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(db->db(), "\
 DELETE FROM DeadBug\n\
-WHERE bug_id = ?;");
-    sql.bind(1, bug_id);
-
-    sql.executenonquery();
-  } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(DBException, std::string(e.what()) +
-                    " (" + db->errormsg() + ")");
-  }
+WHERE bug_id = ?;", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(db->db()));
+  sqlite3_bind_int64(stmt, 1, bug_id);
+  if (sqlite3_step(stmt) != SQLITE_DONE)
+    throw EXCEPTION(DBException, sqlite3_errmsg(db->db()));
+  sqlite3_finalize(stmt);
 }
 
 
@@ -327,26 +295,21 @@ WHERE bug_id = ?;");
  */
 ID DeadBug::bug_id() const
 {
-  sqlite3x::sqlite3_command sql(*this->db_);
-
-  try {
-    sql.prepare("\
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(this->db_->db(), "\
 SELECT bug_id\n\
 FROM DeadBug\n\
-WHERE bug_id = ?;");
-    sql.bind(1, this->id_);
-
-    sqlite3x::sqlite3_cursor cursor(sql.executecursor());
-    if (! cursor.step())
-      throw EXCEPTION(DBException, boost::str(boost::format("\
+WHERE bug_id = ?;", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_bind_int64(stmt, 1, this->id_);
+  if (sqlite3_step(stmt) != SQLITE_ROW)
+    throw EXCEPTION(DBException, boost::str(boost::format("\
 id %1% not found in table DeadBug")
-                                              % this->id_));
+					    % this->id_));
+  ID id = sqlite3_column_int64(stmt, 0);
+  sqlite3_finalize(stmt);
 
-    return cursor.getint64(0);
-  } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(DBException, std::string(e.what()) +
-                    " (" + this->db()->errormsg() + ")");
-  }
+  return id;
 }
 
 /**
@@ -356,21 +319,17 @@ id %1% not found in table DeadBug")
  */
 void DeadBug::bug_id(ID bug_id)
 {
-  sqlite3x::sqlite3_command sql(*this->db_);
-
-  try {
-    sql.prepare("\
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(this->db_->db(), "\
 UPDATE DeadBug\n\
 SET bug_id = ?\n\
-WHERE bug_id = ?;");
-    sql.bind(1, static_cast<sqlite3x::int64_t>(bug_id));
-    sql.bind(2, this->id_);
-
-    sql.executenonquery();
-  } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(DBException, std::string(e.what()) +
-                    " (" + this->db()->errormsg() + ")");
-  }
+WHERE bug_id = ?;", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_bind_int64(stmt, 1, bug_id);
+  sqlite3_bind_int64(stmt, 2, this->id_);
+  if (sqlite3_step(stmt) != SQLITE_DONE)
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_finalize(stmt);
 }
 
 
@@ -382,26 +341,21 @@ WHERE bug_id = ?;");
  */
 Time DeadBug::birth() const
 {
-  sqlite3x::sqlite3_command sql(*this->db_);
-
-  try {
-    sql.prepare("\
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(this->db_->db(), "\
 SELECT birth\n\
 FROM DeadBug\n\
-WHERE bug_id = ?;");
-    sql.bind(1, this->id_);
-
-    sqlite3x::sqlite3_cursor cursor(sql.executecursor());
-    if (! cursor.step())
-      throw EXCEPTION(DBException, boost::str(boost::format("\
+WHERE bug_id = ?;", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_bind_int64(stmt, 1, this->id_);
+  if (sqlite3_step(stmt) != SQLITE_ROW)
+    throw EXCEPTION(DBException, boost::str(boost::format("\
 id %1% not found in table DeadBug")
-                                              % this->id_));
+					    % this->id_));
+  Time birth = sqlite3_column_int(stmt, 0);
+  sqlite3_finalize(stmt);
 
-    return cursor.getint(0);
-  } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(DBException, std::string(e.what()) +
-                    " (" + this->db()->errormsg() + ")");
-  }
+  return birth;
 }
 
 /**
@@ -411,21 +365,17 @@ id %1% not found in table DeadBug")
  */
 void DeadBug::birth(Time birth)
 {
-  sqlite3x::sqlite3_command sql(*this->db_);
-
-  try {
-    sql.prepare("\
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(this->db_->db(), "\
 UPDATE DeadBug\n\
 SET birth = ?\n\
-WHERE bug_id = ?;");
-    sql.bind(1, static_cast<int>(birth));
-    sql.bind(2, this->id_);
-
-    sql.executenonquery();
-  } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(DBException, std::string(e.what()) +
-                    " (" + this->db()->errormsg() + ")");
-  }
+WHERE bug_id = ?;", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_bind_int(stmt, 1, birth);
+  sqlite3_bind_int64(stmt, 2, this->id_);
+  if (sqlite3_step(stmt) != SQLITE_DONE)
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_finalize(stmt);
 }
 
 /**
@@ -435,26 +385,21 @@ WHERE bug_id = ?;");
  */
 Time DeadBug::death() const
 {
-  sqlite3x::sqlite3_command sql(*this->db_);
-
-  try {
-    sql.prepare("\
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(this->db_->db(), "\
 SELECT death\n\
 FROM DeadBug\n\
-WHERE bug_id = ?;");
-    sql.bind(1, this->id_);
-
-    sqlite3x::sqlite3_cursor cursor(sql.executecursor());
-    if (! cursor.step())
-      throw EXCEPTION(DBException, boost::str(boost::format("\
+WHERE bug_id = ?;", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_bind_int64(stmt, 1, this->id_);
+  if (sqlite3_step(stmt) != SQLITE_ROW)
+    throw EXCEPTION(DBException, boost::str(boost::format("\
 id %1% not found in table DeadBug")
-                                              % this->id_));
+					    % this->id_));
+  Time death = sqlite3_column_int(stmt, 0);
+  sqlite3_finalize(stmt);
 
-    return cursor.getint(0);
-  } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(DBException, std::string(e.what()) +
-                    " (" + this->db()->errormsg() + ")");
-  }
+  return death;
 }
 
 /**
@@ -464,21 +409,17 @@ id %1% not found in table DeadBug")
  */
 void DeadBug::death(Time death)
 {
-  sqlite3x::sqlite3_command sql(*this->db_);
-
-  try {
-    sql.prepare("\
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(this->db_->db(), "\
 UPDATE DeadBug\n\
 SET death = ?\n\
-WHERE bug_id = ?;");
-    sql.bind(1, static_cast<int>(death));
-    sql.bind(2, this->id_);
-
-    sql.executenonquery();
-  } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(DBException, std::string(e.what()) +
-                    " (" + this->db()->errormsg() + ")");
-  }
+WHERE bug_id = ?;", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_bind_int(stmt, 1, death);
+  sqlite3_bind_int64(stmt, 2, this->id_);
+  if (sqlite3_step(stmt) != SQLITE_DONE)
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_finalize(stmt);
 }
 
 /**
@@ -489,26 +430,21 @@ WHERE bug_id = ?;");
  */
 ID DeadBug::killer_id() const
 {
-  sqlite3x::sqlite3_command sql(*this->db_);
-
-  try {
-    sql.prepare("\
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(this->db_->db(), "\
 SELECT killer_id\n\
 FROM DeadBug\n\
-WHERE bug_id = ?;");
-    sql.bind(1, this->id_);
-
-    sqlite3x::sqlite3_cursor cursor(sql.executecursor());
-    if (! cursor.step())
-      throw EXCEPTION(DBException, boost::str(boost::format("\
+WHERE bug_id = ?;", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_bind_int64(stmt, 1, this->id_);
+  if (sqlite3_step(stmt) != SQLITE_ROW)
+    throw EXCEPTION(DBException, boost::str(boost::format("\
 id %1% not found in table DeadBug")
-                                              % this->id_));
+					    % this->id_));
+  ID killer_id = sqlite3_column_int64(stmt, 0);
+  sqlite3_finalize(stmt);
 
-    return cursor.getint64(0);
-  } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(DBException, std::string(e.what()) +
-                    " (" + this->db()->errormsg() + ")");
-  }
+  return killer_id;
 }
 
 /**
@@ -518,21 +454,17 @@ id %1% not found in table DeadBug")
  */
 void DeadBug::killer_id(ID killer_id)
 {
-  sqlite3x::sqlite3_command sql(*this->db_);
-
-  try {
-    sql.prepare("\
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(this->db_->db(), "\
 UPDATE DeadBug\n\
 SET killer_id = ?\n\
-WHERE bug_id = ?;");
-    sql.bind(1, static_cast<sqlite3x::int64_t>(killer_id));
-    sql.bind(2, this->id_);
-
-    sql.executenonquery();
-  } catch (const sqlite3x::database_error& e) {
-    throw EXCEPTION(DBException, std::string(e.what()) +
-                    " (" + this->db()->errormsg() + ")");
-  }
+WHERE bug_id = ?;", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_bind_int64(stmt, 1, killer_id);
+  sqlite3_bind_int64(stmt, 2, this->id_);
+  if (sqlite3_step(stmt) != SQLITE_DONE)
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_finalize(stmt);
 }
 
 }
