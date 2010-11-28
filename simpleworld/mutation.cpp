@@ -25,7 +25,6 @@
 #include <simpleworld/cpu/memory.hpp>
 #include <simpleworld/db/types.hpp>
 #include <simpleworld/db/exception.hpp>
-#include <simpleworld/db/transaction.hpp>
 #include <simpleworld/db/mutation.hpp>
 
 #include "dbmemory.hpp"
@@ -157,10 +156,6 @@ bool mutate(db::Bug* bug, float probability, Time time)
 {
   bool mutation = false;
 
-  // savepoint
-  db::Transaction transaction(bug->db());
-  transaction.savepoint("mutation;");
-
   DBMemory original(bug->code());
   cpu::Memory mutated(original.size());
 
@@ -215,9 +210,6 @@ bool mutate(db::Bug* bug, float probability, Time time)
 
   if (mutation)
     original.assign(mutated);
-
-  // Release savepoint
-  transaction.release("mutation;");
 
   return mutation;
 }
