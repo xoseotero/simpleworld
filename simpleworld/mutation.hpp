@@ -1,6 +1,6 @@
 /**
- * @file simpleworld/reproduction.hpp
- * Reproduction of bugs.
+ * @file simpleworld/mutation.hpp
+ * Mutation of bugs.
  *
  *  Copyright (C) 2008-2010  Xosé Otero <xoseotero@gmail.com>
  *
@@ -18,8 +18,8 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef SIMPLEWORLD_REPRODUCTION_HPP
-#define SIMPLEWORLD_REPRODUCTION_HPP
+#ifndef SIMPLEWORLD_MUTATION_HPP
+#define SIMPLEWORLD_MUTATION_HPP
 
 #include <simpleworld/types.hpp>
 #include <simpleworld/db/bug.hpp>
@@ -38,4 +38,4 @@ bool mutate(db::Bug* bug, float probability, Time time);
 
 }
 
-#endif // SIMPLEWORLD_REPRODUCTION_HPP
+#endif // SIMPLEWORLD_MUTATION_HPP

@@ -107,7 +107,7 @@ public:
 
   /**
    * Set the id of the world.
-   * @return the new id.
+   * @param world_id the new id.
    * @exception DBException if there is an error with the update.
    */
   void world_id(ID world_id);

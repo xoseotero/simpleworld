@@ -67,7 +67,7 @@ void set_byte(Word* word, Uint8 byte, QuarterWord value);
  * @return the byte value.
  * @exception CPUException if byte > 1
  */
-void set_byte(HalfWord* word, Uint8 byte, QuarterWord value);
+void set_byte(HalfWord* hword, Uint8 byte, QuarterWord value);
 
 
 /**

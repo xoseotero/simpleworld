@@ -41,7 +41,7 @@ public:
    * It's not checked if the id is in the table, only when accessing the data
    * the id is checked.
    * @param db database.
-   * @param bug_id id of the bug.
+   * @param id id of the world.
    */
   World(DB* db, ID id);
 
@@ -78,15 +78,15 @@ public:
 
 
   /**
-   * Get the id of the element.
+   * Get the id of the world.
    * @return the id.
    * @exception DBException if there is an error with the query.
    */
   ID id() const { return db::Table::id(); }
 
   /**
-   * Set the id of the element.
-   * @param bug_id the new id.
+   * Set the id of the world.
+   * @param id the new id.
    * @exception DBException if there is an error with the update.
    */
   void id(ID id);
@@ -108,14 +108,14 @@ public:
 
   /**
    * Set position in the x coordinate.
-   * @param bug_id the new position.
+   * @param position_x the new position.
    * @exception DBException if there is an error with the update.
    */
   void position_x(Coord position_x);
 
   /**
    * Set position in the y coordinate.
-   * @param bug_id the new position.
+   * @param position_y the new position.
    * @exception DBException if there is an error with the update.
    */
   void position_y(Coord position_y);
@@ -130,7 +130,7 @@ public:
 
   /**
    * Set the orientation.
-   * @param bug_id the new orientation.
+   * @param orientation the new orientation.
    * @exception DBException if there is an error with the update.
    */
   void orientation(Orientation orientation);

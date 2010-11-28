@@ -156,7 +156,7 @@ public:
 
   /**
    * Set the id of the bug.
-   * @param id the new id.
+   * @param bug_id the new id.
    * @exception DBException if there is an error with the update.
    */
   void bug_id(ID bug_id);

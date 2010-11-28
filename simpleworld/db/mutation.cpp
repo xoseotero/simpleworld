@@ -38,7 +38,7 @@ namespace db
  * It's not checked if the id is in the table, only when accessing the data
  * the id is checked.
  * @param db database.
- * @param bug_id id of the bug.
+ * @param id id of the mutation.
  */
 Mutation::Mutation(DB* db, ID bug_id)
   : Table("Mutation", db, bug_id)
@@ -51,7 +51,7 @@ Mutation::Mutation(DB* db, ID bug_id)
  * @param db database.
  * @param bug_id id of the bug.
  * @param time when the mutation happened.
- * @param positon where the mutation happened.
+ * @param position where the mutation happened.
  * @param original the previous value of the code.
  * @param mutated the new value of the code.
  * @return the id of the new row.
@@ -82,7 +82,7 @@ VALUES(?, ?, ?, ?, ?);", -1, &stmt, NULL))
  * @param db database.
  * @param bug_id id of the bug.
  * @param time when the mutation happened.
- * @param positon where the mutation happened.
+ * @param position where the mutation happened.
  * @param mutated the new word.
  * @return the id of the new row.
  * @exception DBException if there is an error with the insertion.
@@ -111,7 +111,7 @@ VALUES(?, ?, ?, ?);", -1, &stmt, NULL))
  * @param db database.
  * @param bug_id id of the bug.
  * @param time when the mutation happened.
- * @param positon where the mutation happened.
+ * @param position where the mutation happened.
  * @param original the deleted word.
  * @return the id of the new row.
  * @exception DBException if there is an error with the insertion.
@@ -204,7 +204,7 @@ id %1% not found in table Mutation")
 
 /**
  * Set the id of the bug.
- * @param world_id the new id.
+ * @param bug_id the new id.
  * @exception DBException if there is an error with the update.
  */
 void Mutation::bug_id(ID bug_id)
@@ -249,7 +249,7 @@ id %1% not found in table Mutation")
 
 /**
  * Set when the mutation happened.
- * @param size the new size.
+ * @param time the new time.
  * @exception DBException if there is an error with the update.
  */
 void Mutation::time(Time time)

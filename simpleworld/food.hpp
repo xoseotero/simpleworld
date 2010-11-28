@@ -43,10 +43,16 @@ public:
 
 
   /**
-   * The id of the table.
-   * @return the ID.
+   * Get the id of the food.
+   * @return the id of the food.
    */
   db::ID id() const { return db::Food::id_; }
+
+  /**
+   * Set the id of the food.
+   * @param id the new id.
+   * @exception DBException if there is an error with the update.
+   */
   void id(db::ID id) { db::Food::id(id); }
 
 

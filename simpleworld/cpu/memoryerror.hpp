@@ -43,6 +43,7 @@ public:
    * @param line Line where the exception is raised.
    * @param function Function where the exception is raised.
    * @param what What happened.
+   * @param address Wrong address.
    */
   MemoryError(std::string file, Uint32 line, std::string function,
               std::string what, Address address) throw ()

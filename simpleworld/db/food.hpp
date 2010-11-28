@@ -41,7 +41,7 @@ public:
    * It's not checked if the id is in the table, only when accessing the data
    * the id is checked.
    * @param db database.
-   * @param bug_id id of the bug.
+   * @param id id of the food.
    */
   Food(DB* db, ID id);
 
@@ -107,7 +107,7 @@ public:
    * @param size the new size.
    * @exception DBException if there is an error with the update.
    */
-  void size(Energy s);
+  void size(Energy size);
 };
 
 }

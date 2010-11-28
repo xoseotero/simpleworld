@@ -77,7 +77,7 @@ public:
 
   /**
    * Set the id of the egg.
-   * @param id the new id.
+   * @param bug_id the new id.
    * @exception DBException if there is an error with the update.
    */
   void bug_id(ID bug_id);
@@ -92,7 +92,7 @@ public:
 
   /**
    * Set the id of the world.
-   * @param id the new id.
+   * @param world_id the new id.
    * @exception DBException if there is an error with the update.
    */
   void world_id(ID world_id);

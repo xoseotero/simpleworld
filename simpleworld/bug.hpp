@@ -48,14 +48,31 @@ public:
 
 
   /**
-   * The id of the table.
-   * @return the ID.
+   * Get the id of the bug.
+   * @return the id of the food.
    */
   db::ID id() const { return db::Bug::id_; }
+
+  /**
+   * Set the id of the bug.
+   * @param id the new id.
+   * @exception DBException if there is an error with the update.
+   */
   void id(db::ID id) { db::Bug::id(id); }
 
 
+  /**
+   * Get the id of the world..
+   * @return the id.
+   * @exception DBException if there is an error with the query.
+   */
   db::ID world_id() const { return db::AliveBug::world_id(); }
+
+  /**
+   * Set the id of the world.
+   * @return the new id.
+   * @exception DBException if there is an error with the update.
+   */
   void world_id(db::ID world_id) {
     db::AliveBug::world_id(world_id);
     db::World::id_ = world_id;
@@ -87,11 +104,11 @@ public:
   void set_null(const std::string& colname);
 
 
-  SimpleWorld* world;
+  SimpleWorld* world;		/**< World where the bug lives */
 
-  DBMemory regs;
-  DBMemory mem;
-  CPU cpu;
+  DBMemory regs;		/**< Registers of the bug */
+  DBMemory mem;			/**< Memory of the bug */
+  CPU cpu;			/**< CPU of the bug */
 };
 
 }

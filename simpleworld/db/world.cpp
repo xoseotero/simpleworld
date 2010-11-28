@@ -37,7 +37,7 @@ namespace db
  * It's not checked if the id is in the table, only when accessing the data
  * the id is checked.
  * @param db database.
- * @param bug_id id of the bug.
+ * @param id id of the world.
  */
 World::World(DB* db, ID id)
   : Table("World", db, id)
@@ -117,8 +117,8 @@ WHERE id = ?;", -1, &stmt, NULL))
 
 
 /**
- * Set the id of the element.
- * @param bug_id the new id.
+ * Set the id of the world.
+ * @param id the new id.
  * @exception DBException if there is an error with the update.
  */
 void World::id(ID id)
@@ -188,7 +188,7 @@ id %1% not found in table World")
 
 /**
  * Set position in the x coordinate.
- * @param bug_id the new position.
+ * @param position_x the new position.
  * @exception DBException if there is an error with the update.
  */
 void World::position_x(Coord position_x)
@@ -208,7 +208,7 @@ WHERE id = ?;", -1, &stmt, NULL))
 
 /**
  * Set position in the y coordinate.
- * @param bug_id the new position.
+ * @param position_y the new position.
  * @exception DBException if there is an error with the update.
  */
 void World::position_y(Coord position_y)
@@ -254,7 +254,7 @@ id %1% not found in table World")
 
 /**
  * Set the orientation.
- * @param bug_id the new orientation.
+ * @param orientation the new orientation.
  * @exception DBException if there is an error with the update.
  */
 void World::orientation(Orientation orientation)

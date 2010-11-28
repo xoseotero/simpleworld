@@ -105,7 +105,7 @@ ID Egg::bug_id() const
 
 /**
  * Set the id of the egg.
- * @param id the new id.
+ * @param bug_id the new id.
  * @exception DBException if there is an error with the update.
  */
 void Egg::bug_id(ID bug_id)
@@ -152,7 +152,7 @@ id %1% not found in table Egg")
 
 /**
  * Set the id of the world.
- * @param id the new id.
+ * @param world_id the new id.
  * @exception DBException if there is an error with the update.
  */
 void Egg::world_id(ID world_id)

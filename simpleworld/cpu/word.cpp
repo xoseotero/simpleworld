@@ -91,14 +91,14 @@ Byte 0x%02X is out of range")
  * @return the byte value.
  * @exception CPUException if byte > 1
  */
-void set_byte(HalfWord* word, Uint8 byte, QuarterWord value)
+void set_byte(HalfWord* hword, Uint8 byte, QuarterWord value)
 {
   if (byte > 1)
     throw EXCEPTION(CPUException, boost::str(boost::format("\
 Byte 0x%02X is out of range")
                                              % byte));
 
-  reinterpret_cast<QuarterWord*>(word)[byte] = value;
+  reinterpret_cast<QuarterWord*>(hword)[byte] = value;
 }
 
 
