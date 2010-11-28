@@ -1,7 +1,7 @@
 *** Dependencies:
 Simple World has a few dependencies:
  - C++ compiler, for example GNU Compiler Collection (http://gcc.gnu.org/)
- - cmake 2.6 (http://cmake.org/) to build the source code
+ - cmake 2.6 (http://cmake.org/)
  - library boost (http://boost.org/)
 
 *** Installation:
