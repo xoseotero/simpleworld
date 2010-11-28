@@ -31,8 +31,10 @@
 namespace sw = simpleworld;
 namespace db = simpleworld::db;
 
+#include "opendb.hpp"
 
-#define DB_SAVE (TESTOUTPUT "temp.sw")
+
+#define DB_SAVE (TESTOUTPUT "transaction.sw")
 
 
 /**
@@ -40,7 +42,7 @@ namespace db = simpleworld::db;
  */
 BOOST_AUTO_TEST_CASE(db_rollback)
 {
-  db::DB sw(DB_SAVE);
+  db::DB sw = open_db(DB_SAVE);
   db::Transaction transaction(&sw, db::Transaction::deferred);
   db::ID id = db::World::insert(&sw, 1, 2);
   transaction.rollback();
@@ -53,7 +55,7 @@ BOOST_AUTO_TEST_CASE(db_rollback)
  */
 BOOST_AUTO_TEST_CASE(db_rollback_block)
 {
-  db::DB sw(DB_SAVE);
+  db::DB sw = open_db(DB_SAVE);
   db::ID id;
   {
     db::Transaction transaction(&sw, db::Transaction::deferred);
@@ -68,7 +70,7 @@ BOOST_AUTO_TEST_CASE(db_rollback_block)
  */
 BOOST_AUTO_TEST_CASE(db_commit)
 {
-  db::DB sw(DB_SAVE);
+  db::DB sw = open_db(DB_SAVE);
   db::Transaction transaction(&sw, db::Transaction::deferred);
   db::ID id = db::World::insert(&sw, 1, 2);
   transaction.commit();
@@ -82,7 +84,7 @@ BOOST_AUTO_TEST_CASE(db_commit)
  */
 BOOST_AUTO_TEST_CASE(db_savepoint_rollback)
 {
-  db::DB sw(DB_SAVE);
+  db::DB sw = open_db(DB_SAVE);
   db::Transaction transaction(&sw, db::Transaction::deferred);
   sw::Uint16 savepoint = transaction.savepoint();
   db::ID id = db::World::insert(&sw, 1, 2);
@@ -97,7 +99,7 @@ BOOST_AUTO_TEST_CASE(db_savepoint_rollback)
  */
 BOOST_AUTO_TEST_CASE(db_savepoint_release)
 {
-  db::DB sw(DB_SAVE);
+  db::DB sw = open_db(DB_SAVE);
   db::Transaction transaction(&sw, db::Transaction::deferred);
   sw::Uint16 savepoint = transaction.savepoint();
   db::ID id = db::World::insert(&sw, 1, 2);
@@ -113,7 +115,7 @@ BOOST_AUTO_TEST_CASE(db_savepoint_release)
  */
 BOOST_AUTO_TEST_CASE(db_savepoint_release_rollback)
 {
-  db::DB sw(DB_SAVE);
+  db::DB sw = open_db(DB_SAVE);
   db::Transaction transaction(&sw, db::Transaction::deferred);
   sw::Uint16 savepoint = transaction.savepoint();
   db::ID id = db::World::insert(&sw, 1, 2);

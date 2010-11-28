@@ -54,28 +54,6 @@
 #include "movement.hpp"
 #include "mutation.hpp"
 
-// Default values for the environment
-#define DEFAULT_SIZE (Position) {16, 16}
-
-#define DEFAULT_MUTATIONS_PROBABILITY 0.001
-#define DEFAULT_TIME_BIRTH 32
-#define DEFAULT_TIME_MUTATE (16 * 1024)
-
-#define DEFAULT_TIME_LAZINESS 1024
-#define DEFAULT_ENERGY_LAZINESS 16
-
-#define DEFAULT_ATTACK_MULTIPLIER 2.5
-
-#define DEFAULT_ENERGY_NOTHING 0
-#define DEFAULT_ENERGY_MYSELF 1
-#define DEFAULT_ENERGY_DETECT 1
-#define DEFAULT_ENERGY_INFO 1
-#define DEFAULT_ENERGY_MOVE 2
-#define DEFAULT_ENERGY_TURN 2
-#define DEFAULT_ENERGY_ATTACK 3
-#define DEFAULT_ENERGY_EAT 3
-#define DEFAULT_ENERGY_EGG 4
-
 namespace simpleworld
 {
 
@@ -87,21 +65,7 @@ namespace simpleworld
 SimpleWorld::SimpleWorld(std::string filename)
   : DB(filename)
 {
-  // Load the environment
-  if (this->environments().empty()) {
-    db::Environment::insert(this, 0, DEFAULT_SIZE.x, DEFAULT_SIZE.y,
-			    DEFAULT_MUTATIONS_PROBABILITY, DEFAULT_TIME_BIRTH,
-			    DEFAULT_TIME_MUTATE, DEFAULT_TIME_LAZINESS,
-			    DEFAULT_ENERGY_LAZINESS, DEFAULT_ATTACK_MULTIPLIER,
-			    DEFAULT_ENERGY_NOTHING, DEFAULT_ENERGY_MYSELF,
-			    DEFAULT_ENERGY_DETECT, DEFAULT_ENERGY_INFO,
-			    DEFAULT_ENERGY_MOVE, DEFAULT_ENERGY_TURN,
-			    DEFAULT_ENERGY_ATTACK, DEFAULT_ENERGY_EAT,
-			    DEFAULT_ENERGY_EGG);
-  }
-
   this->env_ = new db::Environment(this, this->last_environment());
-
   this->world_ = new World(Position(this->env_->size_x(), this->env_->size_y()));
 
 

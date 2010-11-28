@@ -31,6 +31,8 @@
 namespace sw = simpleworld;
 namespace db = simpleworld::db;
 
+#include "opendb.hpp"
+
 
 #define DB_FILE (TESTDATA "db.sw")
 #define DB_SAVE (TESTOUTPUT "mutation.sw")
@@ -78,7 +80,7 @@ db::ID bug_id;
  */
 BOOST_AUTO_TEST_CASE(mutation_insert)
 {
-  db::DB sw(DB_SAVE);
+  db::DB sw = open_db(DB_SAVE);
   bug_id = db::Bug::insert(&sw, "0123456789abcdef", 16);
   id = db::Mutation::insert(&sw, bug_id, 10, 0, 1, 2);
   db::ID id2 = db::Mutation::insert_addition(&sw, bug_id, 20, 4, 3);
@@ -118,7 +120,7 @@ BOOST_AUTO_TEST_CASE(mutation_insert)
  */
 BOOST_AUTO_TEST_CASE(mutation_update)
 {
-  db::DB sw(DB_SAVE);
+  db::DB sw = open_db(DB_SAVE);
   db::Mutation mutation(&sw, id);
   mutation.time(15);
   mutation.position(4);
@@ -140,7 +142,7 @@ BOOST_AUTO_TEST_CASE(mutation_update)
  */
 BOOST_AUTO_TEST_CASE(mutation_delete)
 {
-  db::DB sw(DB_SAVE);
+  db::DB sw = open_db(DB_SAVE);
   db::Mutation::remove(&sw, id);
 
   BOOST_CHECK_THROW(db::Mutation(&sw, id).time(), db::DBException);

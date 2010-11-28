@@ -30,6 +30,8 @@
 namespace sw = simpleworld;
 namespace db = simpleworld::db;
 
+#include "opendb.hpp"
+
 
 #define DB_FILE (TESTDATA "db.sw")
 #define DB_SAVE (TESTOUTPUT "world.sw")
@@ -66,7 +68,7 @@ db::ID id;
  */
 BOOST_AUTO_TEST_CASE(world_insert)
 {
-  db::DB sw(DB_SAVE);
+  db::DB sw = open_db(DB_SAVE);
   id = db::World::insert(&sw, 5, 3, sw::OrientationSouth);
   db::World world(&sw, id);
 
@@ -82,7 +84,7 @@ BOOST_AUTO_TEST_CASE(world_insert)
  */
 BOOST_AUTO_TEST_CASE(world_update)
 {
-  db::DB sw(DB_SAVE);
+  db::DB sw = open_db(DB_SAVE);
   db::World world(&sw, id);
   world.position_x(8);
   world.position_y(0);
@@ -99,7 +101,7 @@ BOOST_AUTO_TEST_CASE(world_update)
  */
 BOOST_AUTO_TEST_CASE(world_delete)
 {
-  db::DB sw(DB_SAVE);
+  db::DB sw = open_db(DB_SAVE);
   db::World::remove(&sw, id);
 
   BOOST_CHECK_THROW(db::World(&sw, id).position_x(), db::DBException);

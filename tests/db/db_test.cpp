@@ -28,9 +28,11 @@
 namespace sw = simpleworld;
 namespace db = simpleworld::db;
 
+#include "opendb.hpp"
+
 
 #define DB_FILE (TESTDATA "db.sw")
-#define DB_SAVE (TESTOUTPUT "temp.sw")
+#define DB_SAVE (TESTOUTPUT "db.sw")
 
 
 /**
@@ -40,7 +42,7 @@ BOOST_AUTO_TEST_CASE(db_version)
 {
   db::DB sw(DB_FILE);
 
-  BOOST_CHECK_EQUAL(sw.version(), db::DB(DB_SAVE).version());
+  BOOST_CHECK_EQUAL(sw.version(), open_db(DB_SAVE).version());
 }
 
 /**

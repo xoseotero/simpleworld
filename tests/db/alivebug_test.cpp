@@ -36,6 +36,7 @@ namespace sw = simpleworld;
 namespace db = simpleworld::db;
 namespace cpu = simpleworld::cpu;
 
+#include "opendb.hpp"
 
 #define DB_FILE (TESTDATA "db.sw")
 #define DB_SAVE (TESTOUTPUT "alivebug.sw")
@@ -85,7 +86,7 @@ db::ID world_id1;
  */
 BOOST_AUTO_TEST_CASE(alivebug_insert)
 {
-  db::DB sw(DB_SAVE);
+  db::DB sw = open_db(DB_SAVE);
   world_id1 = db::World::insert(&sw, 1, 12);
   bug_id1 = db::Bug::insert(&sw, "code", 4);
   id1 = db::AliveBug::insert(&sw, bug_id1, world_id1, 15, 215, "register", 8);
@@ -119,7 +120,7 @@ db::ID world_id2;
  */
 BOOST_AUTO_TEST_CASE(alivebug_insert_egg)
 {
-  db::DB sw(DB_SAVE);
+  db::DB sw = open_db(DB_SAVE);
   world_id2 = db::World::insert(&sw, 13, 2);
   bug_id2 = db::Bug::insert(&sw, "code", 4);
   db::ID egg_id = db::Egg::insert(&sw, bug_id2, world_id2, 74, 0);
@@ -146,7 +147,7 @@ BOOST_AUTO_TEST_CASE(alivebug_insert_egg)
  */
 BOOST_AUTO_TEST_CASE(alivebug_update)
 {
-  db::DB sw(DB_SAVE);
+  db::DB sw = open_db(DB_SAVE);
   db::AliveBug alivebug(&sw, id1);
   alivebug.birth(21);
   alivebug.energy(52);
@@ -174,7 +175,7 @@ BOOST_AUTO_TEST_CASE(alivebug_update)
  */
 BOOST_AUTO_TEST_CASE(alivebug_delete)
 {
-  db::DB sw(DB_SAVE);
+  db::DB sw = open_db(DB_SAVE);
   db::AliveBug::remove(&sw, id1);
   db::World::remove(&sw, world_id1);
   db::Bug::remove(&sw, id1);

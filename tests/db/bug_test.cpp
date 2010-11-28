@@ -30,6 +30,8 @@
 namespace sw = simpleworld;
 namespace db = simpleworld::db;
 
+#include "opendb.hpp"
+
 
 #define DB_FILE (TESTDATA "db.sw")
 #define DB_SAVE (TESTOUTPUT "bug.sw")
@@ -94,7 +96,7 @@ db::ID id;
  */
 BOOST_AUTO_TEST_CASE(bug_insert)
 {
-  db::DB sw(DB_SAVE);
+  db::DB sw = open_db(DB_SAVE);
   db::ID father_id = db::Bug::insert(&sw, "1234", 4);
   id = db::Bug::insert(&sw, father_id, "4321", 4);
   db::Bug father(&sw, father_id);
@@ -128,7 +130,7 @@ BOOST_AUTO_TEST_CASE(bug_insert)
  */
 BOOST_AUTO_TEST_CASE(bug_update)
 {
-  db::DB sw(DB_SAVE);
+  db::DB sw = open_db(DB_SAVE);
   db::ID father_id = db::Bug::insert(&sw, "1234", 4);
   db::Bug bug(&sw, id);
   bug.father_id(father_id);
@@ -151,7 +153,7 @@ BOOST_AUTO_TEST_CASE(bug_update)
  */
 BOOST_AUTO_TEST_CASE(bug_delete)
 {
-  db::DB sw(DB_SAVE);
+  db::DB sw = open_db(DB_SAVE);
   db::Bug::remove(&sw, id);
 
   BOOST_CHECK_THROW(db::Bug(&sw, id).father_id(), db::DBException);

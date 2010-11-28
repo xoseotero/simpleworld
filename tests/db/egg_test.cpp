@@ -32,6 +32,8 @@
 namespace sw = simpleworld;
 namespace db = simpleworld::db;
 
+#include "opendb.hpp"
+
 
 #define DB_FILE (TESTDATA "db.sw")
 #define DB_SAVE (TESTOUTPUT "egg.sw")
@@ -59,7 +61,7 @@ db::ID world_id;
  */
 BOOST_AUTO_TEST_CASE(egg_insert)
 {
-  db::DB sw(DB_SAVE);
+  db::DB sw = open_db(DB_SAVE);
   db::ID bug_id = db::Bug::insert(&sw, "abcd", 4);
   world_id = db::World::insert(&sw, 4, 3, sw::OrientationNorth);
   id = db::Egg::insert(&sw, bug_id, world_id, 101, 0);
@@ -78,7 +80,7 @@ BOOST_AUTO_TEST_CASE(egg_insert)
  */
 BOOST_AUTO_TEST_CASE(egg_update)
 {
-  db::DB sw(DB_SAVE);
+  db::DB sw = open_db(DB_SAVE);
   db::Egg egg(&sw, id);
   egg.energy(82);
 
@@ -91,7 +93,7 @@ BOOST_AUTO_TEST_CASE(egg_update)
  */
 BOOST_AUTO_TEST_CASE(egg_delete)
 {
-  db::DB sw(DB_SAVE);
+  db::DB sw = open_db(DB_SAVE);
   db::Egg::remove(&sw, id);
   db::World::remove(&sw, world_id);
 

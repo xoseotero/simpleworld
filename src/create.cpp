@@ -27,7 +27,6 @@
 
 #include <simpleworld/types.hpp>
 #include <simpleworld/db/db.hpp>
-#include <simpleworld/simpleworld.hpp>
 namespace sw = simpleworld;
 namespace db = simpleworld::db;
 
@@ -299,9 +298,7 @@ void sw_create(int argc, char* argv[])
 {
   parse_cmd(argc, argv);
 
-  sw::SimpleWorld simpleworld(database_path);
-
-  db::Environment::insert(&simpleworld, 0, size.x, size.y, mutations, birth,
-			  old, laziness, elaziness, multiplier, nothing,
-			  myself, detect, info, move, turn, attack, eat, egg);
+  db::DB::create(database_path, 0, size.x, size.y, mutations, birth, old,
+		 laziness, elaziness, multiplier, nothing, myself, detect,
+		 info, move, turn, attack, eat, egg);
 }

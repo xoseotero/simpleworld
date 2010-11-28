@@ -34,6 +34,8 @@
 namespace sw = simpleworld;
 namespace db = simpleworld::db;
 
+#include "opendb.hpp"
+
 
 #define DB_FILE (TESTDATA "db.sw")
 #define DB_SAVE (TESTOUTPUT "deadbug.sw")
@@ -61,7 +63,7 @@ db::ID id;
  */
 BOOST_AUTO_TEST_CASE(deadbug_insert)
 {
-  db::DB sw(DB_SAVE);
+  db::DB sw = open_db(DB_SAVE);
   id = db::Bug::insert(&sw, "code", 4);
   db::DeadBug::insert(&sw, id, 101);
   db::DeadBug deadbug1(&sw, id);
@@ -108,7 +110,7 @@ BOOST_AUTO_TEST_CASE(deadbug_insert)
  */
 BOOST_AUTO_TEST_CASE(deadbug_insert_egg)
 {
-  db::DB sw(DB_SAVE);
+  db::DB sw = open_db(DB_SAVE);
   db::ID world_id1 = db::World::insert(&sw, 1, 1, sw::OrientationNorth);
   db::ID id1 = db::Bug::insert(&sw, "code", 4);
   db::Egg::insert(&sw, id1, world_id1, 1000, 0);
@@ -144,7 +146,7 @@ BOOST_AUTO_TEST_CASE(deadbug_insert_egg)
  */
 BOOST_AUTO_TEST_CASE(deadbug_insert_alivebug)
 {
-  db::DB sw(DB_SAVE);
+  db::DB sw = open_db(DB_SAVE);
   db::ID world_id1 = db::World::insert(&sw, 1, 1, sw::OrientationNorth);
   db::ID id1 = db::Bug::insert(&sw, "code", 4);
   db::AliveBug::insert(&sw, id1, world_id1, 0, 134, "registers", 9);
@@ -184,7 +186,7 @@ BOOST_AUTO_TEST_CASE(deadbug_insert_alivebug)
  */
 BOOST_AUTO_TEST_CASE(deadbug_update)
 {
-  db::DB sw(DB_SAVE);
+  db::DB sw = open_db(DB_SAVE);
   db::DeadBug deadbug(&sw, id);
   deadbug.birth(78);
   deadbug.death(108);
@@ -203,7 +205,7 @@ BOOST_AUTO_TEST_CASE(deadbug_update)
  */
 BOOST_AUTO_TEST_CASE(deadbug_delete)
 {
-  db::DB sw(DB_SAVE);
+  db::DB sw = open_db(DB_SAVE);
   db::DeadBug::remove(&sw, id);
 
   BOOST_CHECK_THROW(db::DeadBug(&sw, id).death(), db::DBException);

@@ -31,6 +31,8 @@
 namespace sw = simpleworld;
 namespace db = simpleworld::db;
 
+#include "opendb.hpp"
+
 
 #define DB_FILE (TESTDATA "db.sw")
 #define DB_SAVE (TESTOUTPUT "food.sw")
@@ -57,7 +59,7 @@ db::ID world_id;
  */
 BOOST_AUTO_TEST_CASE(food_insert)
 {
-  db::DB sw(DB_SAVE);
+  db::DB sw = open_db(DB_SAVE);
   world_id = db::World::insert(&sw, 10, 8);
   id = db::Food::insert(&sw, world_id, 101);
   db::Food food(&sw, id);
@@ -73,7 +75,7 @@ BOOST_AUTO_TEST_CASE(food_insert)
  */
 BOOST_AUTO_TEST_CASE(food_update)
 {
-  db::DB sw(DB_SAVE);
+  db::DB sw = open_db(DB_SAVE);
   db::Food food(&sw, id);
   food.size(78);
 
@@ -87,7 +89,7 @@ BOOST_AUTO_TEST_CASE(food_update)
  */
 BOOST_AUTO_TEST_CASE(food_delete)
 {
-  db::DB sw(DB_SAVE);
+  db::DB sw = open_db(DB_SAVE);
   db::Food::remove(&sw, id);
   db::World::remove(&sw, world_id);
 

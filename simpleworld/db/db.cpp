@@ -19,6 +19,9 @@
  */
 
 #include <boost/format.hpp>
+#include <boost/filesystem/path.hpp>
+#include <boost/filesystem/operations.hpp>
+namespace fs = boost::filesystem;
 
 #include "exception.hpp"
 #include "wrongversion.hpp"
@@ -440,7 +443,8 @@ CREATE TABLE Food\n\
  */
 DB::DB(std::string filename)
 {
-  if (sqlite3_open(filename.c_str(), &this->db_))
+  if (sqlite3_open_v2(filename.c_str(), &this->db_, SQLITE_OPEN_READWRITE,
+		      NULL))
     throw EXCEPTION(DBException, sqlite3_errmsg(this->db_));
 
   // user_version is used for know if the database was new (user_version is 0
@@ -453,14 +457,7 @@ DB::DB(std::string filename)
     throw EXCEPTION(DBException, sqlite3_errmsg(this->db()));
   this->version_ = sqlite3_column_int(stmt, 0);
   sqlite3_finalize(stmt);
-  if (this->version_ == 0) {
-    sqlite3_exec(this->db_,
-		 boost::str(boost::format("PRAGMA user_version = %1%;")
-			    % DATABASE_VERSION).c_str(), NULL, NULL, NULL);
-    this->version_ = DATABASE_VERSION;
-
-    create_tables(this);
-  } else if (this->version_ != DATABASE_VERSION)
+  if (this->version_ != DATABASE_VERSION)
     throw EXCEPTION(WrongVersion, boost::str(boost::format("\
 Database version %1% not supported")
 					     % this->version_));
@@ -486,6 +483,63 @@ Database version %1% not supported")
 DB::~DB()
 {
   sqlite3_close(this->db_);
+}
+
+
+/**
+ * Create the database.
+ * @param filename File name of the database.
+ * @param time cycles since the creation of the World.
+ * @param size_x size of the World (x coord).
+ * @param size_y size of the World (y coord).
+ * @param mutations_probability probability (0.0-1.0) that the code mutates.
+ * @param time_birth cycles to convert a egg into a bug.
+ * @param time_mutate cycles to mutate the code of a old bug.
+ * @param time_laziness cycles without doing a action to consider a bug lazy.
+ * @param energy_laziness energy substracted for laziness.
+ * @param attack_multiplier multiplier for the energy of a attack.
+ * @param energy_nothing energy used to do the action nothing.
+ * @param energy_myself energy used to do the action myself.
+ * @param energy_detect energy used to do the action detect.
+ * @param energy_info energy used to do the action info.
+ * @param energy_move energy used to do the action move.
+ * @param energy_turn energy used to do the action turn.
+ * @param energy_attack energy used to do the action attack.
+ * @param energy_eat energy used to do the action eat.
+ * @param energy_egg energy used to do egg 
+ * @exception DBException if there is an error with the creation.
+ */
+void DB::create(std::string filename,
+		Time time, Coord size_x, Coord size_y,
+		double mutations_probability, Time time_birth,
+		Time time_mutate, Time time_laziness,
+		Energy energy_laziness, double attack_multiplier,
+		Energy energy_nothing, Energy energy_myself,
+		Energy energy_detect, Energy energy_info,
+		Energy energy_move, Energy energy_turn,
+		Energy energy_attack, Energy energy_eat,
+		Energy energy_egg)
+{
+  if (fs::exists(fs::path(filename, fs::native)))
+    throw EXCEPTION(DBException,
+		    boost::str(boost::format("File %1% already exists")
+			       % filename));
+
+  sqlite3* handler;
+  if (sqlite3_open_v2(filename.c_str(), &handler,
+		      SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(handler));
+  sqlite3_exec(handler, boost::str(boost::format("PRAGMA user_version = %1%;")
+				   % DATABASE_VERSION).c_str(), NULL, NULL, NULL);
+  sqlite3_close(handler);
+
+  DB db(filename);
+  create_tables(&db);
+  Environment::insert(&db, time, size_x, size_y, mutations_probability,
+		      time_birth, time_mutate, time_laziness, energy_laziness,
+		      attack_multiplier, energy_nothing, energy_myself,
+		      energy_detect, energy_info, energy_move, energy_turn,
+		      energy_attack, energy_eat, energy_egg);
 }
 
 

@@ -60,6 +60,41 @@ public:
 
 
   /**
+   * Create the database.
+   * @param filename File name of the database.
+   * @param time cycles since the creation of the World.
+   * @param size_x size of the World (x coord).
+   * @param size_y size of the World (y coord).
+   * @param mutations_probability probability (0.0-1.0) that the code mutates.
+   * @param time_birth cycles to convert a egg into a bug.
+   * @param time_mutate cycles to mutate the code of a old bug.
+   * @param time_laziness cycles without doing a action to consider a bug lazy.
+   * @param energy_laziness energy substracted for laziness.
+   * @param attack_multiplier multiplier for the energy of a attack.
+   * @param energy_nothing energy used to do the action nothing.
+   * @param energy_myself energy used to do the action myself.
+   * @param energy_detect energy used to do the action detect.
+   * @param energy_info energy used to do the action info.
+   * @param energy_move energy used to do the action move.
+   * @param energy_turn energy used to do the action turn.
+   * @param energy_attack energy used to do the action attack.
+   * @param energy_eat energy used to do the action eat.
+   * @param energy_egg energy used to do egg 
+   * @exception DBException if there is an error with the creation.
+   */
+  static void create(std::string filename,
+		     Time time, Coord size_x, Coord size_y,
+		     double mutations_probability, Time time_birth,
+		     Time time_mutate, Time time_laziness,
+		     Energy energy_laziness, double attack_multiplier,
+		     Energy energy_nothing, Energy energy_myself,
+		     Energy energy_detect, Energy energy_info,
+		     Energy energy_move, Energy energy_turn,
+		     Energy energy_attack, Energy energy_eat,
+		     Energy energy_egg);
+
+
+  /**
    * Get the sqlite3 database connection handler.
    */
   sqlite3* db() const { return this->db_; }

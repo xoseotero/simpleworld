@@ -30,6 +30,8 @@
 namespace sw = simpleworld;
 namespace db = simpleworld::db;
 
+#include "opendb.hpp"
+
 
 #define DB_FILE (TESTDATA "db.sw")
 #define DB_SAVE (TESTOUTPUT "blob.sw")
@@ -79,7 +81,7 @@ BOOST_AUTO_TEST_CASE(blob_get_part)
  */
 BOOST_AUTO_TEST_CASE(blob_update)
 {
-  db::DB sw(DB_SAVE);
+  db::DB sw = open_db(DB_SAVE);
   sw::Uint8 code[8];
   code[0] = 0xAA;
   code[1] = 0xBB;
@@ -110,7 +112,7 @@ BOOST_AUTO_TEST_CASE(blob_update)
  */
 BOOST_AUTO_TEST_CASE(blob_update_part)
 {
-  db::DB sw(DB_SAVE);
+  db::DB sw = open_db(DB_SAVE);
   sw::Uint8 code[4];
   code[0] = 0xAA;
   code[1] = 0xBB;

@@ -30,6 +30,8 @@
 namespace sw = simpleworld;
 namespace db = simpleworld::db;
 
+#include "opendb.hpp"
+
 
 #define DB_FILE (TESTDATA "db.sw")
 #define DB_SAVE (TESTOUTPUT "environment.sw")
@@ -71,7 +73,7 @@ db::ID id;
  */
 BOOST_AUTO_TEST_CASE(environment_insert)
 {
-  db::DB sw(DB_SAVE);
+  db::DB sw = open_db(DB_SAVE);
   id = db::Environment::insert(&sw, 100, 16, 16, 0.01, 16, 65536, 2048, 32,
 			       3.0, 1, 2, 2, 2, 3, 3, 4, 4, 5);
   db::Environment environment(&sw, id);
@@ -103,7 +105,7 @@ BOOST_AUTO_TEST_CASE(environment_insert)
  */
 BOOST_AUTO_TEST_CASE(environment_update)
 {
-  db::DB sw(DB_SAVE);
+  db::DB sw = open_db(DB_SAVE);
   db::Environment environment(&sw, id);
   environment.time(101);
   environment.mutations_probability(0.02);
@@ -148,7 +150,7 @@ BOOST_AUTO_TEST_CASE(environment_update)
  */
 BOOST_AUTO_TEST_CASE(environment_delete)
 {
-  db::DB sw(DB_SAVE);
+  db::DB sw = open_db(DB_SAVE);
   db::Environment::remove(&sw, id);
 
   BOOST_CHECK_THROW(db::Environment(&sw, id).time(), db::DBException);
