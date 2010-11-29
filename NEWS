@@ -1,3 +1,15 @@
+-- Simple World 1.0b3 (2010/10/11) --
+
+Most of the work in this version was done in the database. Again,
+incompatible changes with the previous versions. I decided that the
+database version released with 1.0 will be the version 1, even if
+now the database version is 3.
+
+A new bug is added in this version: herbivorous. This bug is based in
+brainless but with the difference that it never attacks other bugs, it
+only looks for food to eat.
+
+
 -- Simple World 1.0b2 (2010/10/11) --
 
 The CPU now uses register windows to easy the development. Now there

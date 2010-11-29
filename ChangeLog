@@ -1,3 +1,16 @@
+Simple World 1.0b3 (2010/11/29):
+	* Update to database version 3.
+	* Major redesign of the database
+	* Use SQLite3 directly instead of SQLite3x
+	* Add bug herbivorous
+
+Simple World 1.0b2 (2010/10/11):
+	* Add register windows to the CPU
+	* Rename the registers: The global registers begin with g and the local
+	  ones with r (as before).
+	* Add macros to SWL
+	* Add ifdef/ifndef blocks to SWL
+
 Simple World 1.0b1 (2010/03/02):
 	* Add the stdlib (standard library of SWL)
 	* Revert the change in Alpha 2 about the order of the parameters in
