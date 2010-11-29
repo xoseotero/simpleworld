@@ -108,6 +108,7 @@ id %1% not found in table %2%")
   int s = sqlite3_column_bytes(stmt, 0);
   boost::shared_array<Uint8> data(new Uint8[s]);
   std::memcpy(data.get(), blob, s);
+  sqlite3_finalize(stmt);
   *size = s;
   return data;
 }
