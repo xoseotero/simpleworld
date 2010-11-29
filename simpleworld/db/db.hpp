@@ -83,15 +83,15 @@ public:
    * @exception DBException if there is an error with the creation.
    */
   static void create(std::string filename,
-		     Time time, Coord size_x, Coord size_y,
-		     double mutations_probability, Time time_birth,
-		     Time time_mutate, Time time_laziness,
-		     Energy energy_laziness, double attack_multiplier,
-		     Energy energy_nothing, Energy energy_myself,
-		     Energy energy_detect, Energy energy_info,
-		     Energy energy_move, Energy energy_turn,
-		     Energy energy_attack, Energy energy_eat,
-		     Energy energy_egg);
+                     Time time, Coord size_x, Coord size_y,
+                     double mutations_probability, Time time_birth,
+                     Time time_mutate, Time time_laziness,
+                     Energy energy_laziness, double attack_multiplier,
+                     Energy energy_nothing, Energy energy_myself,
+                     Energy energy_detect, Energy energy_info,
+                     Energy energy_move, Energy energy_turn,
+                     Energy energy_attack, Energy energy_eat,
+                     Energy energy_egg);
 
 
   /**

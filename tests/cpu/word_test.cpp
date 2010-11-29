@@ -137,7 +137,7 @@ BOOST_AUTO_TEST_CASE(word_set_bytes_half)
 BOOST_AUTO_TEST_CASE(word_change_endianness)
 {
   BOOST_CHECK_EQUAL(0x01234567,
-		    cpu::change_byte_order(static_cast<cpu::Word>(0x67452301)));
+                    cpu::change_byte_order(static_cast<cpu::Word>(0x67452301)));
 }
 
 /**
@@ -146,5 +146,5 @@ BOOST_AUTO_TEST_CASE(word_change_endianness)
 BOOST_AUTO_TEST_CASE(word_change_endianness_half)
 {
   BOOST_CHECK_EQUAL(0x0123,
-		    cpu::change_byte_order(static_cast<cpu::HalfWord>(0x2301)));
+                    cpu::change_byte_order(static_cast<cpu::HalfWord>(0x2301)));
 }

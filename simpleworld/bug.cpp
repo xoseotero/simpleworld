@@ -60,7 +60,7 @@ void Bug::attacked()
 #ifdef DEBUG
   std::cout << boost::str(boost::format("\
 Bug[%1%] attacked")
-			  % db::Bug::id_)
+                          % db::Bug::id_)
     << std::endl;
 #endif // DEBUG
 
@@ -75,7 +75,7 @@ void Bug::mutated()
 #ifdef DEBUG
   std::cout << boost::str(boost::format("\
 Bug[%1%] mutated")
-			  % db::Bug::id_)
+                          % db::Bug::id_)
     << std::endl;
 #endif // DEBUG
 

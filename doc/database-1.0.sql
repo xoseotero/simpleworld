@@ -77,7 +77,7 @@ BEGIN
   SELECT RAISE(ROLLBACK, 'The size of the World can''t change')
   WHERE (SELECT count(id)
          FROM Environment) > 0
-	AND
+        AND
         (SELECT id
          FROM Environment
          WHERE size_x=NEW.size_x AND size_y=NEW.size_y) IS NULL;

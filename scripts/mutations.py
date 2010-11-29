@@ -17,9 +17,9 @@ def father(bug_id):
     cursor.execute("SELECT father_id FROM Bug WHERE id = ?", (bug_id, ))
     data = cursor.fetchone()
     if data is None:
-	return None
+        return None
     else:
-	return data[0]
+        return data[0]
 
 def birth(bug_id):
     cursor = connection.cursor()
@@ -52,7 +52,7 @@ def mutations(bug_id, total=False):
                                                             mutation[3])
     father_id = father(bug_id)
     if father_id:
-	mutations(father_id, False)
+        mutations(father_id, False)
 
 
 mutations(BUG_ID, True)

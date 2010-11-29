@@ -61,7 +61,7 @@ public:
    * @exception DBException if there is an error with the insertion.
    */
   static ID insert(DB* db, ID bug_id, ID world_id, Time birth, Energy energy,
-		   const void* registers, Uint32 size);
+                   const void* registers, Uint32 size);
 
   /**
    * Insert a alive bug from a egg.

@@ -155,7 +155,7 @@ WHERE id = ?", -1, &stmt, NULL))
   if (sqlite3_step(stmt) != SQLITE_ROW)
     throw EXCEPTION(DBException, boost::str(boost::format("\
 id %1% not found in table World")
-					    % this->id_));
+                                            % this->id_));
   Coord position_x = sqlite3_column_int(stmt, 0);
   sqlite3_finalize(stmt);
 
@@ -179,7 +179,7 @@ WHERE id = ?", -1, &stmt, NULL))
   if (sqlite3_step(stmt) != SQLITE_ROW)
     throw EXCEPTION(DBException, boost::str(boost::format("\
 id %1% not found in table World")
-					    % this->id_));
+                                            % this->id_));
   Coord position_y = sqlite3_column_int(stmt, 0);
   sqlite3_finalize(stmt);
 
@@ -244,7 +244,7 @@ WHERE id = ?", -1, &stmt, NULL))
   if (sqlite3_step(stmt) != SQLITE_ROW)
     throw EXCEPTION(DBException, boost::str(boost::format("\
 id %1% not found in table World")
-					    % this->id_));
+                                            % this->id_));
   Orientation orientation =
     static_cast<Orientation>(sqlite3_column_int(stmt, 0));
   sqlite3_finalize(stmt);

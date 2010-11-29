@@ -195,5 +195,5 @@ void sw_egg(int argc, char* argv[])
 
   parse_cmd(argc, argv);
   simpleworld.add_egg(energy, position, orientation,
-		      cpu::MemoryFile(code_path));
+                      cpu::MemoryFile(code_path));
 }

@@ -60,18 +60,18 @@ Uint32 Blob::size() const
 SELECT length(%1%)\n\
 FROM %2%\n\
 WHERE _ROWID_ = ?;")
-			       % this->column_
-			       % this->table_));
+                               % this->column_
+                               % this->table_));
   sqlite3_stmt* stmt;
   if (sqlite3_prepare_v2(this->db_->db(), query.c_str(), query.size(), &stmt,
-			 NULL))
+                         NULL))
     throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
   sqlite3_bind_int64(stmt, 1, this->id_);
   if (sqlite3_step(stmt) != SQLITE_ROW)
     throw EXCEPTION(DBException, boost::str(boost::format("\
 id %1% not found in table %2%")
-					    % this->id_
-					    % this->column_));
+                                            % this->id_
+                                            % this->column_));
   Uint32 size = sqlite3_column_int(stmt, 0);
   sqlite3_finalize(stmt);
 
@@ -92,11 +92,11 @@ boost::shared_array<Uint8> Blob::read(Uint32* size) const
 SELECT %1%\n\
 FROM %2%\n\
 WHERE _ROWID_ = ?;")
-			       % this->column_
-			       % this->table_));
+                               % this->column_
+                               % this->table_));
   sqlite3_stmt* stmt;
   if (sqlite3_prepare_v2(this->db_->db(), query.c_str(), query.size(), &stmt,
-			 NULL))
+                         NULL))
     throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
   sqlite3_bind_int64(stmt, 1, this->id_);
   if (sqlite3_step(stmt) != SQLITE_ROW)
@@ -123,7 +123,7 @@ boost::shared_array<Uint8> Blob::read(Uint32 n, Uint32 offset) const
 {
   sqlite3_blob* blob;
   if (sqlite3_blob_open(this->db_->db(), "main", this->table_.c_str(),
-			this->column_.c_str(), this->id_, 0, &blob))
+                        this->column_.c_str(), this->id_, 0, &blob))
     throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
   boost::shared_array<Uint8> data(new Uint8[n]);
   if (sqlite3_blob_read(blob, data.get(), n, offset)) {
@@ -153,11 +153,11 @@ void Blob::write(const void* data, Uint32 size)
 UPDATE %1%\n\
 SET %2% = ?\n\
 WHERE _ROWID_ = ?;")
-			       % this->table_
-			       % this->column_));
+                               % this->table_
+                               % this->column_));
   sqlite3_stmt* stmt;
   if (sqlite3_prepare_v2(this->db_->db(), query.c_str(), query.size(), &stmt,
-			 NULL))
+                         NULL))
     throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
   sqlite3_bind_blob(stmt, 1, data, size, SQLITE_TRANSIENT);
   sqlite3_bind_int64(stmt, 2, this->id_);
@@ -177,7 +177,7 @@ void Blob::write(const void* data, Uint32 n, Uint32 offset)
 {
   sqlite3_blob* blob;
   if (sqlite3_blob_open(this->db_->db(), "main", this->table_.c_str(),
-			this->column_.c_str(), this->id_, 1, &blob))
+                        this->column_.c_str(), this->id_, 1, &blob))
     throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
   if (sqlite3_blob_write(blob, data, n, offset)) {
     // sqlite3_errmsg() must be called just after the error

@@ -81,8 +81,8 @@ void Transaction::begin(Type type)
     break;
   default:
     throw EXCEPTION(DBException,
-		    boost::str(boost::format("Unknown transaction type: %1%")
-			       % static_cast<int>(type)));
+                    boost::str(boost::format("Unknown transaction type: %1%")
+                               % static_cast<int>(type)));
   }
 
   if (errmsg) {
@@ -103,8 +103,8 @@ void Transaction::savepoint(std::string savepoint)
 {
   char* errmsg;
   if (sqlite3_exec(this->db_->db(), boost::str(boost::format("SAVEPOINT %1%;")
-					% savepoint).c_str(),
-		   NULL, NULL, &errmsg)) {
+                                               % savepoint).c_str(),
+                   NULL, NULL, &errmsg)) {
     std::string error(errmsg);
     sqlite3_free(errmsg);
     throw EXCEPTION(DBException, error);
@@ -153,8 +153,8 @@ void Transaction::release(std::string savepoint)
 {
   char* errmsg;
   if (sqlite3_exec(this->db_->db(), boost::str(boost::format("RELEASE %1%;")
-					% savepoint).c_str(),
-		   NULL, NULL, &errmsg)) {
+                                               % savepoint).c_str(),
+                   NULL, NULL, &errmsg)) {
     std::string error(errmsg);
     sqlite3_free(errmsg);
     throw EXCEPTION(DBException, error);
@@ -199,9 +199,9 @@ void Transaction::rollback(std::string savepoint)
 {
   char* errmsg;
   if (sqlite3_exec(this->db_->db(),
-		   boost::str(boost::format("ROLLBACK TO %1%;")
-			      % savepoint).c_str(),
-		   NULL, NULL, &errmsg)) {
+                   boost::str(boost::format("ROLLBACK TO %1%;")
+                              % savepoint).c_str(),
+                   NULL, NULL, &errmsg)) {
     std::string error(errmsg);
     sqlite3_free(errmsg);
     throw EXCEPTION(DBException, error);

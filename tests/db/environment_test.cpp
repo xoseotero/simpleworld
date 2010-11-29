@@ -75,7 +75,7 @@ BOOST_AUTO_TEST_CASE(environment_insert)
 {
   db::DB sw = open_db(DB_SAVE);
   id = db::Environment::insert(&sw, 100, 16, 16, 0.01, 16, 65536, 2048, 32,
-			       3.0, 1, 2, 2, 2, 3, 3, 4, 4, 5);
+                               3.0, 1, 2, 2, 2, 3, 3, 4, 4, 5);
   db::Environment environment(&sw, id);
 
   BOOST_CHECK_EQUAL(environment.id(), id);

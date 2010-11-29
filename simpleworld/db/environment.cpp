@@ -70,14 +70,14 @@ Environment::Environment(DB* db, ID id)
  * @exception DBException if there is an error with the insertion.
  */
 ID Environment::insert(DB* db, Time time, Coord size_x, Coord size_y,
-		       double mutations_probability, Time time_birth,
-		       Time time_mutate, Time time_laziness,
-		       Energy energy_laziness, double attack_multiplier,
-		       Energy energy_nothing, Energy energy_myself,
-		       Energy energy_detect, Energy energy_info,
-		       Energy energy_move, Energy energy_turn,
-		       Energy energy_attack, Energy energy_eat,
-		       Energy energy_egg)
+                       double mutations_probability, Time time_birth,
+                       Time time_mutate, Time time_laziness,
+                       Energy energy_laziness, double attack_multiplier,
+                       Energy energy_nothing, Energy energy_myself,
+                       Energy energy_detect, Energy energy_info,
+                       Energy energy_move, Energy energy_turn,
+                       Energy energy_attack, Energy energy_eat,
+                       Energy energy_egg)
 {
   sqlite3_stmt* stmt;
   if (sqlite3_prepare_v2(db->db(), "\
@@ -175,7 +175,7 @@ WHERE id = ?;", -1, &stmt, NULL))
   if (sqlite3_step(stmt) != SQLITE_ROW)
     throw EXCEPTION(DBException, boost::str(boost::format("\
 id %1% not found in table Environment")
-					    % this->id_));
+                                            % this->id_));
   Time time = sqlite3_column_int(stmt, 0);
   sqlite3_finalize(stmt);
 
@@ -220,7 +220,7 @@ WHERE id = ?;", -1, &stmt, NULL))
   if (sqlite3_step(stmt) != SQLITE_ROW)
     throw EXCEPTION(DBException, boost::str(boost::format("\
 id %1% not found in table Environment")
-					    % this->id_));
+                                            % this->id_));
   Coord size_x = sqlite3_column_int(stmt, 0);
   sqlite3_finalize(stmt);
 
@@ -244,7 +244,7 @@ WHERE id = ?;", -1, &stmt, NULL))
   if (sqlite3_step(stmt) != SQLITE_ROW)
     throw EXCEPTION(DBException, boost::str(boost::format("\
 id %1% not found in table Environment")
-					    % this->id_));
+                                            % this->id_));
   Coord size_y = sqlite3_column_int(stmt, 0);
   sqlite3_finalize(stmt);
 
@@ -309,7 +309,7 @@ WHERE id = ?;", -1, &stmt, NULL))
   if (sqlite3_step(stmt) != SQLITE_ROW)
     throw EXCEPTION(DBException, boost::str(boost::format("\
 id %1% not found in table Environment")
-					    % this->id_));
+                                            % this->id_));
   double mutations_probability = sqlite3_column_double(stmt, 0);
   sqlite3_finalize(stmt);
 
@@ -354,7 +354,7 @@ WHERE id = ?;", -1, &stmt, NULL))
   if (sqlite3_step(stmt) != SQLITE_ROW)
     throw EXCEPTION(DBException, boost::str(boost::format("\
 id %1% not found in table Environment")
-					    % this->id_));
+                                            % this->id_));
   Time time_birth = sqlite3_column_int(stmt, 0);
   sqlite3_finalize(stmt);
 
@@ -399,7 +399,7 @@ WHERE id = ?;", -1, &stmt, NULL))
   if (sqlite3_step(stmt) != SQLITE_ROW)
     throw EXCEPTION(DBException, boost::str(boost::format("\
 id %1% not found in table Environment")
-					    % this->id_));
+                                            % this->id_));
   Time time_mutate = sqlite3_column_int(stmt, 0);
   sqlite3_finalize(stmt);
 
@@ -444,7 +444,7 @@ WHERE id = ?;", -1, &stmt, NULL))
   if (sqlite3_step(stmt) != SQLITE_ROW)
     throw EXCEPTION(DBException, boost::str(boost::format("\
 id %1% not found in table Environment")
-					    % this->id_));
+                                            % this->id_));
   Time time_laziness = sqlite3_column_int(stmt, 0);
   sqlite3_finalize(stmt);
 
@@ -489,7 +489,7 @@ WHERE id = ?;", -1, &stmt, NULL))
   if (sqlite3_step(stmt) != SQLITE_ROW)
     throw EXCEPTION(DBException, boost::str(boost::format("\
 id %1% not found in table Environment")
-					    % this->id_));
+                                            % this->id_));
   Energy energy_laziness = sqlite3_column_int(stmt, 0);
   sqlite3_finalize(stmt);
 
@@ -534,7 +534,7 @@ WHERE id = ?;", -1, &stmt, NULL))
   if (sqlite3_step(stmt) != SQLITE_ROW)
     throw EXCEPTION(DBException, boost::str(boost::format("\
 id %1% not found in table Environment")
-					    % this->id_));
+                                            % this->id_));
   double attack_multiplier = sqlite3_column_double(stmt, 0);
   sqlite3_finalize(stmt);
 
@@ -579,7 +579,7 @@ WHERE id = ?;", -1, &stmt, NULL))
   if (sqlite3_step(stmt) != SQLITE_ROW)
     throw EXCEPTION(DBException, boost::str(boost::format("\
 id %1% not found in table Environment")
-					    % this->id_));
+                                            % this->id_));
   Energy energy_nothing = sqlite3_column_int(stmt, 0);
   sqlite3_finalize(stmt);
 
@@ -624,7 +624,7 @@ WHERE id = ?;", -1, &stmt, NULL))
   if (sqlite3_step(stmt) != SQLITE_ROW)
     throw EXCEPTION(DBException, boost::str(boost::format("\
 id %1% not found in table Environment")
-					    % this->id_));
+                                            % this->id_));
   Energy energy_myself = sqlite3_column_int(stmt, 0);
   sqlite3_finalize(stmt);
 
@@ -669,7 +669,7 @@ WHERE id = ?;", -1, &stmt, NULL))
   if (sqlite3_step(stmt) != SQLITE_ROW)
     throw EXCEPTION(DBException, boost::str(boost::format("\
 id %1% not found in table Environment")
-					    % this->id_));
+                                            % this->id_));
   Energy energy_detect = sqlite3_column_int(stmt, 0);
   sqlite3_finalize(stmt);
 
@@ -714,7 +714,7 @@ WHERE id = ?;", -1, &stmt, NULL))
   if (sqlite3_step(stmt) != SQLITE_ROW)
     throw EXCEPTION(DBException, boost::str(boost::format("\
 id %1% not found in table Environment")
-					    % this->id_));
+                                            % this->id_));
   Energy energy_info = sqlite3_column_int(stmt, 0);
   sqlite3_finalize(stmt);
 
@@ -759,7 +759,7 @@ WHERE id = ?;", -1, &stmt, NULL))
   if (sqlite3_step(stmt) != SQLITE_ROW)
     throw EXCEPTION(DBException, boost::str(boost::format("\
 id %1% not found in table Environment")
-					    % this->id_));
+                                            % this->id_));
   Energy energy_move = sqlite3_column_int(stmt, 0);
   sqlite3_finalize(stmt);
 
@@ -804,7 +804,7 @@ WHERE id = ?;", -1, &stmt, NULL))
   if (sqlite3_step(stmt) != SQLITE_ROW)
     throw EXCEPTION(DBException, boost::str(boost::format("\
 id %1% not found in table Environment")
-					    % this->id_));
+                                            % this->id_));
   Energy energy_turn = sqlite3_column_int(stmt, 0);
   sqlite3_finalize(stmt);
 
@@ -849,7 +849,7 @@ WHERE id = ?;", -1, &stmt, NULL))
   if (sqlite3_step(stmt) != SQLITE_ROW)
     throw EXCEPTION(DBException, boost::str(boost::format("\
 id %1% not found in table Environment")
-					    % this->id_));
+                                            % this->id_));
   Energy energy_attack = sqlite3_column_int(stmt, 0);
   sqlite3_finalize(stmt);
 
@@ -894,7 +894,7 @@ WHERE id = ?;", -1, &stmt, NULL))
   if (sqlite3_step(stmt) != SQLITE_ROW)
     throw EXCEPTION(DBException, boost::str(boost::format("\
 id %1% not found in table Environment")
-					    % this->id_));
+                                            % this->id_));
   Energy energy_eat = sqlite3_column_int(stmt, 0);
   sqlite3_finalize(stmt);
 
@@ -939,7 +939,7 @@ WHERE id = ?;", -1, &stmt, NULL))
   if (sqlite3_step(stmt) != SQLITE_ROW)
     throw EXCEPTION(DBException, boost::str(boost::format("\
 id %1% not found in table Environment")
-					    % this->id_));
+                                            % this->id_));
   Energy energy_egg = sqlite3_column_int(stmt, 0);
   sqlite3_finalize(stmt);
 

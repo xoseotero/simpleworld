@@ -104,11 +104,11 @@ public:
   void set_null(const std::string& colname);
 
 
-  SimpleWorld* world;		/**< World where the bug lives */
+  SimpleWorld* world;           /**< World where the bug lives */
 
-  DBMemory regs;		/**< Registers of the bug */
-  DBMemory mem;			/**< Memory of the bug */
-  CPU cpu;			/**< CPU of the bug */
+  DBMemory regs;                /**< Registers of the bug */
+  DBMemory mem;                 /**< Memory of the bug */
+  CPU cpu;                      /**< CPU of the bug */
 };
 
 }

@@ -143,7 +143,7 @@ WHERE bug_id = ?;", -1, &stmt, NULL))
   if (sqlite3_step(stmt) != SQLITE_ROW)
     throw EXCEPTION(DBException, boost::str(boost::format("\
 id %1% not found in table Egg")
-					    % this->id_));
+                                            % this->id_));
   ID world_id = sqlite3_column_int64(stmt, 0);
   sqlite3_finalize(stmt);
 
@@ -188,7 +188,7 @@ WHERE bug_id = ?;", -1, &stmt, NULL))
   if (sqlite3_step(stmt) != SQLITE_ROW)
     throw EXCEPTION(DBException, boost::str(boost::format("\
 id %1% not found in table Egg")
-					    % this->id_));
+                                            % this->id_));
   Energy energy = sqlite3_column_int(stmt, 0);
   sqlite3_finalize(stmt);
 
@@ -232,7 +232,7 @@ WHERE bug_id = ?;", -1, &stmt, NULL))
   if (sqlite3_step(stmt) != SQLITE_ROW)
     throw EXCEPTION(DBException, boost::str(boost::format("\
 id %1% not found in table Egg")
-					    % this->id_));
+                                            % this->id_));
   Time conception = sqlite3_column_int(stmt, 0);
   sqlite3_finalize(stmt);
 

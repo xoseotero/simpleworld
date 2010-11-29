@@ -55,18 +55,18 @@ bool Table::is_null(const std::string& colname) const
 SELECT %1%\n\
 FROM %2%\n\
 WHERE _ROWID_ = ?;")
-			       % colname
-			       % this->name_));
+                               % colname
+                               % this->name_));
   sqlite3_stmt* stmt;
   if (sqlite3_prepare_v2(this->db_->db(), query.c_str(), query.size(), &stmt,
-			 NULL))
+                         NULL))
     throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
   sqlite3_bind_int64(stmt, 1, this->id_);
   if (sqlite3_step(stmt) != SQLITE_ROW)
     throw EXCEPTION(DBException, boost::str(boost::format("\
 id %1% not found in table %2%")
-					    % this->id_
-					    % colname));
+                                            % this->id_
+                                            % colname));
   bool is_null = sqlite3_column_type(stmt, 0) == SQLITE_NULL;
   sqlite3_finalize(stmt);
 
@@ -85,19 +85,19 @@ void Table::set_null(const std::string& colname)
 UPDATE %1%\n\
 SET %2% = ?\n\
 WHERE _ROWID_ = ?;")
-			       % this->name_
-			       % colname));
+                               % this->name_
+                               % colname));
   sqlite3_stmt* stmt;
   if (sqlite3_prepare_v2(this->db_->db(), query.c_str(), query.size(), &stmt,
-			 NULL))
+                         NULL))
     throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
   sqlite3_bind_null(stmt, 1);
   sqlite3_bind_int64(stmt, 2, this->id_);
   if (sqlite3_step(stmt) != SQLITE_DONE)
     throw EXCEPTION(DBException, boost::str(boost::format("\
 id %1% not found in table %2%")
-					    % this->id_
-					    % colname));
+                                            % this->id_
+                                            % colname));
   sqlite3_finalize(stmt);
 }
 

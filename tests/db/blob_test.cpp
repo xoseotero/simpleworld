@@ -68,7 +68,7 @@ BOOST_AUTO_TEST_CASE(blob_get_part)
   db::Blob blob(db::Bug(&sw, 2).code());
 
   boost::shared_array<sw::Uint8> data = blob.read(sizeof(sw::Uint8) * 4,
-						  sizeof(sw::Uint8) * 3);
+                                                  sizeof(sw::Uint8) * 3);
 
   BOOST_CHECK_EQUAL(data[0], 0x4D);
   BOOST_CHECK_EQUAL(data[1], 0x5E);

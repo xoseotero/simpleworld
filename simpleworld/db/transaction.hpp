@@ -136,8 +136,8 @@ public:
 
 private:
   DB* db_;                      /**< DB connection */
-  Uint16 counter_;		/**< Values of the automatic savepoints */
-  bool started_;		/**< If a transaction is started */
+  Uint16 counter_;              /**< Values of the automatic savepoints */
+  bool started_;                /**< If a transaction is started */
 };
 
 }

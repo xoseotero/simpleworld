@@ -400,7 +400,7 @@ Interrupt thrown:\tcode: 0x%02X, name: %s")
     // Store a register:
     // Save the register in the top of the stack
     this->memory_->set_word(this->registers_->get_word(ADDRESS(REGISTER_SP)),
-			    this->registers_->get_word(ADDRESS(i)));
+                            this->registers_->get_word(ADDRESS(i)));
     // Update stack pointer
     this->registers_->set_word(ADDRESS(REGISTER_SP),
                                this->registers_->get_word(ADDRESS(REGISTER_SP)) + sizeof(Word));

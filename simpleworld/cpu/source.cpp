@@ -57,8 +57,8 @@ namespace cpu
 
 // A keyword
 static const boost::regex re_keyword("(" KEYWORD ")"
-				     OPTIONAL_SPACE
-				     OPTIONAL_COMMENT);
+                                     OPTIONAL_SPACE
+                                     OPTIONAL_COMMENT);
 // A blank line
 static const boost::regex re_blank(BEGIN_LINE
                                    OPTIONAL_SPACE
@@ -81,21 +81,21 @@ static const boost::regex re_include(BEGIN_LINE
                                      END_LINE);
 // A line with the begining of a macro block
 static const boost::regex re_macro(BEGIN_LINE
-				   OPTIONAL_SPACE
-				   "\\.macro"
-				   SPACE
-				   "(" KEYWORD ")"
-				   OPTIONAL_SPACE
-				   "(" ANYTHING ")"
-				   OPTIONAL_COMMENT
-				   END_LINE);
+                                   OPTIONAL_SPACE
+                                   "\\.macro"
+                                   SPACE
+                                   "(" KEYWORD ")"
+                                   OPTIONAL_SPACE
+                                   "(" ANYTHING ")"
+                                   OPTIONAL_COMMENT
+                                   END_LINE);
 // A line with the end of a macro block
 static const boost::regex re_endmacro(BEGIN_LINE
-				      OPTIONAL_SPACE
-				      "\\.endmacro"
-				      OPTIONAL_SPACE
-				      OPTIONAL_COMMENT
-				      END_LINE);
+                                      OPTIONAL_SPACE
+                                      "\\.endmacro"
+                                      OPTIONAL_SPACE
+                                      OPTIONAL_COMMENT
+                                      END_LINE);
 // A line with a define
 static const boost::regex re_define(BEGIN_LINE
                                     OPTIONAL_SPACE
@@ -109,29 +109,29 @@ static const boost::regex re_define(BEGIN_LINE
                                     END_LINE);
 // A line with the begining of a ifdef block
 static const boost::regex re_ifdef(BEGIN_LINE
-				   OPTIONAL_SPACE
-				   "\\.ifdef"
-				   SPACE
-				   "(" KEYWORD ")"
-				   OPTIONAL_SPACE
-				   OPTIONAL_COMMENT
-				   END_LINE);
+                                   OPTIONAL_SPACE
+                                   "\\.ifdef"
+                                   SPACE
+                                   "(" KEYWORD ")"
+                                   OPTIONAL_SPACE
+                                   OPTIONAL_COMMENT
+                                   END_LINE);
 // A line with the begining of a ifndef block
 static const boost::regex re_ifndef(BEGIN_LINE
-				    OPTIONAL_SPACE
-				    "\\.ifndef"
-				    SPACE
+                                    OPTIONAL_SPACE
+                                    "\\.ifndef"
+                                    SPACE
                                     "(" KEYWORD ")"
-				    OPTIONAL_SPACE
-				    OPTIONAL_COMMENT
-				    END_LINE);
+                                    OPTIONAL_SPACE
+                                    OPTIONAL_COMMENT
+                                    END_LINE);
 // A line with the end of a if block
 static const boost::regex re_endif(BEGIN_LINE
-				   OPTIONAL_SPACE
-				   "\\.endif"
-				   OPTIONAL_SPACE
-				   OPTIONAL_COMMENT
-				   END_LINE);
+                                   OPTIONAL_SPACE
+                                   "\\.endif"
+                                   OPTIONAL_SPACE
+                                   OPTIONAL_COMMENT
+                                   END_LINE);
 // A line with a block of memory
 static const boost::regex re_block(BEGIN_LINE
                                    OPTIONAL_SPACE
@@ -416,37 +416,37 @@ Macro %2% already defined")
     if (not this->is_blank(i) and not this->is_comment(i)) {
       std::vector<std::string> keywords(this->get_keywords(i));
       std::map<std::string, Source::Macro>::const_iterator macro =
-	this->macros_.find(keywords[0]);
+        this->macros_.find(keywords[0]);
       if (macro != this->macros_.end()) {
-	if ((*macro).second.params.size() != (keywords.size() - 1))
-	  throw EXCEPTION(ParserError, boost::str(boost::format("\
+        if ((*macro).second.params.size() != (keywords.size() - 1))
+          throw EXCEPTION(ParserError, boost::str(boost::format("\
 Line: %1%\n\
 Wrong number of parameters")
-						  % this->get_line(i)));
+                                                  % this->get_line(i)));
 
-	// Replace the parameters
-	std::vector<std::string> code((*macro).second.code);
-	std::vector<std::string>::iterator line = code.begin();
-	while (line != code.end()) {
-	  File::size_type p;
-	  for (p = 0; p < keywords.size() - 1; p++)
-	    *line = boost::regex_replace(*line,
-					 boost::regex((*macro).second.params[p]),
-					 keywords[p + 1]);
+        // Replace the parameters
+        std::vector<std::string> code((*macro).second.code);
+        std::vector<std::string>::iterator line = code.begin();
+        while (line != code.end()) {
+          File::size_type p;
+          for (p = 0; p < keywords.size() - 1; p++)
+            *line = boost::regex_replace(*line,
+                                         boost::regex((*macro).second.params[p]),
+                                         keywords[p + 1]);
 
-	  ++line;
-	}
+          ++line;
+        }
 
-	// Insert the code
-	this->remove(i, 1);
-	line = code.begin();
-	while (line != code.end()) {
-	  this->insert(i, *line);
+        // Insert the code
+        this->remove(i, 1);
+        line = code.begin();
+        while (line != code.end()) {
+          this->insert(i, *line);
 
-	  ++line;
-	  if (line != code.end())
-	    i++;
-	}
+          ++line;
+          if (line != code.end())
+            i++;
+        }
       }
   }
 }
@@ -477,40 +477,40 @@ Constant %2% already defined")
 
       File::size_type end = i;
       while ((end < this->lines()) and not this->is_endif(end))
-	end++;
+        end++;
       if (end == this->lines())
-	throw EXCEPTION(ParserError, boost::str(boost::format("\
+        throw EXCEPTION(ParserError, boost::str(boost::format("\
 Line: %1%\n\
 ifdef block has not .endifdef")
                                                 % this->get_line(i)));
 
       if (this->defines_.find(ifdef) != this->defines_.end()) {
-	// Remove the begining and end of the block
-	this->remove(i, 1);
-	this->remove(end - 1, 1);
+        // Remove the begining and end of the block
+        this->remove(i, 1);
+        this->remove(end - 1, 1);
       } else {
-	// Remove all the block
-	this->remove(i, end - i + 1);
+        // Remove all the block
+        this->remove(i, end - i + 1);
       }
     } else if (this->is_ifndef(i)) {
       std::string ifndef(this->get_ifndef(i));
 
       File::size_type end = i;
       while ((end < this->lines()) and not this->is_endif(end))
-	end++;
+        end++;
       if (end == this->lines())
-	throw EXCEPTION(ParserError, boost::str(boost::format("\
+        throw EXCEPTION(ParserError, boost::str(boost::format("\
 Line: %1%\n\
 ifndef block has not .endifndef")
                                                 % this->get_line(i)));
 
       if (this->defines_.find(ifndef) == this->defines_.end()) {
-	// Remove the begining and end of the block
-	this->remove(i, 1);
-	this->remove(end - 1, 1);
+        // Remove the begining and end of the block
+        this->remove(i, 1);
+        this->remove(end - 1, 1);
       } else {
-	// Remove all the block
-	this->remove(i, end - i + 1);
+        // Remove all the block
+        this->remove(i, end - i + 1);
       }
     } else
       i++;
@@ -525,25 +525,25 @@ ifndef block has not .endifndef")
     // TODO: the defines are replaced if they are in a inline comment
     if (not this->is_blank(i) and not this->is_comment(i))
       while (again) {
-	again = false;
+        again = false;
 
-	std::vector<std::string> keywords(this->get_keywords(i));
-	std::vector<std::string>::const_iterator key = keywords.begin();
-	while (key != keywords.end()) {
-	  std::map<std::string, std::string>::const_iterator define =
-	    this->defines_.find(*key);
-	  if (define != this->defines_.end()) {
-	    this->get_line(i) =
-	      boost::regex_replace(this->get_line(i),
-				   boost::regex(std::string(BEGIN_WORD) +
-						(*define).first +
-						std::string(END_WORD)),
-				   (*define).second);
-	    again = true;
-	  }
+        std::vector<std::string> keywords(this->get_keywords(i));
+        std::vector<std::string>::const_iterator key = keywords.begin();
+        while (key != keywords.end()) {
+          std::map<std::string, std::string>::const_iterator define =
+            this->defines_.find(*key);
+          if (define != this->defines_.end()) {
+            this->get_line(i) =
+              boost::regex_replace(this->get_line(i),
+                                   boost::regex(std::string(BEGIN_WORD) +
+                                                (*define).first +
+                                                std::string(END_WORD)),
+                                   (*define).second);
+            again = true;
+          }
 
-	  ++key;
-	}
+          ++key;
+        }
       }
   }
 }
@@ -604,20 +604,20 @@ Label %2% already defined")
       std::vector<std::string> keywords(this->get_keywords(i));
       std::vector<std::string>::const_iterator key = keywords.begin();
       while (key != keywords.end()) {
-	std::map<std::string, Address>::const_iterator label =
-	  this->labels_.find(*key);
-	if (label != this->labels_.end()) {
-	  std::string address(boost::str(boost::format("0x%08X") %
-					 (*label).second));
-	  this->get_line(i) =
-	    boost::regex_replace(this->get_line(i),
-				 boost::regex(std::string(BEGIN_WORD) +
-					      (*label).first +
-					      std::string(END_WORD)),
-				 address);
-	}
+        std::map<std::string, Address>::const_iterator label =
+          this->labels_.find(*key);
+        if (label != this->labels_.end()) {
+          std::string address(boost::str(boost::format("0x%08X") %
+                                         (*label).second));
+          this->get_line(i) =
+            boost::regex_replace(this->get_line(i),
+                                 boost::regex(std::string(BEGIN_WORD) +
+                                              (*label).first +
+                                              std::string(END_WORD)),
+                                 address);
+        }
 
-	++key;
+        ++key;
       }
 
       lines_code++;
@@ -626,21 +626,21 @@ Label %2% already defined")
       std::vector<std::string> keywords(this->get_keywords(i));
       std::vector<std::string>::const_iterator key = keywords.begin();
       while (key != keywords.end()) {
-	std::map<std::string, Address>::const_iterator label =
-	  this->labels_.find(*key);
-	if (label != this->labels_.end()) {
-	  std::string offset(boost::str(boost::format("0x%04X") %
-					static_cast<Uint16>(((*label).second -
-							     lines_code * sizeof(Word)))));
-	  this->get_line(i) =
-	    boost::regex_replace(this->get_line(i),
-				 boost::regex(std::string(BEGIN_WORD) +
-					      (*label).first +
-					      std::string(END_WORD)),
-				 offset);
-	}
+        std::map<std::string, Address>::const_iterator label =
+          this->labels_.find(*key);
+        if (label != this->labels_.end()) {
+          std::string offset(boost::str(boost::format("0x%04X") %
+                                        static_cast<Uint16>(((*label).second -
+                                                             lines_code * sizeof(Word)))));
+          this->get_line(i) =
+            boost::regex_replace(this->get_line(i),
+                                 boost::regex(std::string(BEGIN_WORD) +
+                                              (*label).first +
+                                              std::string(END_WORD)),
+                                 offset);
+        }
 
-	++key;
+        ++key;
       }
 
       lines_code++;
@@ -962,7 +962,7 @@ std::pair<std::string, Source::Macro> Source::get_macro(File::size_type line)
     std::vector<std::string> keywords(this->get_keywords(line));
     result.first = keywords[1];
     result.second.params.insert(result.second.params.begin(),
-				keywords.begin() + 2, keywords.end());
+                                keywords.begin() + 2, keywords.end());
     File::size_type end = line;
     while ((++end < this->lines()) and not this->is_endmacro(end))
       result.second.code.push_back(this->get_line(end));

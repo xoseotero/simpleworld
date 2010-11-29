@@ -49,7 +49,7 @@ for i in $(seq ${RUNS}); do
         let new_bugs=${MINBUGS}-${alive_bugs}
         #let new_bugs=(${MINBUGS}-${alive_bugs})/2
 
-	echo -n " Adding bugs in $i"
+        echo -n " Adding bugs in $i"
         echo "Adding bugs" >> ${LOGFILE}
         for j in $(seq ${new_bugs}); do
             ${SIMPLEWORLD} egg --code ${NOTHING} --position=$(random -e 16; echo $?),$(random -e 16; echo $?) --energy 256 ${DATABASE} >> ${LOGFILE} 2> /dev/null
@@ -62,7 +62,7 @@ for i in $(seq ${RUNS}); do
     if [ ${alive_bugs} -lt 64 -a ${food} -lt 64 ]; then
         let new_food=${MINBUGSFOOD}-${alive_bugs}
 
-	echo -n " Adding food in $i"
+        echo -n " Adding food in $i"
         echo "Adding food" >> ${LOGFILE}
         for j in $(seq ${new_food}); do
             ${SIMPLEWORLD} food --position=$(random -e 16; echo $?),$(random -e 16; echo $?) --energy 512 ${DATABASE} >> ${LOGFILE} 2> /dev/null

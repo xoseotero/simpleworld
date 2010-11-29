@@ -24,12 +24,12 @@
 .label init
         loada sp stack                  # Initialize the Stack Pointer
 
-	# Get the initial energy of the bug
-	world STD_MYENERGY
-	store g1 initial_energy
+        # Get the initial energy of the bug
+        world STD_MYENERGY
+        store g1 initial_energy
 
-	# Use the actual position of the bug as the seed of the random number
-	# generator
+        # Use the actual position of the bug as the seed of the random number
+        # generator
         world STD_MYPOSITION
         add g0 g1 g2
         call std_seed
@@ -102,7 +102,7 @@
 
 # Create a egg in front of the bug
 .label egg
-	load g0 initial_energy
+        load g0 initial_energy
         world STD_EGG
 
         # let the egg alone
@@ -118,7 +118,7 @@
 
         world STD_MYENERGY
         load g0 initial_energy
-	multi g0 g0 0x3
+        multi g0 g0 0x3
         bgtu g0 g1 _eat_ret
 
         .label _eat_egg                 # if (MYSELF_ENERGY > ENERGY_TO_CREATE_EGG)
@@ -137,7 +137,7 @@
         .label _detect_food             # if ELEMENT == FOOD
         call eat
 
-	.label _detect_ret		# else
+        .label _detect_ret              # else
         ret
 
 

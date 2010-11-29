@@ -32,22 +32,22 @@ Options:
 parse_cmd()
 {
     if [ "$1" == "--help" ]; then
-	usage 0
+        usage 0
     elif [ "$1" == "--release" ]; then
-	release=1
-	shift
-	parse_cmd $*
+        release=1
+        shift
+        parse_cmd $*
     elif [ "$1" == "--debug" ]; then
-	debug=1
-	shift
-	parse_cmd $*
+        debug=1
+        shift
+        parse_cmd $*
     elif [ "$1" != "" ]; then
-	prefix=$1
+        prefix=$1
     fi
 
     if [ $# -gt 1 ]; then
-	echo "Too many or wrong parameters."
-	usage 1
+        echo "Too many or wrong parameters."
+        usage 1
     fi
 }
 
@@ -64,7 +64,7 @@ create_build()
     cmake ${options} ..
 
     if [ "${prefix}" != "" ]; then
-	ln -s ${prefix} install_dir
+        ln -s ${prefix} install_dir
     fi
 
     cd ..

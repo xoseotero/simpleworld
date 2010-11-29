@@ -128,7 +128,7 @@ BEGIN\n\
   SELECT RAISE(ROLLBACK, 'The size of the World can''t change')\n\
   WHERE (SELECT count(id)\n\
          FROM Environment) > 0\n\
-	AND\n\
+        AND\n\
         (SELECT id\n\
          FROM Environment\n\
          WHERE size_x=NEW.size_x AND size_y=NEW.size_y) IS NULL;\n\
@@ -444,7 +444,7 @@ CREATE TABLE Food\n\
 DB::DB(std::string filename)
 {
   if (sqlite3_open_v2(filename.c_str(), &this->db_, SQLITE_OPEN_READWRITE,
-		      NULL))
+                      NULL))
     throw EXCEPTION(DBException, sqlite3_errmsg(this->db_));
 
   // user_version is used for know if the database was new (user_version is 0
@@ -460,7 +460,7 @@ DB::DB(std::string filename)
   if (this->version_ != DATABASE_VERSION)
     throw EXCEPTION(WrongVersion, boost::str(boost::format("\
 Database version %1% not supported")
-					     % this->version_));
+                                             % this->version_));
 
   // From http://sqlite.org/c3ref/step.html:
   // SQLITE_BUSY means that the database engine was unable to acquire the
@@ -510,36 +510,36 @@ DB::~DB()
  * @exception DBException if there is an error with the creation.
  */
 void DB::create(std::string filename,
-		Time time, Coord size_x, Coord size_y,
-		double mutations_probability, Time time_birth,
-		Time time_mutate, Time time_laziness,
-		Energy energy_laziness, double attack_multiplier,
-		Energy energy_nothing, Energy energy_myself,
-		Energy energy_detect, Energy energy_info,
-		Energy energy_move, Energy energy_turn,
-		Energy energy_attack, Energy energy_eat,
-		Energy energy_egg)
+                Time time, Coord size_x, Coord size_y,
+                double mutations_probability, Time time_birth,
+                Time time_mutate, Time time_laziness,
+                Energy energy_laziness, double attack_multiplier,
+                Energy energy_nothing, Energy energy_myself,
+                Energy energy_detect, Energy energy_info,
+                Energy energy_move, Energy energy_turn,
+                Energy energy_attack, Energy energy_eat,
+                Energy energy_egg)
 {
   if (fs::exists(fs::path(filename, fs::native)))
     throw EXCEPTION(DBException,
-		    boost::str(boost::format("File %1% already exists")
-			       % filename));
+                    boost::str(boost::format("File %1% already exists")
+                               % filename));
 
   sqlite3* handler;
   if (sqlite3_open_v2(filename.c_str(), &handler,
-		      SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, NULL))
+                      SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, NULL))
     throw EXCEPTION(DBException, sqlite3_errmsg(handler));
   sqlite3_exec(handler, boost::str(boost::format("PRAGMA user_version = %1%;")
-				   % DATABASE_VERSION).c_str(), NULL, NULL, NULL);
+                                   % DATABASE_VERSION).c_str(), NULL, NULL, NULL);
   sqlite3_close(handler);
 
   DB db(filename);
   create_tables(&db);
   Environment::insert(&db, time, size_x, size_y, mutations_probability,
-		      time_birth, time_mutate, time_laziness, energy_laziness,
-		      attack_multiplier, energy_nothing, energy_myself,
-		      energy_detect, energy_info, energy_move, energy_turn,
-		      energy_attack, energy_eat, energy_egg);
+                      time_birth, time_mutate, time_laziness, energy_laziness,
+                      attack_multiplier, energy_nothing, energy_myself,
+                      energy_detect, energy_info, energy_move, energy_turn,
+                      energy_attack, energy_eat, energy_egg);
 }
 
 

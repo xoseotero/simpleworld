@@ -25,12 +25,12 @@
 .label init
         loada sp stack                  # Initialize the Stack Pointer
 
-	# Get the initial energy of the bug
-	world STD_MYENERGY
-	store g1 initial_energy
+        # Get the initial energy of the bug
+        world STD_MYENERGY
+        store g1 initial_energy
 
-	# Use the actual position of the bug as the seed of the random number
-	# generator
+        # Use the actual position of the bug as the seed of the random number
+        # generator
         world STD_MYPOSITION
         add g0 g1 g2
         call std_seed
@@ -105,7 +105,7 @@
 .label attack
         .label _attack_loop             # do
         load g0 initial_energy
-	divi g0 g0 0x10
+        divi g0 g0 0x10
         world STD_ATTACK
         bz g0 _attack_loop              # while STD_ATTACK == STD_SUCCESS
 
@@ -116,7 +116,7 @@
 
 # Create a egg in front of the bug
 .label egg
-	load g0 initial_energy
+        load g0 initial_energy
         world STD_EGG
 
         # let the egg alone
@@ -132,7 +132,7 @@
 
         world STD_MYENERGY
         load g0 initial_energy
-	multi g0 g0 0x3
+        multi g0 g0 0x3
         bgtu g0 g1 _eat_ret
 
         .label _eat_egg                 # if (MYSELF_ENERGY > ENERGY_TO_CREATE_EGG)
@@ -148,18 +148,18 @@
 .label detect
         world STD_DETECT                # g1 = ELEMENT
 
-        loadi g0 STD_LFOOD		# if (ELEMENT == FOOD)
+        loadi g0 STD_LFOOD              # if (ELEMENT == FOOD)
         beq g1 g0 _detect_eat
-	loadi g0 STD_LNOTHING		# else (ELEMENT == NOTHING)
-	beq g1 g0 _detect_ret
+        loadi g0 STD_LNOTHING           # else (ELEMENT == NOTHING)
+        beq g1 g0 _detect_ret
 
-        call attack			# else
+        call attack                     # else
         ret
 
         .label _detect_eat
         call eat
 
-	.label _detect_ret
+        .label _detect_ret
         ret
 
 

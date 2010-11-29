@@ -299,6 +299,6 @@ void sw_create(int argc, char* argv[])
   parse_cmd(argc, argv);
 
   db::DB::create(database_path, 0, size.x, size.y, mutations, birth, old,
-		 laziness, elaziness, multiplier, nothing, myself, detect,
-		 info, move, turn, attack, eat, egg);
+                 laziness, elaziness, multiplier, nothing, myself, detect,
+                 info, move, turn, attack, eat, egg);
 }

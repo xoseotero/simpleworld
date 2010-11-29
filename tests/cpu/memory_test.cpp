@@ -102,7 +102,7 @@ BOOST_AUTO_TEST_CASE(memory_get_big_endian)
 
   for (sw::Uint8 i = 0; i < 16 * 4; i += 4)
     BOOST_CHECK_EQUAL(memory.get_word(i, false),
-		      cpu::change_byte_order(static_cast<cpu::Word>(i)));
+                      cpu::change_byte_order(static_cast<cpu::Word>(i)));
 }
 
 /**
@@ -127,7 +127,7 @@ BOOST_AUTO_TEST_CASE(memory_set_big_endian)
   cpu::Memory memory(16 * 4);
   for (sw::Uint8 i = 0; i < 16 * 4; i += 4)
     memory.set_word(i, cpu::change_byte_order(static_cast<cpu::Word>(i)),
-		    false);
+                    false);
 
   for (sw::Uint8 i = 0; i < 16 * 4; i += 4)
     BOOST_CHECK_EQUAL(memory.get_word(i), i);
@@ -141,8 +141,8 @@ BOOST_AUTO_TEST_CASE(memory_set_big_endian_half)
   cpu::Memory memory(16 * 2);
   for (sw::Uint8 i = 0; i < 16 * 2; i += 2)
     memory.set_halfword(i,
-			cpu::change_byte_order(static_cast<cpu::HalfWord>(i)),
-			false);
+                        cpu::change_byte_order(static_cast<cpu::HalfWord>(i)),
+                        false);
 
   for (sw::Uint8 i = 0; i < 16 * 2; i += 2)
     BOOST_CHECK_EQUAL(memory.get_halfword(i), i);

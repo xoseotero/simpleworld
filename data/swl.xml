@@ -140,8 +140,8 @@
                 <keyword attribute="Error" context="#stay" firstNonSpace="false" String="prep" />
                 <keyword attribute="Keyword" context="#stay" firstNonSpace="true" String="inst" />
                 <keyword attribute="Error" context="#stay" firstNonSpace="false" String="inst" />
-		<keyword attribute="Error" context="#stay" firstNonSpace="true" String="register" />
-		<keyword attribute="Register" context="#stay" firstNonSpace="false" String="register" />
+                <keyword attribute="Error" context="#stay" firstNonSpace="true" String="register" />
+                <keyword attribute="Register" context="#stay" firstNonSpace="false" String="register" />
                 <RegExpr attribute="Comment" context="#stay" String="#.*$" />
                 <DetectChar attribute="Error" context="string" firstNonSpace="true" char="&quot;" />
                 <DetectChar attribute="String" context="string" firstNonSpace="false" char="&quot;" />
@@ -153,7 +153,7 @@
         </contexts>
         <itemDatas>
             <itemData name="Normal Text" defStyleNum="dsNormal" />
-	    <itemData name="Preprocessor" defStyleNum="dsOthers" />
+            <itemData name="Preprocessor" defStyleNum="dsOthers" />
             <itemData name="Keyword" defStyleNum="dsKeyword" />
             <itemData name="Register" defStyleNum="dsDataType" color="#0000ff" />
             <itemData name="Comment" defStyleNum="dsComment" />

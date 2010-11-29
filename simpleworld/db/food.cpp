@@ -129,7 +129,7 @@ WHERE id = ?;", -1, &stmt, NULL))
   if (sqlite3_step(stmt) != SQLITE_ROW)
     throw EXCEPTION(DBException, boost::str(boost::format("\
 id %1% not found in table Food")
-					    % this->id_));
+                                            % this->id_));
   ID world_id = sqlite3_column_int64(stmt, 0);
   sqlite3_finalize(stmt);
 
@@ -174,7 +174,7 @@ WHERE id = ?;", -1, &stmt, NULL))
   if (sqlite3_step(stmt) != SQLITE_ROW)
     throw EXCEPTION(DBException, boost::str(boost::format("\
 id %1% not found in table Food")
-					    % this->id_));
+                                            % this->id_));
   Energy size = sqlite3_column_int(stmt, 0);
   sqlite3_finalize(stmt);
 

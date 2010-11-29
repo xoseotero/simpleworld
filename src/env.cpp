@@ -292,8 +292,8 @@ void sw_env(int argc, char* argv[])
   parse_cmd(argc, argv);
 
   db::Environment::insert(&simpleworld, simpleworld.env().time(),
-			  simpleworld.env().size_x(),
-			  simpleworld.env().size_y(), mutations, birth, old,
-			  laziness, elaziness, multiplier, nothing, myself,
-			  detect, info, move, turn, attack, eat, egg);
+                          simpleworld.env().size_x(),
+                          simpleworld.env().size_y(), mutations, birth, old,
+                          laziness, elaziness, multiplier, nothing, myself,
+                          detect, info, move, turn, attack, eat, egg);
 }

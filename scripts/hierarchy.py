@@ -17,17 +17,17 @@ def father(bug_id):
     cursor.execute("SELECT father_id FROM Bug WHERE id = ?", (bug_id, ))
     data = cursor.fetchone()
     if data is None:
-	return None
+        return None
     else:
-	return data[0]
+        return data[0]
 
 def hierarchy(bug_id):
     while True:
-	bug_id = father(bug_id)
-	if bug_id:
-	    yield bug_id
-	else:
-	    break
+        bug_id = father(bug_id)
+        if bug_id:
+            yield bug_id
+        else:
+            break
 
 
 for father_id in hierarchy(BUG_ID):
