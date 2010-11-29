@@ -14,11 +14,15 @@ STATSFILE="$(dirname $0)/stats"
 #STATSFILE="/dev/null"
 
 MINBUGS=32
-MINBUGSFOOD=64
+MINFOOD=32
 CYCLES=1024
 
-NOTHING="nothing.swo"
+#NOTHING="nothing.swo"
+#NOTHING_ENERGY=64
+HERBIVOROUS="herbivorous.swo"
+HERBIVOROUS_ENERGY=512
 BRAINLESS="brainless.swo"
+BRAINLESS_ENERGY=1024
 
 if [ $# -lt 1 ]; then
     echo "Database file must be passed"
@@ -44,29 +48,28 @@ for i in $(seq ${RUNS}); do
     food=$(${FOOD} ${DATABASE} | wc -l)
     alive_bugs=$(${ALIVE_BUGS} ${DATABASE} | wc -l)
 
-    # add a new bug if there are less than 32 bugs (1/8 of the world)
+    # add a new bug if there are less than MINBUGS bugs
     if [ ${alive_bugs} -lt ${MINBUGS} ]; then
+        #let new_bugs=${MINBUGS}-${alive_bugs}
         let new_bugs=${MINBUGS}-${alive_bugs}
-        #let new_bugs=(${MINBUGS}-${alive_bugs})/2
 
-        echo -n " Adding bugs in $i"
-        echo "Adding bugs" >> ${LOGFILE}
+        echo "Adding ${new_bugs} bugs in $i" >> ${LOGFILE}
+        let new_bugs=${new_bugs}/3+1
         for j in $(seq ${new_bugs}); do
-            ${SIMPLEWORLD} egg --code ${NOTHING} --position=$(random -e 16; echo $?),$(random -e 16; echo $?) --energy 256 ${DATABASE} >> ${LOGFILE} 2> /dev/null
-            ${SIMPLEWORLD} egg --code ${BRAINLESS} --position=$(random -e 16; echo $?),$(random -e 16; echo $?) --energy 1024 ${DATABASE} >> ${LOGFILE} 2> /dev/null
+            #${SIMPLEWORLD} egg --code ${NOTHING} --energy ${NOTHING_ENERGY} ${DATABASE} >> ${LOGFILE}
+            ${SIMPLEWORLD} egg --code ${HERBIVOROUS} --energy ${HERBIVOROUS_ENERGY} ${DATABASE} >> ${LOGFILE}
+            ${SIMPLEWORLD} egg --code ${BRAINLESS} --energy ${BRAINLESS_ENERGY} ${DATABASE} >> ${LOGFILE}
         done
-    fi
 
-    # add food if there are less than 64 bugs (1/4 of the world) and less
-    # than 64 food
-    if [ ${alive_bugs} -lt 64 -a ${food} -lt 64 ]; then
-        let new_food=${MINBUGSFOOD}-${alive_bugs}
+        # add food if there are less than MINFOOD food
+        if [ ${food} -lt ${MINFOOD} ]; then
+            let new_food=${MINFOOD}-${food}
 
-        echo -n " Adding food in $i"
-        echo "Adding food" >> ${LOGFILE}
-        for j in $(seq ${new_food}); do
-            ${SIMPLEWORLD} food --position=$(random -e 16; echo $?),$(random -e 16; echo $?) --energy 512 ${DATABASE} >> ${LOGFILE} 2> /dev/null
-        done
+            echo "Adding ${new_food} food in $i" >> ${LOGFILE}
+            for j in $(seq ${new_food}); do
+                ${SIMPLEWORLD} food --size 512 ${DATABASE} >> ${LOGFILE}
+            done
+        fi
     fi
 
     ${SIMPLEWORLD} run --cycles 1024 ${DATABASE} >> ${LOGFILE}

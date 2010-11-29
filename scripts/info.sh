@@ -20,8 +20,8 @@ WHERE time = (SELECT max(time)
 
 # Bugs alive
 sql_alive="\
-SELECT Bug.id as id, AliveBug.energy as energy, World.position_x as position_x,
-       World.position_y as position_y,
+SELECT Bug.id as id, AliveBug.energy as energy, length(code) as size,
+       World.position_x as x, World.position_y as y,
        (SELECT MAX(time) FROM Environment) - AliveBug.birth as age,
        COUNT(Mutation.bug_id) as mutations
 FROM Bug
@@ -40,42 +40,35 @@ ORDER BY AliveBug.energy DESC;"
 sql_age="\
 SELECT bug_id as id, (SELECT max(time) FROM Environment) - birth AS age
 FROM AliveBug
-
-UNION
-
-SELECT bug_id as id, death - birth AS age
-FROM DeadBug
-
-ORDER BY age DESC
-
-LIMIT 100;"
+ORDER BY age DESC;"
 
 # Bugs with more sons
 sql_sons="\
 SELECT father_id, count(father_id) AS sons
 FROM Bug
-WHERE father_id IS NOT NULL
+WHERE father_id IS NOT NULL AND father_id IN (SELECT bug_id
+                                              FROM AliveBug)
 GROUP BY father_id
-ORDER BY sons DESC
-LIMIT 100;"
+ORDER BY sons DESC;"
 
 
 # Bugs with more kills
 sql_kills="\
 SELECT killer_id, count(killer_id) AS kills
 FROM DeadBug
-WHERE killer_id IS NOT NULL
+WHERE killer_id IS NOT NULL AND killer_id IN (SELECT bug_id
+                                              FROM AliveBug)
 GROUP BY killer_id
-ORDER BY kills DESC
-LIMIT 100;"
+ORDER BY kills DESC;"
 
 # Bugs with more mutations
 sql_mutations="\
 SELECT bug_id, count(position) AS mutations
 FROM Mutation
+WHERE bug_id IN (SELECT bug_id
+                 FROM AliveBug)
 GROUP BY bug_id
-ORDER BY mutations DESC
-LIMIT 100;"
+ORDER BY mutations DESC;"
 
 
 # sql_all="\
