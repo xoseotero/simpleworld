@@ -112,7 +112,7 @@ void Memory::resize(Address size)
  */
 Word Memory::get_word(Address address, bool system_endian) const
 {
-  if (address + sizeof(Word) > this->size_)
+  if (address > this->size_ or address + sizeof(Word) > this->size_)
     throw EXCEPTION1(MemoryError, boost::str(boost::format("\
 Address 0x%08X is out of range")
                                             % address), address);
@@ -141,7 +141,7 @@ Address 0x%08X is out of range")
  */
 HalfWord Memory::get_halfword(Address address, bool system_endian) const
 {
-  if (address + sizeof(HalfWord) > this->size_)
+  if (address > this->size_ or address + sizeof(HalfWord) > this->size_)
     throw EXCEPTION1(MemoryError, boost::str(boost::format("\
 Address 0x%08X is out of range")
                                             % address), address);
@@ -166,7 +166,7 @@ Address 0x%08X is out of range")
  */
 QuarterWord Memory::get_quarterword(Address address) const
 {
-  if (address + sizeof(QuarterWord) > this->size_)
+  if (address > this->size_ or address + sizeof(QuarterWord) > this->size_)
     throw EXCEPTION1(MemoryError, boost::str(boost::format("\
 Address 0x%08X is out of range")
                                             % address), address);
@@ -187,7 +187,7 @@ Address 0x%08X is out of range")
  */
 void Memory::set_word(Address address, Word value, bool system_endian)
 {
-  if (address + sizeof(Word) > this->size_)
+  if (address > this->size_ or address + sizeof(Word) > this->size_)
     throw EXCEPTION1(MemoryError, boost::str(boost::format("\
 Address 0x%08X is out of range")
                                             % address), address);
@@ -218,7 +218,7 @@ Address 0x%08X is out of range")
  */
 void Memory::set_halfword(Address address, HalfWord value, bool system_endian)
 {
-  if (address + sizeof(HalfWord) > this->size_)
+  if (address > this->size_ or address + sizeof(HalfWord) > this->size_)
     throw EXCEPTION1(MemoryError, boost::str(boost::format("\
 Address 0x%08X is out of range")
                                             % address), address);
@@ -245,7 +245,7 @@ Address 0x%08X is out of range")
  */
 void Memory::set_quarterword(Address address, QuarterWord value)
 {
-  if (address + sizeof(QuarterWord) > this->size_)
+  if (address > this->size_ or address + sizeof(QuarterWord) > this->size_)
     throw EXCEPTION1(MemoryError, boost::str(boost::format("\
 Address 0x%08X is out of range")
                                             % address), address);
