@@ -112,6 +112,7 @@ CREATE TRIGGER Environment_update_time\n\
 BEFORE UPDATE\n\
 ON Environment\n\
 FOR EACH ROW\n\
+WHEN OLD.time <> NEW.time\n\
 BEGIN\n\
   SELECT RAISE(ROLLBACK, 'There is a older time')\n\
   WHERE (SELECT max(time)\n\
