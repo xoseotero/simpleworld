@@ -18,6 +18,8 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <cstdlib>
+
 #include <boost/format.hpp>
 
 #include "worlderror.hpp"
@@ -159,6 +161,35 @@ Element* World::get(Position position) const
   CHECK_NOTUSED(this->terrain_, position);
 
   return this->terrain_[position.x][position.y];
+}
+
+
+/**
+ * Get a random unused position.
+ * @return the unused position.
+ * @exception WorldError if there aren't unused poisiton.
+ */
+Position World::unused_position() const
+{
+  if (this->size_.x * this->size_.y == this->num_elements_)
+    throw EXCEPTION(WorldError, "There aren't unused positions");
+
+  Position pos;
+  do {
+    pos.x = float(this->size_.x) * (std::rand() / (RAND_MAX + 1.0));
+    pos.y = float(this->size_.y) * (std::rand() / (RAND_MAX + 1.0));
+  } while (this->terrain_[pos.x][pos.y] != NULL);
+
+  return pos;
+}
+
+/**
+ * Get a random orientation.
+ * @return the random orientation.
+ */
+Orientation World::random_orientation()
+{
+  return static_cast<Orientation>(float(4) * (std::rand() / (RAND_MAX + 1.0)));
 }
 
 

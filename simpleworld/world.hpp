@@ -25,6 +25,7 @@
 #include <boost/multi_array.hpp>
 
 #include <simpleworld/ints.hpp>
+#include <simpleworld/types.hpp>
 #include <simpleworld/element.hpp>
 
 namespace simpleworld
@@ -106,6 +107,20 @@ public:
    * @exception WorldError if the position is not used.
    */
   Element* operator[](Position position) const { return this->get(position); };
+
+
+  /**
+   * Get a random unused position.
+   * @return the unused position.
+   * @exception WorldError if there aren't unused poisiton.
+   */
+  Position unused_position() const;
+
+  /**
+   * Get a random orientation.
+   * @return the random orientation.
+   */
+  static Orientation random_orientation();
 
 
   /**

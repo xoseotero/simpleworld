@@ -28,12 +28,12 @@
 #include <simpleworld/types.hpp>
 #include <simpleworld/simpleworld.hpp>
 #include <simpleworld/world.hpp>
+#include <simpleworld/worlderror.hpp>
 #include <simpleworld/cpu/memory_file.hpp>
 namespace sw = simpleworld;
 namespace cpu = simpleworld::cpu;
 
 #include "simpleworld.hpp"
-#include "random.hpp"
 
 
 // Default values
@@ -181,17 +181,15 @@ void sw_egg(int argc, char* argv[])
 {
   parse_cmd(argc, argv);
   sw::SimpleWorld simpleworld(database_path);
-  sw::World world(simpleworld.world());
-  if (world.num_elements() == world.size().x * world.size().y) {
-    std::cerr << "Can't add a egg because the world is full" << std::endl;
-    std::exit(1);
-  }
 
   // set a random position and orientation as the default
-  do {
-    position = random_position(world.size());
-  } while (world.used(position));
-  orientation = random_orientation();
+  try {
+    position = simpleworld.world().unused_position();
+  } catch (const sw::WorldError&) {
+    std::cerr << "Can't add food because the world is full" << std::endl;
+    std::exit(1);
+  }
+  orientation = sw::World::random_orientation();
 
   parse_cmd(argc, argv);
   simpleworld.add_egg(energy, position, orientation,

@@ -28,10 +28,10 @@
 #include <simpleworld/types.hpp>
 #include <simpleworld/simpleworld.hpp>
 #include <simpleworld/world.hpp>
+#include <simpleworld/worlderror.hpp>
 namespace sw = simpleworld;
 
 #include "simpleworld.hpp"
-#include "random.hpp"
 
 
 // Default values
@@ -159,16 +159,14 @@ void sw_food(int argc, char* argv[])
 {
   parse_cmd(argc, argv);
   sw::SimpleWorld simpleworld(database_path);
-  sw::World world(simpleworld.world());
-  if (world.num_elements() == world.size().x * world.size().y) {
+
+  // set a random position as the default
+  try {
+    position = simpleworld.world().unused_position();
+  } catch (const sw::WorldError&) {
     std::cerr << "Can't add food because the world is full" << std::endl;
     std::exit(1);
   }
-
-  // set a random position as the default
-  do {
-    position = random_position(world.size());
-  } while (world.used(position));
 
   parse_cmd(argc, argv);
   simpleworld.add_food(position, size);

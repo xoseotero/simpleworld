@@ -12,7 +12,6 @@
 # The second option was used
 
 set(SIMPLEWORLD_EXE_SRCS
-  random.cpp
   table.cpp
   create.cpp
   run.cpp

@@ -154,6 +154,47 @@ BOOST_AUTO_TEST_CASE(world_remove_notused)
 }
 
 /**
+ * Get an unused position.
+ */
+BOOST_AUTO_TEST_CASE(world_unused_position)
+{
+  sw::World world(16, 16);
+  sw::Position p = world.unused_position();
+
+  BOOST_CHECK_EQUAL(world.used(p), false);
+  BOOST_CHECK(p.x >= 0 and p.x < 16);
+  BOOST_CHECK(p.y >= 0 and p.y < 16);
+}
+
+/**
+ * Get an unused position with the World full.
+ */
+BOOST_AUTO_TEST_CASE(world_unused_position_full)
+{
+  sw::World world(16, 16);
+  sw::Element e(sw::ElementBug);
+  sw::Position p;
+  for (p.x = 0; p.x < 16; p.x++)
+    for (p.y = 0; p.y < 16; p.y++)
+      world.add(&e, p);
+
+  BOOST_CHECK_THROW(world.unused_position(), sw::WorldError);
+}
+
+/**
+ * Get a random orientation.
+ */
+BOOST_AUTO_TEST_CASE(world_random_orientation)
+{
+  sw::Orientation o = sw::World::random_orientation();
+
+  BOOST_CHECK(o == sw::OrientationNorth or
+              o == sw::OrientationEast or
+              o == sw::OrientationSouth or
+              o == sw::OrientationWest);
+}
+
+/**
  * Move elements in the World.
  */
 BOOST_AUTO_TEST_CASE(world_move)
