@@ -114,10 +114,10 @@ BEGIN
          WHERE time=(SELECT max(time)
                      FROM Environment)) <= NEW.position_x;
   SELECT RAISE(ROLLBACK, 'position_y is out of the World')
-  WHERE (SELECT size_x
+  WHERE (SELECT size_y
          FROM Environment
          WHERE time=(SELECT max(time)
-                     FROM Environment)) <= NEW.position_x;
+                     FROM Environment)) <= NEW.position_y;
 END;
 
 CREATE TRIGGER World_update_position_x
@@ -138,10 +138,10 @@ ON World
 FOR EACH ROW
 BEGIN
   SELECT RAISE(ROLLBACK, 'position_y is out of the World')
-  WHERE (SELECT size_x
+  WHERE (SELECT size_y
          FROM Environment
          WHERE time=(SELECT max(time)
-                     FROM Environment)) <= NEW.position_x;
+                     FROM Environment)) <= NEW.position_y;
 END;
 
 

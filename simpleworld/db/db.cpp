@@ -167,10 +167,10 @@ BEGIN\n\
          WHERE time=(SELECT max(time)\n\
                      FROM Environment)) <= NEW.position_x;\n\
   SELECT RAISE(ROLLBACK, 'position_y is out of the World')\n\
-  WHERE (SELECT size_x\n\
+  WHERE (SELECT size_y\n\
          FROM Environment\n\
          WHERE time=(SELECT max(time)\n\
-                     FROM Environment)) <= NEW.position_x;\n\
+                     FROM Environment)) <= NEW.position_y;\n\
 END;",
 
     "\
@@ -193,10 +193,10 @@ ON World\n\
 FOR EACH ROW\n\
 BEGIN\n\
   SELECT RAISE(ROLLBACK, 'position_y is out of the World')\n\
-  WHERE (SELECT size_x\n\
+  WHERE (SELECT size_y\n\
          FROM Environment\n\
          WHERE time=(SELECT max(time)\n\
-                     FROM Environment)) <= NEW.position_x;\n\
+                     FROM Environment)) <= NEW.position_y;\n\
 END;",
 
 
