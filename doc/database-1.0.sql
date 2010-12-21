@@ -59,10 +59,9 @@ BEGIN
 END;
 
 CREATE TRIGGER Environment_update_time
-BEFORE UPDATE
+BEFORE UPDATE OF time
 ON Environment
 FOR EACH ROW
-WHEN OLD.time <> NEW.time
 BEGIN
   SELECT RAISE(ROLLBACK, 'There is a older time')
   WHERE (SELECT max(time)
@@ -104,7 +103,7 @@ CREATE TABLE World
 );
 
 /* positions must be less than the size of the world */
-CREATE TRIGGER World_insert_position_x
+CREATE TRIGGER World_insert
 BEFORE INSERT
 ON World
 FOR EACH ROW
@@ -114,13 +113,6 @@ BEGIN
          FROM Environment
          WHERE time=(SELECT max(time)
                      FROM Environment)) <= NEW.position_x;
-END;
-
-CREATE TRIGGER World_insert_position_y
-BEFORE INSERT
-ON World
-FOR EACH ROW
-BEGIN
   SELECT RAISE(ROLLBACK, 'position_y is out of the World')
   WHERE (SELECT size_x
          FROM Environment
@@ -129,10 +121,9 @@ BEGIN
 END;
 
 CREATE TRIGGER World_update_position_x
-BEFORE UPDATE
+BEFORE UPDATE OF position_x
 ON World
 FOR EACH ROW
-WHEN OLD.position_x <> NEW.position_x
 BEGIN
   SELECT RAISE(ROLLBACK, 'position_x is out of the World')
   WHERE (SELECT size_x
@@ -142,10 +133,9 @@ BEGIN
 END;
 
 CREATE TRIGGER World_update_position_y
-BEFORE UPDATE
+BEFORE UPDATE OF position_y
 ON World
 FOR EACH ROW
-WHEN OLD.position_y <> NEW.position_y
 BEGIN
   SELECT RAISE(ROLLBACK, 'position_y is out of the World')
   WHERE (SELECT size_x
@@ -248,10 +238,9 @@ BEGIN
 END;
 
 CREATE TRIGGER AliveBug_update_time_last_action
-BEFORE UPDATE
+BEFORE UPDATE OF time_last_action
 ON AliveBug
 FOR EACH ROW
-WHEN OLD.time_last_action <> NEW.time_last_action
 BEGIN
   SELECT RAISE(ROLLBACK, 'The time_last_action is in the future')
   WHERE (SELECT max(time)
@@ -272,10 +261,9 @@ BEGIN
 END;
 
 CREATE TRIGGER AliveBug_update_action_time
-BEFORE UPDATE
+BEFORE UPDATE OF action_time
 ON AliveBug
 FOR EACH ROW
-WHEN OLD.action_time <> NEW.action_time
 BEGIN
   SELECT RAISE(ROLLBACK, 'The action_time is in the past')
   WHERE (SELECT max(time)

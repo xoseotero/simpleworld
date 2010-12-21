@@ -109,10 +109,9 @@ END;",
 
     "\
 CREATE TRIGGER Environment_update_time\n\
-BEFORE UPDATE\n\
+BEFORE UPDATE OF time\n\
 ON Environment\n\
 FOR EACH ROW\n\
-WHEN OLD.time <> NEW.time\n\
 BEGIN\n\
   SELECT RAISE(ROLLBACK, 'There is a older time')\n\
   WHERE (SELECT max(time)\n\
@@ -157,7 +156,7 @@ CREATE TABLE World\n\
 
     /* positions must be less than the size of the world */
     "\
-CREATE TRIGGER World_insert_position_x\n\
+CREATE TRIGGER World_insert\n\
 BEFORE INSERT\n\
 ON World\n\
 FOR EACH ROW\n\
@@ -167,14 +166,6 @@ BEGIN\n\
          FROM Environment\n\
          WHERE time=(SELECT max(time)\n\
                      FROM Environment)) <= NEW.position_x;\n\
-END;",
-
-    "\
-CREATE TRIGGER World_insert_position_y\n\
-BEFORE INSERT\n\
-ON World\n\
-FOR EACH ROW\n\
-BEGIN\n\
   SELECT RAISE(ROLLBACK, 'position_y is out of the World')\n\
   WHERE (SELECT size_x\n\
          FROM Environment\n\
@@ -184,10 +175,9 @@ END;",
 
     "\
 CREATE TRIGGER World_update_position_x\n\
-BEFORE UPDATE\n\
+BEFORE UPDATE OF position_x\n\
 ON World\n\
 FOR EACH ROW\n\
-WHEN OLD.position_x <> NEW.position_x\n\
 BEGIN\n\
   SELECT RAISE(ROLLBACK, 'position_x is out of the World')\n\
   WHERE (SELECT size_x\n\
@@ -198,10 +188,9 @@ END;",
 
     "\
 CREATE TRIGGER World_update_position_y\n\
-BEFORE UPDATE\n\
+BEFORE UPDATE OF position_y\n\
 ON World\n\
 FOR EACH ROW\n\
-WHEN OLD.position_y <> NEW.position_y\n\
 BEGIN\n\
   SELECT RAISE(ROLLBACK, 'position_y is out of the World')\n\
   WHERE (SELECT size_x\n\
@@ -311,10 +300,9 @@ END;",
 
     "\
 CREATE TRIGGER AliveBug_update_time_last_action\n\
-BEFORE UPDATE\n\
+BEFORE UPDATE OF time_last_action\n\
 ON AliveBug\n\
 FOR EACH ROW\n\
-WHEN OLD.time_last_action <> NEW.time_last_action\n\
 BEGIN\n\
   SELECT RAISE(ROLLBACK, 'The time_last_action is in the future')\n\
   WHERE (SELECT max(time)\n\
@@ -337,10 +325,9 @@ END;",
 
     "\
 CREATE TRIGGER AliveBug_update_action_time\n\
-BEFORE UPDATE\n\
+BEFORE UPDATE OF action_time\n\
 ON AliveBug\n\
 FOR EACH ROW\n\
-WHEN OLD.action_time <> NEW.action_time\n\
 BEGIN\n\
   SELECT RAISE(ROLLBACK, 'The action_time is in the past')\n\
   WHERE (SELECT max(time)\n\
