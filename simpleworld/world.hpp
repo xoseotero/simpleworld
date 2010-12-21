@@ -59,9 +59,17 @@ public:
 
   /**
    * Number of elements in the World.
-   * @return the number of element.
+   * @return the number of elements.
    */
   Uint16 num_elements() const { return this->num_elements_; }
+
+  /**
+   * Number of elements in a region of the World.
+   * @param start left/top position of the region.
+   * @param end right/bottom position of the region.
+   * @return the number of elements.
+   */
+  Uint16 num_elements(Position start, Position end) const;
 
 
   /**
@@ -112,9 +120,18 @@ public:
   /**
    * Get a random unused position.
    * @return the unused position.
-   * @exception WorldError if there aren't unused poisiton.
+   * @exception WorldError if there aren't unused positions.
    */
   Position unused_position() const;
+
+  /**
+   * Get a random unused position inside a region of the World.
+   * @param start left/top position of the region.
+   * @param end right/bottom position of the region.
+   * @return the unused position.
+   * @exception WorldError if there aren't unused positions.
+   */
+  Position unused_position(Position start, Position end) const;
 
   /**
    * Get a random orientation.

@@ -100,6 +100,23 @@ World::World(Position size)
       this->terrain_[i.x][i.y] = NULL;
 }
 
+/**
+ * Number of elements in a region of the World.
+ * @param start left/top position of the region.
+ * @param end right/bottom position of the region.
+ * @return the number of elements.
+ */
+Uint16 World::num_elements(Position start, Position end) const
+{
+  Uint16 count = 0;
+  for (Coord x = start.x; x < end.x; x++)
+    for (Coord y = start.y; y < end.y; y++)
+      if (this->terrain_[x][y] != NULL)
+        count++;
+
+  return count;
+}
+
 
 /**
  * Add a element to the World.
@@ -167,7 +184,7 @@ Element* World::get(Position position) const
 /**
  * Get a random unused position.
  * @return the unused position.
- * @exception WorldError if there aren't unused poisiton.
+ * @exception WorldError if there aren't unused positions.
  */
 Position World::unused_position() const
 {
@@ -178,6 +195,28 @@ Position World::unused_position() const
   do {
     pos.x = float(this->size_.x) * (std::rand() / (RAND_MAX + 1.0));
     pos.y = float(this->size_.y) * (std::rand() / (RAND_MAX + 1.0));
+  } while (this->terrain_[pos.x][pos.y] != NULL);
+
+  return pos;
+}
+
+/**
+ * Get a random unused position inside a region of the World.
+ * @param start left/top position of the region.
+ * @param end right/bottom position of the region.
+ * @return the unused position.
+ * @exception WorldError if there aren't unused positions.
+ */
+Position World::unused_position(Position start, Position end) const
+{
+  Position size(end.x - start.x, end.y - start.y);
+  if (size.x * size.y == this->num_elements(start, end))
+    throw EXCEPTION(WorldError, "There aren't unused positions");
+
+  Position pos;
+  do {
+    pos.x = start.x + float(size.x) * (std::rand() / (RAND_MAX + 1.0));
+    pos.y = start.y + float(size.y) * (std::rand() / (RAND_MAX + 1.0));
   } while (this->terrain_[pos.x][pos.y] != NULL);
 
   return pos;

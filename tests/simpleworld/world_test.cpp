@@ -182,6 +182,36 @@ BOOST_AUTO_TEST_CASE(world_unused_position_full)
 }
 
 /**
+ * Get an unused position in a region.
+ */
+BOOST_AUTO_TEST_CASE(world_unused_position_region)
+{
+  sw::World world(16, 16);
+  sw::Position start(3, 5), end(10, 6);
+  sw::Position p = world.unused_position(start, end);
+
+  BOOST_CHECK_EQUAL(world.used(p), false);
+  BOOST_CHECK(p.x >= start.x and p.x < end.x);
+  BOOST_CHECK(p.y >= start.y and p.y < end.y);
+}
+
+/**
+ * Get an unused position in a region with the region full.
+ */
+BOOST_AUTO_TEST_CASE(world_unused_position_region_full)
+{
+  sw::World world(16, 16);
+  sw::Position start(4, 2), end(6, 3);
+  sw::Element e(sw::ElementBug);
+  sw::Position p;
+  for (p.x = start.x; p.x < end.x; p.x++)
+    for (p.y = start.y; p.y < end.y; p.y++)
+      world.add(&e, p);
+
+  BOOST_CHECK_THROW(world.unused_position(start, end), sw::WorldError);
+}
+
+/**
  * Get a random orientation.
  */
 BOOST_AUTO_TEST_CASE(world_random_orientation)
