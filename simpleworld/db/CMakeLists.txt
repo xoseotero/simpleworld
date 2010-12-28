@@ -3,6 +3,7 @@ set(DB_SRCS
   blob.cpp
   environment.cpp
   world.cpp
+  spawn.cpp
   food.cpp
   mutation.cpp
   bug.cpp

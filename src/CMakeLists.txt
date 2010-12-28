@@ -17,6 +17,7 @@ set(SIMPLEWORLD_EXE_SRCS
   run.cpp
   vacuum.cpp
   info.cpp
+  spawn.cpp
   food.cpp
   egg.cpp
   env.cpp

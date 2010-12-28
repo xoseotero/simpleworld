@@ -67,6 +67,13 @@ void sw_info(int argc, char* argv[]);
 void sw_env(int argc, char* argv[]);
 
 /**
+ * Simple World spawn command.
+ * @param argc number of parameters.
+ * @param argv array of parameters.
+ */
+void sw_spawn(int argc, char* argv[]);
+
+/**
  * Simple World egg command.
  * @param argc number of parameters.
  * @param argv array of parameters.

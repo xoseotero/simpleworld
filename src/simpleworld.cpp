@@ -81,6 +81,7 @@ Available commands:\n\
   vacuum                     remove not used space from the database\n\
   info                       get information\n\
   env                        set the environment\n\
+  spawn                      add a new spawn\n\
   egg                        add a new egg\n\
   food                       add a new food\n\
 \n\
@@ -183,6 +184,8 @@ try {
       sw_info(argc - 1, argv + 1);
     else if (std::strcmp(argv[1], "env") == 0)
       sw_env(argc - 1, argv + 1);
+    else if (std::strcmp(argv[1], "spawn") == 0)
+      sw_spawn(argc -1, argv + 1);
     else if (std::strcmp(argv[1], "egg") == 0)
       sw_egg(argc - 1, argv + 1);
     else if (std::strcmp(argv[1], "food") == 0)

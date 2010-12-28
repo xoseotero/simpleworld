@@ -36,6 +36,7 @@
 #include <simpleworld/bug.hpp>
 #include <simpleworld/db/db.hpp>
 #include <simpleworld/db/environment.hpp>
+#include <simpleworld/db/spawn.hpp>
 #include <simpleworld/cpu/types.hpp>
 #include <simpleworld/cpu/memory.hpp>
 
@@ -183,6 +184,11 @@ protected:
 
 
   /**
+   * Spawn new eggs.
+   */
+  void spawn_eggs();
+
+  /**
    * Convert in bugs all the eggs that are old enough.
    */
   void eggs_birth();
@@ -262,6 +268,7 @@ protected:
   db::Environment* env_;
 
 private:
+  std::list<db::Spawn*> spawns_;
   std::list<Food*> foods_;
   std::list<Egg*> eggs_;
   std::list<Bug*> bugs_;

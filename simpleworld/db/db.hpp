@@ -123,6 +123,14 @@ public:
 
 
   /**
+   * List of spawns.
+   * @return the list of spawns.
+   * @exception DBException if there is a error in the database.
+   */
+  std::vector<ID> spawns();
+
+
+  /**
    * List of eggs, ordered by its conception time.
    * @return the list of eggs.
    * @exception DBException if there is a error in the database.

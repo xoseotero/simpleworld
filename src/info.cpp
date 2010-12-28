@@ -77,6 +77,7 @@ static void help()
 Show information about the World, by default the environment.\n\
 \n\
 Mandatory arguments to long options are mandatory for short options too.\n\
+      --spawns               show the spawns\n\
       --bugs                 show the alive bugs\n\
       --eggs                 show the eggs\n\
       --foods                show the food\n\
@@ -111,6 +112,7 @@ Report bugs to <%2%>.")
 // information from the command line
 static std::string database_path;
 
+static bool spawns_flag = false;
 static bool bugs_flag = false;
 static bool eggs_flag = false;
 static bool foods_flag = false;
@@ -141,6 +143,7 @@ static bool version_flag = false;
 static void parse_cmd(int argc, char* argv[])
 {
   struct option long_options[] = {
+    {"spawns", no_argument, NULL, 'P'},
     {"bugs", no_argument, NULL, 'B'},
     {"eggs", no_argument, NULL, 'E'},
     {"foods", no_argument, NULL, 'F'},
@@ -178,6 +181,9 @@ static void parse_cmd(int argc, char* argv[])
       break;
     switch (c)
     {
+    case 'P': // spawns
+      spawns_flag = true;
+      break;
     case 'B': // bugs
       bugs_flag = true;
       break;
@@ -293,6 +299,21 @@ WHERE id = (SELECT max(id)\n\
 ORDER BY id;", -1, &stmt, NULL))
     throw EXCEPTION(db::DBException, sqlite3_errmsg(sw.db()));
   show_query_line(true, "NULL", stmt);
+  sqlite3_finalize(stmt);
+}
+
+/**
+ * Show the spawns of the World.
+ * @param sw database.
+ */
+static void show_spawns(sw::SimpleWorld& sw)
+{
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(sw.db(), "\
+SELECT id, frequency, max, start_x, start_y, end_x, end_y\n\
+FROM Spawn;", -1, &stmt, NULL))
+    throw EXCEPTION(db::DBException, sqlite3_errmsg(sw.db()));
+  show_query_column(true, 10, "NULL", stmt);
   sqlite3_finalize(stmt);
 }
 
@@ -619,7 +640,9 @@ void sw_info(int argc, char* argv[])
   parse_cmd(argc, argv);
   sw::SimpleWorld simpleworld(database_path);
 
-  if (bugs_flag)
+  if (spawns_flag)
+    show_spawns(simpleworld);
+  else if (bugs_flag)
     show_bugs(simpleworld);
   else if (eggs_flag)
     show_eggs(simpleworld);

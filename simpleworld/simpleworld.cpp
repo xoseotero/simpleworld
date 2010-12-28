@@ -72,6 +72,14 @@ SimpleWorld::SimpleWorld(std::string filename)
   // Load the elements of the world
   std::vector< db::ID > ids;
 
+  ids = this->spawns();
+  for (std::vector< db::ID >::const_iterator iter = ids.begin();
+       iter != ids.end();
+       ++iter) {
+    db::Spawn* ptr = new db::Spawn(this, *iter);
+    this->spawns_.push_back(ptr);
+  }
+
   ids = this->food();
   for (std::vector< db::ID >::const_iterator iter = ids.begin();
        iter != ids.end();
@@ -209,16 +217,18 @@ void SimpleWorld::run(Time cycles)
     // execute each cycle in a transaction
     db::Transaction transaction(this, db::Transaction::immediate);
 
+    this->spawn_eggs();
+    this->eggs_birth();
+    this->bugs_mutate();
+
     // update the time of the environment
     Time time = this->env_->time() + 1;
     this->env_->time(time);
 
-    this->bugs_mutate();
     if (time % 64 == 0)
       this->bugs_timer();
     this->bugs_run();
     this->bugs_laziness();
-    this->eggs_birth();
 
     transaction.commit();
   }
@@ -615,6 +625,39 @@ Position SimpleWorld::front(Bug* bug)
                              this->world_->size());
 }
 
+
+/**
+ * Spawn new eggs.
+ */
+void SimpleWorld::spawn_eggs()
+{
+  for (std::list<db::Spawn*>::iterator spawn = this->spawns_.begin();
+       spawn != this->spawns_.end();
+       ++spawn)
+    if (this->env_->time() % (*spawn)->frequency() == 0) {
+      Position start((*spawn)->start_x(), (*spawn)->start_y());
+      Position end((*spawn)->end_x(), (*spawn)->end_y());
+      Uint16 num_elements = this->world_->num_elements(start, end);
+      Uint16 max = (*spawn)->max();
+      Energy energy = (*spawn)->energy();
+      if (num_elements < max) {
+        Uint32 size;
+        boost::shared_array<Uint8> data = (*spawn)->code().read(&size);
+
+        for (Uint16 i = 0; i < max - num_elements; i++) {
+          db::ID id = db::Bug::insert(this, data.get(), size);
+          Position position = this->world_->unused_position(start, end);
+          db::ID world_id = db::World::insert(this, position.x, position.y,
+                                              World::random_orientation());
+          db::Egg::insert(this, id, world_id, energy, this->env_->time());
+
+          Egg* egg = new Egg(this, id);
+          this->eggs_.push_back(egg);
+          this->world_->add(egg, position);
+        }
+      }
+    }
+}
 
 /**
  * Convert in bugs all the eggs that are old enough.
