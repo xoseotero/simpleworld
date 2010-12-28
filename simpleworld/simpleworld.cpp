@@ -213,22 +213,24 @@ void SimpleWorld::add_food(Position position, Energy size)
  */
 void SimpleWorld::run(Time cycles)
 {
-  for (; cycles > 0; cycles--) {
-    // execute each cycle in a transaction
+  while (cycles > 0) {
+    // run each 16 cycles (time to do a action) in a transaction
     db::Transaction transaction(this, db::Transaction::immediate);
 
-    this->spawn_eggs();
-    this->eggs_birth();
-    this->bugs_mutate();
+    for (Time i = 0; i < 16 and cycles > 0; i++, cycles--) {
+      this->spawn_eggs();
+      this->eggs_birth();
+      this->bugs_mutate();
 
-    // update the time of the environment
-    Time time = this->env_->time() + 1;
-    this->env_->time(time);
+      // update the time of the environment
+      Time time = this->env_->time() + 1;
+      this->env_->time(time);
 
-    if (time % 64 == 0)
-      this->bugs_timer();
-    this->bugs_run();
-    this->bugs_laziness();
+      if (time % 64 == 0)
+        this->bugs_timer();
+      this->bugs_run();
+      this->bugs_laziness();
+    }
 
     transaction.commit();
   }
