@@ -204,8 +204,8 @@ void sw_spawn(int argc, char* argv[])
   // set max, start and end as the default
   start.x = 0;
   start.y = 0;
-  end.x = world.size().x - 1;
-  end.y = world.size().y - 1;
+  end.x = world.size().x;
+  end.y = world.size().y;
   max = end.x - start.x * end.y - start.y;
 
   parse_cmd(argc, argv);
