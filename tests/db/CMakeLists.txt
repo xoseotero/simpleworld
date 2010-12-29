@@ -33,6 +33,13 @@ if(UNIT_TESTS)
     ${Boost_REGEX_LIBRARY} ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY}
     ${SQLite3x_LIB} ${SQLite3_LIB})
 
+  add_executable(db_resource_test resource_test.cpp)
+  target_link_libraries(db_resource_test test_db_opendb
+    simpleworld_cpu simpleworld_db simpleworld
+    ${Boost_PROGRAM_OPTIONS_LIBRARY} ${Boost_FILESYSTEM_LIBRARY}
+    ${Boost_REGEX_LIBRARY} ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY}
+    ${SQLite3x_LIB} ${SQLite3_LIB})
+
   add_executable(db_food_test food_test.cpp)
   target_link_libraries(db_food_test test_db_opendb
     simpleworld_cpu simpleworld_db simpleworld
@@ -93,6 +100,7 @@ if(UNIT_TESTS)
   add_test("db::Environment" db_environment_test)
   add_test("db::World" db_world_test)
   add_test("db::Spawn" db_spawn_test)
+  add_test("db::Resource" db_resource_test)
   add_test("db::Food" db_food_test)
   add_test("db::Mutation" db_mutation_test)
   add_test("db::Bug" db_bug_test)

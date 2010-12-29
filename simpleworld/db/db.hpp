@@ -129,6 +129,13 @@ public:
    */
   std::vector<ID> spawns();
 
+  /**
+   * List of resources.
+   * @return the list of resources.
+   * @exception DBException if there is a error in the database.
+   */
+  std::vector<ID> resources();
+
 
   /**
    * List of eggs, ordered by its conception time.

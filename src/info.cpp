@@ -78,6 +78,7 @@ Show information about the World, by default the environment.\n\
 \n\
 Mandatory arguments to long options are mandatory for short options too.\n\
       --spawns               show the spawns\n\
+      --resources            show the resources\n\
       --bugs                 show the alive bugs\n\
       --eggs                 show the eggs\n\
       --foods                show the food\n\
@@ -113,6 +114,7 @@ Report bugs to <%2%>.")
 static std::string database_path;
 
 static bool spawns_flag = false;
+static bool resources_flag = false;
 static bool bugs_flag = false;
 static bool eggs_flag = false;
 static bool foods_flag = false;
@@ -144,6 +146,7 @@ static void parse_cmd(int argc, char* argv[])
 {
   struct option long_options[] = {
     {"spawns", no_argument, NULL, 'P'},
+    {"resources", no_argument, NULL, 'R'},
     {"bugs", no_argument, NULL, 'B'},
     {"eggs", no_argument, NULL, 'E'},
     {"foods", no_argument, NULL, 'F'},
@@ -183,6 +186,9 @@ static void parse_cmd(int argc, char* argv[])
     {
     case 'P': // spawns
       spawns_flag = true;
+      break;
+    case 'R': // resources
+      resources_flag = true;
       break;
     case 'B': // bugs
       bugs_flag = true;
@@ -312,6 +318,21 @@ static void show_spawns(sw::SimpleWorld& sw)
   if (sqlite3_prepare_v2(sw.db(), "\
 SELECT id, frequency, max, start_x, start_y, end_x, end_y, energy\n\
 FROM Spawn;", -1, &stmt, NULL))
+    throw EXCEPTION(db::DBException, sqlite3_errmsg(sw.db()));
+  show_query_column(true, 10, "NULL", stmt);
+  sqlite3_finalize(stmt);
+}
+
+/**
+ * Show the resources of the World.
+ * @param sw database.
+ */
+static void show_resources(sw::SimpleWorld& sw)
+{
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(sw.db(), "\
+SELECT id, frequency, max, start_x, start_y, end_x, end_y, size\n\
+FROM Resource;", -1, &stmt, NULL))
     throw EXCEPTION(db::DBException, sqlite3_errmsg(sw.db()));
   show_query_column(true, 10, "NULL", stmt);
   sqlite3_finalize(stmt);
@@ -642,6 +663,8 @@ void sw_info(int argc, char* argv[])
 
   if (spawns_flag)
     show_spawns(simpleworld);
+  else if (resources_flag)
+    show_resources(simpleworld);
   else if (bugs_flag)
     show_bugs(simpleworld);
   else if (eggs_flag)

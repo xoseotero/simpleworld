@@ -250,6 +250,109 @@ END;
 
 
 /*******************
+ * Resource
+ */
+CREATE TABLE Resource(
+  id INTEGER NOT NULL,
+
+  frequency INTGER NOT NULL,
+
+  max INTEGER NOT NULL,
+  start_x INTEGER NOT NULL,
+  start_y INTEGER NOT NULL,
+  end_x INTEGER NOT NULL,
+  end_y INTEGER NOT NULL,
+
+  size INTENER NOT NULL,
+
+  PRIMARY KEY(id)
+  CHECK(frequency > 0),
+  CHECK(start_x >= 0),
+  CHECK(start_y >= 0),
+  CHECK(end_x > start_x),
+  CHECK(end_y > start_y),
+  CHECK(max <= (end_x - start_x) * (end_y - start_y)),
+  CHECK(size > 0)
+);
+
+/* regions must be inside the world */
+CREATE TRIGGER Resource_insert
+BEFORE INSERT
+ON Resource
+FOR EACH ROW
+BEGIN
+  SELECT RAISE(ROLLBACK, 'start_x is out of the World')
+  WHERE (SELECT size_x
+         FROM Environment
+         WHERE time=(SELECT max(time)
+                     FROM Environment)) <= NEW.start_x;
+  SELECT RAISE(ROLLBACK, 'start_y is out of the World')
+  WHERE (SELECT size_y
+         FROM Environment
+         WHERE time=(SELECT max(time)
+                     FROM Environment)) <= NEW.start_y;
+  SELECT RAISE(ROLLBACK, 'end_x is out of the World')
+  WHERE (SELECT size_x
+         FROM Environment
+         WHERE time=(SELECT max(time)
+                     FROM Environment)) < NEW.end_x;
+  SELECT RAISE(ROLLBACK, 'end_y is out of the World')
+  WHERE (SELECT size_y
+         FROM Environment
+         WHERE time=(SELECT max(time)
+                     FROM Environment)) < NEW.end_y;
+END;
+
+CREATE TRIGGER Resource_update_start_x
+BEFORE UPDATE OF start_x
+ON Resource
+FOR EACH ROW
+BEGIN
+  SELECT RAISE(ROLLBACK, 'start_x is out of the World')
+  WHERE (SELECT size_x
+         FROM Environment
+         WHERE time=(SELECT max(time)
+                     FROM Environment)) <= NEW.start_x;
+END;
+
+CREATE TRIGGER Resource_update_start_y
+BEFORE UPDATE OF start_y
+ON Resource
+FOR EACH ROW
+BEGIN
+  SELECT RAISE(ROLLBACK, 'start_y is out of the World')
+  WHERE (SELECT size_y
+         FROM Environment
+         WHERE time=(SELECT max(time)
+                     FROM Environment)) <= NEW.start_y;
+END;
+
+CREATE TRIGGER Resource_update_end_x
+BEFORE UPDATE OF end_x
+ON Resource
+FOR EACH ROW
+BEGIN
+  SELECT RAISE(ROLLBACK, 'end_x is out of the World')
+  WHERE (SELECT size_x
+         FROM Environment
+         WHERE time=(SELECT max(time)
+                     FROM Environment)) < NEW.end_x;
+END;
+
+CREATE TRIGGER Resource_update_end_y
+BEFORE UPDATE OF end_y
+ON Resource
+FOR EACH ROW
+BEGIN
+  SELECT RAISE(ROLLBACK, 'end_y is out of the World')
+  WHERE (SELECT size_y
+         FROM Environment
+         WHERE time=(SELECT max(time)
+                     FROM Environment)) < NEW.end_y;
+END;
+
+
+/*******************
  * Bug
  */
 CREATE TABLE Bug

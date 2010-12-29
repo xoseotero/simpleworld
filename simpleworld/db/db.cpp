@@ -310,6 +310,115 @@ END;",
 
 
     /*******************
+     * Resource
+     */
+    "\
+CREATE TABLE Resource(\n\
+  id INTEGER NOT NULL,\n\
+\n\
+  frequency INTGER NOT NULL,\n\
+\n\
+  max INTEGER NOT NULL,\n\
+  start_x INTEGER NOT NULL,\n\
+  start_y INTEGER NOT NULL,\n\
+  end_x INTEGER NOT NULL,\n\
+  end_y INTEGER NOT NULL,\n\
+\n\
+  size INTENER NOT NULL,\n\
+\n\
+  PRIMARY KEY(id)\n\
+  CHECK(frequency > 0),\n\
+  CHECK(start_x >= 0),\n\
+  CHECK(start_y >= 0),\n\
+  CHECK(end_x > start_x),\n\
+  CHECK(end_y > start_y),\n\
+  CHECK(max <= (end_x - start_x) * (end_y - start_y)),\n\
+  CHECK(size > 0)\n\
+);",
+
+    /* regions must be inside the world */
+    "\
+CREATE TRIGGER Resource_insert\n\
+BEFORE INSERT\n\
+ON Resource\n\
+FOR EACH ROW\n\
+BEGIN\n\
+  SELECT RAISE(ROLLBACK, 'start_x is out of the World')\n\
+  WHERE (SELECT size_x\n\
+         FROM Environment\n\
+         WHERE time=(SELECT max(time)\n\
+                     FROM Environment)) <= NEW.start_x;\n\
+  SELECT RAISE(ROLLBACK, 'start_y is out of the World')\n\
+  WHERE (SELECT size_y\n\
+         FROM Environment\n\
+         WHERE time=(SELECT max(time)\n\
+                     FROM Environment)) <= NEW.start_y;\n\
+  SELECT RAISE(ROLLBACK, 'end_x is out of the World')\n\
+  WHERE (SELECT size_x\n\
+         FROM Environment\n\
+         WHERE time=(SELECT max(time)\n\
+                     FROM Environment)) < NEW.end_x;\n\
+  SELECT RAISE(ROLLBACK, 'end_y is out of the World')\n\
+  WHERE (SELECT size_y\n\
+         FROM Environment\n\
+         WHERE time=(SELECT max(time)\n\
+                     FROM Environment)) < NEW.end_y;\n\
+END;",
+
+    "\
+CREATE TRIGGER Resource_update_start_x\n\
+BEFORE UPDATE OF start_x\n\
+ON Resource\n\
+FOR EACH ROW\n\
+BEGIN\n\
+  SELECT RAISE(ROLLBACK, 'start_x is out of the World')\n\
+  WHERE (SELECT size_x\n\
+         FROM Environment\n\
+         WHERE time=(SELECT max(time)\n\
+                     FROM Environment)) <= NEW.start_x;\n\
+END;",
+
+    "\
+CREATE TRIGGER Resource_update_start_y\n\
+BEFORE UPDATE OF start_y\n\
+ON Resource\n\
+FOR EACH ROW\n\
+BEGIN\n\
+  SELECT RAISE(ROLLBACK, 'start_y is out of the World')\n\
+  WHERE (SELECT size_y\n\
+         FROM Environment\n\
+         WHERE time=(SELECT max(time)\n\
+                     FROM Environment)) <= NEW.start_y;\n\
+END;",
+
+    "\
+CREATE TRIGGER Resource_update_end_x\n\
+BEFORE UPDATE OF end_x\n\
+ON Resource\n\
+FOR EACH ROW\n\
+BEGIN\n\
+  SELECT RAISE(ROLLBACK, 'end_x is out of the World')\n\
+  WHERE (SELECT size_x\n\
+         FROM Environment\n\
+         WHERE time=(SELECT max(time)\n\
+                     FROM Environment)) < NEW.end_x;\n\
+END;",
+
+    "\
+CREATE TRIGGER Resource_update_end_y\n\
+BEFORE UPDATE OF end_y\n\
+ON Resource\n\
+FOR EACH ROW\n\
+BEGIN\n\
+  SELECT RAISE(ROLLBACK, 'end_y is out of the World')\n\
+  WHERE (SELECT size_y\n\
+         FROM Environment\n\
+         WHERE time=(SELECT max(time)\n\
+                     FROM Environment)) < NEW.end_y;\n\
+END;",
+
+
+    /*******************
      * Bug
      */
     "\
@@ -710,6 +819,38 @@ std::vector<ID> DB::spawns()
   if (sqlite3_prepare_v2(this->db(), "\
 SELECT id\n\
 FROM Spawn;", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db()));
+
+  bool done = false;
+  std::vector<ID> ids;
+  while (not done)
+    switch (sqlite3_step(stmt)) {
+    case SQLITE_DONE:
+      done = true;
+      break;
+    case SQLITE_ROW:
+      ids.push_back(sqlite3_column_int64(stmt, 0));
+      break;
+    default:
+      throw EXCEPTION(DBException, sqlite3_errmsg(this->db()));
+    }
+
+  sqlite3_finalize(stmt);
+
+  return ids;
+}
+
+/**
+ * List of resources.
+ * @return the list of resources.
+ * @exception DBException if there is a error in the database.
+ */
+std::vector<ID> DB::resources()
+{
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(this->db(), "\
+SELECT id\n\
+FROM Resource;", -1, &stmt, NULL))
     throw EXCEPTION(DBException, sqlite3_errmsg(this->db()));
 
   bool done = false;

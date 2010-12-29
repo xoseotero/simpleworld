@@ -82,6 +82,7 @@ Available commands:\n\
   info                       get information\n\
   env                        set the environment\n\
   spawn                      add a new spawn\n\
+  resource                   add a new resource\n\
   egg                        add a new egg\n\
   food                       add a new food\n\
 \n\
@@ -186,6 +187,8 @@ try {
       sw_env(argc - 1, argv + 1);
     else if (std::strcmp(argv[1], "spawn") == 0)
       sw_spawn(argc -1, argv + 1);
+    else if (std::strcmp(argv[1], "resource") == 0)
+      sw_resource(argc -1, argv + 1);
     else if (std::strcmp(argv[1], "egg") == 0)
       sw_egg(argc - 1, argv + 1);
     else if (std::strcmp(argv[1], "food") == 0)

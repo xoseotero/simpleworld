@@ -4,6 +4,7 @@ set(DB_SRCS
   environment.cpp
   world.cpp
   spawn.cpp
+  resource.cpp
   food.cpp
   mutation.cpp
   bug.cpp

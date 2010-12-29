@@ -80,6 +80,14 @@ SimpleWorld::SimpleWorld(std::string filename)
     this->spawns_.push_back(ptr);
   }
 
+  ids = this->resources();
+  for (std::vector< db::ID >::const_iterator iter = ids.begin();
+       iter != ids.end();
+       ++iter) {
+    db::Resource* ptr = new db::Resource(this, *iter);
+    this->resources_.push_back(ptr);
+  }
+
   ids = this->food();
   for (std::vector< db::ID >::const_iterator iter = ids.begin();
        iter != ids.end();
@@ -219,6 +227,7 @@ void SimpleWorld::run(Time cycles)
 
     for (Time i = 0; i < 16 and cycles > 0; i++, cycles--) {
       this->spawn_eggs();
+      this->spawn_food();
       this->eggs_birth();
       this->bugs_mutate();
 
@@ -656,6 +665,34 @@ void SimpleWorld::spawn_eggs()
           Egg* egg = new Egg(this, id);
           this->eggs_.push_back(egg);
           this->world_->add(egg, position);
+        }
+      }
+    }
+}
+
+/**
+ * Spawn new food.
+ */
+void SimpleWorld::spawn_food()
+{
+  for (std::list<db::Resource*>::iterator resource = this->resources_.begin();
+       resource != this->resources_.end();
+       ++resource)
+    if (this->env_->time() % (*resource)->frequency() == 0) {
+      Position start((*resource)->start_x(), (*resource)->start_y());
+      Position end((*resource)->end_x(), (*resource)->end_y());
+      Uint16 num_elements = this->world_->num_elements(start, end);
+      Uint16 max = (*resource)->max();
+      Energy size = (*resource)->size();
+      if (num_elements < max) {
+        for (Uint16 i = 0; i < max - num_elements; i++) {
+          Position position = this->world_->unused_position(start, end);
+          db::ID world_id = db::World::insert(this, position.x, position.y);
+          db::ID id = db::Food::insert(this, world_id, size);
+
+          Food* food = new Food(this, id);
+          this->foods_.push_back(food);
+          this->world_->add(food, position);
         }
       }
     }

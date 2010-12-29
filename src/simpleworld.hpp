@@ -2,7 +2,7 @@
  * @file src/simpleworld.hpp
  * Simple World.
  *
- *  Copyright (C) 2008  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2008-2010  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -72,6 +72,13 @@ void sw_env(int argc, char* argv[]);
  * @param argv array of parameters.
  */
 void sw_spawn(int argc, char* argv[]);
+
+/**
+ * Simple World resource command.
+ * @param argc number of parameters.
+ * @param argv array of parameters.
+ */
+void sw_resource(int argc, char* argv[]);
 
 /**
  * Simple World egg command.
