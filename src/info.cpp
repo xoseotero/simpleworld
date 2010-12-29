@@ -310,7 +310,7 @@ static void show_spawns(sw::SimpleWorld& sw)
 {
   sqlite3_stmt* stmt;
   if (sqlite3_prepare_v2(sw.db(), "\
-SELECT id, frequency, max, start_x, start_y, end_x, end_y\n\
+SELECT id, frequency, max, start_x, start_y, end_x, end_y, energy\n\
 FROM Spawn;", -1, &stmt, NULL))
     throw EXCEPTION(db::DBException, sqlite3_errmsg(sw.db()));
   show_query_column(true, 10, "NULL", stmt);
