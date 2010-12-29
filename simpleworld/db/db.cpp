@@ -224,7 +224,8 @@ CREATE TABLE Spawn(\n\
   CHECK(end_x > start_x),\n\
   CHECK(end_y > start_y),\n\
   CHECK(max <= (end_x - start_x) * (end_y - start_y)),\n\
-  CHECK(energy > 0)\n\
+  CHECK(energy > 0),\n\
+  CHECK(length(code) >= 0 AND (length(code) % 4 = 0))\n \
 );",
 
     /* regions must be inside the world */

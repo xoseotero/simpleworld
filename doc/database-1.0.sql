@@ -169,7 +169,8 @@ CREATE TABLE Spawn(
   CHECK(end_x > start_x),
   CHECK(end_y > start_y),
   CHECK(max <= (end_x - start_x) * (end_y - start_y)),
-  CHECK(energy > 0)
+  CHECK(energy > 0),
+  CHECK(length(code) >= 0 AND (length(code) % 4 = 0))
 );
 
 /* regions must be inside the world */
