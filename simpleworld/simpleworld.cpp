@@ -663,6 +663,7 @@ void SimpleWorld::spawn_eggs()
           db::Egg::insert(this, id, world_id, energy, this->env_->time());
 
           Egg* egg = new Egg(this, id);
+          mutate(egg, this->env_->mutations_probability(), this->env_->time());
           this->eggs_.push_back(egg);
           this->world_->add(egg, position);
         }
