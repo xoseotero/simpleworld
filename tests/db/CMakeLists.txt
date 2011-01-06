@@ -82,8 +82,8 @@ if(UNIT_TESTS)
     ${Boost_REGEX_LIBRARY} ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY}
     ${SQLite3x_LIB} ${SQLite3_LIB})
 
-  add_executable(db_db_test db_test.cpp)
-  target_link_libraries(db_db_test test_db_opendb
+  add_executable(db_stats_test stats_test.cpp)
+  target_link_libraries(db_stats_test test_db_opendb
     simpleworld_cpu simpleworld_db simpleworld
     ${Boost_PROGRAM_OPTIONS_LIBRARY} ${Boost_FILESYSTEM_LIBRARY}
     ${Boost_REGEX_LIBRARY} ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY}
@@ -91,6 +91,13 @@ if(UNIT_TESTS)
 
   add_executable(db_transaction_test transaction_test.cpp)
   target_link_libraries(db_transaction_test test_db_opendb
+    simpleworld_cpu simpleworld_db simpleworld
+    ${Boost_PROGRAM_OPTIONS_LIBRARY} ${Boost_FILESYSTEM_LIBRARY}
+    ${Boost_REGEX_LIBRARY} ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY}
+    ${SQLite3x_LIB} ${SQLite3_LIB})
+
+  add_executable(db_db_test db_test.cpp)
+  target_link_libraries(db_db_test test_db_opendb
     simpleworld_cpu simpleworld_db simpleworld
     ${Boost_PROGRAM_OPTIONS_LIBRARY} ${Boost_FILESYSTEM_LIBRARY}
     ${Boost_REGEX_LIBRARY} ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY}
@@ -107,6 +114,7 @@ if(UNIT_TESTS)
   add_test("db::Egg" db_egg_test)
   add_test("db::AliveBug" db_alivebug_test)
   add_test("db::DeadBug" db_deadbug_test)
+  add_test("db::Stats" db_stats_test)
   add_test("db::Transaction" db_transaction_test)
   add_test("db::DB" db_db_test)
 endif(UNIT_TESTS)

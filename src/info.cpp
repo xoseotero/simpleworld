@@ -2,7 +2,7 @@
  * @file src/info.cpp
  * Command info of Simple World.
  *
- *  Copyright (C) 2008-2010  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2008-2011  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -82,6 +82,7 @@ Mandatory arguments to long options are mandatory for short options too.\n\
       --bugs                 show the alive bugs\n\
       --eggs                 show the eggs\n\
       --foods                show the food\n\
+      --stats                show the stats\n\
 \n\
       --sortenergy           show all the bugs sorted by energy\n\
       --sortage              show all the bugs sorted by age\n\
@@ -118,6 +119,7 @@ static bool resources_flag = false;
 static bool bugs_flag = false;
 static bool eggs_flag = false;
 static bool foods_flag = false;
+static bool stats_flag = false;
 
 static bool sortenergy_flag = false;
 static bool sortage_flag = false;
@@ -150,6 +152,7 @@ static void parse_cmd(int argc, char* argv[])
     {"bugs", no_argument, NULL, 'B'},
     {"eggs", no_argument, NULL, 'E'},
     {"foods", no_argument, NULL, 'F'},
+    {"stats", no_argument, NULL, 'T'},
 
     {"sortenergy", no_argument, NULL, 'N'},
     {"sortage", no_argument, NULL, 'G'},
@@ -198,6 +201,9 @@ static void parse_cmd(int argc, char* argv[])
       break;
     case 'F': // foods
       foods_flag = true;
+      break;
+    case 'T': // stats
+      stats_flag = true;
       break;
 
     case 'N': // sort by energy
@@ -380,6 +386,23 @@ static void show_foods(sw::SimpleWorld& sw)
   if (sqlite3_prepare_v2(sw.db(), "\
 SELECT *\n\
 FROM Food\n\
+ORDER BY id;", -1, &stmt, NULL))
+    throw EXCEPTION(db::DBException, sqlite3_errmsg(sw.db()));
+  show_query_column(true, 10, "NULL", stmt);
+  sqlite3_finalize(stmt);
+}
+
+/**
+ * Show the stats of the World.
+ * @param sw database.
+ */
+static void show_stats(sw::SimpleWorld& sw)
+{
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(sw.db(), "\
+SELECT time, alive, eggs, food, energy, mutations, age,\n\
+       last_births, last_sons, last_deaths, last_kills, last_mutations\n\
+FROM Stats\n\
 ORDER BY id;", -1, &stmt, NULL))
     throw EXCEPTION(db::DBException, sqlite3_errmsg(sw.db()));
   show_query_column(true, 10, "NULL", stmt);
@@ -671,6 +694,8 @@ void sw_info(int argc, char* argv[])
     show_eggs(simpleworld);
   else if (foods_flag)
     show_foods(simpleworld);
+  else if (stats_flag)
+    show_stats(simpleworld);
   else if (sortenergy_flag)
     show_sortenergy(simpleworld);
   else if (sortage_flag)

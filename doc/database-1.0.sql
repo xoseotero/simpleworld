@@ -544,3 +544,41 @@ CREATE TABLE Food
   UNIQUE(world_id),
   CHECK(size >= 0)
 );
+
+
+/*******************
+ * Stats
+ */
+CREATE TABLE Stats
+(
+  id INTEGER NOT NULL,
+
+  time INTEGER NOT NULL,
+
+  alive INTEGER NOT NULL,
+  eggs INTEGER NOT NULL,
+  food INTEGER NOT NULL,
+  energy INTEGER NOT NULL,
+  mutations INTEGER NOT NULL,
+  age INTEGER NOT NULL,
+
+  last_births INTEGER NOT NULL,
+  last_sons INTEGER NOT NULL,
+  last_deaths INTEGER NOT NULL,
+  last_kills INTEGER NOT NULL,
+  last_mutations INTEGER NOT NULL,
+
+  PRIMARY KEY(id),
+  CHECK(time >= 0),
+  CHECK(alive >= 0),
+  CHECK(eggs >= 0),
+  CHECK(food >= 0),
+  CHECK(energy >= 0),
+  CHECK(mutations >= 0),
+  CHECK(age >= 0),
+  CHECK(last_births >= 0),
+  CHECK(last_sons >= 0),
+  CHECK(last_deaths >= 0),
+  CHECK(last_kills >= 0),
+  CHECK(last_mutations >= 0)
+);

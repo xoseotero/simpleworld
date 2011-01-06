@@ -2,7 +2,7 @@
  * @file simpleworld/db/db.hpp
  * Simple World Database management.
  *
- *  Copyright (C) 2007-2010  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2007-2011  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -165,6 +165,13 @@ public:
    * @exception DBException if there is a error in the database.
    */
   std::vector<ID> food();
+
+  /**
+   * List of the stats.
+   * @return the list of stats.
+   * @exception DBException if there is a error in the database.
+   */
+  std::vector<ID> stats();
 
 private:
   sqlite3* db_;                 /**< Database connection */

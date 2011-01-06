@@ -7,7 +7,7 @@
  * world. The objective of the project is to observe the evolution of this
  * world and of these bugs.
  *
- *  Copyright (C) 2007-2010  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2007-2011  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -46,6 +46,7 @@
 #include <simpleworld/db/egg.hpp>
 #include <simpleworld/db/alivebug.hpp>
 #include <simpleworld/db/deadbug.hpp>
+#include <simpleworld/db/stats.hpp>
 
 #include "simpleworld.hpp"
 #include "worlderror.hpp"
@@ -228,17 +229,21 @@ void SimpleWorld::run(Time cycles)
     for (Time i = 0; i < 16 and cycles > 0; i++, cycles--) {
       this->spawn_eggs();
       this->spawn_food();
-      this->eggs_birth();
-      this->bugs_mutate();
 
       // update the time of the environment
       Time time = this->env_->time() + 1;
       this->env_->time(time);
 
+      this->eggs_birth();
+      this->bugs_mutate();
+
       if (time % 64 == 0)
         this->bugs_timer();
       this->bugs_run();
       this->bugs_laziness();
+
+      if (time % 1024 == 0)
+        db::Stats::insert(this);
     }
 
     transaction.commit();

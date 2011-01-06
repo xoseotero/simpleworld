@@ -2,7 +2,7 @@
  * @file simpleworld/db/db.cpp
  * Simple World database.
  *
- *  Copyright (C) 2006-2010  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2006-2011  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -626,6 +626,45 @@ CREATE TABLE Food\n\
 );",
 
 
+    /*******************
+     * Stats
+     */
+    "\
+CREATE TABLE Stats\n\
+(\n\
+  id INTEGER NOT NULL,\n\
+\n\
+  time INTEGER NOT NULL,\n\
+\n\
+  alive INTEGER NOT NULL,\n\
+  eggs INTEGER NOT NULL,\n\
+  food INTEGER NOT NULL,\n\
+  energy INTEGER NOT NULL,\n\
+  mutations INTEGER NOT NULL,\n\
+  age INTEGER NOT NULL,\n\
+\n\
+  last_births INTEGER NOT NULL,\n\
+  last_sons INTEGER NOT NULL,\n\
+  last_deaths INTEGER NOT NULL,\n\
+  last_kills INTEGER NOT NULL,\n\
+  last_mutations INTEGER NOT NULL,\n\
+\n\
+  PRIMARY KEY(id),\n\
+  CHECK(time >= 0),\n\
+  CHECK(alive >= 0),\n\
+  CHECK(eggs >= 0),\n\
+  CHECK(food >= 0),\n\
+  CHECK(energy >= 0),\n\
+  CHECK(mutations >= 0),\n\
+  CHECK(age >= 0),\n\
+  CHECK(last_births >= 0),\n\
+  CHECK(last_sons >= 0),\n\
+  CHECK(last_deaths >= 0),\n\
+  CHECK(last_kills >= 0),\n\
+  CHECK(last_mutations >= 0)\n\
+);",
+
+
     NULL
   };
 
@@ -985,6 +1024,40 @@ std::vector<ID> DB::food()
   if (sqlite3_prepare_v2(this->db(), "\
 SELECT id\n\
 FROM Food\n\
+ORDER BY id;", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db()));
+
+  bool done = false;
+  std::vector<ID> ids;
+  while (not done)
+    switch (sqlite3_step(stmt)) {
+    case SQLITE_DONE:
+      done = true;
+      break;
+    case SQLITE_ROW:
+      ids.push_back(sqlite3_column_int64(stmt, 0));
+      break;
+    default:
+      throw EXCEPTION(DBException, sqlite3_errmsg(this->db()));
+    }
+
+  sqlite3_finalize(stmt);
+
+  return ids;
+}
+
+
+/**
+ * List of the stats.
+ * @return the list of stats.
+ * @exception DBException if there is a error in the database.
+ */
+std::vector<ID> DB::stats()
+{
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(this->db(), "\
+SELECT id\n\
+FROM Stats\n\
 ORDER BY id;", -1, &stmt, NULL))
     throw EXCEPTION(DBException, sqlite3_errmsg(this->db()));
 
