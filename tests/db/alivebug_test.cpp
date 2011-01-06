@@ -2,7 +2,7 @@
  * @file tests/db/db_test.cpp
  * Unit test for db::AliveBug.
  *
- *  Copyright (C) 2010  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2010-2011  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -151,7 +151,7 @@ BOOST_AUTO_TEST_CASE(alivebug_update)
   db::AliveBug alivebug(&sw, id1);
   alivebug.birth(21);
   alivebug.energy(52);
-  alivebug.time_last_action(40);
+  alivebug.time_last_action(0);
   alivebug.action_time(45);
   alivebug.registers().write("void", 4);
   sw::Uint32 size;
@@ -161,7 +161,9 @@ BOOST_AUTO_TEST_CASE(alivebug_update)
   BOOST_CHECK_EQUAL(alivebug.world_id(), world_id1);
   BOOST_CHECK_EQUAL(alivebug.birth(), 21);
   BOOST_CHECK_EQUAL(alivebug.energy(), 52);
-  BOOST_CHECK_EQUAL(alivebug.time_last_action(), 40);
+  BOOST_CHECK_EQUAL(alivebug.is_null("time_last_action"), false);
+  BOOST_CHECK_EQUAL(alivebug.time_last_action(), 0);
+  BOOST_CHECK_EQUAL(alivebug.is_null("action_time"), false);
   BOOST_CHECK_EQUAL(alivebug.action_time(), 45);
   BOOST_CHECK_EQUAL(size, 4);
   BOOST_CHECK_EQUAL(registers[0], 'v');
