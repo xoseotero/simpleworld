@@ -29,7 +29,7 @@ namespace fs = boost::filesystem;
 #include "transaction.hpp"
 #include "environment.hpp"
 
-#define DATABASE_VERSION 3
+#define DATABASE_VERSION 4
 
 namespace simpleworld
 {
