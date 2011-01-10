@@ -1,3 +1,19 @@
+-- Simple World 1.0b4 (2011/01/10) --
+
+This is a small version in which most of the functionality found in
+the scripts directory were replaced with code added to the
+executable:
+a) Spawns: spawns are regions of the world where eggs are added
+   periodically.
+b) Resources: resources are regions of the world where food is
+   added periodically.
+c) Stats: a new table was added to the database where a summary
+   of the state of the bugs and food is stored.
+
+As the database format has changed, the database version was changed
+to 4.
+
+
 -- Simple World 1.0b3 (2010/10/11) --
 
 Most of the work in this version was done in the database. Again,
