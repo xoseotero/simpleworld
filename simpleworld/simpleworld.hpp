@@ -265,6 +265,11 @@ protected:
   void bugs_run();
 
   /**
+   * Rot the food that is getting old.
+   */
+  void food_rot();
+
+  /**
    * Penalize the bugs that don't do any action.
    */
   void bugs_laziness();

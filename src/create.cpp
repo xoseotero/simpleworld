@@ -2,7 +2,7 @@
  * @file src/create.cpp
  * Command create of Simple World.
  *
- *  Copyright (C) 2008-2010  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2008-2011  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -35,6 +35,8 @@ namespace db = simpleworld::db;
 
 // Default values
 #define DEFAULT_SIZE sw::Position(16, 16)
+#define DEFAULT_ROT 1024
+#define DEFAULT_SROT 64
 #define DEFAULT_MUTATIONS 0.01
 #define DEFAULT_BIRTH 32
 #define DEFAULT_OLD 16 * 1024
@@ -81,6 +83,9 @@ The parameters not set are filled with the default values.\n\
 Mandatory arguments to long options are mandatory for short options too.\n\
       --size=X,Y             size of the World\n\
 \n\
+      --rot=CYCLES           cycles needed to rot the food\n\
+      --srot=SIZE            size that is substracted to the food\n\
+\n\
       --mutations=PROB       probability for a mutation\n\
 \n\
       --birth=CYCLES         cycles needed for a egg to get born\n\
@@ -116,6 +121,8 @@ Report bugs to <%2%>.")
 static std::string database_path;
 
 static sw::Position size = DEFAULT_SIZE;
+static sw::Time rot = DEFAULT_ROT;
+static sw::Energy srot = DEFAULT_SROT;
 static double mutations = DEFAULT_MUTATIONS;
 static sw::Time birth = DEFAULT_BIRTH;
 static sw::Time old = DEFAULT_OLD;
@@ -141,6 +148,9 @@ static void parse_cmd(int argc, char* argv[])
 {
   struct option long_options[] = {
     {"size", required_argument, NULL, 's'},
+
+    {"rot", required_argument, NULL, 'r'},
+    {"srot", required_argument, NULL, 't'},
 
     {"mutations", required_argument, NULL, 'm'},
 
@@ -183,6 +193,17 @@ static void parse_cmd(int argc, char* argv[])
       if (sscanf(optarg, "%hu,%hu", &size.x, &size.y) != 2)
         usage(boost::str(boost::format("Invalid value for --size (%1%)")
                          % optarg));
+      break;
+
+    case 'r': // rot
+      if (sscanf(optarg, "%d", &rot) != 1)
+        usage(boost::str(boost::format("Invalid value for --rot (%1%)")
+        % optarg));
+      break;
+    case 't': // srot
+      if (sscanf(optarg, "%d", &srot) != 1)
+        usage(boost::str(boost::format("Invalid value for --srot (%1%)")
+        % optarg));
       break;
 
     case 'm': // mutations
@@ -298,7 +319,7 @@ void sw_create(int argc, char* argv[])
 {
   parse_cmd(argc, argv);
 
-  db::DB::create(database_path, 0, size.x, size.y, mutations, birth, old,
-                 laziness, elaziness, multiplier, nothing, myself, detect,
-                 info, move, turn, attack, eat, egg);
+  db::DB::create(database_path, 0, size.x, size.y, rot, srot, mutations,
+                 birth, old, laziness, elaziness, multiplier, nothing,
+                 myself, detect, info, move, turn, attack, eat, egg);
 }

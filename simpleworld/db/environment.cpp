@@ -2,7 +2,7 @@
  * @file simpleworld/db/environment.cpp
  * Information about the environment of the world.
  *
- *  Copyright (C) 2007-2010  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2007-2011  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -18,6 +18,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <iostream>
 #include <string>
 
 #include <boost/format.hpp>
@@ -51,6 +52,8 @@ Environment::Environment(DB* db, ID id)
  * @param time cycles since the creation of the World.
  * @param size_x size of the World (x coord).
  * @param size_y size of the World (y coord).
+ * @param time_rot cycles needed to rot the food.
+ * @param size_rot size that is substracted to the food.
  * @param mutations_probability probability (0.0-1.0) that the code mutates.
  * @param time_birth cycles to convert a egg into a bug.
  * @param time_mutate cycles to mutate the code of a old bug.
@@ -70,6 +73,7 @@ Environment::Environment(DB* db, ID id)
  * @exception DBException if there is an error with the insertion.
  */
 ID Environment::insert(DB* db, Time time, Coord size_x, Coord size_y,
+                       Time time_rot, Energy size_rot,
                        double mutations_probability, Time time_birth,
                        Time time_mutate, Time time_laziness,
                        Energy energy_laziness, double attack_multiplier,
@@ -82,34 +86,41 @@ ID Environment::insert(DB* db, Time time, Coord size_x, Coord size_y,
   sqlite3_stmt* stmt;
   if (sqlite3_prepare_v2(db->db(), "\
 INSERT INTO Environment(time, size_x, size_y,\n\
-                        mutations_probability, time_birth, time_mutate,\n\
-                        time_laziness, energy_laziness,\n\
-                        attack_multiplier,\n\
+                        time_rot, size_rot, mutations_probability,\n\
+                        time_birth, time_mutate, time_laziness,\n\
+                        energy_laziness, attack_multiplier,\n\
                         energy_nothing, energy_myself, energy_detect,\n\
                         energy_info, energy_move, energy_turn,\n\
                         energy_attack, energy_eat, energy_egg)\n\
-VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);", -1, &stmt, NULL))
+VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);", -1,
+			 &stmt, NULL)) {
+    std::cout << sqlite3_errmsg(db->db()) << std::endl;
     throw EXCEPTION(DBException, sqlite3_errmsg(db->db()));
+  }
   sqlite3_bind_int(stmt, 1, time);
   sqlite3_bind_int(stmt, 2, size_x);
   sqlite3_bind_int(stmt, 3, size_y);
-  sqlite3_bind_double(stmt, 4, mutations_probability);
-  sqlite3_bind_int(stmt, 5, time_birth);
-  sqlite3_bind_int(stmt, 6, time_mutate);
-  sqlite3_bind_int(stmt, 7, time_laziness);
-  sqlite3_bind_int(stmt, 8, energy_laziness);
-  sqlite3_bind_double(stmt, 9, attack_multiplier);
-  sqlite3_bind_int(stmt, 10, energy_nothing);
-  sqlite3_bind_int(stmt, 11, energy_myself);
-  sqlite3_bind_int(stmt, 12, energy_detect);
-  sqlite3_bind_int(stmt, 13, energy_info);
-  sqlite3_bind_int(stmt, 14, energy_move);
-  sqlite3_bind_int(stmt, 15, energy_turn);
-  sqlite3_bind_int(stmt, 16, energy_attack);
-  sqlite3_bind_int(stmt, 17, energy_eat);
-  sqlite3_bind_int(stmt, 18, energy_egg);
-  if (sqlite3_step(stmt) != SQLITE_DONE)
+  sqlite3_bind_int(stmt, 4, time_rot);
+  sqlite3_bind_int(stmt, 5, size_rot);
+  sqlite3_bind_double(stmt, 6, mutations_probability);
+  sqlite3_bind_int(stmt, 7, time_birth);
+  sqlite3_bind_int(stmt, 8, time_mutate);
+  sqlite3_bind_int(stmt, 9, time_laziness);
+  sqlite3_bind_int(stmt, 10, energy_laziness);
+  sqlite3_bind_double(stmt, 11, attack_multiplier);
+  sqlite3_bind_int(stmt, 12, energy_nothing);
+  sqlite3_bind_int(stmt, 13, energy_myself);
+  sqlite3_bind_int(stmt, 14, energy_detect);
+  sqlite3_bind_int(stmt, 15, energy_info);
+  sqlite3_bind_int(stmt, 16, energy_move);
+  sqlite3_bind_int(stmt, 17, energy_turn);
+  sqlite3_bind_int(stmt, 18, energy_attack);
+  sqlite3_bind_int(stmt, 19, energy_eat);
+  sqlite3_bind_int(stmt, 20, energy_egg);
+  if (sqlite3_step(stmt) != SQLITE_DONE) {
+    std::cout << sqlite3_errmsg(db->db()) << std::endl;;
     throw EXCEPTION(DBException, sqlite3_errmsg(db->db()));
+  }
   sqlite3_finalize(stmt);
 
   return sqlite3_last_insert_rowid(db->db());
@@ -285,6 +296,101 @@ SET size_y = ?\n\
 WHERE id = ?;", -1, &stmt, NULL))
     throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
   sqlite3_bind_int(stmt, 1, size_y);
+  sqlite3_bind_int64(stmt, 2, this->id_);
+  if (sqlite3_step(stmt) != SQLITE_DONE)
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_finalize(stmt);
+}
+
+
+/**
+* Get the cycles needed to rot the food.
+* @return the cycles.
+* @exception DBException if there is an error with the update.
+*/
+Time Environment::time_rot() const
+{
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(this->db_->db(), "\
+    SELECT time_rot\n\
+    FROM Environment\n\
+    WHERE id = ?;", -1, &stmt, NULL)) {
+    std::cout << sqlite3_errmsg(this->db_->db()) << std::endl;
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  }
+  sqlite3_bind_int64(stmt, 1, this->id_);
+  if (sqlite3_step(stmt) != SQLITE_ROW)
+    throw EXCEPTION(DBException, boost::str(boost::format("\
+    id %1% not found in table Environment")
+    % this->id_));
+  Time time_rot = sqlite3_column_int(stmt, 0);
+  sqlite3_finalize(stmt);
+
+  return time_rot;
+}
+
+/**
+* Get the cycles needed to rot the food.
+* @param time_rot the new cycles.
+* @exception DBException if there is an error with the update.
+*/
+void Environment::time_rot(Time time_rot)
+{
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(this->db_->db(), "\
+    UPDATE Environment\n\
+    SET time_rot = ?\n\
+    WHERE id = ?;", -1, &stmt, NULL)) {
+    std::cout << sqlite3_errmsg(this->db_->db()) << std::endl;
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  }
+  sqlite3_bind_int(stmt, 1, time_rot);
+  sqlite3_bind_int64(stmt, 2, this->id_);
+  if (sqlite3_step(stmt) != SQLITE_DONE) {
+    std::cout << sqlite3_errmsg(this->db_->db()) << std::endl;
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  }
+  sqlite3_finalize(stmt);
+}
+
+/**
+* Get the size that is substracted to the food.
+* @return the size.
+* @exception DBException if there is an error with the update.
+*/
+Energy Environment::size_rot() const
+{
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(this->db_->db(), "\
+    SELECT size_rot\n\
+    FROM Environment\n\
+    WHERE id = ?;", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_bind_int64(stmt, 1, this->id_);
+  if (sqlite3_step(stmt) != SQLITE_ROW)
+    throw EXCEPTION(DBException, boost::str(boost::format("\
+    id %1% not found in table Environment")
+    % this->id_));
+  Energy size_rot = sqlite3_column_int(stmt, 0);
+  sqlite3_finalize(stmt);
+
+  return size_rot;
+}
+
+/**
+* Set the size that is substracted to the food.
+* @param size_rot the new size.
+* @exception DBException if there is an error with the update.
+*/
+void Environment::size_rot(Energy size_rot)
+{
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(this->db_->db(), "\
+    UPDATE Environment\n\
+    SET size_rot = ?\n\
+    WHERE id = ?;", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_bind_int(stmt, 1, size_rot);
   sqlite3_bind_int64(stmt, 2, this->id_);
   if (sqlite3_step(stmt) != SQLITE_DONE)
     throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));

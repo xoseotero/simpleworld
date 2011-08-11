@@ -2,7 +2,7 @@
  * @file simpleworld/db/environment.hpp
  * Information about the environment of the world.
  *
- *  Copyright (C) 2007-2010  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2007-2011  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -52,6 +52,8 @@ public:
    * @param time cycles since the creation of the World.
    * @param size_x size of the World (x coord).
    * @param size_y size of the World (y coord).
+   * @param time_rot cycles needed to rot the food.
+   * @param size_rot size that is substracted to the food.
    * @param mutations_probability probability (0.0-1.0) that the code mutates.
    * @param time_birth cycles to convert a egg into a bug.
    * @param time_mutate cycles to mutate the code of a old bug.
@@ -71,6 +73,7 @@ public:
    * @exception DBException if there is an error with the insertion.
    */
   static ID insert(DB* db, Time time, Coord size_x, Coord size_y,
+                   Time time_rot, Energy size_rot,
                    double mutations_probability, Time time_birth,
                    Time time_mutate, Time time_laziness,
                    Energy energy_laziness, double attack_multiplier,
@@ -146,6 +149,35 @@ public:
    * @exception DBException if there is an error with the update.
    */
   void size_y(Coord size_y);
+
+
+  /**
+   * Get the cycles needed to rot the food.
+   * @return the cycles.
+   * @exception DBException if there is an error with the update.
+   */
+  Time time_rot() const;
+
+  /**
+   * Get the cycles needed to rot the food.
+   * @param time_rot the new cycles.
+   * @exception DBException if there is an error with the update.
+   */
+  void time_rot(Time time_rot);
+
+  /**
+   * Get the size that is substracted to the food.
+   * @return the size.
+   * @exception DBException if there is an error with the update.
+   */
+  Energy size_rot() const;
+
+  /**
+   * Set the size that is substracted to the food.
+   * @param size_rot the new size.
+   * @exception DBException if there is an error with the update.
+   */
+  void size_rot(Energy size_rot);
 
 
   /**

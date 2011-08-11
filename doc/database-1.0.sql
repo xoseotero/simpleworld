@@ -11,6 +11,9 @@ CREATE TABLE Environment
   size_x INTEGER NOT NULL,
   size_y INTEGER NOT NULL,
 
+  time_rot INTEGER NOT NULL,
+  size_rot INTEGER NOT NULL,
+
   mutations_probability REAL NOT NULL,  -- Values from 0 to 1
   time_birth INTEGER NOT NULL,
   time_mutate INTEGER NOT NULL,
@@ -33,6 +36,8 @@ CREATE TABLE Environment
   PRIMARY KEY(id),
   CHECK(time >= 0),
   CHECK(size_x > 0 AND size_y > 0),
+  CHECK(time_rot >= 0),
+  CHECK(size_rot >= 0),
   CHECK(mutations_probability >= 0 AND mutations_probability <= 1),
   CHECK(time_birth >= 0),
   CHECK(time_mutate >= 0),
@@ -536,12 +541,14 @@ CREATE TABLE Food
 (
   id INTEGER NOT NULL,
 
+  time INTEGER NOT NULL,
   world_id INTEGER NOT NULL,
   size INTEGER NOT NULL,
 
   PRIMARY KEY(id),
   FOREIGN KEY(world_id) REFERENCES World(id) ON UPDATE CASCADE ON DELETE CASCADE,
   UNIQUE(world_id),
+  CHECK(time >= 0),
   CHECK(size >= 0)
 );
 

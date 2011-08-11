@@ -2,7 +2,7 @@
  * @file simpleworld/db/food.cpp
  * Information about the food
  *
- *  Copyright (C) 2007-2010  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2007-2011  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -48,20 +48,22 @@ Food::Food(DB* db, ID id)
 /**
  * Insert a food.
  * @param db database.
+ * @param time when the food was added.
  * @param world_id id of the world.
  * @param size size.
  * @return the id of the new row.
  * @exception DBException if there is an error with the insertion.
  */
-ID Food::insert(DB* db, ID world_id, Energy size)
+ID Food::insert(DB* db, Time time, ID world_id, Energy size)
 {
   sqlite3_stmt* stmt;
   if (sqlite3_prepare_v2(db->db(), "\
-INSERT INTO Food(world_id, size)\n\
-VALUES(?, ?);", -1, &stmt, NULL))
+INSERT INTO Food(time, world_id, size)\n\
+VALUES(?, ?, ?);", -1, &stmt, NULL))
     throw EXCEPTION(DBException, sqlite3_errmsg(db->db()));
-  sqlite3_bind_int64(stmt, 1, world_id);
-  sqlite3_bind_int(stmt, 2, size);
+  sqlite3_bind_int(stmt, 1, time);
+  sqlite3_bind_int64(stmt, 2, world_id);
+  sqlite3_bind_int(stmt, 3, size);
   if (sqlite3_step(stmt) != SQLITE_DONE)
     throw EXCEPTION(DBException, sqlite3_errmsg(db->db()));
   sqlite3_finalize(stmt);
@@ -109,6 +111,51 @@ WHERE id = ?;", -1, &stmt, NULL))
   sqlite3_finalize(stmt);
 
   this->id_ = id;
+}
+
+
+/**
+ * Get when the food was added.
+ * @return the time.
+ * @exception DBException if there is an error with the query.
+ */
+Time Food::time() const
+{
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(this->db_->db(), "\
+SELECT time\n\
+FROM Food\n\
+WHERE id = ?;", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_bind_int64(stmt, 1, this->id_);
+  if (sqlite3_step(stmt) != SQLITE_ROW)
+    throw EXCEPTION(DBException, boost::str(boost::format("\
+id %1% not found in table Food")
+                                            % this->id_));
+  Time time = sqlite3_column_int(stmt, 0);
+  sqlite3_finalize(stmt);
+
+  return time;
+}
+
+/**
+ * Set when the food was added.
+ * @param time the new time.
+ * @exception DBException if there is an error with the update.
+ */
+void Food::time(Time time)
+{
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(this->db_->db(), "\
+UPDATE Food\n\
+SET time = ?\n\
+WHERE id = ?;", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_bind_int(stmt, 1, time);
+  sqlite3_bind_int64(stmt, 2, this->id_);
+  if (sqlite3_step(stmt) != SQLITE_DONE)
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_finalize(stmt);
 }
 
 

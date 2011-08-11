@@ -62,6 +62,9 @@ The parameters not set are filled with the values of the last environment.\n\
 The size of the World can change.\n\
 \n\
 Mandatory arguments to long options are mandatory for short options too.\n\
+      --rot=CYCLES           cycles needed to rot the food\n\
+      --srot=SIZE            size that is substracted to the food\n\
+\n\
       --mutations=PROB       probability for a mutation\n\
 \n\
       --birth=CYCLES         cycles needed for a egg to get born\n\
@@ -96,6 +99,8 @@ Report bugs to <%2%>.")
 // information from the command line
 static std::string database_path;
 
+static sw::Time rot;
+static sw::Energy srot;
 static double mutations;
 static sw::Time birth;
 static sw::Time old;
@@ -120,6 +125,9 @@ static sw::Energy egg;
 static void parse_cmd(int argc, char* argv[])
 {
   struct option long_options[] = {
+    {"rot", required_argument, NULL, 'r'},
+    {"srot", required_argument, NULL, 't'},
+
     {"mutations", required_argument, NULL, 'm'},
 
     {"birth", required_argument, NULL, 'b'},
@@ -157,6 +165,17 @@ static void parse_cmd(int argc, char* argv[])
       break;
     switch (c)
     {
+      case 'r': // rot
+        if (sscanf(optarg, "%d", &rot) != 1)
+          usage(boost::str(boost::format("Invalid value for --rot (%1%)")
+          % optarg));
+        break;
+      case 't': // srot
+        if (sscanf(optarg, "%d", &srot) != 1)
+          usage(boost::str(boost::format("Invalid value for --srot (%1%)")
+          % optarg));
+        break;
+
     case 'm': // mutations
       if (sscanf(optarg, "%lf", &mutations) != 1)
         usage(boost::str(boost::format("Invalid value for --mutations (%1%)")
@@ -272,6 +291,8 @@ void sw_env(int argc, char* argv[])
   parse_cmd(argc, argv);
 
   sw::SimpleWorld simpleworld(database_path);
+  rot = simpleworld.env().time_rot();
+  srot = simpleworld.env().size_rot();
   mutations = simpleworld.env().mutations_probability();
   birth = simpleworld.env().time_birth();
   old = simpleworld.env().time_mutate();
@@ -293,7 +314,8 @@ void sw_env(int argc, char* argv[])
 
   db::Environment::insert(&simpleworld, simpleworld.env().time(),
                           simpleworld.env().size_x(),
-                          simpleworld.env().size_y(), mutations, birth, old,
-                          laziness, elaziness, multiplier, nothing, myself,
-                          detect, info, move, turn, attack, eat, egg);
+                          simpleworld.env().size_y(), rot, srot,
+                          mutations, birth, old, laziness, elaziness,
+                          multiplier, nothing, myself, detect, info,
+                          move, turn, attack, eat, egg);
 }

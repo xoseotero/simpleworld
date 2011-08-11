@@ -65,6 +65,8 @@ public:
    * @param time cycles since the creation of the World.
    * @param size_x size of the World (x coord).
    * @param size_y size of the World (y coord).
+   * @param time_rot cycles needed to rot the food.
+   * @param size_rot size that is substracted to the food.
    * @param mutations_probability probability (0.0-1.0) that the code mutates.
    * @param time_birth cycles to convert a egg into a bug.
    * @param time_mutate cycles to mutate the code of a old bug.
@@ -84,6 +86,7 @@ public:
    */
   static void create(std::string filename,
                      Time time, Coord size_x, Coord size_y,
+                     Time time_rot, Energy size_rot,
                      double mutations_probability, Time time_birth,
                      Time time_mutate, Time time_laziness,
                      Energy energy_laziness, double attack_multiplier,

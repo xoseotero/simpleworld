@@ -2,7 +2,7 @@
  * @file simpleworld/db/food.hpp
  * Information about the food
  *
- *  Copyright (C) 2007-2010  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2007-2011  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -21,6 +21,7 @@
 #ifndef SIMPLEWORLD_DB_FOOD_HPP
 #define SIMPLEWORLD_DB_FOOD_HPP
 
+#include <simpleworld/types.hpp>
 #include <simpleworld/db/types.hpp>
 #include <simpleworld/db/db.hpp>
 #include <simpleworld/db/table.hpp>
@@ -49,12 +50,13 @@ public:
   /**
    * Insert a food.
    * @param db database.
+   * @param time when the food was added.
    * @param world_id id of the world.
    * @param size size.
    * @return the id of the new row.
    * @exception DBException if there is an error with the insertion.
    */
-  static ID insert(DB* db, ID world_id, Energy size);
+  static ID insert(DB* db, Time time, ID world_id, Energy size);
 
   /**
    * Delete a food.
@@ -78,6 +80,21 @@ public:
    * @exception DBException if there is an error with the update.
    */
   void id(ID id);
+
+
+  /**
+   * Get when the food was added.
+   * @return the time.
+   * @exception DBException if there is an error with the query.
+   */
+  Time time() const;
+
+  /**
+   * Set when the food was added.
+   * @param time the new time.
+   * @exception DBException if there is an error with the update.
+   */
+  void time(Time time);
 
 
   /**

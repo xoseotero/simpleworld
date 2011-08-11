@@ -301,8 +301,8 @@ static void show_env(sw::SimpleWorld& sw)
   sqlite3_stmt* stmt;
   if (sqlite3_prepare_v2(sw.db(), "\
 SELECT time, size_x, size_y,\n\
-       mutations_probability, time_birth, time_mutate, time_laziness,\n\
-       energy_laziness, attack_multiplier,\n\
+       time_rot, size_rot, mutations_probability, time_birth, time_mutate,\n\
+       time_laziness, energy_laziness, attack_multiplier,\n\
        energy_nothing, energy_myself, energy_detect, energy_info,\n\
        energy_move, energy_turn, energy_attack, energy_eat, energy_egg\n\
 FROM Environment\n\

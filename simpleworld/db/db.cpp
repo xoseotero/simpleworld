@@ -58,6 +58,9 @@ CREATE TABLE Environment\n\
   size_x INTEGER NOT NULL,\n\
   size_y INTEGER NOT NULL,\n\
 \n\
+time_rot INTEGER NOT NULL,\n\
+size_rot INTEGER NOT NULL,\n\
+\n\
   mutations_probability REAL NOT NULL,  -- Values from 0 to 1\n\
   time_birth INTEGER NOT NULL,\n\
   time_mutate INTEGER NOT NULL,\n\
@@ -80,6 +83,8 @@ CREATE TABLE Environment\n\
   PRIMARY KEY(id),\n\
   CHECK(time >= 0),\n\
   CHECK(size_x > 0 AND size_y > 0),\n\
+  CHECK(time_rot >= 0),\n\
+  CHECK(size_rot >= 0),\n\
   CHECK(mutations_probability >= 0 AND mutations_probability <= 1),\n\
   CHECK(time_birth >= 0),\n\
   CHECK(time_mutate >= 0),\n\
@@ -616,12 +621,14 @@ CREATE TABLE Food\n\
 (\n\
   id INTEGER NOT NULL,\n\
 \n\
+  time INTEGER NOT NULL,\n\
   world_id INTEGER NOT NULL,\n\
   size INTEGER NOT NULL,\n\
 \n\
   PRIMARY KEY(id),\n\
   FOREIGN KEY(world_id) REFERENCES World(id) ON UPDATE CASCADE ON DELETE CASCADE,\n\
   UNIQUE(world_id),\n\
+  CHECK(time >= 0),\n\
   CHECK(size >= 0)\n\
 );",
 
@@ -738,6 +745,8 @@ DB::~DB()
  * @param time cycles since the creation of the World.
  * @param size_x size of the World (x coord).
  * @param size_y size of the World (y coord).
+ * @param time_rot cycles needed to rot the food.
+ * @param size_rot size that is substracted to the food.
  * @param mutations_probability probability (0.0-1.0) that the code mutates.
  * @param time_birth cycles to convert a egg into a bug.
  * @param time_mutate cycles to mutate the code of a old bug.
@@ -757,6 +766,7 @@ DB::~DB()
  */
 void DB::create(std::string filename,
                 Time time, Coord size_x, Coord size_y,
+                Time time_rot, Energy size_rot,
                 double mutations_probability, Time time_birth,
                 Time time_mutate, Time time_laziness,
                 Energy energy_laziness, double attack_multiplier,
@@ -781,11 +791,12 @@ void DB::create(std::string filename,
 
   DB db(filename);
   create_tables(&db);
-  Environment::insert(&db, time, size_x, size_y, mutations_probability,
-                      time_birth, time_mutate, time_laziness, energy_laziness,
-                      attack_multiplier, energy_nothing, energy_myself,
-                      energy_detect, energy_info, energy_move, energy_turn,
-                      energy_attack, energy_eat, energy_egg);
+  Environment::insert(&db, time, size_x, size_y, time_rot, size_rot,
+                      mutations_probability, time_birth, time_mutate,
+                      time_laziness, energy_laziness, attack_multiplier,
+                      energy_nothing, energy_myself, energy_detect,
+                      energy_info, energy_move, energy_turn, energy_attack,
+                      energy_eat, energy_egg);
 }
 
 

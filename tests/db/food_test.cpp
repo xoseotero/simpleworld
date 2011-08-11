@@ -2,7 +2,7 @@
  * @file tests/db/db_test.cpp
  * Unit test for db::Food.
  *
- *  Copyright (C) 2010  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2010-2011  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -47,6 +47,7 @@ BOOST_AUTO_TEST_CASE(food_get)
   db::Food food(&sw, 1);
 
   BOOST_CHECK_EQUAL(food.id(), 1);
+  BOOST_CHECK_EQUAL(food.time(), 2);
   BOOST_CHECK_EQUAL(food.world_id(), 3);
   BOOST_CHECK_EQUAL(food.size(), 10);
 }
@@ -61,10 +62,11 @@ BOOST_AUTO_TEST_CASE(food_insert)
 {
   db::DB sw = open_db(DB_SAVE);
   world_id = db::World::insert(&sw, 10, 8);
-  id = db::Food::insert(&sw, world_id, 101);
+  id = db::Food::insert(&sw, 203, world_id, 101);
   db::Food food(&sw, id);
 
   BOOST_CHECK_EQUAL(food.id(), id);
+  BOOST_CHECK_EQUAL(food.time(), 203);
   BOOST_CHECK_EQUAL(food.world_id(), world_id);
   BOOST_CHECK_EQUAL(food.size(), 101);
 }
@@ -77,9 +79,11 @@ BOOST_AUTO_TEST_CASE(food_update)
 {
   db::DB sw = open_db(DB_SAVE);
   db::Food food(&sw, id);
+  food.time(87);
   food.size(78);
 
   BOOST_CHECK_EQUAL(food.id(), id);
+  BOOST_CHECK_EQUAL(food.time(), 87);
   BOOST_CHECK_EQUAL(food.world_id(), world_id);
   BOOST_CHECK_EQUAL(food.size(), 78);
 }

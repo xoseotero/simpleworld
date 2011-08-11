@@ -203,7 +203,7 @@ void SimpleWorld::add_food(Position position, Energy size)
   db::ID id;
   try {
     db::ID world_id = db::World::insert(this, position.x, position.y);
-    id = db::Food::insert(this, world_id, size);
+    id = db::Food::insert(this, this->env_->time(), world_id, size);
   } catch (const db::DBException& e) {
     throw EXCEPTION(WorldError, e.what);
   }
@@ -241,6 +241,7 @@ void SimpleWorld::run(Time cycles)
         this->bugs_timer();
       this->bugs_run();
       this->bugs_laziness();
+      this->food_rot();
 
       if (time % 1024 == 0)
         db::Stats::insert(this);
@@ -681,6 +682,8 @@ void SimpleWorld::spawn_eggs()
  */
 void SimpleWorld::spawn_food()
 {
+  Time now = this->env_->time();
+
   for (std::list<db::Resource*>::iterator resource = this->resources_.begin();
        resource != this->resources_.end();
        ++resource)
@@ -694,7 +697,7 @@ void SimpleWorld::spawn_food()
         for (Uint16 i = 0; i < max - num_elements; i++) {
           Position position = this->world_->unused_position(start, end);
           db::ID world_id = db::World::insert(this, position.x, position.y);
-          db::ID id = db::Food::insert(this, world_id, size);
+          db::ID id = db::Food::insert(this, now, world_id, size);
 
           Food* food = new Food(this, id);
           this->foods_.push_back(food);
@@ -831,8 +834,9 @@ Bug[%1%] born")
 void SimpleWorld::kill(Egg* egg)
 {
   // Convert the egg in food
-  db::ID id = db::Food::insert(this, egg->world_id(), egg->code().size());
-  db::DeadBug::insert(this, egg, this->env_->time());
+  Time now = this->env_->time();
+  db::ID id = db::Food::insert(this, now, egg->world_id(), egg->code().size());
+  db::DeadBug::insert(this, egg, now);
 
   Food* food = new Food(this, id);
   Position position(food->position_x(), food->position_y());
@@ -868,8 +872,9 @@ Egg[%1%] died")
 void SimpleWorld::kill(Egg* egg, db::ID killer_id)
 {
   // Convert the egg in food
-  db::ID id = db::Food::insert(this, egg->world_id(), egg->code().size());
-  db::DeadBug::insert(this, egg, this->env_->time(), killer_id);
+  Time now = this->env_->time();
+  db::ID id = db::Food::insert(this, now, egg->world_id(), egg->code().size());
+  db::DeadBug::insert(this, egg, now, killer_id);
 
   Food* food = new Food(this, id);
   Position position(food->position_x(), food->position_y());
@@ -904,8 +909,9 @@ Egg[%1%] died")
 void SimpleWorld::kill(Bug* bug)
 {
   // Convert the bug in food
-  db::ID id = db::Food::insert(this, bug->world_id(), bug->code().size());
-  db::DeadBug::insert(this, bug, this->env_->time());
+  Time now = this->env_->time();
+  db::ID id = db::Food::insert(this, now, bug->world_id(), bug->code().size());
+  db::DeadBug::insert(this, bug, now);
 
   Food* food = new Food(this, id);
   Position position(food->position_x(), food->position_y());
@@ -941,8 +947,9 @@ Bug[%1%] died")
 void SimpleWorld::kill(Bug* bug, db::ID killer_id)
 {
   // Convert the bug in food
-  db::ID id = db::Food::insert(this, bug->world_id(), bug->code().size());
-  db::DeadBug::insert(this, bug, this->env_->time(), killer_id);
+  Time now = this->env_->time();
+  db::ID id = db::Food::insert(this, now, bug->world_id(), bug->code().size());
+  db::DeadBug::insert(this, bug, now, killer_id);
 
   Food* food = new Food(this, id);
   Position position(food->position_x(), food->position_y());
@@ -1017,9 +1024,9 @@ void SimpleWorld::bugs_laziness()
 
     if (time > 0 and time % this->env_->time_laziness() == 0) {
 #ifdef DEBUG
-  std::cout << boost::format("Bug %1% is lazy")
-    % (*bug)->id()
-    << std::endl;
+      std::cout << boost::format("Bug %1% is lazy")
+        % (*bug)->id()
+      << std::endl;
 #endif // DEBUG
 
       try {
@@ -1028,6 +1035,40 @@ void SimpleWorld::bugs_laziness()
         // the bug is death
         this->kill(*bug);
       }
+    }
+  }
+}
+
+/**
+* Rot the food that is getting old.
+*/
+void SimpleWorld::food_rot()
+{
+  std::list<Food*> foods = this->foods_;
+  for (std::list<Food*>::iterator food = foods.begin();
+       food != foods.end();
+       ++food) {
+    // calculate the age of the food
+    Time age = this->env_->time() - (*food)->time();
+
+    if (age > 0 and age % this->env_->time_rot() == 0) {
+#ifdef DEBUG
+      std::cout << boost::format("Food %1% is rotting")
+        % (*food)->id()
+      << std::endl;
+#endif // DEBUG
+
+      if ((*food)->size() <= this->env_->size_rot()) {
+        db::World world(this, (*food)->world_id());
+        Position position(world.position_x(), world.position_y());
+
+        db::World::remove(this, (*food)->world_id());
+        db::Food::remove(this, (*food)->id());
+        this->world_->remove(position);
+        this->foods_.remove(*food);
+        delete *food;
+      } else
+        (*food)->size((*food)->size() - this->env_->size_rot());
     }
   }
 }

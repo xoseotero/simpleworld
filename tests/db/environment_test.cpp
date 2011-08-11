@@ -2,7 +2,7 @@
  * @file tests/db/db_test.cpp
  * Unit test for db::Environment.
  *
- *  Copyright (C) 2010  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2010-2011  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -18,6 +18,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <iostream>
 #define BOOST_TEST_MODULE Unit test for db::Environment
 #define BOOST_TEST_DYN_LINK
 #include <boost/test/unit_test.hpp>
@@ -49,6 +50,8 @@ BOOST_AUTO_TEST_CASE(environment_get)
   BOOST_CHECK_EQUAL(environment.time(), 200);
   BOOST_CHECK_EQUAL(environment.size_x(), 16);
   BOOST_CHECK_EQUAL(environment.size_y(), 16);
+  BOOST_CHECK_EQUAL(environment.time_rot(), 1024);
+  BOOST_CHECK_EQUAL(environment.size_rot(), 16);
   BOOST_CHECK_EQUAL(environment.mutations_probability(), 0.001);
   BOOST_CHECK_EQUAL(environment.time_birth(), 32);
   BOOST_CHECK_EQUAL(environment.time_mutate(), 16384);
@@ -73,15 +76,21 @@ db::ID id;
  */
 BOOST_AUTO_TEST_CASE(environment_insert)
 {
+  std::cout << 1 << std::endl;
   db::DB sw = open_db(DB_SAVE);
-  id = db::Environment::insert(&sw, 100, 16, 16, 0.01, 16, 65536, 2048, 32,
-                               3.0, 1, 2, 2, 2, 3, 3, 4, 4, 5);
+  std::cout << 2 << std::endl;
+  id = db::Environment::insert(&sw, 100, 16, 16, 4096, 8, 0.01, 16, 65536,
+                               2048, 32, 3.0, 1, 2, 2, 2, 3, 3, 4, 4, 5);
+  std::cout << 3 << std::endl;
   db::Environment environment(&sw, id);
 
+  std::cout << 4 << std::endl;
   BOOST_CHECK_EQUAL(environment.id(), id);
   BOOST_CHECK_EQUAL(environment.time(), 100);
   BOOST_CHECK_EQUAL(environment.size_x(), 16);
   BOOST_CHECK_EQUAL(environment.size_y(), 16);
+  BOOST_CHECK_EQUAL(environment.time_rot(), 4096);
+  BOOST_CHECK_EQUAL(environment.size_rot(), 8);
   BOOST_CHECK_EQUAL(environment.mutations_probability(), 0.01);
   BOOST_CHECK_EQUAL(environment.time_birth(), 16);
   BOOST_CHECK_EQUAL(environment.time_mutate(), 65536);
@@ -97,6 +106,7 @@ BOOST_AUTO_TEST_CASE(environment_insert)
   BOOST_CHECK_EQUAL(environment.energy_attack(), 4);
   BOOST_CHECK_EQUAL(environment.energy_eat(), 4);
   BOOST_CHECK_EQUAL(environment.energy_egg(), 5);
+  std::cout << 5 << std::endl;
 }
 
 
@@ -105,9 +115,17 @@ BOOST_AUTO_TEST_CASE(environment_insert)
  */
 BOOST_AUTO_TEST_CASE(environment_update)
 {
+  std::cout << 1 << std::endl;
   db::DB sw = open_db(DB_SAVE);
+  std::cout << 2 << std::endl;
   db::Environment environment(&sw, id);
+  std::cout << 3 << std::endl;
   environment.time(101);
+  std::cout << 4 << std::endl;
+  environment.time_rot(1001);
+  std::cout << 5 << std::endl;
+  environment.size_rot(11);
+  std::cout << 6 << std::endl;
   environment.mutations_probability(0.02);
   environment.time_birth(17);
   environment.time_mutate(65537);
@@ -124,10 +142,16 @@ BOOST_AUTO_TEST_CASE(environment_update)
   environment.energy_eat(5);
   environment.energy_egg(6);
 
+  std::cout << 7 << std::endl;
   BOOST_CHECK_EQUAL(environment.id(), id);
   BOOST_CHECK_EQUAL(environment.time(), 101);
   BOOST_CHECK_EQUAL(environment.size_x(), 16);
   BOOST_CHECK_EQUAL(environment.size_y(), 16);
+  std::cout << 8 << std::endl;
+  BOOST_CHECK_EQUAL(environment.time_rot(), 1001);
+  std::cout << 9 << std::endl;
+  BOOST_CHECK_EQUAL(environment.size_rot(), 11);
+  std::cout << 10 << std::endl;
   BOOST_CHECK_EQUAL(environment.mutations_probability(), 0.02);
   BOOST_CHECK_EQUAL(environment.time_birth(), 17);
   BOOST_CHECK_EQUAL(environment.time_mutate(), 65537);
@@ -143,6 +167,7 @@ BOOST_AUTO_TEST_CASE(environment_update)
   BOOST_CHECK_EQUAL(environment.energy_attack(), 5);
   BOOST_CHECK_EQUAL(environment.energy_eat(), 5);
   BOOST_CHECK_EQUAL(environment.energy_egg(), 6);
+  std::cout << 11 << std::endl;
 }
 
 /**
