@@ -2,7 +2,7 @@
  * @file simpleworld/world.cpp
  * Simple World World.
  *
- *  Copyright (C) 2007-2010  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2007-2011  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -113,6 +113,27 @@ Uint16 World::num_elements(Position start, Position end) const
     for (Coord y = start.y; y < end.y; y++)
       if (this->terrain_[x][y] != NULL)
         count++;
+
+  return count;
+}
+
+/**
+ * Number of elements of a specific kind in a region of the World.
+ * @param start left/top position of the region.
+ * @param end right/bottom position of the region.
+ * @param type type of element.
+ * @return the number of elements.
+ */
+Uint16 World::num_elements(Position start, Position end,
+			   ElementType type) const
+{
+  Uint16 count = 0;
+  for (Coord x = start.x; x < end.x; x++)
+    for (Coord y = start.y; y < end.y; y++) {
+      Element* const element = this->terrain_[x][y];
+      if (element != NULL and element->type == type)
+        count++;
+    }
 
   return count;
 }

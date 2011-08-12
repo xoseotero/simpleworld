@@ -654,7 +654,7 @@ void SimpleWorld::spawn_eggs()
     if (this->env_->time() % (*spawn)->frequency() == 0) {
       Position start((*spawn)->start_x(), (*spawn)->start_y());
       Position end((*spawn)->end_x(), (*spawn)->end_y());
-      Uint16 num_elements = this->world_->num_elements(start, end);
+      Uint16 num_elements = this->world_->num_elements(start, end, ElementBug);
       Uint16 max = (*spawn)->max();
       Energy energy = (*spawn)->energy();
       if (num_elements < max) {
@@ -690,7 +690,7 @@ void SimpleWorld::spawn_food()
     if (this->env_->time() % (*resource)->frequency() == 0) {
       Position start((*resource)->start_x(), (*resource)->start_y());
       Position end((*resource)->end_x(), (*resource)->end_y());
-      Uint16 num_elements = this->world_->num_elements(start, end);
+      Uint16 num_elements = this->world_->num_elements(start, end, ElementFood);
       Uint16 max = (*resource)->max();
       Energy size = (*resource)->size();
       if (num_elements < max) {

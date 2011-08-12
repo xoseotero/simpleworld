@@ -2,7 +2,7 @@
  * @file simpleworld/world.hpp
  * Simple World World.
  *
- *  Copyright (C) 2006-2007  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2006-2011  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -70,6 +70,15 @@ public:
    * @return the number of elements.
    */
   Uint16 num_elements(Position start, Position end) const;
+
+  /**
+   * Number of elements of a specific kind in a region of the World.
+   * @param start left/top position of the region.
+   * @param end right/bottom position of the region.
+   * @param type type of element.
+   * @return the number of elements.
+   */
+  Uint16 num_elements(Position start, Position end, ElementType type) const;
 
 
   /**
