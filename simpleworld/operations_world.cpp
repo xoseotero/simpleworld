@@ -32,7 +32,7 @@
 #include "movement.hpp"
 #include "operations.hpp"
 
-#define ACTION_TIME 16          /**< The actions take 16 (24) cycles */
+#define ACTION_TIME 1                   /**< The actions take 1 cycle */
 
 #define ACTION_NOTHING 0x00
 #define ACTION_MYSELFID 0x10

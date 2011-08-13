@@ -226,26 +226,24 @@ void SimpleWorld::run(Time cycles)
     // run each 16 cycles (time to do a action) in a transaction
     db::Transaction transaction(this, db::Transaction::immediate);
 
-    for (Time i = 0; i < 16 and cycles > 0; i++, cycles--) {
-      this->spawn_eggs();
-      this->spawn_food();
+    this->spawn_eggs();
+    this->spawn_food();
 
-      // update the time of the environment
-      Time time = this->env_->time() + 1;
-      this->env_->time(time);
+    // update the time of the environment
+    Time time = this->env_->time() + 1;
+    this->env_->time(time);
 
-      this->eggs_birth();
-      this->bugs_mutate();
+    this->eggs_birth();
+    this->bugs_mutate();
 
-      if (time % 64 == 0)
-        this->bugs_timer();
-      this->bugs_run();
-      this->bugs_laziness();
-      this->food_rot();
+    if (time % 64 == 0)
+      this->bugs_timer();
+    this->bugs_run();
+    this->bugs_laziness();
+    this->food_rot();
 
-      if (time % 1024 == 0)
-        db::Stats::insert(this);
-    }
+    if (time % 1024 == 0)
+      db::Stats::insert(this);
 
     transaction.commit();
   }
@@ -994,7 +992,7 @@ void SimpleWorld::bugs_run()
 
     try {
       // execute a instruction
-      (*bug)->cpu.next();
+      (*bug)->cpu.execute(16);
     } catch (const cpu::CPUException& e) {
       // some uncaught error in the CPU (CPU stopped)
       this->kill(*bug);

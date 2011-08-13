@@ -5,12 +5,12 @@ namespace db = simpleworld::db;
 
 // Default values
 #define DEFAULT_SIZE sw::Position(16, 16)
-#define DEFAULT_ROT 1024
+#define DEFAULT_ROT 64
 #define DEFAULT_SROT 64
 #define DEFAULT_MUTATIONS 0.01
-#define DEFAULT_BIRTH 32
-#define DEFAULT_OLD 16 * 1024
-#define DEFAULT_LAZINESS 1024
+#define DEFAULT_BIRTH 2
+#define DEFAULT_OLD 1024
+#define DEFAULT_LAZINESS 64
 #define DEFAULT_ELAZINESS 64
 #define DEFAULT_MULTIPLIER 2.5
 #define DEFAULT_NOTHING 0
