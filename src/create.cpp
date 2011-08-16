@@ -43,6 +43,15 @@ namespace db = simpleworld::db;
 #define DEFAULT_LAZINESS 64
 #define DEFAULT_ELAZINESS 64
 #define DEFAULT_MULTIPLIER 2.5
+#define DEFAULT_TNOTHING 1
+#define DEFAULT_TMYSELF 1
+#define DEFAULT_TDETECT 2
+#define DEFAULT_TINFO 2
+#define DEFAULT_TMOVE 3
+#define DEFAULT_TTURN 3
+#define DEFAULT_TATTACK 4
+#define DEFAULT_TEAT 4
+#define DEFAULT_TEGG 4
 #define DEFAULT_NOTHING 0
 #define DEFAULT_MYSELF 1
 #define DEFAULT_DETECT 1
@@ -83,18 +92,27 @@ The parameters not set are filled with the default values.\n\
 Mandatory arguments to long options are mandatory for short options too.\n\
       --size=X,Y             size of the World\n\
 \n\
-      --rot=CYCLES           cycles needed to rot the food\n\
+      --rot=CYCLES           time needed to rot the food\n\
       --srot=SIZE            size that is substracted to the food\n\
 \n\
       --mutations=PROB       probability for a mutation\n\
 \n\
-      --birth=CYCLES         cycles needed for a egg to get born\n\
-      --old=CYCLES           cycles needed to consider a bug old and mutate\n\
-      --laziness=CYCLES      cycles needed to consider a bug lazy\n\
+      --birth=CYCLES         time needed for a egg to get born\n\
+      --old=CYCLES           time needed to consider a bug old and mutate\n\
+      --laziness=CYCLES      time needed to consider a bug lazy\n\
       --elaziness=ENERGY     energy substracted to a lazy bug\n\
 \n\
       --multiplier=MULT      multiplier to the attack\n\
 \n\
+      --tnothing=ENERGY      time needed for doing action NOTHING\n\
+      --tmyself=ENERGY       time needed for doing action MYSELF\n\
+      --tdetect=ENERGY       time needed for doing action DETECT\n\
+      --tinfo=ENERGY         time needed for doing action INFO\n\
+      --tmove=ENERGY         time needed for doing action MOVE\n\
+      --tturn=ENERGY         time needed for doing action TURN\n\
+      --tattack=ENERGY       time needed for doing action ATTACK\n\
+      --teat=ENERGY          time needed for doing action EAT\n\
+      --tegg=ENERGY          time needed for doing action EGG\n\
       --nothing=ENERGY       energy used for doing action NOTHING\n\
       --myself=ENERGY        energy used for doing action MYSELF\n\
       --detect=ENERGY        energy used for doing action DETECT\n\
@@ -129,6 +147,15 @@ static sw::Time old = DEFAULT_OLD;
 static sw::Time laziness = DEFAULT_LAZINESS;
 static sw::Energy elaziness = DEFAULT_ELAZINESS;
 static double multiplier = DEFAULT_MULTIPLIER;
+static sw::Energy tnothing = DEFAULT_TNOTHING;
+static sw::Energy tmyself = DEFAULT_TMYSELF;
+static sw::Energy tdetect = DEFAULT_TDETECT;
+static sw::Energy tinfo = DEFAULT_TINFO;
+static sw::Energy tmove = DEFAULT_TMOVE;
+static sw::Energy tturn = DEFAULT_TTURN;
+static sw::Energy tattack = DEFAULT_TATTACK;
+static sw::Energy teat = DEFAULT_TEAT;
+static sw::Energy tegg = DEFAULT_TEGG;
 static sw::Energy nothing = DEFAULT_NOTHING;
 static sw::Energy myself = DEFAULT_MYSELF;
 static sw::Energy detect = DEFAULT_DETECT;
@@ -161,6 +188,15 @@ static void parse_cmd(int argc, char* argv[])
 
     {"multiplier", required_argument, NULL, 'u'},
 
+    {"tnothing", required_argument, NULL, '0'},
+    {"tmyself", required_argument, NULL, '1'},
+    {"tdetect", required_argument, NULL, '2'},
+    {"tinfo", required_argument, NULL, '3'},
+    {"tmove", required_argument, NULL, '4'},
+    {"tturn", required_argument, NULL, '5'},
+    {"tattack", required_argument, NULL, '6'},
+    {"teat", required_argument, NULL, '7'},
+    {"tegg", required_argument, NULL, '8'},
     {"nothing", required_argument, NULL, 'N'},
     {"myself", required_argument, NULL, 'M'},
     {"detect", required_argument, NULL, 'D'},
@@ -239,6 +275,51 @@ static void parse_cmd(int argc, char* argv[])
                          % optarg));
       break;
 
+    case '0': // tnothing
+      if (sscanf(optarg, "%d", &tnothing) != 1)
+        usage(boost::str(boost::format("Invalid value for --tnothing (%1%)")
+        % optarg));
+      break;
+    case '1': // tmyself
+      if (sscanf(optarg, "%d", &tmyself) != 1)
+        usage(boost::str(boost::format("Invalid value for --tmyself (%1%)")
+        % optarg));
+      break;
+    case '2': // tdetect
+      if (sscanf(optarg, "%d", &tdetect) != 1)
+        usage(boost::str(boost::format("Invalid value for --tdetect (%1%)")
+        % optarg));
+      break;
+    case '3': // tinfo
+      if (sscanf(optarg, "%d", &tinfo) != 1)
+        usage(boost::str(boost::format("Invalid value for --tinfo (%1%)")
+        % optarg));
+      break;
+    case '4': // tmove
+      if (sscanf(optarg, "%d", &tmove) != 1)
+        usage(boost::str(boost::format("Invalid value for --tmove (%1%)")
+        % optarg));
+      break;
+    case '5': // tturn
+      if (sscanf(optarg, "%d", &tturn) != 1)
+        usage(boost::str(boost::format("Invalid value for --tturn (%1%)")
+        % optarg));
+      break;
+    case '6': // tattack
+      if (sscanf(optarg, "%d", &tattack) != 1)
+        usage(boost::str(boost::format("Invalid value for --tattack (%1%)")
+        % optarg));
+      break;
+    case '7': // teat
+      if (sscanf(optarg, "%d", &teat) != 1)
+        usage(boost::str(boost::format("Invalid value for --teat (%1%)")
+        % optarg));
+      break;
+    case '8': // tegg
+      if (sscanf(optarg, "%d", &tegg) != 1)
+        usage(boost::str(boost::format("Invalid value for --tegg (%1%)")
+        % optarg));
+      break;
     case 'N': // nothing
       if (sscanf(optarg, "%d", &nothing) != 1)
         usage(boost::str(boost::format("Invalid value for --nothing (%1%)")
@@ -320,6 +401,7 @@ void sw_create(int argc, char* argv[])
   parse_cmd(argc, argv);
 
   db::DB::create(database_path, 0, size.x, size.y, rot, srot, mutations,
-                 birth, old, laziness, elaziness, multiplier, nothing,
-                 myself, detect, info, move, turn, attack, eat, egg);
+                 birth, old, laziness, elaziness, multiplier, tnothing,
+                 tmyself, tdetect, tinfo, tmove, tturn, tattack, teat, tegg,
+                 nothing, myself, detect, info, move, turn, attack, eat, egg);
 }

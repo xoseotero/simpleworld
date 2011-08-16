@@ -32,8 +32,6 @@
 #include "movement.hpp"
 #include "operations.hpp"
 
-#define ACTION_TIME 1                   /**< The actions take 1 cycle */
-
 #define ACTION_NOTHING 0x00
 #define ACTION_MYSELFID 0x10
 #define ACTION_MYSELFSIZE 0x11
@@ -68,8 +66,7 @@ cpu::Update world(cpu::CPU& cpu, cpu::Instruction inst)
   Bug* bug = dynamic_cast<CPU*>(&cpu)->bug;;
   Time time = bug->world->env().time();
 
-  // a action is not done in 1 cycle, it takes ACTION_TIME cycles to be
-  // finished
+  // a action is not done in 1 cycle, it takes several cycles to be finished
   // if action_time is NULL, then there is not a action in proccess
   // if action_time > time, then the action will be finished in the next cycles
   // if action_time == time, then the action will be finished in this cycle
@@ -83,9 +80,61 @@ cpu::Update world(cpu::CPU& cpu, cpu::Instruction inst)
 
   // check the state of the action
   if (bug->is_null("action_time")) {
-    // the action begins in this cycle
-    // after ACTION_TIME cycles, the action can be finished
-    bug->action_time(time + ACTION_TIME);
+    // the action begins in this cycle and after some cycles the action can be
+    // finished
+    // every action last for a fixed number of cycles
+    switch (inst.data) {
+    case ACTION_NOTHING:
+      bug->action_time(time + bug->world->env().time_nothing());
+      break;
+
+    case ACTION_MYSELFID:
+    case ACTION_MYSELFSIZE:
+    case ACTION_MYSELFENERGY:
+    case ACTION_MYSELFPOSITION:
+    case ACTION_MYSELFORIENTATION:
+      bug->action_time(time + bug->world->env().time_myself());
+      break;
+
+    case ACTION_DETECT:
+      bug->action_time(time + bug->world->env().time_detect());
+      break;
+
+    case ACTION_INFOID:
+    case ACTION_INFOSIZE:
+    case ACTION_INFOENERGY:
+    case ACTION_INFOPOSITION:
+    case ACTION_INFOORIENTATION:
+      bug->action_time(time + bug->world->env().time_info());
+      break;
+
+    case ACTION_MOVEFORWARD:
+    case ACTION_MOVEBACKWARD:
+      bug->action_time(time + bug->world->env().time_move());
+      break;
+
+    case ACTION_TURNLEFT:
+    case ACTION_TURNRIGHT:
+      bug->action_time(time + bug->world->env().time_turn());
+      break;
+
+    case ACTION_ATTACK:
+      bug->action_time(time + bug->world->env().time_attack());
+      break;
+
+    case ACTION_EAT:
+      bug->action_time(time + bug->world->env().time_eat());
+      break;
+
+    case ACTION_EGG:
+      bug->action_time(time + bug->world->env().time_egg());
+      break;
+
+    default:
+      throw EXCEPTION(ActionError, boost::str(boost::format(\
+"Unknown action (0x%04x)")
+                                                % inst.data));
+    }
 
     // the PC can't be updated until the action is finished
     return cpu::UpdateNone;

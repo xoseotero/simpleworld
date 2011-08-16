@@ -49,17 +49,26 @@ public:
   /**
    * Insert a environment.
    * @param db database.
-   * @param time cycles since the creation of the World.
+   * @param time time passed since the creation of the World.
    * @param size_x size of the World (x coord).
    * @param size_y size of the World (y coord).
-   * @param time_rot cycles needed to rot the food.
+   * @param time_rot time needed to rot the food.
    * @param size_rot size that is substracted to the food.
    * @param mutations_probability probability (0.0-1.0) that the code mutates.
-   * @param time_birth cycles to convert a egg into a bug.
-   * @param time_mutate cycles to mutate the code of a old bug.
-   * @param time_laziness cycles without doing a action to consider a bug lazy.
+   * @param time_birth time needed to convert a egg into a bug.
+   * @param time_mutate time to mutate the code of a old bug.
+   * @param time_laziness time without doing a action to consider a bug lazy.
    * @param energy_laziness energy substracted for laziness.
    * @param attack_multiplier multiplier for the energy of a attack.
+   * @param time_nothing time needed to do the action nothing.
+   * @param time_myself time needed to do the action myself.
+   * @param time_detect time needed to do the action detect.
+   * @param time_info time needed to do the action info.
+   * @param time_move time needed to do the action move.
+   * @param time_turn time needed to do the action turn.
+   * @param time_attack time needed to do the action attack.
+   * @param time_eat time needed to do the action eat.
+   * @param time_egg time needed to do the action egg.
    * @param energy_nothing energy used to do the action nothing.
    * @param energy_myself energy used to do the action myself.
    * @param energy_detect energy used to do the action detect.
@@ -68,7 +77,7 @@ public:
    * @param energy_turn energy used to do the action turn.
    * @param energy_attack energy used to do the action attack.
    * @param energy_eat energy used to do the action eat.
-   * @param energy_egg energy used to do egg 
+   * @param energy_egg energy used to do egg.
    * @return the id of the new row.
    * @exception DBException if there is an error with the insertion.
    */
@@ -77,6 +86,9 @@ public:
                    double mutations_probability, Time time_birth,
                    Time time_mutate, Time time_laziness,
                    Energy energy_laziness, double attack_multiplier,
+                   Time time_nothing, Time time_myself, Time time_detect,
+                   Time time_info, Time time_move, Time time_turn,
+                   Time time_attack, Time time_eat, Time time_egg,
                    Energy energy_nothing, Energy energy_myself,
                    Energy energy_detect, Energy energy_info,
                    Energy energy_move, Energy energy_turn,
@@ -108,15 +120,15 @@ public:
 
 
   /**
-   * Get cycles since the creation of the World.
-   * @return the cycles.
+   * Get the time passed since the creation of the World.
+   * @return the time.
    * @exception DBException if there is an error with the query.
    */
   Time time() const;
 
   /**
-   * Set cycles since the creation of the World.
-   * @param time the new cycles.
+   * Set the time passed since the creation of the World.
+   * @param time the new time.
    * @exception DBException if there is an error with the update.
    */
   void time(Time time);
@@ -152,15 +164,15 @@ public:
 
 
   /**
-   * Get the cycles needed to rot the food.
-   * @return the cycles.
+   * Get the time needed to rot the food.
+   * @return the time.
    * @exception DBException if there is an error with the update.
    */
   Time time_rot() const;
 
   /**
-   * Get the cycles needed to rot the food.
-   * @param time_rot the new cycles.
+   * Get the time needed to rot the food.
+   * @param time_rot the new time.
    * @exception DBException if there is an error with the update.
    */
   void time_rot(Time time_rot);
@@ -196,29 +208,29 @@ public:
 
 
   /**
-   * Get the cycles to convert a egg into a bug.
-   * @return the cycles.
+   * Get the time needed to convert a egg into a bug.
+   * @return the time.
    * @exception DBException if there is an error with the query.
    */
   Time time_birth() const;
 
   /**
-   * Set the cycles to convert a egg into a bug.
-   * @param time_birth the new cycles.
+   * Set the time needed to convert a egg into a bug.
+   * @param time_birth the new time.
    * @exception DBException if there is an error with the update.
    */
   void time_birth(Time time_birth);
 
 
   /**
-   * Get the cycles to mutate the code of a old bug.
-   * @return the cycles.
+   * Get the time to mutate the code of a old bug.
+   * @return the time.
    * @exception DBException if there is an error with the query.
    */
   Time time_mutate() const;
 
   /**
-   * Set the cycles to mutate the code of a old bug.
+   * Set the time to mutate the code of a old bug.
    * @param time_mutate the new time.
    * @exception DBException if there is an error with the update.
    */
@@ -226,7 +238,7 @@ public:
 
 
   /**
-   * Get the cycles without doing a action to be considered lazy.
+   * Get the time without doing a action to be considered lazy.
    * @return the time.
    * @exception DBException if there is an error with the query.
    */
@@ -268,6 +280,141 @@ public:
    * @exception DBException if there is an error with the update.
    */
   void attack_multiplier(double attack_multiplier);
+
+
+  /**
+  * Get the time needed to do the action nothing.
+  * @return the time.
+  * @exception DBException if there is an error with the query.
+  */
+  Time time_nothing() const;
+
+  /**
+  * Set the time needed to do the action nothing.
+  * @param time_nothing the new time.
+  * @exception DBException if there is an error with the update.
+  */
+  void time_nothing(Time time_nothing);
+
+
+  /**
+  * Get the time needed to do the action myself.
+  * @return the time.
+  * @exception DBException if there is an error with the query.
+  */
+  Time time_myself() const;
+
+  /**
+  * Set the time needed to do the action myself.
+  * @param time_myself the new time.
+  * @exception DBException if there is an error with the update.
+  */
+  void time_myself(Time time_myself);
+
+
+  /**
+  * Get the time needed to do the action detect.
+  * @return the time.
+  * @exception DBException if there is an error with the query.
+  */
+  Time time_detect() const;
+
+  /**
+  * Set the time needed to do the action detect.
+  * @param time_detect the new time.
+  * @exception DBException if there is an error with the update.
+  */
+  void time_detect(Time time_detect);
+
+
+  /**
+  * Get the time needed to do the action info.
+  * @return the time.
+  * @exception DBException if there is an error with the query.
+  */
+  Time time_info() const;
+
+  /**
+  * Set the time needed to do the action info.
+  * @param time_info the new time.
+  * @exception DBException if there is an error with the update.
+  */
+  void time_info(Time time_info);
+
+
+  /**
+  * Get the time needed to do the action move.
+  * @return the time.
+  * @exception DBException if there is an error with the query.
+  */
+  Time time_move() const;
+
+  /**
+  * Set the time needed to do the action move.
+  * @param time_move the new time.
+  * @exception DBException if there is an error with the update.
+  */
+  void time_move(Time time_move);
+
+
+  /**
+  * Get the time needed to do the action turn.
+  * @return the time.
+  * @exception DBException if there is an error with the query.
+  */
+  Time time_turn() const;
+
+  /**
+  * Set the time needed to do the action turn.
+  * @param time_turn the new time.
+  * @exception DBException if there is an error with the update.
+  */
+  void time_turn(Time time_turn);
+
+
+  /**
+  * Get the time needed to do the action attack.
+  * @return the Time.
+  * @exception DBException if there is an error with the query.
+  */
+  Time time_attack() const;
+
+  /**
+  * Set the time needed to do the action attack.
+  * @param time_attack the new time.
+  * @exception DBException if there is an error with the update.
+  */
+  void time_attack(Time time_attack);
+
+
+  /**
+  * Get the time needed to do the action eat.
+  * @return the time.
+  * @exception DBException if there is an error with the query.
+  */
+  Time time_eat() const;
+
+  /**
+  * Set the time needed to do the action eat.
+  * @param energy_eat the new time.
+  * @exception DBException if there is an error with the update.
+  */
+  void time_eat(Time time_eat);
+
+
+  /**
+  * Get the time needed to do the action egg.
+  * @return the time.
+  * @exception DBException if there is an error with the query.
+  */
+  Time time_egg() const;
+
+  /**
+  * Set the time needed to do the action egg.
+  * @param time_egg the new time.
+  * @exception DBException if there is an error with the update.
+  */
+  void time_egg(Time time_egg);
 
 
   /**

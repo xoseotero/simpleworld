@@ -23,6 +23,15 @@ CREATE TABLE Environment
 
   attack_multiplier REAL NOT NULL,
 
+  time_nothing INTEGER NOT NULL,
+  time_myself INTEGER NOT NULL,
+  time_detect INTEGER NOT NULL,
+  time_info INTEGER NOT NULL,
+  time_move INTEGER NOT NULL,
+  time_turn INTEGER NOT NULL,
+  time_attack INTEGER NOT NULL,
+  time_eat INTEGER NOT NULL,
+  time_egg INTEGER NOT NULL,
   energy_nothing INTEGER NOT NULL,
   energy_myself INTEGER NOT NULL,
   energy_detect INTEGER NOT NULL,
@@ -43,6 +52,11 @@ CREATE TABLE Environment
   CHECK(time_mutate >= 0),
   CHECK(time_laziness >= 0),
   CHECK(energy_laziness >= 0),
+  CHECK(time_nothing >= 0 AND time_myself >= 0 AND
+        time_detect >= 0 AND time_info >= 0 AND
+        time_move >= 0 AND time_turn >= 0 AND
+        time_attack >= 0 AND time_eat >= 0 AND
+        time_egg >= 0),
   CHECK(energy_nothing >= 0 AND energy_myself >= 0 AND
         energy_detect >= 0 AND energy_info >= 0 AND
         energy_move >= 0 AND energy_turn >= 0 AND

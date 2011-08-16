@@ -58,6 +58,15 @@ BOOST_AUTO_TEST_CASE(environment_get)
   BOOST_CHECK_EQUAL(environment.time_laziness(), 1024);
   BOOST_CHECK_EQUAL(environment.energy_laziness(), 16);
   BOOST_CHECK_EQUAL(environment.attack_multiplier(), 2.5);
+  BOOST_CHECK_EQUAL(environment.time_nothing(), 1);
+  BOOST_CHECK_EQUAL(environment.time_myself(), 2);
+  BOOST_CHECK_EQUAL(environment.time_detect(), 2);
+  BOOST_CHECK_EQUAL(environment.time_info(), 2);
+  BOOST_CHECK_EQUAL(environment.time_move(), 3);
+  BOOST_CHECK_EQUAL(environment.time_turn(), 3);
+  BOOST_CHECK_EQUAL(environment.time_attack(), 4);
+  BOOST_CHECK_EQUAL(environment.time_eat(), 4);
+  BOOST_CHECK_EQUAL(environment.time_egg(), 4);
   BOOST_CHECK_EQUAL(environment.energy_nothing(), 0);
   BOOST_CHECK_EQUAL(environment.energy_myself(), 1);
   BOOST_CHECK_EQUAL(environment.energy_detect(), 1);
@@ -80,7 +89,8 @@ BOOST_AUTO_TEST_CASE(environment_insert)
   db::DB sw = open_db(DB_SAVE);
   std::cout << 2 << std::endl;
   id = db::Environment::insert(&sw, 100, 16, 16, 4096, 8, 0.01, 16, 65536,
-                               2048, 32, 3.0, 1, 2, 2, 2, 3, 3, 4, 4, 5);
+                               2048, 32, 3.0, 2, 3, 3, 3, 4, 4, 5, 5, 5,
+                               1, 2, 2, 2, 3, 3, 4, 4, 5);
   std::cout << 3 << std::endl;
   db::Environment environment(&sw, id);
 
@@ -97,6 +107,15 @@ BOOST_AUTO_TEST_CASE(environment_insert)
   BOOST_CHECK_EQUAL(environment.time_laziness(), 2048);
   BOOST_CHECK_EQUAL(environment.energy_laziness(), 32);
   BOOST_CHECK_EQUAL(environment.attack_multiplier(), 3.0);
+  BOOST_CHECK_EQUAL(environment.time_nothing(), 2);
+  BOOST_CHECK_EQUAL(environment.time_myself(), 3);
+  BOOST_CHECK_EQUAL(environment.time_detect(), 3);
+  BOOST_CHECK_EQUAL(environment.time_info(), 3);
+  BOOST_CHECK_EQUAL(environment.time_move(), 4);
+  BOOST_CHECK_EQUAL(environment.time_turn(), 4);
+  BOOST_CHECK_EQUAL(environment.time_attack(), 5);
+  BOOST_CHECK_EQUAL(environment.time_eat(), 5);
+  BOOST_CHECK_EQUAL(environment.time_egg(), 5);
   BOOST_CHECK_EQUAL(environment.energy_nothing(), 1);
   BOOST_CHECK_EQUAL(environment.energy_myself(), 2);
   BOOST_CHECK_EQUAL(environment.energy_detect(), 2);
@@ -132,6 +151,15 @@ BOOST_AUTO_TEST_CASE(environment_update)
   environment.time_laziness(2049);
   environment.energy_laziness(33);
   environment.attack_multiplier(3.1);
+  environment.time_nothing(1);
+  environment.time_myself(2);
+  environment.time_detect(2);
+  environment.time_info(2);
+  environment.time_move(3);
+  environment.time_turn(3);
+  environment.time_attack(4);
+  environment.time_eat(4);
+  environment.time_egg(4);
   environment.energy_nothing(2);
   environment.energy_myself(3);
   environment.energy_detect(3);
@@ -158,6 +186,15 @@ BOOST_AUTO_TEST_CASE(environment_update)
   BOOST_CHECK_EQUAL(environment.time_laziness(), 2049);
   BOOST_CHECK_EQUAL(environment.energy_laziness(), 33);
   BOOST_CHECK_EQUAL(environment.attack_multiplier(), 3.1);
+  BOOST_CHECK_EQUAL(environment.time_nothing(), 1);
+  BOOST_CHECK_EQUAL(environment.time_myself(), 2);
+  BOOST_CHECK_EQUAL(environment.time_detect(), 2);
+  BOOST_CHECK_EQUAL(environment.time_info(), 2);
+  BOOST_CHECK_EQUAL(environment.time_move(), 3);
+  BOOST_CHECK_EQUAL(environment.time_turn(), 3);
+  BOOST_CHECK_EQUAL(environment.time_attack(), 4);
+  BOOST_CHECK_EQUAL(environment.time_eat(), 4);
+  BOOST_CHECK_EQUAL(environment.time_egg(), 4);
   BOOST_CHECK_EQUAL(environment.energy_nothing(), 2);
   BOOST_CHECK_EQUAL(environment.energy_myself(), 3);
   BOOST_CHECK_EQUAL(environment.energy_detect(), 3);

@@ -74,6 +74,15 @@ Mandatory arguments to long options are mandatory for short options too.\n\
 \n\
       --multiplier=MULT      multiplier to the attack\n\
 \n\
+      --tnothing=ENERGY      time needed for doing action NOTHING\n\
+      --tmyself=ENERGY       time needed for doing action MYSELF\n\
+      --tdetect=ENERGY       time needed for doing action DETECT\n\
+      --tinfo=ENERGY         time needed for doing action INFO\n\
+      --tmove=ENERGY         time needed for doing action MOVE\n\
+      --tturn=ENERGY         time needed for doing action TURN\n\
+      --tattack=ENERGY       time needed for doing action ATTACK\n\
+      --teat=ENERGY          time needed for doing action EAT\n\
+      --tegg=ENERGY          time needed for doing action EGG\n\
       --nothing=ENERGY       energy used for doing action NOTHING\n\
       --myself=ENERGY        energy used for doing action MYSELF\n\
       --detect=ENERGY        energy used for doing action DETECT\n\
@@ -107,6 +116,15 @@ static sw::Time old;
 static sw::Time laziness;
 static sw::Energy elaziness;
 static double multiplier;
+static sw::Energy tnothing;
+static sw::Energy tmyself;
+static sw::Energy tdetect;
+static sw::Energy tinfo;
+static sw::Energy tmove;
+static sw::Energy tturn;
+static sw::Energy tattack;
+static sw::Energy teat;
+static sw::Energy tegg;
 static sw::Energy nothing;
 static sw::Energy myself;
 static sw::Energy detect;
@@ -137,6 +155,15 @@ static void parse_cmd(int argc, char* argv[])
 
     {"multiplier", required_argument, NULL, 'u'},
 
+    {"tnothing", required_argument, NULL, '0'},
+    {"tmyself", required_argument, NULL, '1'},
+    {"tdetect", required_argument, NULL, '2'},
+    {"tinfo", required_argument, NULL, '3'},
+    {"tmove", required_argument, NULL, '4'},
+    {"tturn", required_argument, NULL, '5'},
+    {"tattack", required_argument, NULL, '6'},
+    {"teat", required_argument, NULL, '7'},
+    {"tegg", required_argument, NULL, '8'},
     {"nothing", required_argument, NULL, 'N'},
     {"myself", required_argument, NULL, 'M'},
     {"detect", required_argument, NULL, 'D'},
@@ -209,6 +236,51 @@ static void parse_cmd(int argc, char* argv[])
                          % optarg));
       break;
 
+    case '0': // tnothing
+      if (sscanf(optarg, "%d", &tnothing) != 1)
+        usage(boost::str(boost::format("Invalid value for --tnothing (%1%)")
+        % optarg));
+      break;
+    case '1': // tmyself
+      if (sscanf(optarg, "%d", &tmyself) != 1)
+        usage(boost::str(boost::format("Invalid value for --tmyself (%1%)")
+        % optarg));
+      break;
+    case '2': // tdetect
+      if (sscanf(optarg, "%d", &tdetect) != 1)
+        usage(boost::str(boost::format("Invalid value for --tdetect (%1%)")
+        % optarg));
+      break;
+    case '3': // tinfo
+      if (sscanf(optarg, "%d", &tinfo) != 1)
+        usage(boost::str(boost::format("Invalid value for --tinfo (%1%)")
+        % optarg));
+      break;
+    case '4': // tmove
+      if (sscanf(optarg, "%d", &tmove) != 1)
+        usage(boost::str(boost::format("Invalid value for --tmove (%1%)")
+        % optarg));
+      break;
+    case '5': // tturn
+      if (sscanf(optarg, "%d", &tturn) != 1)
+        usage(boost::str(boost::format("Invalid value for --tturn (%1%)")
+        % optarg));
+      break;
+    case '6': // tattack
+      if (sscanf(optarg, "%d", &tattack) != 1)
+        usage(boost::str(boost::format("Invalid value for --tattack (%1%)")
+        % optarg));
+      break;
+    case '7': // teat
+      if (sscanf(optarg, "%d", &teat) != 1)
+        usage(boost::str(boost::format("Invalid value for --teat (%1%)")
+        % optarg));
+      break;
+    case '8': // tegg
+      if (sscanf(optarg, "%d", &tegg) != 1)
+        usage(boost::str(boost::format("Invalid value for --tegg (%1%)")
+        % optarg));
+      break;
     case 'N': // nothing
       if (sscanf(optarg, "%d", &nothing) != 1)
         usage(boost::str(boost::format("Invalid value for --nothing (%1%)")
@@ -299,6 +371,15 @@ void sw_env(int argc, char* argv[])
   laziness = simpleworld.env().time_laziness();
   elaziness = simpleworld.env().energy_laziness();
   multiplier = simpleworld.env().attack_multiplier();
+  tnothing = simpleworld.env().time_nothing();
+  tmyself = simpleworld.env().time_myself();
+  tdetect = simpleworld.env().time_detect();
+  tinfo = simpleworld.env().time_info();
+  tmove = simpleworld.env().time_move();
+  tturn = simpleworld.env().time_turn();
+  tattack = simpleworld.env().time_attack();
+  teat = simpleworld.env().time_eat();
+  tegg = simpleworld.env().time_egg();
   nothing = simpleworld.env().energy_nothing();
   myself = simpleworld.env().energy_myself();
   detect = simpleworld.env().energy_detect();
@@ -316,6 +397,7 @@ void sw_env(int argc, char* argv[])
                           simpleworld.env().size_x(),
                           simpleworld.env().size_y(), rot, srot,
                           mutations, birth, old, laziness, elaziness,
-                          multiplier, nothing, myself, detect, info,
-                          move, turn, attack, eat, egg);
+                          multiplier, tnothing, tmyself, tdetect, tinfo,
+                          tmove, tturn, tattack, teat, tegg, nothing, myself,
+			  detect, info, move, turn, attack, eat, egg);
 }

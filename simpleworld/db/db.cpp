@@ -70,6 +70,15 @@ size_rot INTEGER NOT NULL,\n\
 \n\
   attack_multiplier REAL NOT NULL,\n\
 \n\
+  time_nothing INTEGER NOT NULL,\n\
+  time_myself INTEGER NOT NULL,\n\
+  time_detect INTEGER NOT NULL,\n\
+  time_info INTEGER NOT NULL,\n\
+  time_move INTEGER NOT NULL,\n\
+  time_turn INTEGER NOT NULL,\n\
+  time_attack INTEGER NOT NULL,\n\
+  time_eat INTEGER NOT NULL,\n\
+  time_egg INTEGER NOT NULL,\n\
   energy_nothing INTEGER NOT NULL,\n\
   energy_myself INTEGER NOT NULL,\n\
   energy_detect INTEGER NOT NULL,\n\
@@ -90,6 +99,11 @@ size_rot INTEGER NOT NULL,\n\
   CHECK(time_mutate >= 0),\n\
   CHECK(time_laziness >= 0),\n\
   CHECK(energy_laziness >= 0),\n\
+  CHECK(time_nothing >= 0 AND time_myself >= 0 AND\n\
+        time_detect >= 0 AND time_info >= 0 AND\n\
+        time_move >= 0 AND time_turn >= 0 AND\n\
+        time_attack >= 0 AND time_eat >= 0 AND\n\
+        time_egg >= 0),\n\
   CHECK(energy_nothing >= 0 AND energy_myself >= 0 AND\n\
         energy_detect >= 0 AND energy_info >= 0 AND\n\
         energy_move >= 0 AND energy_turn >= 0 AND\n\
@@ -742,17 +756,26 @@ DB::~DB()
 /**
  * Create the database.
  * @param filename File name of the database.
- * @param time cycles since the creation of the World.
+ * @param time time passed since the creation of the World.
  * @param size_x size of the World (x coord).
  * @param size_y size of the World (y coord).
- * @param time_rot cycles needed to rot the food.
+ * @param time_rot time needed to rot the food.
  * @param size_rot size that is substracted to the food.
  * @param mutations_probability probability (0.0-1.0) that the code mutates.
- * @param time_birth cycles to convert a egg into a bug.
- * @param time_mutate cycles to mutate the code of a old bug.
- * @param time_laziness cycles without doing a action to consider a bug lazy.
+ * @param time_birth time needed to convert a egg into a bug.
+ * @param time_mutate time to mutate the code of a old bug.
+ * @param time_laziness time without doing a action to consider a bug lazy.
  * @param energy_laziness energy substracted for laziness.
  * @param attack_multiplier multiplier for the energy of a attack.
+ * @param time_nothing time needed to do the action nothing.
+ * @param time_myself time needed to do the action myself.
+ * @param time_detect time needed to do the action detect.
+ * @param time_info time needed to do the action info.
+ * @param time_move time needed to do the action move.
+ * @param time_turn time needed to do the action turn.
+ * @param time_attack time needed to do the action attack.
+ * @param time_eat time needed to do the action eat.
+ * @param time_egg time needed to do the action egg.
  * @param energy_nothing energy used to do the action nothing.
  * @param energy_myself energy used to do the action myself.
  * @param energy_detect energy used to do the action detect.
@@ -770,6 +793,9 @@ void DB::create(std::string filename,
                 double mutations_probability, Time time_birth,
                 Time time_mutate, Time time_laziness,
                 Energy energy_laziness, double attack_multiplier,
+		Time time_nothing, Time time_myself, Time time_detect,
+		Time time_info, Time time_move, Time time_turn,
+		Time time_attack, Time time_eat, Time time_egg,
                 Energy energy_nothing, Energy energy_myself,
                 Energy energy_detect, Energy energy_info,
                 Energy energy_move, Energy energy_turn,
@@ -794,6 +820,8 @@ void DB::create(std::string filename,
   Environment::insert(&db, time, size_x, size_y, time_rot, size_rot,
                       mutations_probability, time_birth, time_mutate,
                       time_laziness, energy_laziness, attack_multiplier,
+		      time_nothing, time_myself, time_detect, time_info,
+		      time_move, time_turn, time_attack, time_eat, time_egg,
                       energy_nothing, energy_myself, energy_detect,
                       energy_info, energy_move, energy_turn, energy_attack,
                       energy_eat, energy_egg);

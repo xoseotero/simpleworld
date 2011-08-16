@@ -49,17 +49,26 @@ Environment::Environment(DB* db, ID id)
 /**
  * Insert a environment.
  * @param db database.
- * @param time cycles since the creation of the World.
+ * @param time time passed since the creation of the World.
  * @param size_x size of the World (x coord).
  * @param size_y size of the World (y coord).
- * @param time_rot cycles needed to rot the food.
+ * @param time_rot time needed to rot the food.
  * @param size_rot size that is substracted to the food.
  * @param mutations_probability probability (0.0-1.0) that the code mutates.
- * @param time_birth cycles to convert a egg into a bug.
- * @param time_mutate cycles to mutate the code of a old bug.
- * @param time_laziness cycles without doing a action to consider a bug lazy.
+ * @param time_birth time needed to convert a egg into a bug.
+ * @param time_mutate time to mutate the code of a old bug.
+ * @param time_laziness time without doing a action to consider a bug lazy.
  * @param energy_laziness energy substracted for laziness.
  * @param attack_multiplier multiplier for the energy of a attack.
+ * @param time_nothing time needed to do the action nothing.
+ * @param time_myself time needed to do the action myself.
+ * @param time_detect time needed to do the action detect.
+ * @param time_info time needed to do the action info.
+ * @param time_move time needed to do the action move.
+ * @param time_turn time needed to do the action turn.
+ * @param time_attack time needed to do the action attack.
+ * @param time_eat time needed to do the action eat.
+ * @param time_egg time needed to do the action egg.
  * @param energy_nothing energy needed to do the action nothing.
  * @param energy_myself energy needed to do the action myself.
  * @param energy_detect energy needed to do the action detect.
@@ -77,6 +86,9 @@ ID Environment::insert(DB* db, Time time, Coord size_x, Coord size_y,
                        double mutations_probability, Time time_birth,
                        Time time_mutate, Time time_laziness,
                        Energy energy_laziness, double attack_multiplier,
+                       Time time_nothing, Time time_myself, Time time_detect,
+                       Time time_info, Time time_move, Time time_turn,
+                       Time time_attack, Time time_eat, Time time_egg,
                        Energy energy_nothing, Energy energy_myself,
                        Energy energy_detect, Energy energy_info,
                        Energy energy_move, Energy energy_turn,
@@ -89,11 +101,15 @@ INSERT INTO Environment(time, size_x, size_y,\n\
                         time_rot, size_rot, mutations_probability,\n\
                         time_birth, time_mutate, time_laziness,\n\
                         energy_laziness, attack_multiplier,\n\
+                        time_nothing, time_myself, time_detect, time_info,\n\
+                        time_move, time_turn, time_attack, time_eat,\n\
+                        time_egg,\n\
                         energy_nothing, energy_myself, energy_detect,\n\
                         energy_info, energy_move, energy_turn,\n\
                         energy_attack, energy_eat, energy_egg)\n\
-VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);", -1,
-			 &stmt, NULL)) {
+VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,\n\
+       ?, ?, ?, ?, ?, ?);", -1,
+                         &stmt, NULL)) {
     std::cout << sqlite3_errmsg(db->db()) << std::endl;
     throw EXCEPTION(DBException, sqlite3_errmsg(db->db()));
   }
@@ -108,15 +124,24 @@ VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);", -1,
   sqlite3_bind_int(stmt, 9, time_laziness);
   sqlite3_bind_int(stmt, 10, energy_laziness);
   sqlite3_bind_double(stmt, 11, attack_multiplier);
-  sqlite3_bind_int(stmt, 12, energy_nothing);
-  sqlite3_bind_int(stmt, 13, energy_myself);
-  sqlite3_bind_int(stmt, 14, energy_detect);
-  sqlite3_bind_int(stmt, 15, energy_info);
-  sqlite3_bind_int(stmt, 16, energy_move);
-  sqlite3_bind_int(stmt, 17, energy_turn);
-  sqlite3_bind_int(stmt, 18, energy_attack);
-  sqlite3_bind_int(stmt, 19, energy_eat);
-  sqlite3_bind_int(stmt, 20, energy_egg);
+  sqlite3_bind_int(stmt, 12, time_nothing);
+  sqlite3_bind_int(stmt, 13, time_myself);
+  sqlite3_bind_int(stmt, 14, time_detect);
+  sqlite3_bind_int(stmt, 15, time_info);
+  sqlite3_bind_int(stmt, 16, time_move);
+  sqlite3_bind_int(stmt, 17, time_turn);
+  sqlite3_bind_int(stmt, 18, time_attack);
+  sqlite3_bind_int(stmt, 19, time_eat);
+  sqlite3_bind_int(stmt, 20, time_egg);
+  sqlite3_bind_int(stmt, 21, energy_nothing);
+  sqlite3_bind_int(stmt, 22, energy_myself);
+  sqlite3_bind_int(stmt, 23, energy_detect);
+  sqlite3_bind_int(stmt, 24, energy_info);
+  sqlite3_bind_int(stmt, 25, energy_move);
+  sqlite3_bind_int(stmt, 26, energy_turn);
+  sqlite3_bind_int(stmt, 27, energy_attack);
+  sqlite3_bind_int(stmt, 28, energy_eat);
+  sqlite3_bind_int(stmt, 29, energy_egg);
   if (sqlite3_step(stmt) != SQLITE_DONE) {
     std::cout << sqlite3_errmsg(db->db()) << std::endl;;
     throw EXCEPTION(DBException, sqlite3_errmsg(db->db()));
@@ -170,8 +195,8 @@ WHERE id = ?;", -1, &stmt, NULL))
 
 
 /**
- * Get cycles since the creation of the World.
- * @return the cycles.
+ * Get the time passed since the creation of the World.
+ * @return the time.
  * @exception DBException if there is an error with the query.
  */
 Time Environment::time() const
@@ -194,8 +219,8 @@ id %1% not found in table Environment")
 }
 
 /**
- * Set cycles since the creation of the World.
- * @param time the new cycles.
+ * Set the time passed since the creation of the World.
+ * @param time the new time.
  * @exception DBException if there is an error with the update.
  */
 void Environment::time(Time time)
@@ -304,8 +329,8 @@ WHERE id = ?;", -1, &stmt, NULL))
 
 
 /**
-* Get the cycles needed to rot the food.
-* @return the cycles.
+* Get the time needed needed to rot the food.
+* @return the time.
 * @exception DBException if there is an error with the update.
 */
 Time Environment::time_rot() const
@@ -330,8 +355,8 @@ Time Environment::time_rot() const
 }
 
 /**
-* Get the cycles needed to rot the food.
-* @param time_rot the new cycles.
+* Get the time needed to rot the food.
+* @param time_rot the new time.
 * @exception DBException if there is an error with the update.
 */
 void Environment::time_rot(Time time_rot)
@@ -444,8 +469,8 @@ WHERE id = ?;", -1, &stmt, NULL))
 
 
 /**
- * Get the cycles to convert a egg into a bug.
- * @return the cycles.
+ * Get the time needed to convert a egg into a bug.
+ * @return the time.
  * @exception DBException if there is an error with the query.
  */
 Time Environment::time_birth() const
@@ -468,8 +493,8 @@ id %1% not found in table Environment")
 }
 
 /**
- * Set the cycles to convert a egg into a bug.
- * @param time_birth the new cycles.
+ * Set the time needed to convert a egg into a bug.
+ * @param time_birth the new time.
  * @exception DBException if there is an error with the update.
  */
 void Environment::time_birth(Time time_birth)
@@ -489,8 +514,8 @@ WHERE id = ?;", -1, &stmt, NULL))
 
 
 /**
- * Get the cycles to mutate the code of a old bug.
- * @return the cycles.
+ * Get the time to mutate the code of a old bug.
+ * @return the time.
  * @exception DBException if there is an error with the query.
  */
 Time Environment::time_mutate() const
@@ -513,7 +538,7 @@ id %1% not found in table Environment")
 }
 
 /**
- * Set the cycles to mutate the code of a old bug.
+ * Set the time to mutate the code of a old bug.
  * @param time_mutate the new time.
  * @exception DBException if there is an error with the update.
  */
@@ -534,7 +559,7 @@ WHERE id = ?;", -1, &stmt, NULL))
 
 
 /**
- * Get the cycles without doing a action to consider a bug lazy.
+ * Get the time without doing a action to consider a bug lazy.
  * @return the time.
  * @exception DBException if there is an error with the query.
  */
@@ -558,7 +583,7 @@ id %1% not found in table Environment")
 }
 
 /**
- * Set the cycles without doing a action to consider a bug lazy.
+ * Set the time without doing a action to consider a bug lazy.
  * @param time_laziness the new time.
  * @exception DBException if there is an error with the update.
  */
@@ -661,6 +686,411 @@ SET attack_multiplier = ?\n\
 WHERE id = ?;", -1, &stmt, NULL))
     throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
   sqlite3_bind_double(stmt, 1, attack_multiplier);
+  sqlite3_bind_int64(stmt, 2, this->id_);
+  if (sqlite3_step(stmt) != SQLITE_DONE)
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_finalize(stmt);
+}
+
+
+/**
+* Get the time needed to do the action nothing.
+* @return the time.
+* @exception DBException if there is an error with the query.
+*/
+Time Environment::time_nothing() const
+{
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(this->db_->db(), "\
+    SELECT time_nothing\n\
+    FROM Environment\n\
+    WHERE id = ?;", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_bind_int64(stmt, 1, this->id_);
+  if (sqlite3_step(stmt) != SQLITE_ROW)
+    throw EXCEPTION(DBException, boost::str(boost::format("\
+    id %1% not found in table Environment")
+    % this->id_));
+  Time time_nothing = sqlite3_column_int(stmt, 0);
+  sqlite3_finalize(stmt);
+
+  return time_nothing;
+}
+
+/**
+* Set the time needed to do the action nothing.
+* @param time_nothing the new time.
+* @exception DBException if there is an error with the update.
+*/
+void Environment::time_nothing(Time time_nothing)
+{
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(this->db_->db(), "\
+    UPDATE Environment\n\
+    SET time_nothing = ?\n\
+    WHERE id = ?;", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_bind_int(stmt, 1, time_nothing);
+  sqlite3_bind_int64(stmt, 2, this->id_);
+  if (sqlite3_step(stmt) != SQLITE_DONE)
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_finalize(stmt);
+}
+
+
+/**
+* Get the time needed to do the action myself.
+* @return the time.
+* @exception DBException if there is an error with the query.
+*/
+Time Environment::time_myself() const
+{
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(this->db_->db(), "\
+    SELECT time_myself\n\
+    FROM Environment\n\
+    WHERE id = ?;", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_bind_int64(stmt, 1, this->id_);
+  if (sqlite3_step(stmt) != SQLITE_ROW)
+    throw EXCEPTION(DBException, boost::str(boost::format("\
+    id %1% not found in table Environment")
+    % this->id_));
+  Time time_myself = sqlite3_column_int(stmt, 0);
+  sqlite3_finalize(stmt);
+
+  return time_myself;
+}
+
+/**
+* Set the time needed to do the action myself.
+* @param time_myself the new time.
+* @exception DBException if there is an error with the update.
+*/
+void Environment::time_myself(Time time_myself)
+{
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(this->db_->db(), "\
+    UPDATE Environment\n\
+    SET time_myself = ?\n\
+    WHERE id = ?;", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_bind_int(stmt, 1, time_myself);
+  sqlite3_bind_int64(stmt, 2, this->id_);
+  if (sqlite3_step(stmt) != SQLITE_DONE)
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_finalize(stmt);
+}
+
+
+/**
+* Get the time needed to do the action detect.
+* @return the time.
+* @exception DBException if there is an error with the query.
+*/
+Time Environment::time_detect() const
+{
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(this->db_->db(), "\
+    SELECT time_detect\n\
+    FROM Environment\n\
+    WHERE id = ?;", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_bind_int64(stmt, 1, this->id_);
+  if (sqlite3_step(stmt) != SQLITE_ROW)
+    throw EXCEPTION(DBException, boost::str(boost::format("\
+    id %1% not found in table Environment")
+    % this->id_));
+  Time time_detect = sqlite3_column_int(stmt, 0);
+  sqlite3_finalize(stmt);
+
+  return time_detect;
+}
+
+/**
+* Set the time needed to do the action detect.
+* @param time_detect the new time.
+* @exception DBException if there is an error with the update.
+*/
+void Environment::time_detect(Time time_detect)
+{
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(this->db_->db(), "\
+    UPDATE Environment\n\
+    SET time_detect = ?\n\
+    WHERE id = ?;", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_bind_int(stmt, 1, time_detect);
+  sqlite3_bind_int64(stmt, 2, this->id_);
+  if (sqlite3_step(stmt) != SQLITE_DONE)
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_finalize(stmt);
+}
+
+
+/**
+* Get the time needed to do the action info.
+* @return the time.
+* @exception DBException if there is an error with the query.
+*/
+Time Environment::time_info() const
+{
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(this->db_->db(), "\
+    SELECT time_info\n\
+    FROM Environment\n\
+    WHERE id = ?;", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_bind_int64(stmt, 1, this->id_);
+  if (sqlite3_step(stmt) != SQLITE_ROW)
+    throw EXCEPTION(DBException, boost::str(boost::format("\
+    id %1% not found in table Environment")
+    % this->id_));
+  Time time_info = sqlite3_column_int(stmt, 0);
+  sqlite3_finalize(stmt);
+
+  return time_info;
+}
+
+/**
+* Set the time needed to do the action info.
+* @param time_info the new time.
+* @exception DBException if there is an error with the update.
+*/
+void Environment::time_info(Time time_info)
+{
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(this->db_->db(), "\
+    UPDATE Environment\n\
+    SET time_info = ?\n\
+    WHERE id = ?;", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_bind_int(stmt, 1, time_info);
+  sqlite3_bind_int64(stmt, 2, this->id_);
+  if (sqlite3_step(stmt) != SQLITE_DONE)
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_finalize(stmt);
+}
+
+
+/**
+* Get the time needed to do the action move.
+* @return the time.
+* @exception DBException if there is an error with the query.
+*/
+Time Environment::time_move() const
+{
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(this->db_->db(), "\
+    SELECT time_move\n\
+    FROM Environment\n\
+    WHERE id = ?;", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_bind_int64(stmt, 1, this->id_);
+  if (sqlite3_step(stmt) != SQLITE_ROW)
+    throw EXCEPTION(DBException, boost::str(boost::format("\
+    id %1% not found in table Environment")
+    % this->id_));
+  Time time_move = sqlite3_column_int(stmt, 0);
+  sqlite3_finalize(stmt);
+
+  return time_move;
+}
+
+/**
+* Set the time needed to do the action move.
+* @param time_move the new time.
+* @exception DBException if there is an error with the update.
+*/
+void Environment::time_move(Time time_move)
+{
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(this->db_->db(), "\
+    UPDATE Environment\n\
+    SET time_move = ?\n\
+    WHERE id = ?;", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_bind_int(stmt, 1, time_move);
+  sqlite3_bind_int64(stmt, 2, this->id_);
+  if (sqlite3_step(stmt) != SQLITE_DONE)
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_finalize(stmt);
+}
+
+
+/**
+* Get the time needed to do the action turn.
+* @return the time.
+* @exception DBException if there is an error with the query.
+*/
+Time Environment::time_turn() const
+{
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(this->db_->db(), "\
+    SELECT time_turn\n\
+    FROM Environment\n\
+    WHERE id = ?;", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_bind_int64(stmt, 1, this->id_);
+  if (sqlite3_step(stmt) != SQLITE_ROW)
+    throw EXCEPTION(DBException, boost::str(boost::format("\
+    id %1% not found in table Environment")
+    % this->id_));
+  Time time_turn = sqlite3_column_int(stmt, 0);
+  sqlite3_finalize(stmt);
+
+  return time_turn;
+}
+
+/**
+* Set the time needed to do the action turn.
+* @param time_turn the new time.
+* @exception DBException if there is an error with the update.
+*/
+void Environment::time_turn(Time time_turn)
+{
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(this->db_->db(), "\
+    UPDATE Environment\n\
+    SET time_turn = ?\n\
+    WHERE id = ?;", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_bind_int(stmt, 1, time_turn);
+  sqlite3_bind_int64(stmt, 2, this->id_);
+  if (sqlite3_step(stmt) != SQLITE_DONE)
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_finalize(stmt);
+}
+
+
+/**
+* Get the time needed to do the action attack.
+* @return the Time.
+* @exception DBException if there is an error with the query.
+*/
+Time Environment::time_attack() const
+{
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(this->db_->db(), "\
+    SELECT time_attack\n\
+    FROM Environment\n\
+    WHERE id = ?;", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_bind_int64(stmt, 1, this->id_);
+  if (sqlite3_step(stmt) != SQLITE_ROW)
+    throw EXCEPTION(DBException, boost::str(boost::format("\
+    id %1% not found in table Environment")
+    % this->id_));
+  Time time_attack = sqlite3_column_int(stmt, 0);
+  sqlite3_finalize(stmt);
+
+  return time_attack;
+}
+
+/**
+* Set the time needed to do the action attack.
+* @param time_attack the new time.
+* @exception DBException if there is an error with the update.
+*/
+void Environment::time_attack(Time time_attack)
+{
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(this->db_->db(), "\
+    UPDATE Environment\n\
+    SET time_attack = ?\n\
+    WHERE id = ?;", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_bind_int(stmt, 1, time_attack);
+  sqlite3_bind_int64(stmt, 2, this->id_);
+  if (sqlite3_step(stmt) != SQLITE_DONE)
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_finalize(stmt);
+}
+
+
+/**
+* Get the time needed to do the action eat.
+* @return the time.
+* @exception DBException if there is an error with the query.
+*/
+Time Environment::time_eat() const
+{
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(this->db_->db(), "\
+    SELECT time_eat\n\
+    FROM Environment\n\
+    WHERE id = ?;", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_bind_int64(stmt, 1, this->id_);
+  if (sqlite3_step(stmt) != SQLITE_ROW)
+    throw EXCEPTION(DBException, boost::str(boost::format("\
+    id %1% not found in table Environment")
+    % this->id_));
+  Time time_eat = sqlite3_column_int(stmt, 0);
+  sqlite3_finalize(stmt);
+
+  return time_eat;
+}
+
+/**
+* Set the time needed to do the action eat.
+* @param energy_eat the new time.
+* @exception DBException if there is an error with the update.
+*/
+void Environment::time_eat(Time time_eat)
+{
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(this->db_->db(), "\
+    UPDATE Environment\n\
+    SET time_eat = ?\n\
+    WHERE id = ?;", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_bind_int(stmt, 1, time_eat);
+  sqlite3_bind_int64(stmt, 2, this->id_);
+  if (sqlite3_step(stmt) != SQLITE_DONE)
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_finalize(stmt);
+}
+
+
+/**
+* Get the time needed to do the action egg.
+* @return the time.
+* @exception DBException if there is an error with the query.
+*/
+Time Environment::time_egg() const
+{
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(this->db_->db(), "\
+    SELECT time_egg\n\
+    FROM Environment\n\
+    WHERE id = ?;", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_bind_int64(stmt, 1, this->id_);
+  if (sqlite3_step(stmt) != SQLITE_ROW)
+    throw EXCEPTION(DBException, boost::str(boost::format("\
+    id %1% not found in table Environment")
+    % this->id_));
+  Time time_egg = sqlite3_column_int(stmt, 0);
+  sqlite3_finalize(stmt);
+
+  return time_egg;
+}
+
+/**
+* Set the time needed to do the action egg.
+* @param time_egg the new time.
+* @exception DBException if there is an error with the update.
+*/
+void Environment::time_egg(Time time_egg)
+{
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(this->db_->db(), "\
+    UPDATE Environment\n\
+    SET time_egg = ?\n\
+    WHERE id = ?;", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_bind_int(stmt, 1, time_egg);
   sqlite3_bind_int64(stmt, 2, this->id_);
   if (sqlite3_step(stmt) != SQLITE_DONE)
     throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
