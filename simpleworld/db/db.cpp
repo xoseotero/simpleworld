@@ -727,7 +727,7 @@ DB::DB(std::string filename)
   if (this->version_ != DATABASE_VERSION)
     throw EXCEPTION(WrongVersion, boost::str(boost::format("\
 Database version %1% not supported")
-                                             % this->version_));
+                                             % static_cast<int>(this->version_)));
 
   // From http://sqlite.org/c3ref/step.html:
   // SQLITE_BUSY means that the database engine was unable to acquire the
