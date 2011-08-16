@@ -37,6 +37,7 @@
 
 #include <simpleworld/cpu/types.hpp>
 #include <simpleworld/cpu/exception.hpp>
+#include <simpleworld/cpu/instruction.hpp>
 #include <simpleworld/db/types.hpp>
 #include <simpleworld/db/exception.hpp>
 #include <simpleworld/db/transaction.hpp>
@@ -51,6 +52,7 @@
 #include "simpleworld.hpp"
 #include "worlderror.hpp"
 #include "actionerror.hpp"
+#include "cpu.hpp"
 #include "bugdeath.hpp"
 #include "movement.hpp"
 #include "mutation.hpp"
@@ -996,6 +998,12 @@ void SimpleWorld::bugs_run()
     } catch (const cpu::CPUException& e) {
       // some uncaught error in the CPU (CPU stopped)
       this->kill(*bug);
+    } catch (const ActionError& e) {
+      // invalid world command
+      cpu::Address addr = (*bug)->cpu.get_reg(REGISTER_PC);
+      (*bug)->cpu.interrupt(INTERRUPT_WORLDACTION, addr,
+                            cpu::Instruction((*bug)->cpu.get_mem(addr,
+                                                                 false)).data);
     } catch (const BugDeath& e) {
       // the bug is death
       this->kill(*bug);
