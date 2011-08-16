@@ -2,6 +2,7 @@ Simple World 1.0b5:
 	* Execute 16 CPU cycles by unit of time in the World.
 	* Make configurable the duration of each kind of action.
 	* Rot the food that is getting old.
+	* Update to database version 5.
 
 Simple World 1.0b4 (2011/01/10):
 	* Add spawns.
