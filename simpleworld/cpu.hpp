@@ -43,6 +43,14 @@ public:
    */
   CPU(cpu::Memory* registers, cpu::Memory* memory, Bug* bug);
 
+
+  /**
+  * Execute the next instruction.
+  * @exception CPUException A stop instruction was found
+  */
+  void next();
+
+
   Bug* bug;
 };
 

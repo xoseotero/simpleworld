@@ -18,7 +18,10 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <simpleworld/cpu/instruction.hpp>
+
 #include "cpu.hpp"
+#include "actionerror.hpp"
 #include "operations.hpp"
 
 namespace simpleworld
@@ -37,6 +40,23 @@ CPU::CPU(cpu::Memory* registers, cpu::Memory* memory, Bug* bug)
   this->isa_.add_interrupt(INTERRUPT_WORLDEVENT, "WorldEvent", false);
 
   this->isa_.add_instruction(0x58, "world", 0, true, ::simpleworld::world);
+}
+
+
+/**
+* Execute the next instruction.
+* @exception CPUException A stop instruction was found
+*/
+void CPU::next()
+{
+  try {
+    cpu::CPU::next();
+  } catch (const ActionError& e) {
+    // invalid world command
+    cpu::Address addr = this->get_reg(REGISTER_PC);
+    this->interrupt(INTERRUPT_WORLDACTION, addr,
+                    cpu::Instruction(this->get_mem(addr, false)).data);
+  }
 }
 
 }
