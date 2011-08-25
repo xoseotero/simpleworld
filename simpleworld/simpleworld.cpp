@@ -222,7 +222,7 @@ void SimpleWorld::add_food(Position position, Energy size)
  */
 void SimpleWorld::run(Time cycles)
 {
-  while (cycles > 0) {
+  while (cycles-- > 0) {
     // run each 16 cycles (time to do a action) in a transaction
     db::Transaction transaction(this, db::Transaction::immediate);
 
