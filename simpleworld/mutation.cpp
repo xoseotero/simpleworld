@@ -2,7 +2,7 @@
  * @file simpleworld/mutation.cpp
  * Mutation of bugs.
  *
- *  Copyright (C) 2008-2010  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2008-2011  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -18,26 +18,42 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <list>
+#include <utility>
 #include <cstdlib>
+#include <cstring>
+
+#include <boost/scoped_array.hpp>
 
 #include <simpleworld/cpu/types.hpp>
 #include <simpleworld/cpu/word.hpp>
-#include <simpleworld/cpu/memory.hpp>
 #include <simpleworld/db/types.hpp>
-#include <simpleworld/db/exception.hpp>
 #include <simpleworld/db/mutation.hpp>
 
-#include "dbmemory.hpp"
 #include "mutation.hpp"
 
 #ifdef DEBUG
 #include <iostream>
 #include <boost/format.hpp>
 #endif // DEBUG
-#include <boost/concept_check.hpp>
 
 namespace simpleworld
 {
+
+/**
+ * Types of mutations
+ */
+enum MutationType {
+  Mutation,
+  Addition,
+  Deletion
+};
+
+/**
+ * A list of mutations
+ */
+typedef std::list< std::pair<MutationType, cpu::Address> > MutationsList;
+
 
 /**
  * Get a random value in the range min <= n < max.
@@ -64,154 +80,136 @@ static cpu::Word random_word()
 }
 
 /**
- * Add a random word to the copy.
- * @param bug bug to mutate.
- * @param mutated where to add the word.
- * @param mutated_pos position of the new word.
- * @param time the current time.
- */
-static void add_word(db::Bug* bug, cpu::Memory& mutated,
-                     cpu::Address mutated_pos, Time time)
-{
-#ifdef DEBUG
-  std::cout << boost::format("Addition of a random word")
-    << std::endl;
-#endif // DEBUG
-
-  mutated.resize(mutated.size() + sizeof(cpu::Word));
-  cpu::Word newword = random_word();
-  mutated.set_word(mutated_pos, newword, false);
-
-  db::Mutation::insert_addition(bug->db(), bug->id(), time, mutated_pos,
-                                newword);
-}
-
-/**
- * Eliminate a word from the copy.
- * @param bug bug to mutate.
- * @param mutated where to add the word.
- * @param mutated_pos position of the new word.
- * @param original original code.
- * @param original_pos position of the original word.
- * @param time the current time.
- */
-static void eliminate_word(db::Bug* bug, cpu::Memory& mutated,
-                           cpu::Address mutated_pos,
-                           const cpu::Memory& original,
-                           cpu::Address original_pos, Time time)
-{
-#ifdef DEBUG
-  std::cout << boost::format("Deletion of a word")
-    << std::endl;
-#endif // DEBUG
-
-  mutated.resize(mutated.size() - sizeof(cpu::Word));
-
-  db::Mutation::insert_deletion(bug->db(), bug->id(), time, mutated_pos,
-                                original.get_word(original_pos, false));
-}
-
-/**
- * Change a word by a random one.
- * @param bug bug to mutate.
- * @param mutated where to add the word.
- * @param mutated_pos position of the new word.
- * @param original original code.
- * @param original_pos position of the original word.
- * @param time the current time.
- * @return if the word was changed
- */
-static bool change_word(db::Bug* bug, cpu::Memory& mutated,
-                        cpu::Address mutated_pos, const cpu::Memory& original,
-                        cpu::Address original_pos, Time time)
-{
-#ifdef DEBUG
-  std::cout << boost::format("Change of a word")
-    << std::endl;
-#endif // DEBUG
-
-  cpu::Word newword = random_word();
-  mutated.set_word(mutated_pos, newword, false);
-
-  // check if the new code is a mutation
-  // when the code is changed, the changed code can be the same as the
-  // original code
-  if (original.get_word(original_pos, false) != newword) {
-    db::Mutation::insert(bug->db(), bug->id(), time, mutated_pos,
-                         original.get_word(original_pos, false), newword);
-
-    return true;
-  } else
-    return false;
-}
-
-
-/**
- * Get a copy of the code but with occasional mutations.
- * @param bug bug to mutate.
+ * Generate mutations.
+ * @param list pointer to a list of mutations.
+ * @param size pointer to the size of the code.
  * @param probability probability to happen a mutation.
- * @param time the current time.
+ * @return if the code is mutated.
  */
-bool mutate(db::Bug* bug, float probability, Time time)
+static bool generate(MutationsList* list, cpu::Address* size, float probability)
 {
-  bool mutation = false;
-
-  DBMemory original(bug->code());
-  cpu::Memory mutated(original.size());
-
-  cpu::Address original_pos = 0, mutated_pos = 0;
-  while (original_pos < original.size()) {
-    // check if the word will be mutated
-    if (randint(0, 1 / probability) == 0) {
+  const int max = 1 / probability;
+  cpu::Address i = 0;
+  while (i < *size) {
+    if (randint(0, max) == 0) {
       // mutation
       switch (randint(0, 3)) {
-      case 0:
-        // addition of a random word
-        add_word(bug, mutated, mutated_pos, time);
-        mutated_pos += sizeof(cpu::Word);
+      case 0:                           // change the word by a random one
+        list->push_back(std::make_pair(Mutation, i));
+        i += sizeof(cpu::Word);
+        break;
+
+      case 1:                           // addition of a random word
+        list->push_back(std::make_pair(Addition, i));
+        i += sizeof(cpu::Word);
+        *size += sizeof(cpu::Word);
+        break;
+
+      case 2:                           // elimination of a word
+        list->push_back(std::make_pair(Deletion, i));
+        *size -= sizeof(cpu::Word);
+        break;
+      }
+    } else
+      // no mutation
+      i += sizeof(cpu::Word);
+  }
+
+  return not list->empty();
+}
+
+
+/**
+* Get a copy of the code but with occasional mutations.
+* @param bug bug to mutate.
+* @param probability probability to happen a mutation.
+* @param time the current time.
+*/
+bool mutate(db::Bug* bug, float probability, Time time)
+{
+  Uint32 size;
+  boost::shared_array<Uint8> original = bug->code().read(&size);
+
+  MutationsList list;
+  if (generate(&list, &size, probability)) {
+    boost::scoped_array<Uint8> mutated(new Uint8[size]);
+    cpu::Address original_i = 0;
+    cpu::Address mutated_i = 0;
+    MutationsList::const_iterator iter = list.begin();
+    while (iter != list.end()) {
+      cpu::Address chunk_size = (*iter).second - mutated_i;
+      if (chunk_size > 0)
+        std::memcpy(mutated.get() + mutated_i, original.get() + original_i,
+                    chunk_size);
+
+      switch ((*iter).first) {
+      case Mutation:
+#ifdef DEBUG
+        std::cout << boost::format("Change of a word")
+                  << std::endl;
+#endif // DEBUG
+
+        {
+          cpu::Word old_word =
+            *reinterpret_cast<cpu::Word*>(original.get() + chunk_size);
+          cpu::Word new_word = random_word();
+          *reinterpret_cast<cpu::Word*>(mutated.get() + chunk_size) = new_word;
+          db::Mutation::insert(bug->db(), bug->id(), time, (*iter).second,
+                               old_word, new_word);
+          original_i += chunk_size + sizeof(cpu::Word);
+          mutated_i += chunk_size + sizeof(cpu::Word);
+        }
 
         break;
 
-      case 1:
-        // elimination of a word
-        eliminate_word(bug, mutated, mutated_pos, original, original_pos,
-                       time);
-        original_pos += sizeof(cpu::Word);
+      case Addition:
+#ifdef DEBUG
+        std::cout << boost::format("Addition of a random word")
+                  << std::endl;
+#endif // DEBUG
+
+        {
+          cpu::Word new_word = random_word();
+          *reinterpret_cast<cpu::Word*>(mutated.get() + chunk_size) = new_word;
+          db::Mutation::insert_addition(bug->db(), bug->id(), time,
+                                        (*iter).second, new_word);
+          original_i += chunk_size;
+          mutated_i += chunk_size + sizeof(cpu::Word);
+        }
 
         break;
 
-      case 2:
-        // change the word by a random one
-        while (not change_word(bug, mutated, mutated_pos, original, original_pos,
-                        time))
-          ;
-        original_pos += sizeof(cpu::Word);
-        mutated_pos += sizeof(cpu::Word);
+      case Deletion:
+#ifdef DEBUG
+        std::cout << boost::format("Deletion of a word")
+                  << std::endl;
+#endif // DEBUG
+
+        {
+          cpu::Word old_word =
+            *reinterpret_cast<cpu::Word*>(original.get() + chunk_size);
+          db::Mutation::insert_deletion(bug->db(), bug->id(), time,
+                                        (*iter).second, old_word);
+          original_i += chunk_size + sizeof(cpu::Word);
+          mutated_i += chunk_size;
+        }
 
         break;
       }
 
-      mutation = true;
-    } else {
-      // same as original
-      mutated.set_word(mutated_pos, original.get_word(original_pos, false),
-                       false);
-
-      original_pos += sizeof(cpu::Word);
-      mutated_pos += sizeof(cpu::Word);
+      ++iter;
     }
+
+    if (mutated_i != size)
+      std::memcpy(mutated.get() + mutated_i, original.get() + original_i,
+                  size - mutated_i);
+
+    bug->code().write(mutated.get(), size);
+
+    return true;
   }
 
-  // addition of a random word at the end of the code
-  if (randint(0, 1 / probability) == 0) {
-    add_word(bug, mutated, mutated_pos, time);
-    mutation = true;
-  }
-
-  if (mutation)
-    original.assign(mutated);
-
-  return mutation;
+  return false;
 }
 
 }
