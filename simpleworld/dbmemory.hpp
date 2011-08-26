@@ -1,8 +1,8 @@
 /**
  * @file simpleworld/dbmemory.hpp
- * Memory from the database.
+ * Memory subclass that get the data from the database.
  *
- *  Copyright (C) 2010  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2010-2011  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -28,10 +28,23 @@
 namespace simpleworld
 {
 
+/**
+ * Memory subclass that get the data from the database.
+ */
 class DBMemory: public cpu::Memory
 {
 public:
+  /**
+   * Constructor.
+   * @param blob binary larget object that with the data
+   */
   DBMemory(const db::Blob& blob);
+
+
+  /**
+  * Update the data from the database.
+  */
+  void update();
 
 
   /**

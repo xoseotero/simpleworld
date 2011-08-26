@@ -1,8 +1,8 @@
 /**
  * @file simpleworld/dbmemory.cpp
- * Memory from the database.
+ * Memory subclass that get the data from the database.
  *
- *  Copyright (C) 2010  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2010-2011  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -18,17 +18,32 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <iostream>
 #include <cstring>
 
 #include <simpleworld/ints.hpp>
 #include <simpleworld/cpu/word.hpp>
+#include <simpleworld/db/exception.hpp>
 #include "dbmemory.hpp"
 
 namespace simpleworld
 {
 
+/**
+ * Constructor.
+ * @param blob binary larget object that with the data
+ */
 DBMemory::DBMemory(const db::Blob& blob)
   : cpu::Memory(0), blob_(blob)
+{
+  this->update();
+}
+
+
+/**
+* Update the data from the database.
+*/
+void DBMemory::update()
 {
   Uint32 size;
   boost::shared_array<Uint8> data = this->blob_.read(&size);
@@ -65,7 +80,12 @@ void DBMemory::set_word(cpu::Address address, cpu::Word value,
   Memory::set_word(address, value, system_endian);
   if (system_endian)
     value = cpu::change_byte_order(value);
-  this->blob_.write(&value, sizeof(cpu::Word), address);
+  try {
+    this->blob_.write(&value, sizeof(cpu::Word), address);
+  } catch (const db::DBException& e) {
+    std::cerr << "size = " << this->size() << std::endl;
+    throw;
+  }
 }
 
 /**

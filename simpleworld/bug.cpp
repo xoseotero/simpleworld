@@ -2,7 +2,7 @@
  * @file simpleworld/bug.cpp
  * A bug in Simple World.
  *
- *  Copyright (C) 2007-2010  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2007-2011  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -79,6 +79,8 @@ Bug[%1%] mutated")
     << std::endl;
 #endif // DEBUG
 
+  // The content of the memory has changed and must be updated
+  this->mem.update();
   this->cpu.interrupt(INTERRUPT_WORLDEVENT, EventMutation);
 }
 
