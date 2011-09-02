@@ -2,7 +2,7 @@
  * @file tests/db/db_test.cpp
  * Unit test for db::DeadBug.
  *
- *  Copyright (C) 2010  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2010-2011  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -64,7 +64,7 @@ db::ID id;
 BOOST_AUTO_TEST_CASE(deadbug_insert)
 {
   db::DB sw = open_db(DB_SAVE);
-  id = db::Bug::insert(&sw, "code", 4);
+  id = db::Bug::insert(&sw, 0, "code", 4);
   db::DeadBug::insert(&sw, id, 101);
   db::DeadBug deadbug1(&sw, id);
 
@@ -73,7 +73,7 @@ BOOST_AUTO_TEST_CASE(deadbug_insert)
   BOOST_CHECK_EQUAL(deadbug1.is_null("birth"), true);
   BOOST_CHECK_EQUAL(deadbug1.is_null("killer_id"), true);
 
-  db::ID id2 = db::Bug::insert(&sw, "code", 4);
+  db::ID id2 = db::Bug::insert(&sw, 0, "code", 4);
   db::DeadBug::insert(&sw, id2, 21, static_cast<sw::Time>(50));
   db::DeadBug deadbug2(&sw, id2);
 
@@ -83,7 +83,7 @@ BOOST_AUTO_TEST_CASE(deadbug_insert)
   BOOST_CHECK_EQUAL(deadbug2.death(), 50);
   BOOST_CHECK_EQUAL(deadbug2.is_null("killer_id"), true);
 
-  db::ID id3 = db::Bug::insert(&sw, "code", 4);
+  db::ID id3 = db::Bug::insert(&sw, 0, "code", 4);
   db::DeadBug::insert(&sw, id3, 51, id);
   db::DeadBug deadbug3(&sw, id3);
 
@@ -93,7 +93,7 @@ BOOST_AUTO_TEST_CASE(deadbug_insert)
   BOOST_CHECK_EQUAL(deadbug3.is_null("killer_id"), false);
   BOOST_CHECK_EQUAL(deadbug3.killer_id(), id);
 
-  db::ID id4 = db::Bug::insert(&sw, "code", 4);
+  db::ID id4 = db::Bug::insert(&sw, 0, "code", 4);
   db::DeadBug::insert(&sw, id4, 0, 100, id);
   db::DeadBug deadbug4(&sw, id4);
 
@@ -112,8 +112,8 @@ BOOST_AUTO_TEST_CASE(deadbug_insert_egg)
 {
   db::DB sw = open_db(DB_SAVE);
   db::ID world_id1 = db::World::insert(&sw, 1, 1, sw::OrientationNorth);
-  db::ID id1 = db::Bug::insert(&sw, "code", 4);
-  db::Egg::insert(&sw, id1, world_id1, 1000, 0);
+  db::ID id1 = db::Bug::insert(&sw, 0, "code", 4);
+  db::Egg::insert(&sw, id1, world_id1, 1000);
   db::Egg egg1(&sw, id1);
   db::DeadBug::insert(&sw, &egg1, 100);
   db::DeadBug deadbug1(&sw, id1);
@@ -126,8 +126,8 @@ BOOST_AUTO_TEST_CASE(deadbug_insert_egg)
   BOOST_CHECK_THROW(db::Egg(&sw, id1).energy(), db::DBException);
 
   db::ID world_id2 = db::World::insert(&sw, 1, 1, sw::OrientationNorth);
-  db::ID id2 = db::Bug::insert(&sw, "code", 4);
-  db::Egg::insert(&sw, id2, world_id2, 1000, 0);
+  db::ID id2 = db::Bug::insert(&sw, 0, "code", 4);
+  db::Egg::insert(&sw, id2, world_id2, 1000);
   db::Egg egg2(&sw, id2);
   db::DeadBug::insert(&sw, &egg2, 100, 1);
   db::DeadBug deadbug2(&sw, id2);
@@ -148,7 +148,7 @@ BOOST_AUTO_TEST_CASE(deadbug_insert_alivebug)
 {
   db::DB sw = open_db(DB_SAVE);
   db::ID world_id1 = db::World::insert(&sw, 1, 1, sw::OrientationNorth);
-  db::ID id1 = db::Bug::insert(&sw, "code", 4);
+  db::ID id1 = db::Bug::insert(&sw, 0, "code", 4);
   db::AliveBug::insert(&sw, id1, world_id1, 0, 134, "registers", 9);
   db::AliveBug alive1(&sw, id1);
   db::DeadBug::insert(&sw, &alive1, 100);
@@ -164,7 +164,7 @@ BOOST_AUTO_TEST_CASE(deadbug_insert_alivebug)
   BOOST_CHECK_THROW(db::AliveBug(&sw, id1).energy(), db::DBException);
 
   db::ID world_id2 = db::World::insert(&sw, 1, 1, sw::OrientationNorth);
-  db::ID id2 = db::Bug::insert(&sw, "code", 4);
+  db::ID id2 = db::Bug::insert(&sw, 0, "code", 4);
   db::AliveBug::insert(&sw, id2, world_id2, 100, 12, "registers", 9);
   db::AliveBug alive2(&sw, id2);
   db::DeadBug::insert(&sw, &alive2, 150, 1);

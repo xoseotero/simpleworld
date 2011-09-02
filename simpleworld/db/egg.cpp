@@ -2,7 +2,7 @@
  * @file simpleworld/db/egg.cpp
  * Information about an egg.
  *
- *  Copyright (C) 2007-2010  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2007-2011  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -51,21 +51,19 @@ Egg::Egg(DB* db, ID bug_id)
  * @param bug_id id of the bug.
  * @param world_id id of the world.
  * @param energy energy.
- * @param conception when the egg was created.
  * @return the id of the new row (the same as bug_id).
  * @exception DBException if there is an error with the insertion.
  */
-ID Egg::insert(DB* db, ID bug_id, ID world_id, Energy energy, Time conception)
+ID Egg::insert(DB* db, ID bug_id, ID world_id, Energy energy)
 {
   sqlite3_stmt* stmt;
   if (sqlite3_prepare_v2(db->db(), "\
-INSERT INTO Egg(bug_id, world_id, energy, conception)\n\
-VALUES(?, ?, ?, ?);", -1, &stmt, NULL))
+INSERT INTO Egg(bug_id, world_id, energy)\n\
+VALUES(?, ?, ?);", -1, &stmt, NULL))
     throw EXCEPTION(DBException, sqlite3_errmsg(db->db()));
   sqlite3_bind_int64(stmt, 1, bug_id);
   sqlite3_bind_int64(stmt, 2, world_id);
   sqlite3_bind_int(stmt, 3, energy);
-  sqlite3_bind_int(stmt, 4, conception);
   if (sqlite3_step(stmt) != SQLITE_DONE)
     throw EXCEPTION(DBException, sqlite3_errmsg(db->db()));
   sqlite3_finalize(stmt);
@@ -209,50 +207,6 @@ SET energy = ?\n\
 WHERE bug_id = ?;", -1, &stmt, NULL))
     throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
   sqlite3_bind_int(stmt, 1, energy);
-  sqlite3_bind_int64(stmt, 2, this->id_);
-  if (sqlite3_step(stmt) != SQLITE_DONE)
-    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
-  sqlite3_finalize(stmt);
-}
-
-/**
- * Get when the egg was created.
- * @return the time.
- * @exception DBException if there is an error with the query.
- */
-Time Egg::conception() const
-{
-  sqlite3_stmt* stmt;
-  if (sqlite3_prepare_v2(this->db_->db(), "\
-SELECT conception\n\
-FROM Egg\n\
-WHERE bug_id = ?;", -1, &stmt, NULL))
-    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
-  sqlite3_bind_int64(stmt, 1, this->id_);
-  if (sqlite3_step(stmt) != SQLITE_ROW)
-    throw EXCEPTION(DBException, boost::str(boost::format("\
-id %1% not found in table Egg")
-                                            % this->id_));
-  Time conception = sqlite3_column_int(stmt, 0);
-  sqlite3_finalize(stmt);
-
-  return conception;
-}
-
-/**
- * Set when the egg was created.
- * @param conception the new time.
- * @exception DBException if there is an error with the update.
- */
-void Egg::conception(Time conception)
-{
-  sqlite3_stmt* stmt;
-  if (sqlite3_prepare_v2(this->db_->db(), "\
-UPDATE Egg\n\
-SET conception = ?\n\
-WHERE bug_id = ?;", -1, &stmt, NULL))
-    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
-  sqlite3_bind_int(stmt, 1, conception);
   sqlite3_bind_int64(stmt, 2, this->id_);
   if (sqlite3_step(stmt) != SQLITE_DONE)
     throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));

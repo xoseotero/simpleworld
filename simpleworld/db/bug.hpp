@@ -2,7 +2,7 @@
  * @file simpleworld/db/bug.hpp
  * Information about a Bug.
  *
- *  Copyright (C) 2007-2010  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2007-2011  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -54,23 +54,26 @@ public:
   /**
    * Insert a bug with father.
    * @param db database.
+   * @param creation when the egg was created.
    * @param father_id id of the father.
    * @param code code of the bug.
    * @param size size of the code.
    * @return the id of the new row.
    * @exception DBException if there is an error with the insertion.
    */
-  static ID insert(DB* db, ID father_id, const void* code, Uint32 size);
+  static ID insert(DB* db, Time creation, ID father_id,
+                   const void* code, Uint32 size);
 
   /**
    * Insert a bug without father.
    * @param db database.
+   * @param creation when the egg was created.
    * @param code code of the bug.
    * @param size size of the code.
    * @return the id of the new row.
    * @exception DBException if there is an error with the insertion.
    */
-  static ID insert(DB* db, const void* code, Uint32 size);
+  static ID insert(DB* db, Time creation, const void* code, Uint32 size);
 
   /**
    * Delete a bug.
@@ -97,6 +100,21 @@ public:
 
 
   /**
+  * Get when the egg was created.
+  * @return the time.
+  * @exception DBException if there is an error with the query.
+  */
+  Time creation() const;
+
+  /**
+  * Set when the egg was created.
+  * @param creation the new time.
+  * @exception DBException if there is an error with the update.
+  */
+  void creation(Time creation);
+
+
+  /**
    * Get the id of the father.
    * father_id is NULL if the bug hasn't got a father.
    * @return the id of the father.
@@ -110,6 +128,13 @@ public:
    * @exception DBException if there is an error with the query.
    */
   void father_id(ID father_id);
+
+  /**
+  * Get the ancestors of the bug.
+  * @return the ancestors.
+  * @exception DBException if there is an error with the query.
+  */
+  std::vector<ID> ancestors() const;
 
 
   /**
@@ -126,6 +151,13 @@ public:
    * @exception DBException if there is an error with the query.
    */
   std::vector<ID> mutations() const;
+
+  /**
+  * Get the mutations of the ancestors of the bug and the bug.
+  * @return the mutations.
+  * @exception DBException if there is an error with the query.
+  */
+  std::vector<ID> all_mutations() const;
 };
 
 }

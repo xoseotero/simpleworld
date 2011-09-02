@@ -379,6 +379,7 @@ CREATE TABLE Bug
 (
   id INTEGER NOT NULL,
 
+  creation INTEGER NOT NULL,
   father_id INTEGER,                    -- NULL if the bug is added manually
 
   /* The blob is the last col for performance */
@@ -386,11 +387,23 @@ CREATE TABLE Bug
 
   PRIMARY KEY(id),
   FOREIGN KEY(father_id) REFERENCES Bug(id) ON UPDATE CASCADE ON DELETE SET NULL,
+  CHECK(creation >= 0),
   CHECK(father_id),
   CHECK(length(code) >= 0 AND (length(code) % 4 = 0))
 );
 
 CREATE INDEX Bug_index ON Bug(father_id);
+
+/* creation must be the current time */
+CREATE TRIGGER Bug_insert_creation
+BEFORE INSERT
+ON Bug
+FOR EACH ROW
+BEGIN
+  SELECT RAISE(ROLLBACK, 'creation is not now')
+  WHERE (SELECT max(time)
+         FROM Environment) <> NEW.creation;
+END;
 
 
 /*******************
@@ -402,26 +415,13 @@ CREATE TABLE Egg
 
   world_id INTEGER NOT NULL,
   energy INTEGER NOT NULL,
-  conception INTEGER NOT NULL,
 
   PRIMARY KEY(bug_id),
   FOREIGN KEY(bug_id) REFERENCES Bug(id) ON UPDATE CASCADE ON DELETE CASCADE,
   FOREIGN KEY(world_id) REFERENCES World(id) ON UPDATE CASCADE ON DELETE CASCADE,
   UNIQUE(world_id),
-  CHECK(energy > 0),
-  CHECK(conception >= 0)
+  CHECK(energy > 0)
 );
-
-/* conception must be in the current time */
-CREATE TRIGGER Egg_insert_conception
-BEFORE INSERT
-ON Egg
-FOR EACH ROW
-BEGIN
-  SELECT RAISE(ROLLBACK, 'conception is not now')
-  WHERE (SELECT max(time)
-         FROM Environment) <> NEW.conception;
-END;
 
 
 /*******************

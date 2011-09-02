@@ -2,7 +2,7 @@
  * @file tests/db/db_test.cpp
  * Unit test for db::Blob.
  *
- *  Copyright (C) 2010  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2010-2011  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -91,7 +91,7 @@ BOOST_AUTO_TEST_CASE(blob_update)
   code[5] = 0xFF;
   code[6] = 0x00;
   code[7] = 0x11;
-  db::ID id = db::Bug::insert(&sw, code, sizeof(code));
+  db::ID id = db::Bug::insert(&sw, 0, code, sizeof(code));
 
   db::Blob blob(db::Bug(&sw, id).code());
   sw::Uint8 newcode[4] = {0x55, 0x66, 0x77, 0x88};
@@ -118,7 +118,7 @@ BOOST_AUTO_TEST_CASE(blob_update_part)
   code[1] = 0xBB;
   code[2] = 0xCC;
   code[3] = 0xDD;
-  db::ID id = db::Bug::insert(&sw, code, sizeof(code));
+  db::ID id = db::Bug::insert(&sw, 0, code, sizeof(code));
 
   db::Blob blob(db::Bug(&sw, id).code());
   sw::Uint8 newcode = 0x88;

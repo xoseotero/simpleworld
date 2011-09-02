@@ -173,10 +173,10 @@ void SimpleWorld::add_egg(Energy energy,
     for (cpu::Address i = 0; i < code.size(); i += sizeof(cpu::Word))
       data[i / sizeof(cpu::Word)] = code.get_word(i, false);
 
-    id = db::Bug::insert(this, data.get(), code.size());
+    id = db::Bug::insert(this, this->env_->time(), data.get(), code.size());
     db::ID world_id = db::World::insert(this, position.x, position.y,
                                         orientation);
-    db::Egg::insert(this, id, world_id, energy, this->env_->time());
+    db::Egg::insert(this, id, world_id, energy);
   } catch (const db::DBException& e) {
     throw EXCEPTION(WorldError, e.what);
   }
@@ -602,9 +602,9 @@ Position used (%1%, %2%)")
                                                           TurnLeft));
   Uint32 size;
   boost::shared_array<Uint8> code = bug->code().read(&size);
-  db::ID egg_id = db::Bug::insert(this, bug->id(), code.get(), size);
-  db::Egg::insert(this, egg_id, world_id, std::min(bug->energy(), energy),
-                  this->env_->time());
+  db::ID egg_id = db::Bug::insert(this, this->env_->time(), bug->id(),
+				  code.get(), size);
+  db::Egg::insert(this, egg_id, world_id, std::min(bug->energy(), energy));
   Egg* ptr = new Egg(this, egg_id);
   mutate(ptr, this->env_->mutations_probability(), this->env_->time());
 
@@ -660,11 +660,12 @@ void SimpleWorld::spawn_eggs()
         boost::shared_array<Uint8> data = (*spawn)->code().read(&size);
 
         for (Uint16 i = 0; i < max - num_elements; i++) {
-          db::ID id = db::Bug::insert(this, data.get(), size);
+          db::ID id = db::Bug::insert(this, this->env_->time(),
+				      data.get(), size);
           Position position = this->world_->unused_position(start, end);
           db::ID world_id = db::World::insert(this, position.x, position.y,
                                               World::random_orientation());
-          db::Egg::insert(this, id, world_id, energy, this->env_->time());
+          db::Egg::insert(this, id, world_id, energy);
 
           Egg* egg = new Egg(this, id);
           mutate(egg, this->env_->mutations_probability(), this->env_->time());
@@ -715,7 +716,7 @@ void SimpleWorld::eggs_birth()
   for (std::list<Egg*>::iterator egg = eggs.begin();
        egg != eggs.end();
        ++egg)
-    if (((*egg)->conception() + this->env_->time_birth()) <= this->env_->time())
+    if (((*egg)->creation() + this->env_->time_birth()) <= this->env_->time())
       this->birth(*egg);
 }
 

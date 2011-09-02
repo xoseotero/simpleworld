@@ -88,7 +88,7 @@ BOOST_AUTO_TEST_CASE(alivebug_insert)
 {
   db::DB sw = open_db(DB_SAVE);
   world_id1 = db::World::insert(&sw, 1, 12);
-  bug_id1 = db::Bug::insert(&sw, "code", 4);
+  bug_id1 = db::Bug::insert(&sw, 0, "code", 4);
   id1 = db::AliveBug::insert(&sw, bug_id1, world_id1, 15, 215, "register", 8);
   db::AliveBug alivebug(&sw, id1);
   sw::Uint32 size;
@@ -122,15 +122,15 @@ BOOST_AUTO_TEST_CASE(alivebug_insert_egg)
 {
   db::DB sw = open_db(DB_SAVE);
   world_id2 = db::World::insert(&sw, 13, 2);
-  bug_id2 = db::Bug::insert(&sw, "code", 4);
-  db::ID egg_id = db::Egg::insert(&sw, bug_id2, world_id2, 74, 0);
+  bug_id2 = db::Bug::insert(&sw, 0, "code", 4);
+  db::ID egg_id = db::Egg::insert(&sw, bug_id2, world_id2, 74);
   db::Egg egg(&sw, egg_id);
   id2 = db::AliveBug::insert(&sw, &egg, 25);
   db::AliveBug alivebug(&sw, id2);
   sw::Uint32 size;
   boost::shared_array<sw::Uint8> registers = alivebug.registers().read(&size);
 
-  BOOST_CHECK_THROW(db::Egg(&sw, egg_id).conception(), db::DBException);
+  BOOST_CHECK_THROW(db::Egg(&sw, egg_id).energy(), db::DBException);
   BOOST_CHECK_EQUAL(alivebug.bug_id(), id2);
   BOOST_CHECK_EQUAL(alivebug.world_id(), world_id2);
   BOOST_CHECK_EQUAL(alivebug.birth(), 25);

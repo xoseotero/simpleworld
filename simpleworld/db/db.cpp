@@ -446,6 +446,7 @@ CREATE TABLE Bug\n\
 (\n\
   id INTEGER NOT NULL,\n\
 \n\
+  creation INTEGER NOT NULL,\n\
   father_id INTEGER,                    -- NULL if the bug is added manually\n\
 \n\
   /* The blob is the last col for performance */\n\
@@ -453,12 +454,25 @@ CREATE TABLE Bug\n\
 \n\
   PRIMARY KEY(id),\n\
   FOREIGN KEY(father_id) REFERENCES Bug(id) ON UPDATE CASCADE ON DELETE SET NULL,\n\
+  CHECK(creation >= 0),\n\
   CHECK(father_id),\n\
   CHECK(length(code) >= 0 AND (length(code) % 4 = 0))\n\
 );",
 
     "\
 CREATE INDEX Bug_index ON Bug(father_id);",
+
+    /* creation must be the current time */
+    "\
+CREATE TRIGGER Bug_insert_creation\n\
+BEFORE INSERT\n\
+ON Bug\n\
+FOR EACH ROW\n\
+BEGIN\n\
+SELECT RAISE(ROLLBACK, 'creation is not now')\n\
+WHERE (SELECT max(time)\n\
+FROM Environment) <> NEW.creation;\n\
+END;",
 
 
     /*******************
@@ -471,27 +485,13 @@ CREATE TABLE Egg\n\
 \n\
   world_id INTEGER NOT NULL,\n\
   energy INTEGER NOT NULL,\n\
-  conception INTEGER NOT NULL,\n\
 \n\
   PRIMARY KEY(bug_id),\n\
   FOREIGN KEY(bug_id) REFERENCES Bug(id) ON UPDATE CASCADE ON DELETE CASCADE,\n\
   FOREIGN KEY(world_id) REFERENCES World(id) ON UPDATE CASCADE ON DELETE CASCADE,\n\
   UNIQUE(world_id),\n\
-  CHECK(energy > 0),\n\
-  CHECK(conception >= 0)\n\
+  CHECK(energy > 0)\n\
 );",
-
-    /* conception must be in the current time */
-    "\
-CREATE TRIGGER Egg_insert_conception\n\
-BEFORE INSERT\n\
-ON Egg\n\
-FOR EACH ROW\n\
-BEGIN\n\
-  SELECT RAISE(ROLLBACK, 'conception is not now')\n\
-  WHERE (SELECT max(time)\n\
-         FROM Environment) <> NEW.conception;\n\
-END;",
 
 
     /*******************
@@ -963,7 +963,7 @@ std::vector<ID> DB::eggs()
   if (sqlite3_prepare_v2(this->db(), "\
 SELECT bug_id\n\
 FROM Egg\n\
-ORDER BY conception, bug_id;", -1, &stmt, NULL))
+ORDER BY bug_id;", -1, &stmt, NULL))
     throw EXCEPTION(DBException, sqlite3_errmsg(this->db()));
 
   bool done = false;

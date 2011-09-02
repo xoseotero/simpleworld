@@ -2,7 +2,7 @@
  * @file tests/db/db_test.cpp
  * Unit test for db::Bug.
  *
- *  Copyright (C) 2010  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2010-2011  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -54,6 +54,7 @@ BOOST_AUTO_TEST_CASE(bug_get)
   boost::shared_array<sw::Uint8> code3 = bug3.code().read(&size3);
 
   BOOST_CHECK_EQUAL(bug1.id(), 1);
+  BOOST_CHECK_EQUAL(bug1.creation(), 1);
   BOOST_CHECK_EQUAL(bug1.is_null("father_id"), true);
   BOOST_CHECK_EQUAL(size1, 8);
   BOOST_CHECK_EQUAL(code1[0], 0x12);
@@ -65,6 +66,7 @@ BOOST_AUTO_TEST_CASE(bug_get)
   BOOST_CHECK_EQUAL(code1[6], 0xCD);
   BOOST_CHECK_EQUAL(code1[7], 0xEF);
   BOOST_CHECK_EQUAL(bug2.id(), 2);
+  BOOST_CHECK_EQUAL(bug2.creation(), 101);
   BOOST_CHECK_EQUAL(bug2.is_null("father_id"), true);
   BOOST_CHECK_EQUAL(size2, 8);
   BOOST_CHECK_EQUAL(code2[0], 0x1A);
@@ -76,6 +78,7 @@ BOOST_AUTO_TEST_CASE(bug_get)
   BOOST_CHECK_EQUAL(code2[6], 0x78);
   BOOST_CHECK_EQUAL(code2[7], 0x90);
   BOOST_CHECK_EQUAL(bug3.id(), 3);
+  BOOST_CHECK_EQUAL(bug3.creation(), 200);
   BOOST_CHECK_EQUAL(bug3.father_id(), 1);
   BOOST_CHECK_EQUAL(bug3.is_null("father_id"), false);
   BOOST_CHECK_EQUAL(size3, 8);
@@ -97,8 +100,8 @@ db::ID id;
 BOOST_AUTO_TEST_CASE(bug_insert)
 {
   db::DB sw = open_db(DB_SAVE);
-  db::ID father_id = db::Bug::insert(&sw, "1234", 4);
-  id = db::Bug::insert(&sw, father_id, "4321", 4);
+  db::ID father_id = db::Bug::insert(&sw, 0, "1234", 4);
+  id = db::Bug::insert(&sw, 0, father_id, "4321", 4);
   db::Bug father(&sw, father_id);
   sw::Uint32 father_size;
   boost::shared_array<sw::Uint8> father_code =
@@ -108,6 +111,7 @@ BOOST_AUTO_TEST_CASE(bug_insert)
   boost::shared_array<sw::Uint8> son_code = son.code().read(&son_size);
 
   BOOST_CHECK_EQUAL(father.id(), father_id);
+  BOOST_CHECK_EQUAL(father.creation(), 0);
   BOOST_CHECK_EQUAL(father.is_null("father_id"), true);
   BOOST_CHECK_EQUAL(father_size, 4);
   BOOST_CHECK_EQUAL(father_code[0], '1');
@@ -115,6 +119,7 @@ BOOST_AUTO_TEST_CASE(bug_insert)
   BOOST_CHECK_EQUAL(father_code[2], '3');
   BOOST_CHECK_EQUAL(father_code[3], '4');
   BOOST_CHECK_EQUAL(son.id(), id);
+  BOOST_CHECK_EQUAL(son.creation(), 0);
   BOOST_CHECK_EQUAL(son.is_null("father_id"), false);
   BOOST_CHECK_EQUAL(son.father_id(), father_id);
   BOOST_CHECK_EQUAL(son_size, 4);
@@ -131,7 +136,7 @@ BOOST_AUTO_TEST_CASE(bug_insert)
 BOOST_AUTO_TEST_CASE(bug_update)
 {
   db::DB sw = open_db(DB_SAVE);
-  db::ID father_id = db::Bug::insert(&sw, "1234", 4);
+  db::ID father_id = db::Bug::insert(&sw, 0, "1234", 4);
   db::Bug bug(&sw, id);
   bug.father_id(father_id);
   bug.code().write("0101", 4);

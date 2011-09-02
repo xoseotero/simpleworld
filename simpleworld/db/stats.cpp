@@ -25,6 +25,7 @@
 #include <sqlite3.h>
 
 #include "exception.hpp"
+#include "bug.hpp"
 #include "stats.hpp"
 
 namespace simpleworld
@@ -95,42 +96,6 @@ VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);", -1, &stmt, NULL))
 }
 
 /**
- * Get the number of mutations of a bug and its ancestors.
- * @param db database.
- * @param id identificator of the bug.
- * @return the number of mutations.
- */
-static Uint32 mutations_ancestors(DB* db, ID id)
-{
-  sqlite3_stmt* stmt;
-
-  if (sqlite3_prepare_v2(db->db(), "\
-SELECT count(*)\n\
-FROM Mutation\n\
-WHERE bug_id = ?;", -1, &stmt, NULL))
-    throw EXCEPTION(DBException, sqlite3_errmsg(db->db()));
-  sqlite3_bind_int64(stmt, 1, id);
-  if (sqlite3_step(stmt) != SQLITE_ROW)
-    throw EXCEPTION(DBException, sqlite3_errmsg(db->db()));
-  Uint32 mutations = sqlite3_column_int(stmt, 0);
-  sqlite3_finalize(stmt);
-
-  if (sqlite3_prepare_v2(db->db(), "\
-SELECT father_id\n\
-FROM Bug\n\
-WHERE id = ?;", -1, &stmt, NULL))
-    throw EXCEPTION(DBException, sqlite3_errmsg(db->db()));
-  sqlite3_bind_int64(stmt, 1, id);
-  if (sqlite3_step(stmt) != SQLITE_ROW)
-    throw EXCEPTION(DBException, sqlite3_errmsg(db->db()));
-  if (sqlite3_column_type(stmt, 0) != SQLITE_NULL)
-    mutations += mutations_ancestors(db, sqlite3_column_int64(stmt, 0));
-  sqlite3_finalize(stmt);
-
-  return mutations;
-}
-
-/**
  * Insert the current stats.
  * @param db database.
  * @return the id of the new row.
@@ -190,7 +155,7 @@ FROM AliveBug;", -1, &stmt, NULL))
   for (std::vector<ID>::const_iterator alive_bug = alive_bugs.begin();
        alive_bug != alive_bugs.end();
        ++alive_bug)
-    mutations += mutations_ancestors(db, *alive_bug);
+    mutations += Bug(db, *alive_bug).all_mutations().size();
 
   if (sqlite3_prepare_v2(db->db(), "\
 SELECT total((SELECT max(time)\n\
