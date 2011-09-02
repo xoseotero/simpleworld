@@ -576,6 +576,7 @@ CREATE TABLE Stats
 
   time INTEGER NOT NULL,
 
+  families INTEGER NO NULL,
   alive INTEGER NOT NULL,
   eggs INTEGER NOT NULL,
   food INTEGER NOT NULL,
@@ -591,6 +592,7 @@ CREATE TABLE Stats
 
   PRIMARY KEY(id),
   CHECK(time >= 0),
+  CHECK(families >= 0),
   CHECK(alive >= 0),
   CHECK(eggs >= 0),
   CHECK(food >= 0),

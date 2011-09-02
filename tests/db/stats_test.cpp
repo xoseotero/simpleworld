@@ -48,6 +48,7 @@ BOOST_AUTO_TEST_CASE(stats_get)
 
   BOOST_CHECK_EQUAL(stats.id(), 1);
   BOOST_CHECK_EQUAL(stats.time(), 1024);
+  BOOST_CHECK_EQUAL(stats.families(), 90);
   BOOST_CHECK_EQUAL(stats.alive(), 100);
   BOOST_CHECK_EQUAL(stats.eggs(), 40);
   BOOST_CHECK_EQUAL(stats.food(), 32);
@@ -69,12 +70,13 @@ db::ID id;
 BOOST_AUTO_TEST_CASE(stats_insert)
 {
   db::DB sw = open_db(DB_SAVE);
-  id = db::Stats::insert(&sw, 2048, 101, 41, 33, 20000, 10, 10241,
+  id = db::Stats::insert(&sw, 2048, 98, 101, 41, 33, 20000, 10, 10241,
                          1, 2, 3, 4, 5);
   db::Stats stats(&sw, id);
 
   BOOST_CHECK_EQUAL(stats.id(), id);
   BOOST_CHECK_EQUAL(stats.time(), 2048);
+  BOOST_CHECK_EQUAL(stats.families(), 98);
   BOOST_CHECK_EQUAL(stats.alive(), 101);
   BOOST_CHECK_EQUAL(stats.eggs(), 41);
   BOOST_CHECK_EQUAL(stats.food(), 33);
@@ -97,6 +99,7 @@ BOOST_AUTO_TEST_CASE(stats_update)
   db::DB sw = open_db(DB_SAVE);
   db::Stats stats(&sw, id);
   stats.time(4096);
+  stats.families(96);
   stats.alive(99);
   stats.eggs(39);
   stats.food(31);
@@ -111,6 +114,7 @@ BOOST_AUTO_TEST_CASE(stats_update)
 
   BOOST_CHECK_EQUAL(stats.id(), id);
   BOOST_CHECK_EQUAL(stats.time(), 4096);
+  BOOST_CHECK_EQUAL(stats.families(), 96);
   BOOST_CHECK_EQUAL(stats.alive(), 99);
   BOOST_CHECK_EQUAL(stats.eggs(), 39);
   BOOST_CHECK_EQUAL(stats.food(), 31);

@@ -50,6 +50,7 @@ public:
    * Insert stats.
    * @param db database.
    * @param time the time.
+   * @param families the number of families.
    * @param alive the number of alive bugs.
    * @param eggs the number of eggs.
    * @param food the number of food.
@@ -64,10 +65,11 @@ public:
    * @return the id of the new row.
    * @exception DBException if there is an error with the insertion.
    */
-  static ID insert(DB* db, Time time, Uint32 alive, Uint32 eggs, Uint32 food,
-                   Uint32 energy, Uint32 mutations, Uint32 age,
-                   Uint32 last_births, Uint32 last_sons, Uint32 last_deaths,
-                   Uint32 last_kills, Uint32 last_mutations);
+  static ID insert(DB* db, Time time, Uint32 families, Uint32 alive,
+                   Uint32 eggs, Uint32 food, Uint32 energy, Uint32 mutations,
+                   Uint32 age, Uint32 last_births, Uint32 last_sons,
+                   Uint32 last_deaths, Uint32 last_kills,
+                   Uint32 last_mutations);
 
   /**
    * Insert the current stats.
@@ -115,6 +117,20 @@ public:
    */
   void time(Time time);
 
+
+  /**
+  * Get the number of families (groups of bugs with a common ancestor).
+  * @return the number of families.
+  * @exception DBException if there is an error with the query.
+  */
+  Uint32 families() const;
+
+  /**
+  * Set the number of families (groups of bugs with a common ancestor).
+  * @param alive the number of families.
+  * @exception DBException if there is an error with the query.
+  */
+  void families(Uint32 families);
 
   /**
    * Get the number of alive bugs.

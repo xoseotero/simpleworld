@@ -18,7 +18,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <string>
+#include <set>
 
 #include <boost/format.hpp>
 
@@ -50,6 +50,7 @@ Stats::Stats(DB* db, ID id)
  * Insert stats.
  * @param db database.
  * @param time the time.
+ * @param families the number of families.
  * @param alive the number of alive bugs.
  * @param eggs the number of eggs.
  * @param food the number of food.
@@ -64,30 +65,31 @@ Stats::Stats(DB* db, ID id)
  * @return the id of the new row.
  * @exception DBException if there is an error with the insertion.
  */
-ID Stats::insert(DB* db, Time time, Uint32 alive, Uint32 eggs, Uint32 food,
-                 Uint32 energy, Uint32 mutations, Uint32 age,
+ID Stats::insert(DB* db, Time time, Uint32 families, Uint32 alive, Uint32 eggs,
+                 Uint32 food, Uint32 energy, Uint32 mutations, Uint32 age,
                  Uint32 last_births, Uint32 last_sons, Uint32 last_deaths,
                  Uint32 last_kills, Uint32 last_mutations)
 {
   sqlite3_stmt* stmt;
   if (sqlite3_prepare_v2(db->db(), "\
-INSERT INTO Stats(time, alive, eggs, food, energy, mutations, age,\n\
+INSERT INTO Stats(time, families, alive, eggs, food, energy, mutations, age,\n\
                   last_births, last_sons, last_deaths, last_kills,\n\
                   last_mutations)\n\
-VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);", -1, &stmt, NULL))
+VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);", -1, &stmt, NULL))
     throw EXCEPTION(DBException, sqlite3_errmsg(db->db()));
   sqlite3_bind_int(stmt, 1, time);
-  sqlite3_bind_int(stmt, 2, alive);
-  sqlite3_bind_int(stmt, 3, eggs);
-  sqlite3_bind_int(stmt, 4, food);
-  sqlite3_bind_int(stmt, 5, energy);
-  sqlite3_bind_int(stmt, 6, mutations);
-  sqlite3_bind_int(stmt, 7, age);
-  sqlite3_bind_int(stmt, 8, last_births);
-  sqlite3_bind_int(stmt, 9, last_sons);
-  sqlite3_bind_int(stmt, 10, last_deaths);
-  sqlite3_bind_int(stmt, 11, last_kills);
-  sqlite3_bind_int(stmt, 12, last_mutations);
+  sqlite3_bind_int(stmt, 2, families);
+  sqlite3_bind_int(stmt, 3, alive);
+  sqlite3_bind_int(stmt, 4, eggs);
+  sqlite3_bind_int(stmt, 5, food);
+  sqlite3_bind_int(stmt, 6, energy);
+  sqlite3_bind_int(stmt, 7, mutations);
+  sqlite3_bind_int(stmt, 8, age);
+  sqlite3_bind_int(stmt, 9, last_births);
+  sqlite3_bind_int(stmt, 10, last_sons);
+  sqlite3_bind_int(stmt, 11, last_deaths);
+  sqlite3_bind_int(stmt, 12, last_kills);
+  sqlite3_bind_int(stmt, 13, last_mutations);
   if (sqlite3_step(stmt) != SQLITE_DONE)
     throw EXCEPTION(DBException, sqlite3_errmsg(db->db()));
   sqlite3_finalize(stmt);
@@ -113,6 +115,19 @@ FROM Environment;", -1, &stmt, NULL))
     throw EXCEPTION(DBException, sqlite3_errmsg(db->db()));
   Time time = sqlite3_column_int(stmt, 0);
   sqlite3_finalize(stmt);
+
+  std::vector<ID> alive_bugs = db->alive_bugs();
+  std::set<ID> ancestors;
+  for (std::vector<ID>::const_iterator alive_bug = alive_bugs.begin();
+       alive_bug != alive_bugs.end();
+       ++alive_bug) {
+    std::vector<ID> bug_ancestors = Bug(db, *alive_bug).ancestors();
+    if (bug_ancestors.empty())
+      ancestors.insert(*alive_bug);
+    else
+      ancestors.insert(bug_ancestors[0]);
+  }
+  Uint32 families = ancestors.size();
 
   if (sqlite3_prepare_v2(db->db(), "\
 SELECT count(*)\n\
@@ -151,7 +166,6 @@ FROM AliveBug;", -1, &stmt, NULL))
   sqlite3_finalize(stmt);
 
   Uint32 mutations = 0;
-  std::vector<ID> alive_bugs = db->alive_bugs();
   for (std::vector<ID>::const_iterator alive_bug = alive_bugs.begin();
        alive_bug != alive_bugs.end();
        ++alive_bug)
@@ -230,8 +244,8 @@ FROM Mutation;", -1, &stmt, NULL))
   Uint32 last_mutations = sqlite3_column_int(stmt, 0);
   sqlite3_finalize(stmt);
 
-  return Stats::insert(db, time, alive, eggs, food, energy, mutations, age,
-                       last_births, last_sons, last_deaths, last_kills,
+  return Stats::insert(db, time, families, alive, eggs, food, energy, mutations,
+                       age, last_births, last_sons, last_deaths, last_kills,
                        last_mutations);
 }
 
@@ -322,6 +336,50 @@ WHERE id = ?;", -1, &stmt, NULL))
   sqlite3_finalize(stmt);
 }
 
+
+/**
+* Get the number of families (groups of bugs with a common ancestor).
+* @return the number of families.
+* @exception DBException if there is an error with the query.
+*/
+Uint32 Stats::families() const
+{
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(this->db_->db(), "\
+SELECT families\n\
+FROM Stats\n\
+WHERE id = ?;", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_bind_int64(stmt, 1, this->id_);
+  if (sqlite3_step(stmt) != SQLITE_ROW)
+    throw EXCEPTION(DBException, boost::str(boost::format("\
+id %1% not found in table Stats")
+                                            % this->id_));
+  Uint32 families = sqlite3_column_int(stmt, 0);
+  sqlite3_finalize(stmt);
+
+  return families;
+}
+
+/**
+* Set the number of families (groups of bugs with a common ancestor).
+* @param alive the number of families.
+* @exception DBException if there is an error with the query.
+*/
+void Stats::families(Uint32 families)
+{
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(this->db_->db(), "\
+UPDATE Stats\n\
+SET families = ?\n\
+WHERE id = ?;", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_bind_int(stmt, 1, families);
+  sqlite3_bind_int64(stmt, 2, this->id_);
+  if (sqlite3_step(stmt) != SQLITE_DONE)
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_finalize(stmt);
+}
 
 /**
  * Get the number of alive bugs.
