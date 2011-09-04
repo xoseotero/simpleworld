@@ -27,6 +27,7 @@ namespace fs = boost::filesystem;
 #include "wrongversion.hpp"
 #include "db.hpp"
 #include "transaction.hpp"
+#include "default.hpp"
 #include "environment.hpp"
 
 #define DATABASE_VERSION 5
@@ -756,6 +757,44 @@ DB::~DB()
 
 
 /**
+* Create the database with the default Environment.
+* @param filename File name of the database.
+* @exception DBException if there is an error with the creation.
+*/
+void DB::create(std::string filename)
+{
+  DB::create(filename, 0,
+             default_environment.size_x,
+             default_environment.size_y,
+             default_environment.time_rot,
+             default_environment.size_rot,
+             default_environment.mutations_probability,
+             default_environment.time_birth,
+             default_environment.time_mutate,
+             default_environment.time_laziness,
+             default_environment.energy_laziness,
+             default_environment.attack_multiplier,
+             default_environment.time_nothing,
+             default_environment.time_myself,
+             default_environment.time_detect,
+             default_environment.time_info,
+             default_environment.time_move,
+             default_environment.time_turn,
+             default_environment.time_attack,
+             default_environment.time_eat,
+             default_environment.time_egg,
+             default_environment.energy_nothing,
+             default_environment.energy_myself,
+             default_environment.energy_detect,
+             default_environment.energy_info,
+             default_environment.energy_move,
+             default_environment.energy_turn,
+             default_environment.energy_attack,
+             default_environment.energy_eat,
+             default_environment.energy_egg);
+}
+
+/**
  * Create the database.
  * @param filename File name of the database.
  * @param time time passed since the creation of the World.
@@ -795,9 +834,9 @@ void DB::create(std::string filename,
                 double mutations_probability, Time time_birth,
                 Time time_mutate, Time time_laziness,
                 Energy energy_laziness, double attack_multiplier,
-		Time time_nothing, Time time_myself, Time time_detect,
-		Time time_info, Time time_move, Time time_turn,
-		Time time_attack, Time time_eat, Time time_egg,
+                Time time_nothing, Time time_myself, Time time_detect,
+                Time time_info, Time time_move, Time time_turn,
+                Time time_attack, Time time_eat, Time time_egg,
                 Energy energy_nothing, Energy energy_myself,
                 Energy energy_detect, Energy energy_info,
                 Energy energy_move, Energy energy_turn,
@@ -822,8 +861,8 @@ void DB::create(std::string filename,
   Environment::insert(&db, time, size_x, size_y, time_rot, size_rot,
                       mutations_probability, time_birth, time_mutate,
                       time_laziness, energy_laziness, attack_multiplier,
-		      time_nothing, time_myself, time_detect, time_info,
-		      time_move, time_turn, time_attack, time_eat, time_egg,
+                      time_nothing, time_myself, time_detect, time_info,
+                      time_move, time_turn, time_attack, time_eat, time_egg,
                       energy_nothing, energy_myself, energy_detect,
                       energy_info, energy_move, energy_turn, energy_attack,
                       energy_eat, energy_egg);

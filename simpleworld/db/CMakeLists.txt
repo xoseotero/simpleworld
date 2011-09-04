@@ -1,6 +1,7 @@
 set(DB_SRCS
   table.cpp
   blob.cpp
+  default.cpp
   environment.cpp
   world.cpp
   spawn.cpp

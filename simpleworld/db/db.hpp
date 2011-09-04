@@ -60,6 +60,13 @@ public:
 
 
   /**
+  * Create the database with the default Environment.
+  * @param filename File name of the database.
+  * @exception DBException if there is an error with the creation.
+  */
+  static void create(std::string filename);
+
+  /**
    * Create the database.
    * @param filename File name of the database.
    * @param time time passed since the creation of the World.
@@ -90,7 +97,7 @@ public:
    * @param energy_turn energy used to do the action turn.
    * @param energy_attack energy used to do the action attack.
    * @param energy_eat energy used to do the action eat.
-   * @param energy_egg energy used to do egg 
+   * @param energy_egg energy used to do egg.
    * @exception DBException if there is an error with the creation.
    */
   static void create(std::string filename,
@@ -99,9 +106,9 @@ public:
                      double mutations_probability, Time time_birth,
                      Time time_mutate, Time time_laziness,
                      Energy energy_laziness, double attack_multiplier,
-		     Time time_nothing, Time time_myself, Time time_detect,
-		     Time time_info, Time time_move, Time time_turn,
-		     Time time_attack, Time time_eat, Time time_egg,
+                     Time time_nothing, Time time_myself, Time time_detect,
+                     Time time_info, Time time_move, Time time_turn,
+                     Time time_attack, Time time_eat, Time time_egg,
                      Energy energy_nothing, Energy energy_myself,
                      Energy energy_detect, Energy energy_info,
                      Energy energy_move, Energy energy_turn,

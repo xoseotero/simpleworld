@@ -27,40 +27,11 @@
 
 #include <simpleworld/types.hpp>
 #include <simpleworld/db/db.hpp>
+#include <simpleworld/db/default.hpp>
 namespace sw = simpleworld;
 namespace db = simpleworld::db;
 
 #include "simpleworld.hpp"
-
-
-// Default values
-#define DEFAULT_SIZE sw::Position(16, 16)
-#define DEFAULT_ROT 64
-#define DEFAULT_SROT 64
-#define DEFAULT_MUTATIONS 0.01
-#define DEFAULT_BIRTH 2
-#define DEFAULT_OLD 1024
-#define DEFAULT_LAZINESS 64
-#define DEFAULT_ELAZINESS 64
-#define DEFAULT_MULTIPLIER 2.5
-#define DEFAULT_TNOTHING 1
-#define DEFAULT_TMYSELF 1
-#define DEFAULT_TDETECT 2
-#define DEFAULT_TINFO 2
-#define DEFAULT_TMOVE 3
-#define DEFAULT_TTURN 3
-#define DEFAULT_TATTACK 4
-#define DEFAULT_TEAT 4
-#define DEFAULT_TEGG 4
-#define DEFAULT_NOTHING 0
-#define DEFAULT_MYSELF 1
-#define DEFAULT_DETECT 1
-#define DEFAULT_INFO 1
-#define DEFAULT_MOVE 2
-#define DEFAULT_TURN 1
-#define DEFAULT_ATTACK 3
-#define DEFAULT_EAT 3
-#define DEFAULT_EGG 4
 
 
 /**
@@ -138,34 +109,6 @@ Report bugs to <%2%>.")
 // information from the command line
 static std::string database_path;
 
-static sw::Position size = DEFAULT_SIZE;
-static sw::Time rot = DEFAULT_ROT;
-static sw::Energy srot = DEFAULT_SROT;
-static double mutations = DEFAULT_MUTATIONS;
-static sw::Time birth = DEFAULT_BIRTH;
-static sw::Time old = DEFAULT_OLD;
-static sw::Time laziness = DEFAULT_LAZINESS;
-static sw::Energy elaziness = DEFAULT_ELAZINESS;
-static double multiplier = DEFAULT_MULTIPLIER;
-static sw::Energy tnothing = DEFAULT_TNOTHING;
-static sw::Energy tmyself = DEFAULT_TMYSELF;
-static sw::Energy tdetect = DEFAULT_TDETECT;
-static sw::Energy tinfo = DEFAULT_TINFO;
-static sw::Energy tmove = DEFAULT_TMOVE;
-static sw::Energy tturn = DEFAULT_TTURN;
-static sw::Energy tattack = DEFAULT_TATTACK;
-static sw::Energy teat = DEFAULT_TEAT;
-static sw::Energy tegg = DEFAULT_TEGG;
-static sw::Energy nothing = DEFAULT_NOTHING;
-static sw::Energy myself = DEFAULT_MYSELF;
-static sw::Energy detect = DEFAULT_DETECT;
-static sw::Energy info = DEFAULT_INFO;
-static sw::Energy move = DEFAULT_MOVE;
-static sw::Energy turn = DEFAULT_TURN;
-static sw::Energy attack = DEFAULT_ATTACK;
-static sw::Energy eat = DEFAULT_EAT;
-static sw::Energy egg = DEFAULT_EGG;
-
 /**
  * Parse the command line.
  * @param argc number of parameters.
@@ -226,142 +169,145 @@ static void parse_cmd(int argc, char* argv[])
     switch (c)
     {
     case 's': // size
-      if (sscanf(optarg, "%hu,%hu", &size.x, &size.y) != 2)
+      if (sscanf(optarg, "%hu,%hu", &db::default_environment.size_x,
+                 &db::default_environment.size_y) != 2)
         usage(boost::str(boost::format("Invalid value for --size (%1%)")
                          % optarg));
       break;
 
     case 'r': // rot
-      if (sscanf(optarg, "%d", &rot) != 1)
+      if (sscanf(optarg, "%d", &db::default_environment.time_rot) != 1)
         usage(boost::str(boost::format("Invalid value for --rot (%1%)")
         % optarg));
       break;
     case 't': // srot
-      if (sscanf(optarg, "%d", &srot) != 1)
+      if (sscanf(optarg, "%d", &db::default_environment.size_rot) != 1)
         usage(boost::str(boost::format("Invalid value for --srot (%1%)")
         % optarg));
       break;
 
     case 'm': // mutations
-      if (sscanf(optarg, "%lf", &mutations) != 1)
+      if (sscanf(optarg, "%lf",
+          &db::default_environment.mutations_probability) != 1)
         usage(boost::str(boost::format("Invalid value for --mutations (%1%)")
                          % optarg));
       break;
 
     case 'b': // birth
-      if (sscanf(optarg, "%d", &birth) != 1)
+      if (sscanf(optarg, "%d", &db::default_environment.time_birth) != 1)
         usage(boost::str(boost::format("Invalid value for --birth (%1%)")
                          % optarg));
       break;
     case 'o': // old
-      if (sscanf(optarg, "%d", &old) != 1)
+      if (sscanf(optarg, "%d", &db::default_environment.time_mutate) != 1)
         usage(boost::str(boost::format("Invalid value for --old (%1%)")
                          % optarg));
       break;
     case 'l': // laziness
-      if (sscanf(optarg, "%d", &laziness) != 1)
+      if (sscanf(optarg, "%d", &db::default_environment.time_laziness) != 1)
         usage(boost::str(boost::format("Invalid value for --laziness (%1%)")
                          % optarg));
       break;
     case 'e': // elaziness
-      if (sscanf(optarg, "%d", &elaziness) != 1)
+      if (sscanf(optarg, "%d", &db::default_environment.energy_laziness) != 1)
         usage(boost::str(boost::format("Invalid value for --elaziness (%1%)")
                          % optarg));
       break;
 
     case 'u': // multiplier
-      if (sscanf(optarg, "%lf", &multiplier) != 1)
+      if (sscanf(optarg, "%lf",
+                 &db::default_environment.attack_multiplier) != 1)
         usage(boost::str(boost::format("Invalid value for --multiplier (%1%)")
                          % optarg));
       break;
 
     case '0': // tnothing
-      if (sscanf(optarg, "%d", &tnothing) != 1)
+      if (sscanf(optarg, "%d", &db::default_environment.time_nothing) != 1)
         usage(boost::str(boost::format("Invalid value for --tnothing (%1%)")
         % optarg));
       break;
     case '1': // tmyself
-      if (sscanf(optarg, "%d", &tmyself) != 1)
+      if (sscanf(optarg, "%d", &db::default_environment.time_myself) != 1)
         usage(boost::str(boost::format("Invalid value for --tmyself (%1%)")
         % optarg));
       break;
     case '2': // tdetect
-      if (sscanf(optarg, "%d", &tdetect) != 1)
+      if (sscanf(optarg, "%d", &db::default_environment.time_detect) != 1)
         usage(boost::str(boost::format("Invalid value for --tdetect (%1%)")
         % optarg));
       break;
     case '3': // tinfo
-      if (sscanf(optarg, "%d", &tinfo) != 1)
+      if (sscanf(optarg, "%d", &db::default_environment.time_info) != 1)
         usage(boost::str(boost::format("Invalid value for --tinfo (%1%)")
         % optarg));
       break;
     case '4': // tmove
-      if (sscanf(optarg, "%d", &tmove) != 1)
+      if (sscanf(optarg, "%d", &db::default_environment.time_move) != 1)
         usage(boost::str(boost::format("Invalid value for --tmove (%1%)")
         % optarg));
       break;
     case '5': // tturn
-      if (sscanf(optarg, "%d", &tturn) != 1)
+      if (sscanf(optarg, "%d", &db::default_environment.time_turn) != 1)
         usage(boost::str(boost::format("Invalid value for --tturn (%1%)")
         % optarg));
       break;
     case '6': // tattack
-      if (sscanf(optarg, "%d", &tattack) != 1)
+      if (sscanf(optarg, "%d", &db::default_environment.time_attack) != 1)
         usage(boost::str(boost::format("Invalid value for --tattack (%1%)")
         % optarg));
       break;
     case '7': // teat
-      if (sscanf(optarg, "%d", &teat) != 1)
+      if (sscanf(optarg, "%d", &db::default_environment.time_eat) != 1)
         usage(boost::str(boost::format("Invalid value for --teat (%1%)")
         % optarg));
       break;
     case '8': // tegg
-      if (sscanf(optarg, "%d", &tegg) != 1)
+      if (sscanf(optarg, "%d", &db::default_environment.time_egg) != 1)
         usage(boost::str(boost::format("Invalid value for --tegg (%1%)")
         % optarg));
       break;
     case 'N': // nothing
-      if (sscanf(optarg, "%d", &nothing) != 1)
+      if (sscanf(optarg, "%d", &db::default_environment.energy_nothing) != 1)
         usage(boost::str(boost::format("Invalid value for --nothing (%1%)")
                          % optarg));
       break;
     case 'M': // myself
-      if (sscanf(optarg, "%d", &myself) != 1)
+      if (sscanf(optarg, "%d", &db::default_environment.energy_myself) != 1)
         usage(boost::str(boost::format("Invalid value for --myself (%1%)")
                          % optarg));
       break;
     case 'D': // detect
-      if (sscanf(optarg, "%d", &detect) != 1)
+      if (sscanf(optarg, "%d", &db::default_environment.energy_detect) != 1)
         usage(boost::str(boost::format("Invalid value for --detect (%1%)")
                          % optarg));
       break;
     case 'I': // info
-      if (sscanf(optarg, "%d", &info) != 1)
+      if (sscanf(optarg, "%d", &db::default_environment.energy_info) != 1)
         usage(boost::str(boost::format("Invalid value for --info (%1%)")
                          % optarg));
       break;
     case 'V': // move
-      if (sscanf(optarg, "%d", &move) != 1)
+      if (sscanf(optarg, "%d", &db::default_environment.energy_move) != 1)
         usage(boost::str(boost::format("Invalid value for --move (%1%)")
                          % optarg));
       break;
     case 'T': // turn
-      if (sscanf(optarg, "%d", &turn) != 1)
+      if (sscanf(optarg, "%d", &db::default_environment.energy_turn) != 1)
         usage(boost::str(boost::format("Invalid value for --turn (%1%)")
                          % optarg));
       break;
     case 'A': // attack
-      if (sscanf(optarg, "%d", &attack) != 1)
+      if (sscanf(optarg, "%d", &db::default_environment.energy_attack) != 1)
         usage(boost::str(boost::format("Invalid value for --attack (%1%)")
                          % optarg));
       break;
     case 'E': // eat
-      if (sscanf(optarg, "%d", &eat) != 1)
+      if (sscanf(optarg, "%d", &db::default_environment.energy_eat) != 1)
         usage(boost::str(boost::format("Invalid value for --eat (%1%)")
                          % optarg));
       break;
     case 'G': // egg
-      if (sscanf(optarg, "%d", &egg) != 1)
+      if (sscanf(optarg, "%d", &db::default_environment.energy_egg) != 1)
         usage(boost::str(boost::format("Invalid value for --egg (%1%)")
                          % optarg));
       break;
@@ -400,8 +346,5 @@ void sw_create(int argc, char* argv[])
 {
   parse_cmd(argc, argv);
 
-  db::DB::create(database_path, 0, size.x, size.y, rot, srot, mutations,
-                 birth, old, laziness, elaziness, multiplier, tnothing,
-                 tmyself, tdetect, tinfo, tmove, tturn, tattack, teat, tegg,
-                 nothing, myself, detect, info, move, turn, attack, eat, egg);
+  db::DB::create(database_path);
 }
