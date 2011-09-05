@@ -45,6 +45,7 @@ namespace simpleworld
  */
 enum MutationType {
   Mutation,
+  Permutation,
   Addition,
   Deletion
 };
@@ -80,6 +81,20 @@ static cpu::Word random_word()
 }
 
 /**
+* Permutate the word.
+* @param word the original word.
+* @return the permutated word.
+*/
+static cpu::Word permutation(cpu::Word word)
+{
+  cpu::Word newword;
+  for (unsigned int i = 0; i < sizeof(cpu::Word); i++)
+    cpu::set_byte(&newword, i, cpu::get_byte(word, randint(0, 4)));
+
+  return newword;
+}
+
+/**
  * Generate mutations.
  * @param list pointer to a list of mutations.
  * @param size pointer to the size of the code.
@@ -93,19 +108,24 @@ static bool generate(MutationsList* list, cpu::Address* size, float probability)
   while (i < *size) {
     if (randint(0, max) == 0) {
       // mutation
-      switch (randint(0, 3)) {
+      switch (randint(0, 4)) {
       case 0:                           // change the word by a random one
         list->push_back(std::make_pair(Mutation, i));
         i += sizeof(cpu::Word);
         break;
 
-      case 1:                           // addition of a random word
+      case 1:                           // permutate the word
+        list->push_back(std::make_pair(Permutation, i));
+        i += sizeof(cpu::Word);
+        break;
+
+      case 2:                           // addition of a random word
         list->push_back(std::make_pair(Addition, i));
         i += sizeof(cpu::Word);
         *size += sizeof(cpu::Word);
         break;
 
-      case 2:                           // elimination of a word
+      case 3:                           // elimination of a word
         list->push_back(std::make_pair(Deletion, i));
         *size -= sizeof(cpu::Word);
         break;
@@ -155,6 +175,28 @@ bool mutate(db::Bug* bug, float probability, Time time)
           cpu::Word new_word;
           do {
             new_word = random_word();
+          } while (old_word == new_word);
+          *reinterpret_cast<cpu::Word*>(mutated.get() + chunk_size) = new_word;
+          db::Mutation::insert(bug->db(), bug->id(), time, (*iter).second,
+                               old_word, new_word);
+          original_i += chunk_size + sizeof(cpu::Word);
+          mutated_i += chunk_size + sizeof(cpu::Word);
+        }
+
+        break;
+
+      case Permutation:
+#ifdef DEBUG
+        std::cout << boost::format("Permutation of a word")
+                  << std::endl;
+#endif // DEBUG
+
+        {
+          cpu::Word old_word =
+            *reinterpret_cast<cpu::Word*>(original.get() + chunk_size);
+          cpu::Word new_word;
+          do {
+            new_word = permutation(old_word);
           } while (old_word == new_word);
           *reinterpret_cast<cpu::Word*>(mutated.get() + chunk_size) = new_word;
           db::Mutation::insert(bug->db(), bug->id(), time, (*iter).second,
