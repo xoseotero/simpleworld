@@ -45,6 +45,7 @@ namespace simpleworld
  */
 enum MutationType {
   Mutation,
+  Partial,
   Permutation,
   Addition,
   Deletion
@@ -81,10 +82,25 @@ static cpu::Word random_word()
 }
 
 /**
-* Permutate the word.
+* Partially mutate the word.
 * @param word the original word.
-* @return the permutated word.
+* @return the mutated word.
 */
+static cpu::Word partial_mutation(cpu::Word word)
+{
+  cpu::Word newword = word;
+  unsigned int max = randint(1, 4);
+  for (unsigned int i = 0; i < max; i++)
+    cpu::set_byte(&newword, randint(0, 4), randint(0, 256));
+
+  return newword;
+}
+
+/**
+ * Permutate the word.
+ * @param word the original word.
+ * @return the permutated word.
+ */
 static cpu::Word permutation(cpu::Word word)
 {
   cpu::Word newword;
@@ -108,24 +124,29 @@ static bool generate(MutationsList* list, cpu::Address* size, float probability)
   while (i < *size) {
     if (randint(0, max) == 0) {
       // mutation
-      switch (randint(0, 4)) {
+      switch (randint(0, 5)) {
       case 0:                           // change the word by a random one
         list->push_back(std::make_pair(Mutation, i));
         i += sizeof(cpu::Word);
         break;
 
-      case 1:                           // permutate the word
+      case 1:                           // mutate part of the word
+        list->push_back(std::make_pair(Partial, i));
+        i += sizeof(cpu::Word);
+        break;
+
+      case 2:                           // permutate the word
         list->push_back(std::make_pair(Permutation, i));
         i += sizeof(cpu::Word);
         break;
 
-      case 2:                           // addition of a random word
+      case 3:                           // addition of a random word
         list->push_back(std::make_pair(Addition, i));
         i += sizeof(cpu::Word);
         *size += sizeof(cpu::Word);
         break;
 
-      case 3:                           // elimination of a word
+      case 4:                           // elimination of a word
         list->push_back(std::make_pair(Deletion, i));
         *size -= sizeof(cpu::Word);
         break;
@@ -175,6 +196,28 @@ bool mutate(db::Bug* bug, float probability, Time time)
           cpu::Word new_word;
           do {
             new_word = random_word();
+          } while (old_word == new_word);
+          *reinterpret_cast<cpu::Word*>(mutated.get() + chunk_size) = new_word;
+          db::Mutation::insert(bug->db(), bug->id(), time, (*iter).second,
+                               old_word, new_word);
+          original_i += chunk_size + sizeof(cpu::Word);
+          mutated_i += chunk_size + sizeof(cpu::Word);
+        }
+
+        break;
+
+      case Partial:
+#ifdef DEBUG
+        std::cout << boost::format("Partial change of a word")
+                  << std::endl;
+#endif // DEBUG
+
+        {
+          cpu::Word old_word =
+            *reinterpret_cast<cpu::Word*>(original.get() + chunk_size);
+          cpu::Word new_word;
+          do {
+            new_word = partial_mutation(old_word);
           } while (old_word == new_word);
           *reinterpret_cast<cpu::Word*>(mutated.get() + chunk_size) = new_word;
           db::Mutation::insert(bug->db(), bug->id(), time, (*iter).second,
