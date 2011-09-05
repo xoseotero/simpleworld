@@ -48,6 +48,7 @@ enum MutationType {
   Partial,
   Permutation,
   Addition,
+  Duplication,
   Deletion
 };
 
@@ -124,7 +125,7 @@ static bool generate(MutationsList* list, cpu::Address* size, float probability)
   while (i < *size) {
     if (randint(0, max) == 0) {
       // mutation
-      switch (randint(0, 5)) {
+      switch (randint(0, 6)) {
       case 0:                           // change the word by a random one
         list->push_back(std::make_pair(Mutation, i));
         i += sizeof(cpu::Word);
@@ -146,7 +147,17 @@ static bool generate(MutationsList* list, cpu::Address* size, float probability)
         *size += sizeof(cpu::Word);
         break;
 
-      case 4:                           // elimination of a word
+      case 4:                           // duplication of a word
+        // if it's the begining of the code do a addition instead
+        if (i == 0)
+          list->push_back(std::make_pair(Addition, i));
+        else
+          list->push_back(std::make_pair(Duplication, i));
+        i += sizeof(cpu::Word);
+        *size += sizeof(cpu::Word);
+        break;
+
+      case 5:                           // elimination of a word
         list->push_back(std::make_pair(Deletion, i));
         *size -= sizeof(cpu::Word);
         break;
@@ -258,6 +269,24 @@ bool mutate(db::Bug* bug, float probability, Time time)
 
         {
           cpu::Word new_word = random_word();
+          *reinterpret_cast<cpu::Word*>(mutated.get() + chunk_size) = new_word;
+          db::Mutation::insert_addition(bug->db(), bug->id(), time,
+                                        (*iter).second, new_word);
+          original_i += chunk_size;
+          mutated_i += chunk_size + sizeof(cpu::Word);
+        }
+
+        break;
+
+      case Duplication:
+#ifdef DEBUG
+        std::cout << boost::format("Duplication of a word")
+                  << std::endl;
+#endif // DEBUG
+
+        {
+          cpu::Word new_word = *reinterpret_cast<cpu::Word*>(mutated.get() +
+            chunk_size -sizeof(cpu::Word));
           *reinterpret_cast<cpu::Word*>(mutated.get() + chunk_size) = new_word;
           db::Mutation::insert_addition(bug->db(), bug->id(), time,
                                         (*iter).second, new_word);
