@@ -152,7 +152,10 @@ bool mutate(db::Bug* bug, float probability, Time time)
         {
           cpu::Word old_word =
             *reinterpret_cast<cpu::Word*>(original.get() + chunk_size);
-          cpu::Word new_word = random_word();
+          cpu::Word new_word;
+          do {
+            new_word = random_word();
+          } while (old_word == new_word);
           *reinterpret_cast<cpu::Word*>(mutated.get() + chunk_size) = new_word;
           db::Mutation::insert(bug->db(), bug->id(), time, (*iter).second,
                                old_word, new_word);
