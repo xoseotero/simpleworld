@@ -2,7 +2,7 @@
  * @file simpleworld/db/mutation.cpp
  * A mutation of a bug.
  *
- *  Copyright (C) 2007-2010  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2007-2011  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -47,23 +47,23 @@ Mutation::Mutation(DB* db, ID bug_id)
 
 
 /**
- * Insert a mutation of code.
+ * Insert a mutation of a word.
  * @param db database.
  * @param bug_id id of the bug.
  * @param time when the mutation happened.
  * @param position where the mutation happened.
- * @param original the previous value of the code.
- * @param mutated the new value of the code.
+ * @param original the old word.
+ * @param mutated the new word.
  * @return the id of the new row.
  * @exception DBException if there is an error with the insertion.
  */
-ID Mutation::insert(DB* db, ID bug_id, Time time, Uint32 position,
-                    Uint32 original, Uint32 mutated)
+ID Mutation::insert_mutation(DB* db, ID bug_id, Time time, Uint32 position,
+                             Uint32 original, Uint32 mutated)
 {
   sqlite3_stmt* stmt;
   if (sqlite3_prepare_v2(db->db(), "\
-INSERT INTO Mutation(bug_id, time, position, original, mutated)\n\
-VALUES(?, ?, ?, ?, ?);", -1, &stmt, NULL))
+INSERT INTO Mutation(bug_id, time, type, position, original, mutated)\n\
+VALUES(?, ?, 0, ?, ?, ?);", -1, &stmt, NULL))
     throw EXCEPTION(DBException, sqlite3_errmsg(db->db()));
   sqlite3_bind_int64(stmt, 1, bug_id);
   sqlite3_bind_int(stmt, 2, time);
@@ -78,7 +78,69 @@ VALUES(?, ?, ?, ?, ?);", -1, &stmt, NULL))
 }
 
 /**
- * Insert a addition of code.
+ * Insert a partial mutation of word.
+ * @param db database.
+ * @param bug_id id of the bug.
+ * @param time when the mutation happened.
+ * @param position where the mutation happened.
+ * @param original the old word.
+ * @param mutated the new word.
+ * @return the id of the new row.
+ * @exception DBException if there is an error with the insertion.
+ */
+ID Mutation::insert_partial(DB* db, ID bug_id, Time time, Uint32 position,
+                            Uint32 original, Uint32 mutated)
+{
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(db->db(), "\
+INSERT INTO Mutation(bug_id, time, type, position, original, mutated)\n\
+VALUES(?, ?, 1, ?, ?, ?);", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(db->db()));
+  sqlite3_bind_int64(stmt, 1, bug_id);
+  sqlite3_bind_int(stmt, 2, time);
+  sqlite3_bind_int(stmt, 3, position);
+  sqlite3_bind_int(stmt, 4, original);
+  sqlite3_bind_int(stmt, 5, mutated);
+  if (sqlite3_step(stmt) != SQLITE_DONE)
+    throw EXCEPTION(DBException, sqlite3_errmsg(db->db()));
+  sqlite3_finalize(stmt);
+
+  return sqlite3_last_insert_rowid(db->db());
+}
+
+/**
+ * Insert a permutation of word.
+ * @param db database.
+ * @param bug_id id of the bug.
+ * @param time when the mutation happened.
+ * @param position where the mutation happened.
+ * @param original the old word.
+ * @param mutated the new word.
+ * @return the id of the new row.
+ * @exception DBException if there is an error with the insertion.
+ */
+ID Mutation::insert_permutation(DB* db, ID bug_id, Time time, Uint32 position,
+                                Uint32 original, Uint32 mutated)
+{
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(db->db(), "\
+INSERT INTO Mutation(bug_id, time, type, position, original, mutated)\n\
+VALUES(?, ?, 2, ?, ?, ?);", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(db->db()));
+  sqlite3_bind_int64(stmt, 1, bug_id);
+  sqlite3_bind_int(stmt, 2, time);
+  sqlite3_bind_int(stmt, 3, position);
+  sqlite3_bind_int(stmt, 4, original);
+  sqlite3_bind_int(stmt, 5, mutated);
+  if (sqlite3_step(stmt) != SQLITE_DONE)
+    throw EXCEPTION(DBException, sqlite3_errmsg(db->db()));
+  sqlite3_finalize(stmt);
+
+  return sqlite3_last_insert_rowid(db->db());
+}
+
+/**
+ * Insert a addition of a word.
  * @param db database.
  * @param bug_id id of the bug.
  * @param time when the mutation happened.
@@ -92,8 +154,8 @@ ID Mutation::insert_addition(DB* db, ID bug_id, Time time, Uint32 position,
 {
   sqlite3_stmt* stmt;
   if (sqlite3_prepare_v2(db->db(), "\
-INSERT INTO Mutation(bug_id, time, position, mutated)\n\
-VALUES(?, ?, ?, ?);", -1, &stmt, NULL))
+INSERT INTO Mutation(bug_id, time, type, position, mutated)\n\
+VALUES(?, ?, 3, ?, ?);", -1, &stmt, NULL))
     throw EXCEPTION(DBException, sqlite3_errmsg(db->db()));
   sqlite3_bind_int64(stmt, 1, bug_id);
   sqlite3_bind_int(stmt, 2, time);
@@ -107,7 +169,36 @@ VALUES(?, ?, ?, ?);", -1, &stmt, NULL))
 }
 
 /**
- * Insert a deletion of code.
+ * Insert a duplication of a word.
+ * @param db database.
+ * @param bug_id id of the bug.
+ * @param time when the mutation happened.
+ * @param position where the mutation happened.
+ * @param mutated the new word.
+ * @return the id of the new row.
+ * @exception DBException if there is an error with the insertion.
+ */
+ID Mutation::insert_duplication(DB* db, ID bug_id, Time time, Uint32 position,
+                                Uint32 mutated)
+{
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(db->db(), "\
+INSERT INTO Mutation(bug_id, time, type, position, mutated)\n\
+VALUES(?, ?, 4, ?, ?);", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(db->db()));
+  sqlite3_bind_int64(stmt, 1, bug_id);
+  sqlite3_bind_int(stmt, 2, time);
+  sqlite3_bind_int(stmt, 3, position);
+  sqlite3_bind_int(stmt, 4, mutated);
+  if (sqlite3_step(stmt) != SQLITE_DONE)
+    throw EXCEPTION(DBException, sqlite3_errmsg(db->db()));
+  sqlite3_finalize(stmt);
+
+  return sqlite3_last_insert_rowid(db->db());
+}
+
+/**
+ * Insert a deletion of a word.
  * @param db database.
  * @param bug_id id of the bug.
  * @param time when the mutation happened.
@@ -121,8 +212,8 @@ ID Mutation::insert_deletion(DB* db, ID bug_id, Time time, Uint32 position,
 {
   sqlite3_stmt* stmt;
   if (sqlite3_prepare_v2(db->db(), "\
-INSERT INTO Mutation(bug_id, time, position, original)\n\
-VALUES(?, ?, ?, ?);", -1, &stmt, NULL))
+INSERT INTO Mutation(bug_id, time, type, position, original)\n\
+VALUES(?, ?, 5, ?, ?);", -1, &stmt, NULL))
     throw EXCEPTION(DBException, sqlite3_errmsg(db->db()));
   sqlite3_bind_int64(stmt, 1, bug_id);
   sqlite3_bind_int(stmt, 2, time);
@@ -267,6 +358,50 @@ WHERE id = ?;", -1, &stmt, NULL))
   sqlite3_finalize(stmt);
 }
 
+
+/**
+* Get the type of mutation.
+* @return the type.
+* @exception DBException if there is an error with the query.
+*/
+Mutation::Type Mutation::type() const
+{
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(this->db_->db(), "\
+SELECT type\n\
+FROM Mutation\n\
+WHERE id = ?;", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_bind_int64(stmt, 1, this->id_);
+  if (sqlite3_step(stmt) != SQLITE_ROW)
+    throw EXCEPTION(DBException, boost::str(boost::format("\
+id %1% not found in table Mutation")
+                                            % this->id_));
+  Uint32 type = sqlite3_column_int(stmt, 0);
+  sqlite3_finalize(stmt);
+
+  return static_cast<Mutation::Type>(type);
+}
+
+/**
+* Set the type of mutation.
+* @param type the new type.
+* @exception DBException if there is an error with the update.
+*/
+void Mutation::type(Mutation::Type type)
+{
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(this->db_->db(), "\
+UPDATE Mutation\n\
+SET type = ?\n\
+WHERE id = ?;", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_bind_int(stmt, 1, static_cast<int>(type));
+  sqlite3_bind_int64(stmt, 2, this->id_);
+  if (sqlite3_step(stmt) != SQLITE_DONE)
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_finalize(stmt);
+}
 
 /**
  * Get where the mutation happened.

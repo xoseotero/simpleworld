@@ -41,21 +41,9 @@ namespace simpleworld
 {
 
 /**
- * Types of mutations
- */
-enum MutationType {
-  Mutation,
-  Partial,
-  Permutation,
-  Addition,
-  Duplication,
-  Deletion
-};
-
-/**
  * A list of mutations
  */
-typedef std::list< std::pair<MutationType, cpu::Address> > MutationsList;
+  typedef std::list< std::pair<db::Mutation::Type, cpu::Address> > MutationsList;
 
 
 /**
@@ -127,22 +115,22 @@ static bool generate(MutationsList* list, cpu::Address* size, float probability)
       // mutation
       switch (randint(0, 6)) {
       case 0:                           // change the word by a random one
-        list->push_back(std::make_pair(Mutation, i));
+        list->push_back(std::make_pair(db::Mutation::Total, i));
         i += sizeof(cpu::Word);
         break;
 
       case 1:                           // mutate part of the word
-        list->push_back(std::make_pair(Partial, i));
+        list->push_back(std::make_pair(db::Mutation::Partial, i));
         i += sizeof(cpu::Word);
         break;
 
       case 2:                           // permutate the word
-        list->push_back(std::make_pair(Permutation, i));
+        list->push_back(std::make_pair(db::Mutation::Permutation, i));
         i += sizeof(cpu::Word);
         break;
 
       case 3:                           // addition of a random word
-        list->push_back(std::make_pair(Addition, i));
+        list->push_back(std::make_pair(db::Mutation::Addition, i));
         i += sizeof(cpu::Word);
         *size += sizeof(cpu::Word);
         break;
@@ -150,15 +138,15 @@ static bool generate(MutationsList* list, cpu::Address* size, float probability)
       case 4:                           // duplication of a word
         // if it's the begining of the code do a addition instead
         if (i == 0)
-          list->push_back(std::make_pair(Addition, i));
+          list->push_back(std::make_pair(db::Mutation::Addition, i));
         else
-          list->push_back(std::make_pair(Duplication, i));
+          list->push_back(std::make_pair(db::Mutation::Duplication, i));
         i += sizeof(cpu::Word);
         *size += sizeof(cpu::Word);
         break;
 
       case 5:                           // elimination of a word
-        list->push_back(std::make_pair(Deletion, i));
+        list->push_back(std::make_pair(db::Mutation::Deletion, i));
         *size -= sizeof(cpu::Word);
         break;
       }
@@ -195,9 +183,9 @@ bool mutate(db::Bug* bug, float probability, Time time)
                     chunk_size);
 
       switch ((*iter).first) {
-      case Mutation:
+      case db::Mutation::Total:
 #ifdef DEBUG
-        std::cout << boost::format("Change of a word")
+        std::cout << boost::format("Mutation of a word")
                   << std::endl;
 #endif // DEBUG
 
@@ -209,17 +197,17 @@ bool mutate(db::Bug* bug, float probability, Time time)
             new_word = random_word();
           } while (old_word == new_word);
           *reinterpret_cast<cpu::Word*>(mutated.get() + chunk_size) = new_word;
-          db::Mutation::insert(bug->db(), bug->id(), time, (*iter).second,
-                               old_word, new_word);
+          db::Mutation::insert_mutation(bug->db(), bug->id(), time,
+                                        (*iter).second, old_word, new_word);
           original_i += chunk_size + sizeof(cpu::Word);
           mutated_i += chunk_size + sizeof(cpu::Word);
         }
 
         break;
 
-      case Partial:
+      case db::Mutation::Partial:
 #ifdef DEBUG
-        std::cout << boost::format("Partial change of a word")
+        std::cout << boost::format("Partial mutation of a word")
                   << std::endl;
 #endif // DEBUG
 
@@ -231,15 +219,15 @@ bool mutate(db::Bug* bug, float probability, Time time)
             new_word = partial_mutation(old_word);
           } while (old_word == new_word);
           *reinterpret_cast<cpu::Word*>(mutated.get() + chunk_size) = new_word;
-          db::Mutation::insert(bug->db(), bug->id(), time, (*iter).second,
-                               old_word, new_word);
+          db::Mutation::insert_partial(bug->db(), bug->id(), time,
+                                       (*iter).second, old_word, new_word);
           original_i += chunk_size + sizeof(cpu::Word);
           mutated_i += chunk_size + sizeof(cpu::Word);
         }
 
         break;
 
-      case Permutation:
+      case db::Mutation::Permutation:
 #ifdef DEBUG
         std::cout << boost::format("Permutation of a word")
                   << std::endl;
@@ -253,15 +241,15 @@ bool mutate(db::Bug* bug, float probability, Time time)
             new_word = permutation(old_word);
           } while (old_word == new_word);
           *reinterpret_cast<cpu::Word*>(mutated.get() + chunk_size) = new_word;
-          db::Mutation::insert(bug->db(), bug->id(), time, (*iter).second,
-                               old_word, new_word);
+          db::Mutation::insert_permutation(bug->db(), bug->id(), time,
+                                           (*iter).second, old_word, new_word);
           original_i += chunk_size + sizeof(cpu::Word);
           mutated_i += chunk_size + sizeof(cpu::Word);
         }
 
         break;
 
-      case Addition:
+      case db::Mutation::Addition:
 #ifdef DEBUG
         std::cout << boost::format("Addition of a random word")
                   << std::endl;
@@ -278,7 +266,7 @@ bool mutate(db::Bug* bug, float probability, Time time)
 
         break;
 
-      case Duplication:
+      case db::Mutation::Duplication:
 #ifdef DEBUG
         std::cout << boost::format("Duplication of a word")
                   << std::endl;
@@ -286,18 +274,18 @@ bool mutate(db::Bug* bug, float probability, Time time)
 
         {
           cpu::Word new_word =
-	    *reinterpret_cast<cpu::Word*>(mutated.get() + chunk_size -
-					  sizeof(cpu::Word));
+            *reinterpret_cast<cpu::Word*>(mutated.get() + chunk_size -
+                                          sizeof(cpu::Word));
           *reinterpret_cast<cpu::Word*>(mutated.get() + chunk_size) = new_word;
-          db::Mutation::insert_addition(bug->db(), bug->id(), time,
-                                        (*iter).second, new_word);
+          db::Mutation::insert_duplication(bug->db(), bug->id(), time,
+                                           (*iter).second, new_word);
           original_i += chunk_size;
           mutated_i += chunk_size + sizeof(cpu::Word);
         }
 
         break;
 
-      case Deletion:
+      case db::Mutation::Deletion:
 #ifdef DEBUG
         std::cout << boost::format("Deletion of a word")
                   << std::endl;

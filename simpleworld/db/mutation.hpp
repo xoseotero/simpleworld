@@ -39,6 +39,19 @@ class Mutation: public Table
 {
 public:
   /**
+   * Types of mutations
+   */
+  enum Type {
+    Total = 0,                /**< Mutation of a word */
+    Partial = 1,              /**< Partial mutation of a word */
+    Permutation = 2,          /**< Permutation of a word */
+    Addition = 3,             /**< Addition of a new word */
+    Duplication = 4,          /**< Duplication of the previous word */
+    Deletion = 5              /**< Deletion of a word */
+  };
+
+
+  /**
    * Constructor.
    * It's not checked if the id is in the table, only when accessing the data
    * the id is checked.
@@ -49,21 +62,49 @@ public:
 
 
   /**
-   * Insert a mutation of code.
+   * Insert a mutation of a word.
    * @param db database.
    * @param bug_id id of the bug.
    * @param time when the mutation happened.
    * @param position where the mutation happened.
-   * @param original the previous value of the code.
-   * @param mutated the new value of the code.
+   * @param original the old word.
+   * @param mutated the new word.
    * @return the id of the new row.
    * @exception DBException if there is an error with the insertion.
    */
-  static ID insert(DB* db, ID bug_id, Time time, Uint32 position,
-                   Uint32 original, Uint32 mutated);
+  static ID insert_mutation(DB* db, ID bug_id, Time time, Uint32 position,
+                            Uint32 original, Uint32 mutated);
 
   /**
-   * Insert a addition of code.
+   * Insert a partial mutation of a word.
+   * @param db database.
+   * @param bug_id id of the bug.
+   * @param time when the mutation happened.
+   * @param position where the mutation happened.
+   * @param original the old word.
+   * @param mutated the new word.
+   * @return the id of the new row.
+   * @exception DBException if there is an error with the insertion.
+   */
+  static ID insert_partial(DB* db, ID bug_id, Time time, Uint32 position,
+                           Uint32 original, Uint32 mutated);
+
+  /**
+   * Insert a permutation of a word.
+   * @param db database.
+   * @param bug_id id of the bug.
+   * @param time when the mutation happened.
+   * @param position where the mutation happened.
+   * @param original the old word.
+   * @param mutated the new word.
+   * @return the id of the new row.
+   * @exception DBException if there is an error with the insertion.
+   */
+  static ID insert_permutation(DB* db, ID bug_id, Time time, Uint32 position,
+                               Uint32 original, Uint32 mutated);
+
+  /**
+   * Insert a addition of a word.
    * @param db database.
    * @param bug_id id of the bug.
    * @param time when the mutation happened.
@@ -76,7 +117,20 @@ public:
                             Uint32 mutated);
 
   /**
-   * Insert a deletion of code.
+   * Insert a duplication of word.
+   * @param db database.
+   * @param bug_id id of the bug.
+   * @param time when the mutation happened.
+   * @param position where the mutation happened.
+   * @param mutated the new word.
+   * @return the id of the new row.
+   * @exception DBException if there is an error with the insertion.
+   */
+  static ID insert_duplication(DB* db, ID bug_id, Time time, Uint32 position,
+                               Uint32 mutated);
+
+  /**
+   * Insert a deletion of a word.
    * @param db database.
    * @param bug_id id of the bug.
    * @param time when the mutation happened.
@@ -141,6 +195,20 @@ public:
    */
   void time(Time time);
 
+
+  /**
+   * Get the type of mutation.
+   * @return the type.
+   * @exception DBException if there is an error with the query.
+   */
+  Type type() const;
+
+  /**
+   * Set the type of mutation.
+   * @param type the new type.
+   * @exception DBException if there is an error with the update.
+   */
+  void type(Type type);
 
   /**
    * Get where the mutation happened.

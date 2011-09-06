@@ -533,8 +533,10 @@ CREATE TABLE Mutation
 
   time INTEGER NOT NULL,
 
+  /* type is 0 for mutation, 1 for partial mutation, 2 for permutation,
+     3 for addition, 4 for duplication and 5 for deletion */
+  type INTEGER NOT NULL,
   position INTEGER NOT NULL,
-  /* original and mutated can't be NULL at same time */
   original INTEGER,                     -- NULL if new code was added
   mutated INTEGER,                      -- NULL if code was deleted
 
@@ -542,7 +544,13 @@ CREATE TABLE Mutation
   FOREIGN KEY(bug_id) REFERENCES Bug(id) ON UPDATE CASCADE ON DELETE CASCADE,
   CHECK(time >= 0),
   CHECK(position >= 0),
-  CHECK((original IS NOT NULL) OR (mutated IS NOT NULL))
+  CHECK(type >= 0 AND type <= 5),
+  CHECK((type == 0 AND original IS NOT NULL AND mutated IS NOT NULL) OR
+        (type == 1 AND original IS NOT NULL AND mutated IS NOT NULL) OR
+        (type == 2 AND original IS NOT NULL AND mutated IS NOT NULL) OR
+        (type == 3 AND original IS NULL AND mutated IS NOT NULL) OR
+        (type == 4 AND original IS NULL AND mutated IS NOT NULL) OR
+        (type == 5 AND original IS NOT NULL AND mutated IS NULL))
 );
 
 CREATE INDEX Mutation_index ON Mutation(bug_id);
