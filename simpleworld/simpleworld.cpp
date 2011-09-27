@@ -222,6 +222,8 @@ void SimpleWorld::add_food(Position position, Energy size)
  */
 void SimpleWorld::run(Time cycles)
 {
+  Time time = this->env_->time();
+
   while (cycles > 0) {
     // run up to 64 cycles in a transaction
     db::Transaction transaction(this, db::Transaction::immediate);
@@ -232,7 +234,7 @@ void SimpleWorld::run(Time cycles)
       this->spawn_food();
 
       // update the time of the environment
-      Time time = this->env_->time() + 1;
+      time = time + 1;
       this->env_->time(time);
 
       this->eggs_birth();
@@ -651,34 +653,40 @@ Position SimpleWorld::front(Bug* bug)
  */
 void SimpleWorld::spawn_eggs()
 {
-  for (std::list<db::Spawn*>::iterator spawn = this->spawns_.begin();
-       spawn != this->spawns_.end();
-       ++spawn)
-    if (this->env_->time() % (*spawn)->frequency() == 0) {
-      Position start((*spawn)->start_x(), (*spawn)->start_y());
-      Position end((*spawn)->end_x(), (*spawn)->end_y());
-      Uint16 num_elements = this->world_->num_elements(start, end, ElementBug);
-      Uint16 max = (*spawn)->max();
-      Energy energy = (*spawn)->energy();
-      if (num_elements < max) {
-        Uint32 size;
-        boost::shared_array<Uint8> data = (*spawn)->code().read(&size);
+  try {
+    for (std::list<db::Spawn*>::iterator spawn = this->spawns_.begin();
+         spawn != this->spawns_.end();
+         ++spawn)
+      if (this->env_->time() % (*spawn)->frequency() == 0) {
+        Position start((*spawn)->start_x(), (*spawn)->start_y());
+        Position end((*spawn)->end_x(), (*spawn)->end_y());
+        Uint16 num_elements = this->world_->num_elements(start, end,
+                                                         ElementBug);
+        Uint16 max = (*spawn)->max();
+        Energy energy = (*spawn)->energy();
+        if (num_elements < max) {
+          Uint32 size;
+          boost::shared_array<Uint8> data = (*spawn)->code().read(&size);
 
-        for (Uint16 i = 0; i < max - num_elements; i++) {
-          db::ID id = db::Bug::insert(this, this->env_->time(),
-				      data.get(), size);
-          Position position = this->world_->unused_position(start, end);
-          db::ID world_id = db::World::insert(this, position.x, position.y,
-                                              World::random_orientation());
-          db::Egg::insert(this, id, world_id, energy);
+          for (Uint16 i = 0; i < max - num_elements; i++) {
+            db::ID id = db::Bug::insert(this, this->env_->time(),
+                                        data.get(), size);
+            Position position = this->world_->unused_position(start, end);
+            db::ID world_id = db::World::insert(this, position.x, position.y,
+                                                World::random_orientation());
+            db::Egg::insert(this, id, world_id, energy);
 
-          Egg* egg = new Egg(this, id);
-          mutate(egg, this->env_->mutations_probability(), this->env_->time());
-          this->eggs_.push_back(egg);
-          this->world_->add(egg, position);
+            Egg* egg = new Egg(this, id);
+            mutate(egg, this->env_->mutations_probability(),
+                   this->env_->time());
+            this->eggs_.push_back(egg);
+            this->world_->add(egg, position);
+          }
         }
       }
-    }
+  } catch (const WorldError& e) {
+    // the World is full
+  }
 }
 
 /**
@@ -688,27 +696,33 @@ void SimpleWorld::spawn_food()
 {
   Time now = this->env_->time();
 
-  for (std::list<db::Resource*>::iterator resource = this->resources_.begin();
-       resource != this->resources_.end();
-       ++resource)
-    if (this->env_->time() % (*resource)->frequency() == 0) {
-      Position start((*resource)->start_x(), (*resource)->start_y());
-      Position end((*resource)->end_x(), (*resource)->end_y());
-      Uint16 num_elements = this->world_->num_elements(start, end, ElementFood);
-      Uint16 max = (*resource)->max();
-      Energy size = (*resource)->size();
-      if (num_elements < max) {
-        for (Uint16 i = 0; i < max - num_elements; i++) {
-          Position position = this->world_->unused_position(start, end);
-          db::ID world_id = db::World::insert(this, position.x, position.y);
-          db::ID id = db::Food::insert(this, now, world_id, size);
+  try {
+    for (std::list<db::Resource*>::iterator resource =
+           this->resources_.begin();
+         resource != this->resources_.end();
+         ++resource)
+      if (now % (*resource)->frequency() == 0) {
+        Position start((*resource)->start_x(), (*resource)->start_y());
+        Position end((*resource)->end_x(), (*resource)->end_y());
+        Uint16 num_elements = this->world_->num_elements(start, end,
+                                                         ElementFood);
+        Uint16 max = (*resource)->max();
+        Energy size = (*resource)->size();
+        if (num_elements < max) {
+          for (Uint16 i = 0; i < max - num_elements; i++) {
+            Position position = this->world_->unused_position(start, end);
+            db::ID world_id = db::World::insert(this, position.x, position.y);
+            db::ID id = db::Food::insert(this, now, world_id, size);
 
-          Food* food = new Food(this, id);
-          this->foods_.push_back(food);
-          this->world_->add(food, position);
+            Food* food = new Food(this, id);
+            this->foods_.push_back(food);
+            this->world_->add(food, position);
+          }
         }
       }
-    }
+  } catch (const WorldError& e) {
+    // the World is full
+  }
 }
 
 /**
@@ -745,11 +759,11 @@ void SimpleWorld::bugs_mutate()
         (*bug)->mutated();
 
 #ifdef DEBUG
-  std::cout << boost::format("The code of bug %1% has been mutated")
-    % (*bug)->id()
-    << std::endl;
+        std::cout << boost::format("The code of bug %1% has been mutated")
+                     % (*bug)->id()
+                  << std::endl;
 #endif // DEBUG
-        }
+      }
   }
 }
 
