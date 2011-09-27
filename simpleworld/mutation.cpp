@@ -193,12 +193,11 @@ bool mutate(db::Bug* bug, float probability, Time time)
           cpu::Word old_word =
             *reinterpret_cast<cpu::Word*>(original.get() + chunk_size);
           cpu::Word new_word;
-          do {
-            new_word = random_word();
-          } while (old_word == new_word);
+          new_word = random_word();
           *reinterpret_cast<cpu::Word*>(mutated.get() + chunk_size) = new_word;
-          db::Mutation::insert_mutation(bug->db(), bug->id(), time,
-                                        (*iter).second, old_word, new_word);
+          if (old_word != new_word) 
+            db::Mutation::insert_mutation(bug->db(), bug->id(), time,
+                                          (*iter).second, old_word, new_word);
           original_i += chunk_size + sizeof(cpu::Word);
           mutated_i += chunk_size + sizeof(cpu::Word);
         }
@@ -215,12 +214,11 @@ bool mutate(db::Bug* bug, float probability, Time time)
           cpu::Word old_word =
             *reinterpret_cast<cpu::Word*>(original.get() + chunk_size);
           cpu::Word new_word;
-          do {
-            new_word = partial_mutation(old_word);
-          } while (old_word == new_word);
+          new_word = partial_mutation(old_word);
           *reinterpret_cast<cpu::Word*>(mutated.get() + chunk_size) = new_word;
-          db::Mutation::insert_partial(bug->db(), bug->id(), time,
-                                       (*iter).second, old_word, new_word);
+          if (old_word != new_word) 
+            db::Mutation::insert_partial(bug->db(), bug->id(), time,
+                                         (*iter).second, old_word, new_word);
           original_i += chunk_size + sizeof(cpu::Word);
           mutated_i += chunk_size + sizeof(cpu::Word);
         }
@@ -237,12 +235,12 @@ bool mutate(db::Bug* bug, float probability, Time time)
           cpu::Word old_word =
             *reinterpret_cast<cpu::Word*>(original.get() + chunk_size);
           cpu::Word new_word;
-          do {
-            new_word = permutation(old_word);
-          } while (old_word == new_word);
+          new_word = permutation(old_word);
           *reinterpret_cast<cpu::Word*>(mutated.get() + chunk_size) = new_word;
-          db::Mutation::insert_permutation(bug->db(), bug->id(), time,
-                                           (*iter).second, old_word, new_word);
+          if (old_word != new_word) 
+            db::Mutation::insert_permutation(bug->db(), bug->id(), time,
+                                             (*iter).second, old_word,
+                                             new_word);
           original_i += chunk_size + sizeof(cpu::Word);
           mutated_i += chunk_size + sizeof(cpu::Word);
         }
