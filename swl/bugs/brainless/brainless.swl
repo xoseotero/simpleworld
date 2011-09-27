@@ -6,7 +6,7 @@
 # the bug attacks it. After eating, if it has enough energy, the bug creates
 # an egg.
 #
-#  Copyright (C) 2007-2010  Xosé Otero <xoseotero@gmail.com>
+#  Copyright (C) 2007-2011  Xosé Otero <xoseotero@gmail.com>
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -29,6 +29,13 @@
         world STD_MYENERGY
         store g1 initial_energy
 
+        # Calculate the energy needed to create a egg: 2 * (energy + size)
+        world STD_MYSIZE
+        load g0 initial_energy
+        add g0 g0 g1
+        multi g0 g0 0x2
+        store g0 energy_egg
+
         # Use the actual position of the bug as the seed of the random number
         # generator
         world STD_MYPOSITION
@@ -42,7 +49,12 @@
 .include "stdlib/random.swl"
 
 
+# Energy of the bug when it was born
 .label initial_energy
+.block 0x4
+
+# Energy needed to create a egg
+.label energy_egg
 .block 0x4
 
 
@@ -131,8 +143,7 @@
         world STD_EAT
 
         world STD_MYENERGY
-        load g0 initial_energy
-        multi g0 g0 0x3
+        load g0 energy_egg
         bgtu g0 g1 _eat_ret
 
         .label _eat_egg                 # if (MYSELF_ENERGY > ENERGY_TO_CREATE_EGG)
