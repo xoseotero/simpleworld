@@ -725,6 +725,17 @@ DB::DB(std::string filename)
                       NULL))
     throw EXCEPTION(DBException, sqlite3_errmsg(this->db_));
 
+  // From http://sqlite.org/c3ref/step.html:
+  // SQLITE_BUSY means that the database engine was unable to acquire the
+  // database locks it needs to do its job. If the statement is a COMMIT or
+  // occurs outside of an explicit transaction, then you can retry the
+  // statement. If the statement is not a COMMIT and occurs within a explicit
+  // transaction then you should rollback the transaction before continuing.
+  //
+  // It seems it's easier to set a big busy timeout and treat SQLITE_BUSY as an
+  // error than trying to handle it.
+  sqlite3_busy_timeout(this->db_, 60000);
+
   // user_version is used for know if the database was new (user_version is 0
   // by default) and the version of the database (user_version is set to
   // DATABASE_VERSION) to check if the database is compatible
@@ -739,17 +750,6 @@ DB::DB(std::string filename)
     throw EXCEPTION(WrongVersion, boost::str(boost::format("\
 Database version %1% not supported")
                                              % static_cast<int>(this->version_)));
-
-  // From http://sqlite.org/c3ref/step.html:
-  // SQLITE_BUSY means that the database engine was unable to acquire the
-  // database locks it needs to do its job. If the statement is a COMMIT or
-  // occurs outside of an explicit transaction, then you can retry the
-  // statement. If the statement is not a COMMIT and occurs within a explicit
-  // transaction then you should rollback the transaction before continuing.
-  //
-  // It's seems easier to set a big busy timeout and treat SQLITE_BUSY as an
-  // error than trying to handle it.
-  sqlite3_busy_timeout(this->db_, 60000);
 
   sqlite3_exec(this->db_, "PRAGMA journal_mode = WAL;", NULL, NULL, NULL);
   sqlite3_exec(this->db_, "PRAGMA foreign_keys = ON;", NULL, NULL, NULL);
