@@ -2,7 +2,7 @@
  * @file simpleworld/cpu/source.cpp
  * Simple World Language source file.
  *
- *  Copyright (C) 2006-2010  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2006-2011  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -21,8 +21,8 @@
 #include <cstdlib>
 
 #include <boost/format.hpp>
-#include <boost/filesystem/path.hpp>
-#include <boost/filesystem/operations.hpp>
+#define BOOST_FILESYSTEM_NO_DEPRECATED
+#include <boost/filesystem.hpp>
 #include <boost/regex.hpp>
 namespace fs = boost::filesystem;
 
@@ -250,7 +250,7 @@ static fs::path find_file(const std::vector<std::string>& path,
 {
   std::vector<std::string>::const_iterator iter = path.begin();
   while (iter != path.end()) {
-    fs::path path(*iter, fs::native);
+    fs::path path(*iter);
     path /= filename;
     if (fs::exists(path))
       return path;
@@ -302,7 +302,7 @@ void Source::load(std::string filename)
   this->includes_.clear();
 
   // The main file can't be included
-  std::string abs_path(fs::complete(fs::path(filename)).normalize().string());
+  std::string abs_path(fs::absolute(fs::path(filename)).string());
   this->includes_.insert(abs_path); // Using the absolute path
 }
 
@@ -374,7 +374,7 @@ File %1% not found")
       this->remove(i, 1);
 
       // don't include the file more than once
-      std::string abs_path(fs::complete(filename).normalize().string());
+      std::string abs_path(fs::absolute(filename).string());
       if (this->includes_.find(abs_path) != this->includes_.end())
         continue;
 
