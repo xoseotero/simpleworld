@@ -2,7 +2,7 @@
  * @file tests/stdlib/int_test.cpp
  * Unit test for stdlib/int.swl
  *
- *  Copyright (C) 2009-2010  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2009-2011  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -110,7 +110,6 @@ BOOST_AUTO_TEST_CASE(std_handler_timer)
   source.insert(line++, "move fp sp");
   source.insert(line++, "loada g0 heap");
   source.insert(line++, "loadi g1 0x400");
-  source.insert(line++, "loadi g2 0x1");
   source.insert(line++, "call std_init");
   source.insert(line++, "b main");
 
@@ -131,7 +130,7 @@ BOOST_AUTO_TEST_CASE(std_handler_timer)
   source.insert(line++, "call std_handler");
 
   // Flag
-  source.insert(line++, "loadi r7 0xF1F1");
+  source.insert(line++, "loadi r5 0xF1F1");
 
   source.insert(line++, "load g0 data");
   source.insert(line++, "stop");
@@ -154,7 +153,7 @@ BOOST_AUTO_TEST_CASE(std_handler_timer)
   cpu::MemoryFile memory(CPU_SAVE);
   FakeCPU cpu(&registers, &memory);
   int i = 0;
-  while (registers[REGISTER(cpu, "r7")] != 0xF1F1) {
+  while (registers[REGISTER(cpu, "r5")] != 0xF1F1) {
     cpu.execute(1);
 
     if (++i == MAX_CYCLES)
@@ -181,7 +180,6 @@ BOOST_AUTO_TEST_CASE(std_handler_software)
   source.insert(line++, "move fp sp");
   source.insert(line++, "loada g0 heap");
   source.insert(line++, "loadi g1 0x400");
-  source.insert(line++, "loadi g2 0x1");
   source.insert(line++, "call std_init");
   source.insert(line++, "b main");
 
@@ -243,7 +241,6 @@ BOOST_AUTO_TEST_CASE(std_handler_instruction)
   source.insert(line++, "move fp sp");
   source.insert(line++, "loada g0 heap");
   source.insert(line++, "loadi g1 0x400");
-  source.insert(line++, "loadi g2 0x1");
   source.insert(line++, "call std_init");
   source.insert(line++, "b main");
 
@@ -305,7 +302,6 @@ BOOST_AUTO_TEST_CASE(std_handler_memory)
   source.insert(line++, "move fp sp");
   source.insert(line++, "loada g0 heap");
   source.insert(line++, "loadi g1 0x400");
-  source.insert(line++, "loadi g2 0x1");
   source.insert(line++, "call std_init");
   source.insert(line++, "b main");
 
@@ -367,7 +363,6 @@ BOOST_AUTO_TEST_CASE(std_handler_division)
   source.insert(line++, "move fp sp");
   source.insert(line++, "loada g0 heap");
   source.insert(line++, "loadi g1 0x400");
-  source.insert(line++, "loadi g2 0x1");
   source.insert(line++, "call std_init");
   source.insert(line++, "b main");
 
@@ -429,7 +424,6 @@ BOOST_AUTO_TEST_CASE(std_handler_worldaction)
   source.insert(line++, "move fp sp");
   source.insert(line++, "loada g0 heap");
   source.insert(line++, "loadi g1 0x400");
-  source.insert(line++, "loadi g2 0x1");
   source.insert(line++, "call std_init");
   source.insert(line++, "b main");
 
@@ -450,7 +444,7 @@ BOOST_AUTO_TEST_CASE(std_handler_worldaction)
   source.insert(line++, "call std_handler");
 
   // Flag
-  source.insert(line++, "loadi r7 0xF1F1");
+  source.insert(line++, "loadi r5 0xF1F1");
 
   // NOP needed because World Action interrupts are thrown by instructions
   // and when caught a instruction is skipped
@@ -477,7 +471,7 @@ BOOST_AUTO_TEST_CASE(std_handler_worldaction)
   cpu::MemoryFile memory(CPU_SAVE);
   FakeCPU cpu(&registers, &memory);
   int i = 0;
-  while (registers[REGISTER(cpu, "r7")] != 0xF1F1) {
+  while (registers[REGISTER(cpu, "r5")] != 0xF1F1) {
     cpu.execute(1);
 
     if (++i == MAX_CYCLES)
@@ -504,7 +498,6 @@ BOOST_AUTO_TEST_CASE(std_handler_worldevent)
   source.insert(line++, "move fp sp");
   source.insert(line++, "loada g0 heap");
   source.insert(line++, "loadi g1 0x400");
-  source.insert(line++, "loadi g2 0x1");
   source.insert(line++, "call std_init");
   source.insert(line++, "b main");
 
@@ -525,7 +518,7 @@ BOOST_AUTO_TEST_CASE(std_handler_worldevent)
   source.insert(line++, "call std_handler");
 
   // Flag
-  source.insert(line++, "loadi r7 0xF1F1");
+  source.insert(line++, "loadi r5 0xF1F1");
 
   source.insert(line++, "load g0 data");
   source.insert(line++, "stop");
@@ -548,7 +541,7 @@ BOOST_AUTO_TEST_CASE(std_handler_worldevent)
   cpu::MemoryFile memory(CPU_SAVE);
   FakeCPU cpu(&registers, &memory);
   int i = 0;
-  while (registers[REGISTER(cpu, "r7")] != 0xF1F1) {
+  while (registers[REGISTER(cpu, "r5")] != 0xF1F1) {
     cpu.execute(1);
 
     if (++i == MAX_CYCLES)

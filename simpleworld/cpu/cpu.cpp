@@ -3,7 +3,7 @@
  * Central Processing Unit big endian with 16 registers of 32bits and 16bits of
  * address space.
  *
- *  Copyright (C) 2006-2010  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2006-2011  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -27,7 +27,6 @@
 #include "codeerror.hpp"
 #include "memoryerror.hpp"
 #include "cpu.hpp"
-#include "cs.hpp"
 #include "operations.hpp"
 
 namespace simpleworld
@@ -49,21 +48,21 @@ CPU::CPU(Memory* registers, Memory* memory)
     this->registers_->resize(min_size);
 
   this->isa_.add_register(REGISTER_PC, "pc");
+  this->isa_.add_register(REGISTER_WC, "wc");
   this->isa_.add_register(REGISTER_SP, "sp");
-  this->isa_.add_register(REGISTER_FP, "fp");
-  this->isa_.add_register(REGISTER_CS, "cs");
+  this->isa_.add_register(REGISTER_IP, "ip");
   this->isa_.add_register(REGISTER_G0, "g0");
   this->isa_.add_register(REGISTER_G1, "g1");
   this->isa_.add_register(REGISTER_G2, "g2");
   this->isa_.add_register(REGISTER_G3, "g3");
+  this->isa_.add_register(REGISTER_LR, "lr");
+  this->isa_.add_register(REGISTER_FP, "fp");
   this->isa_.add_register(REGISTER_R0, "r0");
   this->isa_.add_register(REGISTER_R1, "r1");
   this->isa_.add_register(REGISTER_R2, "r2");
   this->isa_.add_register(REGISTER_R3, "r3");
   this->isa_.add_register(REGISTER_R4, "r4");
   this->isa_.add_register(REGISTER_R5, "r5");
-  this->isa_.add_register(REGISTER_R6, "r6");
-  this->isa_.add_register(REGISTER_R7, "r7");
 
   // Interrupts
   this->isa_.add_interrupt(INTERRUPT_TIMER, "TimerInterrupt", false);
@@ -240,13 +239,13 @@ Instruction info:\tcode: 0x%02X, name: %s, nregs: %d, has_i: %d")
       break;
     }
   } catch (const CodeError& exc) {
-    // If the pc or the itp are out of range, the error is critical and
+    // If the pc or the ip are out of range, the error is critical and
     // the CPU must be stopped
     this->interrupt(INTERRUPT_INSTRUCTION,
                     this->registers_->get_word(ADDRESS(REGISTER_PC)),
                     instruction.code);
   } catch (const MemoryError& exc) {
-    // If the pc or the itp are out of range, then the error is critical and
+    // If the pc or the ip are out of range, then the error is critical and
     // the CPU must be stopped
     this->interrupt(INTERRUPT_MEMORY,
                     this->registers_->get_word(ADDRESS(REGISTER_PC)),
@@ -264,8 +263,10 @@ Instruction info:\tcode: 0x%02X, name: %s, nregs: %d, has_i: %d")
 Word CPU::get_reg(Uint8 reg, bool system_endian) const
 {
   if (reg >= GLOBAL_REGISTERS) {
-    CS cs(this->registers_->get_word(ADDRESS(REGISTER_CS), false));
-    reg += cs.cw * REGISTERS_PER_WINDOW;
+    Uint32 window = this->registers_->get_word(ADDRESS(REGISTER_WC));
+    if (window >= REGISTER_WINDOWS)
+      window = REGISTER_WINDOWS - 1;
+    reg += window * REGISTERS_PER_WINDOW;
   }
 
   return this->registers_->get_word(ADDRESS(reg), system_endian);
@@ -280,8 +281,10 @@ Word CPU::get_reg(Uint8 reg, bool system_endian) const
 void CPU::set_reg(Uint8 reg, Word word, bool system_endian)
 {
   if (reg >= GLOBAL_REGISTERS) {
-    CS cs(this->registers_->get_word(ADDRESS(REGISTER_CS), false));
-    reg += cs.cw * REGISTERS_PER_WINDOW;
+    Uint32 window = this->registers_->get_word(ADDRESS(REGISTER_WC));
+    if (window >= REGISTER_WINDOWS)
+      window = REGISTER_WINDOWS - 1;
+    reg += window * REGISTERS_PER_WINDOW;
   }
 
   this->registers_->set_word(ADDRESS(reg), word, system_endian); 
@@ -354,10 +357,10 @@ void CPU::set_quartermem(Address addr, QuarterWord word)
 
 /**
  * Throw a interrupt.
- * @param code the ode of the interrupt.
+ * @param code the code of the interrupt.
  * @param g1 the word stored in g1.
  * @param g2 the word stored in g2.
- * @exception MemoryError if the itp is not valid.
+ * @exception MemoryError if the ip is not valid.
  */
 void CPU::interrupt(Uint8 code, Word g1, Word g2)
 {
@@ -392,42 +395,57 @@ Interrupt thrown:\tcode: 0x%02X, name: %s")
             << std::endl;
 #endif
 
-  CS cs(this->registers_->get_word(ADDRESS(REGISTER_CS), false));
-  Word handler = this->memory_->get_word(cs.itp + ADDRESS(code));
+  Word handler =
+    this->memory_->get_word(this->registers_->get_word(ADDRESS(REGISTER_IP)) +
+                            ADDRESS(code));
 
-  // Save all the global registers in the stack
-  for (Sint8 i = 0; i < GLOBAL_REGISTERS; i++) {
-    // Store a register:
-    // Save the register in the top of the stack
-    this->memory_->set_word(this->registers_->get_word(ADDRESS(REGISTER_SP)),
-                            this->registers_->get_word(ADDRESS(i)));
-    // Update stack pointer
-    this->registers_->set_word(ADDRESS(REGISTER_SP),
-                               this->registers_->get_word(ADDRESS(REGISTER_SP)) + sizeof(Word));
-  }
+  // Save the global registers in the stack
+  Word sp = this->registers_->get_word(ADDRESS(REGISTER_SP));
+  this->memory_->set_word(sp, this->registers_->get_word(ADDRESS(REGISTER_IP)));
+  sp += sizeof(Word);
+  this->memory_->set_word(sp, this->registers_->get_word(ADDRESS(REGISTER_G0)));
+  sp += sizeof(Word);
+  this->memory_->set_word(sp, this->registers_->get_word(ADDRESS(REGISTER_G1)));
+  sp += sizeof(Word);
+  this->memory_->set_word(sp, this->registers_->get_word(ADDRESS(REGISTER_G2)));
+  sp += sizeof(Word);
+  this->memory_->set_word(sp, this->registers_->get_word(ADDRESS(REGISTER_G3)));
+  sp += sizeof(Word);
+  // Update stack pointer
+  this->registers_->set_word(ADDRESS(REGISTER_SP), sp);
 
-  // Update the frame pointer
-  this->registers_->set_word(ADDRESS(REGISTER_FP),
-                             this->registers_->get_word(ADDRESS(REGISTER_SP)));
+  // Update the wc register
+  Word wc = this->registers_->get_word(ADDRESS(REGISTER_WC));
+  if (wc >= (REGISTER_WINDOWS - 1))
+    // Save the local registers in the stack
+    for (Sint8 i = GLOBAL_REGISTERS;
+         i < GLOBAL_REGISTERS + REGISTERS_PER_WINDOW;
+         i++) {
+      // Save the register in the top of the stack
+      this->memory_->set_word(sp, this->get_reg(i));
+      // Update stack pointer
+      sp += sizeof(Word);
+    }
+  // Update stack pointer
+  this->registers_->set_word(ADDRESS(REGISTER_SP), sp);
+  this->registers_->set_word(ADDRESS(REGISTER_WC), wc + 1);
+
+  // Update the link register and the frame pointer
+  this->set_reg(REGISTER_LR, this->registers_->get_word(ADDRESS(REGISTER_PC)));
+  this->set_reg(REGISTER_FP, this->registers_->get_word(ADDRESS(REGISTER_SP)));
 
   // Store the information of the interrupt
   this->registers_->set_word(ADDRESS(REGISTER_G0), code);
   this->registers_->set_word(ADDRESS(REGISTER_G1), g1);
   this->registers_->set_word(ADDRESS(REGISTER_G2), g2);
 
-  // Update the PC with the interrupt handler location
+  // Execute the interrupt handler
   this->registers_->set_word(ADDRESS(REGISTER_PC), handler);
-
-  // Update the cs register
-  cs.cw++;
-  cs.interrupt = true;
-  cs.max_interrupts--;
-  this->registers_->set_word(ADDRESS(REGISTER_CS), cs.encode(), false);
 }
 
 /**
  * Throw the Timer Interrupt.
- * @exception MemoryError if the itp is not valid.
+ * @exception MemoryError if the ip is not valid.
  */
 void CPU::timer_interrupt()
 {
@@ -457,18 +475,21 @@ Instruction CPU::fetch_instruction_() const
  * @param code Interrupt to check.
  * @return true if the interrupt is enabled, not if not.
  * @exception CPUexception if the interrupt is not found.
- * @exception MemoryError if the itp is not valid.
+ * @exception MemoryError if the ip is not valid.
  */
 bool CPU::interrupt_enabled(Uint8 code) const
 {
-  // If the itp or the region pointed by the itp is not valid, then
-  // a MemoryError exception is thrown.
+  // If the region pointed by the ip is not valid, then a MemoryError
+  // exception is thrown.
   // This error is critical because no more interrupts can be thrown, so
   // the CPU must be stopped.
 
-  CS cs(this->registers_->get_word(ADDRESS(REGISTER_CS), false));
-  Word handler = this->memory_->get_word(cs.itp + ADDRESS(code));
-  return (cs.enable and cs.max_interrupts > 0 and handler != 0);
+  Word ip = this->registers_->get_word(ADDRESS(REGISTER_IP));
+  if (ip == 0)
+    return false;
+
+  Word handler = this->memory_->get_word(ip + ADDRESS(code));
+  return handler != 0;
 }
 
 }

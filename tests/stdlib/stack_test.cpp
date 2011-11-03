@@ -2,7 +2,7 @@
  * @file tests/stdlib/stack_test.cpp
  * Unit test for stdlib/stack.swl
  *
- *  Copyright (C) 2009-2010  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2009-2011  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -82,7 +82,6 @@ BOOST_AUTO_TEST_CASE(std_stack)
   source.insert(line++, "move fp sp");
   source.insert(line++, "loada g0 heap");
   source.insert(line++, "loadi g1 0x400");
-  source.insert(line++, "loadi g2 0x1");
   source.insert(line++, "call std_init");
   source.insert(line++, "b main");
 
@@ -158,7 +157,6 @@ BOOST_AUTO_TEST_CASE(std_stackempty)
   source.insert(line++, "move fp sp");
   source.insert(line++, "loada g0 heap");
   source.insert(line++, "loadi g1 0x400");
-  source.insert(line++, "loadi g2 0x1");
   source.insert(line++, "call std_init");
   source.insert(line++, "b main");
 
@@ -219,7 +217,6 @@ BOOST_AUTO_TEST_CASE(std_stackpush)
   source.insert(line++, "move fp sp");
   source.insert(line++, "loada g0 heap");
   source.insert(line++, "loadi g1 0x400");
-  source.insert(line++, "loadi g2 0x1");
   source.insert(line++, "call std_init");
   source.insert(line++, "b main");
 

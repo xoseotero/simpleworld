@@ -2,7 +2,7 @@
  * @file tests/stdlib/address_test.cpp
  * Unit test for stdlib/address.swl
  *
- *  Copyright (C) 2009-2010  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2009-2011  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -86,7 +86,6 @@ BOOST_AUTO_TEST_CASE(std_address)
   source.insert(line++, ".define HEAP_SIZE 0x400");
   source.insert(line++, "loada g0 heap");
   source.insert(line++, "loadi g1 HEAP_SIZE");
-  source.insert(line++, "loadi g2 0x1");
   source.insert(line++, "call std_init");
 
   source.insert(line++, "b main");
@@ -140,7 +139,6 @@ BOOST_AUTO_TEST_CASE(std_address_limit_word)
   source.insert(line++, ".define HEAP_SIZE 0x400");
   source.insert(line++, "loada g0 heap");
   source.insert(line++, "loadi g1 HEAP_SIZE");
-  source.insert(line++, "loadi g2 0x1");
   source.insert(line++, "call std_init");
 
   source.insert(line++, "b main");
@@ -198,7 +196,6 @@ BOOST_AUTO_TEST_CASE(std_address_limit_halfword)
   source.insert(line++, ".define HEAP_SIZE 0x400");
   source.insert(line++, "loada g0 heap");
   source.insert(line++, "loadi g1 HEAP_SIZE");
-  source.insert(line++, "loadi g2 0x1");
   source.insert(line++, "call std_init");
 
   source.insert(line++, "b main");
@@ -256,7 +253,6 @@ BOOST_AUTO_TEST_CASE(std_address_limit_quarterword)
   source.insert(line++, ".define HEAP_SIZE 0x400");
   source.insert(line++, "loada g0 heap");
   source.insert(line++, "loadi g1 HEAP_SIZE");
-  source.insert(line++, "loadi g2 0x1");
   source.insert(line++, "call std_init");
 
   source.insert(line++, "b main");
@@ -314,7 +310,6 @@ BOOST_AUTO_TEST_CASE(std_address_null)
   source.insert(line++, ".define HEAP_SIZE 0x400");
   source.insert(line++, "loada g0 heap");
   source.insert(line++, "loadi g1 HEAP_SIZE");
-  source.insert(line++, "loadi g2 0x1");
   source.insert(line++, "call std_init");
 
   source.insert(line++, "b main");
@@ -368,7 +363,6 @@ BOOST_AUTO_TEST_CASE(std_address_inval)
   source.insert(line++, ".define HEAP_SIZE 0x400");
   source.insert(line++, "loada g0 heap");
   source.insert(line++, "loadi g1 HEAP_SIZE");
-  source.insert(line++, "loadi g2 0x1");
   source.insert(line++, "call std_init");
 
   source.insert(line++, "b main");

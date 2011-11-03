@@ -2,7 +2,7 @@
  * @file simpleworld/cpu/memory_file.hpp
  * Memory that loads its content from a file.
  *
- *  Copyright (C) 2007-2010  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2007-2011  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -20,7 +20,8 @@
 
 #include <fstream>
 
-#include <boost/filesystem/operations.hpp>
+#define BOOST_FILESYSTEM_NO_DEPRECATED
+#include <boost/filesystem.hpp>
 #include <boost/format.hpp>
 namespace fs = boost::filesystem;
 

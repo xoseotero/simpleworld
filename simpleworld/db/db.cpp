@@ -19,8 +19,8 @@
  */
 
 #include <boost/format.hpp>
-#include <boost/filesystem/path.hpp>
-#include <boost/filesystem/operations.hpp>
+#define BOOST_FILESYSTEM_NO_DEPRECATED
+#include <boost/filesystem.hpp>
 namespace fs = boost::filesystem;
 
 #include "exception.hpp"
@@ -851,7 +851,7 @@ void DB::create(std::string filename,
                 Energy energy_attack, Energy energy_eat,
                 Energy energy_egg)
 {
-  if (fs::exists(fs::path(filename, fs::native)))
+  if (fs::exists(fs::path(filename)))
     throw EXCEPTION(DBException,
                     boost::str(boost::format("File %1% already exists")
                                % filename));

@@ -2,29 +2,29 @@ stop
 restart
 move g0 g1
 swap g2 g3
-push r0
-pop r1
-load r2 0x1ADC
-loadrr r6 r5 r6
-loadri r7 r7 0x0001
-loadh r2 0x1ADC
-loadhrr r6 r5 r6
-loadhri r7 r7 0x0001
-loadq r2 0x1ADC
-loadqrr r6 r5 r6
-loadqri r7 r7 0x0001
-loadi r3 0x1ADC
-loadhi r4 0xDC1A
-loada r5 0x0000
-store pc 0xAFFF
-storerr pc sp g0
-storeri fp cs 0x0001
-storeh pc 0xAFFF
-storehrr pc sp g0
-storehri fp cs 0x0001
-storeq pc 0xAFFF
-storeqrr pc sp g0
-storeqri fp cs 0x0001
+push lr
+pop fp
+load r0 0x1ADC
+loadrr r4 r3 r4
+loadri r5 r5 0x0001
+loadh r0 0x1ADC
+loadhrr r4 r3 r4
+loadhri r5 r5 0x0001
+loadq r0 0x1ADC
+loadqrr r4 r3 r4
+loadqri r5 r5 0x0001
+loadi r1 0x1ADC
+loadhi r2 0xDC1A
+loada r3 0x0000
+store wc 0xAFFF
+storerr wc pc g0
+storeri sp ip 0x0001
+storeh wc 0xAFFF
+storehrr wc pc g0
+storehri sp ip 0x0001
+storeq wc 0xAFFF
+storeqrr wc pc g0
+storeqri sp ip 0x0001
 b 0xFFFF
 bz g0 0x0000
 bnz g0 0x0000
@@ -66,15 +66,15 @@ and g0 g1 g2
 andi g0 g1 0xFFFF
 xor g0 g1 g2
 xori g0 g1 0xFFFF
-sll r1 r2 fp
-slli r1 r2 0x0001
-srl r1 r2 r7
-srli r1 r2 0x0002
-sra r1 r2 r5
-srai r1 r2 0x0004
-rl r1 r2 r4
-rli r1 r2 0x0005
-rr r1 r2 r3
-rri r1 r2 0x0006
+sll fp r0 sp
+slli fp r0 0x0001
+srl fp r0 r5
+srli fp r0 0x0002
+sra fp r0 r3
+srai fp r0 0x0004
+rl fp r0 r2
+rli fp r0 0x0005
+rr fp r0 r1
+rri fp r0 0x0006
 0xABCD0123
 0x1EF56789

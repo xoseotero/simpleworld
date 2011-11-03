@@ -9,12 +9,6 @@ if(UNIT_TESTS)
     ${Boost_FILESYSTEM_LIBRARY} ${Boost_REGEX_LIBRARY}
     ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
 
-  add_executable(cs_swl_test cs_test.cpp)
-  target_link_libraries(cs_swl_test
-    simpleworld_cpu common
-    ${Boost_FILESYSTEM_LIBRARY} ${Boost_REGEX_LIBRARY}
-    ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
-
   add_executable(error_swl_test error_test.cpp)
   target_link_libraries(error_swl_test
     simpleworld_cpu common
@@ -124,7 +118,6 @@ if(UNIT_TESTS)
     ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
 
   add_test("stdlib/def.swl" def_swl_test)
-  add_test("stdlib/cs.swl" cs_swl_test)
   add_test("stdlib/error.swl" error_swl_test)
   add_test("stdlib/world.swl" world_swl_test)
   add_test("stdlib/bits.swl" bits_swl_test)

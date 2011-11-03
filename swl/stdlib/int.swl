@@ -1,7 +1,7 @@
 # @file stdlib/int.swl
 # Interrupt management.
 #
-#  Copyright (C) 2008-2010  Xosé Otero <xoseotero@gmail.com>
+#  Copyright (C) 2008-2011  Xosé Otero <xoseotero@gmail.com>
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -18,9 +18,7 @@
 
 .include "stdlib/def.swl"
 .include "stdlib/error.swl"
-.include "stdlib/cs.swl"
 .include "stdlib/world.swl"
-.include "stdlib/bits.swl"
 .include "stdlib/address.swl"
 .include "stdlib/list.swl"
 
@@ -128,18 +126,11 @@
 
 # Initialize the interrupts manager.
 # It should not be called directly but by std_init.
-# IN:   g0 maximum number of interrupts that can be handled
 # OUT:  g1 error status
 #      STD_NOERROR: no errors
-#      STD_EINVAL: number of interrupts too bit (more than 15)
 #      STD_ENOMEM: there is not enough memory
 .label _std_intinit
         move r0 g0                      # number
-
-        # check the number of interrupts
-        loadi g1 STD_CSINTMAX
-        call std_bitsclear
-        bnz g0 __std_intinit_einval
 
         # initialize the interrupts
         loadi g0 STD_ITIMER
@@ -172,28 +163,11 @@
         addi r3 r3 0x1
         bleu r3 r1 __std_intinit_loop2
 
-        # set the itp
-        move g0 cs
-        loadi g1 0x0000
-        loadhi g1 0xFFFF
-        call std_bitsclear
-        slli g1 r2 0x10
-        call std_bitsset
-        move cs g0
-
-        # set the maximum number of interrupts
-        loadi g1 STD_CSINTMAX
-        call std_bitsclear
-        move g1 r0
-        call std_bitsset
-        move cs g0
+        # set the ip
+        move ip r2
 
         .label __std_intinit_ok
         loadi g1 STD_NOERROR
-        ret
-
-        .label __std_intinit_einval
-        loadi g1 STD_EINVAL
         ret
 
         .label __std_intinit_enomem
@@ -203,18 +177,12 @@
 
 # Enable the interrupts.
 .label std_enable
-        move g0 cs
-        loadi g1 STD_CSENABLE
-        call std_bitsset
-        move cs g0
+        loada ip _std_itp
         ret
 
 # Disable the interrupts.
 .label std_disable
-        move g0 cs
-        loadi g1 STD_CSENABLE
-        call std_bitsclear
-        move cs g0
+        loadi ip 0x0
         ret
 
 

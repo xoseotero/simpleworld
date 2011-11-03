@@ -18,11 +18,6 @@ if(UNIT_TESTS)
     ${Boost_PROGRAM_OPTIONS_LIBRARY} ${Boost_FILESYSTEM_LIBRARY}
     ${Boost_REGEX_LIBRARY} ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
 
-  add_executable(cs_test cs_test.cpp)
-  target_link_libraries(cs_test simpleworld_cpu
-    ${Boost_PROGRAM_OPTIONS_LIBRARY} ${Boost_FILESYSTEM_LIBRARY}
-    ${Boost_REGEX_LIBRARY} ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
-
   add_executable(isa_test isa_test.cpp)
   target_link_libraries(isa_test simpleworld_cpu
     ${Boost_PROGRAM_OPTIONS_LIBRARY} ${Boost_FILESYSTEM_LIBRARY}
@@ -51,7 +46,6 @@ if(UNIT_TESTS)
   add_test("cpu/word.hpp" word_test)
   add_test("cpu::Memory" memory_test)
   add_test("cpu::Instruction" instruction_test)
-  add_test("cpu::CS" cs_test)
   add_test("cpu::ISA" isa_test)
   add_test("cpu::File" file_test)
   add_test("cpu::Source" source_test)

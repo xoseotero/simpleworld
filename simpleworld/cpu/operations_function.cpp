@@ -2,7 +2,7 @@
  * @file simpleworld/cpu/operations_function.cpp
  * Function operations of the Simple CPU.
  *
- *  Copyright (C) 2006-2010  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2006-2011  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -20,7 +20,6 @@
 
 #include "types.hpp"
 #include "operations.hpp"
-#include "cs.hpp"
 
 namespace simpleworld
 {
@@ -28,15 +27,83 @@ namespace cpu
 {
 
 /**
+ * Push the local registers in the stack.
+ *
+ * @param cpu the CPU.
+ */
+static inline void push_locals(CPU& cpu)
+{
+  Word sp = cpu.get_reg(REGISTER_SP);
+
+  for (Sint8 i = GLOBAL_REGISTERS;
+       i < GLOBAL_REGISTERS + REGISTERS_PER_WINDOW;
+       i++) {
+    // Save the register in the top of the stack
+    cpu.set_mem(sp, cpu.get_reg(i));
+    sp += sizeof(Word);
+  }
+
+  // Update stack pointer
+  cpu.set_reg(REGISTER_SP, sp);
+}
+
+/**
+ * Pop the local registers from the stack.
+ *
+ * @param cpu the CPU.
+ */
+static inline void pop_locals(CPU& cpu)
+{
+  Word sp = cpu.get_reg(REGISTER_SP);
+
+  for (Sint8 i = GLOBAL_REGISTERS + REGISTERS_PER_WINDOW - 1;
+       i >= GLOBAL_REGISTERS;
+       i--) {
+    sp -= sizeof(Word);
+    // Restore the register
+    cpu.set_reg(i, cpu.get_mem(sp));
+  }
+
+  // Update stack pointer
+  cpu.set_reg(REGISTER_SP, sp);
+}
+
+/**
+ * Pop the global registers from the stack.
+ *
+ * @param cpu the CPU.
+ */
+static inline void pop_globals(CPU& cpu)
+{
+  Word sp = cpu.get_reg(REGISTER_SP);
+
+  // Restore the registers
+  sp -= sizeof(Word);
+  cpu.set_reg(REGISTER_G3, cpu.get_mem(sp));
+  sp -= sizeof(Word);
+  cpu.set_reg(REGISTER_G2, cpu.get_mem(sp));
+  sp -= sizeof(Word);
+  cpu.set_reg(REGISTER_G1, cpu.get_mem(sp));
+  sp -= sizeof(Word);
+  cpu.set_reg(REGISTER_G0, cpu.get_mem(sp));
+  sp -= sizeof(Word);
+  cpu.set_reg(REGISTER_IP, cpu.get_mem(sp));
+
+  // Update stack pointer
+  cpu.set_reg(REGISTER_SP, sp);
+}
+
+/**
  * Increase the register window.
  *
  * @param cpu the CPU.
  */
-static void increase_window(CPU& cpu)
+static inline void increase_window(CPU& cpu)
 {
-  CS cs(cpu.get_reg(REGISTER_CS, false));
-  cs.cw++;
-  cpu.set_reg(REGISTER_CS, cs.encode(), false);
+  Word wc = cpu.get_reg(REGISTER_WC);
+  if (wc >= (REGISTER_WINDOWS - 1))
+    push_locals(cpu);
+  cpu.set_reg(REGISTER_WC, wc + 1);
 }
 
 /**
@@ -44,18 +111,18 @@ static void increase_window(CPU& cpu)
  *
  * @param cpu the CPU.
  */
-static void decrease_window(CPU& cpu)
+static inline void decrease_window(CPU& cpu)
 {
-  CS cs(cpu.get_reg(REGISTER_CS, false));
-  cs.cw--;
-  cpu.set_reg(REGISTER_CS, cs.encode(), false);
+  Word wc = cpu.get_reg(REGISTER_WC) - 1;
+  cpu.set_reg(REGISTER_WC, wc);
+  if (wc >= (REGISTER_WINDOWS - 1))
+    pop_locals(cpu);
 }
 
 
 /**
  * Call a function.
  *
- * PUSH(PC) and PC += OFFSET
  * @param cpu the CPU.
  * @param inst the instruction.
  * @return if the PC must be updated.
@@ -70,13 +137,10 @@ Update call(CPU& cpu, Instruction inst)
 
   increase_window(cpu);
 
-  // Save the frame pointer and the program counter in the top of the stack
-  cpu.set_mem(cpu.get_reg(REGISTER_SP), cpu.get_reg(REGISTER_FP));
-  cpu.set_mem(cpu.get_reg(REGISTER_SP) + sizeof(Word),
-              cpu.get_reg(REGISTER_PC));
-  // Update the stack pointer and the frame pointer
-  cpu.set_reg(REGISTER_SP, cpu.get_reg(REGISTER_SP) + 8);
+  // Update the link register and the frame pointer
+  cpu.set_reg(REGISTER_LR, cpu.get_reg(REGISTER_PC));
   cpu.set_reg(REGISTER_FP, cpu.get_reg(REGISTER_SP));
+
   // Execute the function
   cpu.set_reg(REGISTER_PC, address);
 
@@ -86,7 +150,6 @@ Update call(CPU& cpu, Instruction inst)
 /**
  * Call a function using a register as address.
  *
- * PUSH(PC) and PC = REGISTER[FIRST]
  * @param cpu the CPU.
  * @param inst the instruction.
  * @return if the PC must be updated.
@@ -101,13 +164,10 @@ Update callr(CPU& cpu, Instruction inst)
 
   increase_window(cpu);
 
-  // Save the frame pointer and the program counter in the top of the stack
-  cpu.set_mem(cpu.get_reg(REGISTER_SP), cpu.get_reg(REGISTER_FP));
-  cpu.set_mem(cpu.get_reg(REGISTER_SP) + sizeof(Word),
-              cpu.get_reg(REGISTER_PC));
-  // Update the stack pointer and the frame pointer
-  cpu.set_reg(REGISTER_SP, cpu.get_reg(REGISTER_SP) + 8);
+  // Update the link register and the frame pointer
+  cpu.set_reg(REGISTER_LR, cpu.get_reg(REGISTER_PC));
   cpu.set_reg(REGISTER_FP, cpu.get_reg(REGISTER_SP));
+
   // Execute the function
   cpu.set_reg(REGISTER_PC, address);
 
@@ -124,7 +184,7 @@ Update callr(CPU& cpu, Instruction inst)
 Update interrupt(CPU& cpu, Instruction inst)
 {
   // It's not needed to increase the register window because cpu.interrupt()
-  // already does it if the interrupts are enabled'
+  // already does it if the interrupts are enabled
   cpu.interrupt(INTERRUPT_SOFTWARE, inst.data);
 
   return UpdateInterrupt;
@@ -133,21 +193,17 @@ Update interrupt(CPU& cpu, Instruction inst)
 /**
  * Return.
  *
- * POP(PC)
  * @param cpu the CPU.
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
 Update ret(CPU& cpu, Instruction inst)
 {
-  decrease_window(cpu);
+  // Restore the program counter and the stack pointer
+  cpu.set_reg(REGISTER_PC, cpu.get_reg(REGISTER_LR));
+  cpu.set_reg(REGISTER_SP, cpu.get_reg(REGISTER_FP));
 
-  // Update stack pointer
-  cpu.set_reg(REGISTER_SP, cpu.get_reg(REGISTER_FP) - 8);
-  // Restore the program counter and the frame pointer
-  cpu.set_reg(REGISTER_PC,
-              cpu.get_mem(cpu.get_reg(REGISTER_SP) + sizeof(Word)));
-  cpu.set_reg(REGISTER_FP, cpu.get_mem(cpu.get_reg(REGISTER_SP)));
+  decrease_window(cpu);
 
   return UpdatePC;
 }
@@ -155,28 +211,20 @@ Update ret(CPU& cpu, Instruction inst)
 /**
  * Return from exception.
  *
- * POP(ALL REGISTERS)
  * @param cpu the CPU.
  * @param inst the instruction.
  * @return if the PC must be updated.
  */
 Update reti(CPU& cpu, Instruction inst)
 {
-  decrease_window(cpu);
-
-  // Update stack pointer
+  // Restore the program counter and the stack pointer
+  cpu.set_reg(REGISTER_PC, cpu.get_reg(REGISTER_LR));
   cpu.set_reg(REGISTER_SP, cpu.get_reg(REGISTER_FP));
 
-  // Restore all the global registers
-  for (Sint8 i = (GLOBAL_REGISTERS - 1); i >= 0; i--) {
-    // Update stack pointer
-    cpu.set_reg(REGISTER_SP, cpu.get_reg(REGISTER_SP) - 4);
-    // Restore the register
-    cpu.set_reg(i, cpu.get_mem(cpu.get_reg(REGISTER_SP)));
-  }
+  decrease_window(cpu);
 
-  // It's not needed to update the cs register because the correct values
-  // were stored in the stack
+  // Restore the global registers
+  pop_globals(cpu);
 
   // It's not needed to update the pc because it already udpated by
   // CPU::interrupt()

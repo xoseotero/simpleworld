@@ -1,7 +1,7 @@
 # @file stdlib/init.swl
 # Initialize the standard library.
 #
-#  Copyright (C) 2008-2010  Xosé Otero <xoseotero@gmail.com>
+#  Copyright (C) 2008-2011  Xosé Otero <xoseotero@gmail.com>
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -37,7 +37,6 @@ STD_FALSE
 # successfull call will initialize the standard library.
 # IN:  g0 heap start
 # IN:  g1 heap size
-# IN:  g2 maximum number of interrupts that can be handled
 # OUT: g1 error status 
 #      STD_ENOMEM: the memory if not enough
 #      STD_EFAULT: the pointer is not valid
@@ -46,14 +45,11 @@ STD_FALSE
         load g3 _std_initialized
         bnz g3 _std_init_ok
 
-        move r0 g2                      # interrupts
-
         # initialize the memory allocator
         call _std_minit
         bnz g1 _std_init_error
 
         # initialize the interrupts manager
-        move g0 r0
         call _std_intinit
         bnz g1 _std_init_error
 
@@ -77,9 +73,6 @@ STD_FALSE
         # set the state of the standard library to initialized
         loadi g0 STD_TRUE
         store g0 _std_initialized
-
-        # enable the interrupts
-        call std_enable
 
         # exit without errors
         .label _std_init_ok

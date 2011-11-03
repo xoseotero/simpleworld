@@ -3,7 +3,7 @@
  * Central Processing Unit big endian with 16 registers of 32bits and 16bits of
  * address space.
  *
- *  Copyright (C) 2006-2010  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2006-2011  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -36,22 +36,22 @@
 #define TOTAL_REGISTERS (GLOBAL_REGISTERS + \
                          REGISTERS_PER_WINDOW * REGISTER_WINDOWS)
 
-#define REGISTER_PC 0x0
-#define REGISTER_SP 0x1
-#define REGISTER_FP 0x2
-#define REGISTER_CS 0x3
+#define REGISTER_WC 0x0
+#define REGISTER_PC 0x1
+#define REGISTER_SP 0x2
+#define REGISTER_IP 0x3
 #define REGISTER_G0 0x4
 #define REGISTER_G1 0x5
 #define REGISTER_G2 0x6
 #define REGISTER_G3 0x7
-#define REGISTER_R0 0x8
-#define REGISTER_R1 0x9
-#define REGISTER_R2 0xA
-#define REGISTER_R3 0xB
-#define REGISTER_R4 0xC
-#define REGISTER_R5 0xD
-#define REGISTER_R6 0xE
-#define REGISTER_R7 0xF
+#define REGISTER_LR 0x8
+#define REGISTER_FP 0x9
+#define REGISTER_R0 0xA
+#define REGISTER_R1 0xB
+#define REGISTER_R2 0xC
+#define REGISTER_R3 0xD
+#define REGISTER_R4 0xE
+#define REGISTER_R5 0xF
 
 #define INTERRUPT_TIMER (0x0)
 #define INTERRUPT_SOFTWARE (0x1)
@@ -200,16 +200,16 @@ public:
 
   /**
    * Throw a interrupt.
-   * @param code the ode of the interrupt.
+   * @param code the code of the interrupt.
    * @param g1 the word stored in g1.
    * @param g2 the word stored in g2.
-   * @exception MemoryError if the itp is not valid.
+   * @exception MemoryError if the ip is not valid.
    */
   void interrupt(Uint8 code, Word g1 = 0, Word g2 = 0);
 
   /**
    * Throw the Timer Interrupt.
-   * @exception MemoryError if the itp is not valid.
+   * @exception MemoryError if the ip is not valid.
    */
   void timer_interrupt();
 
@@ -220,6 +220,7 @@ protected:
   Memory* memory_;
 
   bool running_;
+
 
   /**
    * Decode the current instruction.
@@ -234,7 +235,7 @@ protected:
    * @param code Interrupt to check.
    * @return true if the interrupt is enabled, not if not.
    * @exception CPUexception if the interrupt is not found.
-   * @exception MemoryError if the itp is not valid.
+   * @exception MemoryError if the ip is not valid.
    */
   bool interrupt_enabled(Uint8 code) const;
 };

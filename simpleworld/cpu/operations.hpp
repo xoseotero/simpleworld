@@ -2,7 +2,7 @@
  * @file simpleworld/cpu/operations.hpp
  * Operations of the Simple CPU.
  *
- *  Copyright (C) 2006-2010  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2006-2011  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -439,7 +439,6 @@ Update bgeu(CPU& cpu, Instruction inst);
 /**
  * Call a function.
  *
- * PUSH(PC) and PC += OFFSET
  * @param cpu the CPU.
  * @param inst the instruction.
  * @return if the PC must be updated.
@@ -449,7 +448,6 @@ Update call(CPU& cpu, Instruction inst);
 /**
  * Call a function using a register as address.
  *
- * PUSH(PC) and PC = REGISTER[FIRST]
  * @param cpu the CPU.
  * @param inst the instruction.
  * @return if the PC must be updated.
@@ -468,7 +466,6 @@ Update interrupt(CPU& cpu, Instruction inst);
 /**
  * Return.
  *
- * POP(PC)
  * @param cpu the CPU.
  * @param inst the instruction.
  * @return if the PC must be updated.
@@ -478,7 +475,6 @@ Update ret(CPU& cpu, Instruction inst);
 /**
  * Return from exception.
  *
- * POP(ALL REGISTERS)
  * @param cpu the CPU.
  * @param inst the instruction.
  * @return if the PC must be updated.

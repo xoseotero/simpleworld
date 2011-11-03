@@ -2,7 +2,7 @@
  * @file tests/stdlib/time_test.cpp
  * Unit test for stdlib/time.swl
  *
- *  Copyright (C) 2009-2010  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2009-2011  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -80,7 +80,6 @@ BOOST_AUTO_TEST_CASE(std_time)
   source.insert(line++, "loada sp stack");
   source.insert(line++, "loada g0 heap");
   source.insert(line++, "loadi g1 0x400");
-  source.insert(line++, "loadi g2 0x1");
   source.insert(line++, "call std_init");
   source.insert(line++, "b main");
 
@@ -93,7 +92,7 @@ BOOST_AUTO_TEST_CASE(std_time)
   source.insert(line++, "push g0");
 
   // Flag
-  source.insert(line++, "loadi r7 0xF894");
+  source.insert(line++, "loadi r5 0xF894");
 
   source.insert(line++, "call std_time");
 
@@ -101,10 +100,6 @@ BOOST_AUTO_TEST_CASE(std_time)
   source.insert(line++, "pop g0");
 
   source.insert(line++, "stop");
-
-  // Space for the minfo struct
-  source.insert(line++, ".label minfo");
-  source.insert(line++, ".block STD_MINFO_STRUCT");
 
   // Space for 256 words in the heap
   source.insert(line++, ".label heap");
@@ -120,7 +115,7 @@ BOOST_AUTO_TEST_CASE(std_time)
   cpu::MemoryFile memory(CPU_SAVE);
   FakeCPU cpu(&registers, &memory);
   int i = 0;
-  while (registers[REGISTER(cpu, "r7")] != 0xF894) {
+  while (registers[REGISTER(cpu, "r5")] != 0xF894) {
     cpu.execute(1);
 
     if (++i == MAX_CYCLES)
@@ -147,7 +142,6 @@ BOOST_AUTO_TEST_CASE(std_sleep)
   source.insert(line++, "loada sp stack");
   source.insert(line++, "loada g0 heap");
   source.insert(line++, "loadi g1 0x400");
-  source.insert(line++, "loadi g2 0x1");
   source.insert(line++, "call std_init");
   source.insert(line++, "b main");
 
@@ -162,10 +156,6 @@ BOOST_AUTO_TEST_CASE(std_sleep)
   source.insert(line++, "call std_time");
 
   source.insert(line++, "stop");
-
-  // Space for the minfo struct
-  source.insert(line++, ".label minfo");
-  source.insert(line++, ".block STD_MINFO_STRUCT");
 
   // Space for 256 words in the heap
   source.insert(line++, ".label heap");

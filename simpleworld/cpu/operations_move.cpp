@@ -2,7 +2,7 @@
  * @file simpleworld/cpu/operations_move.cpp
  * Load/store/move/stack operations of the Simple CPU.
  *
- *  Copyright (C) 2006-2010  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2006-2011  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -430,7 +430,7 @@ Update push(CPU& cpu, Instruction inst)
 Update pop(CPU& cpu, Instruction inst)
 {
   // Update stack pointer
-  cpu.set_reg(REGISTER_SP, cpu.get_reg(REGISTER_SP) - 4);
+  cpu.set_reg(REGISTER_SP, cpu.get_reg(REGISTER_SP) - sizeof(Word));
   // Restore the register
   cpu.set_reg(inst.first, cpu.get_mem(cpu.get_reg(REGISTER_SP)));
 

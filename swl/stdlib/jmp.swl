@@ -1,7 +1,7 @@
 # @file stdlib/jmp.swl
 # Non-local jump.
 #
-#  Copyright (C) 2008-2010  Xosé Otero <xoseotero@gmail.com>
+#  Copyright (C) 2008-2011  Xosé Otero <xoseotero@gmail.com>
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -21,11 +21,9 @@
 
 # jmp struct to store the stack context
 .define STD_JMP_STRUCT       0xC        # Size of the jmp struct
-.define STD_JMP_FP           0x0        # Offset to the frame pointer field
-.define STD_JMP_CALLERFP     0x4        # Offset to the caller frame pointer
-                                        # field
-.define STD_JMP_CALLERPC     0x8        # Offset to the caller program counter
-                                        # field
+.define STD_JMP_WC           0x0        # Offset to the window counter
+.define STD_JMP_LR           0x4        # Offset to the link register
+.define STD_JMP_FP           0x8        # Offset to the frame pointer
 
 
 # Destination of a non-local jump.
@@ -43,13 +41,11 @@
         call std_address
         bz g0 _std_jmpset_efault
 
+        storeri r0 wc STD_JMP_WC
+        storeri r0 lr STD_JMP_LR
         storeri r0 fp STD_JMP_FP
-        loadri g0 fp 0xFFF8
-        storeri r0 g0 STD_JMP_CALLERFP
-        loadri g0 fp 0xFFFC
-        storeri r0 g0 STD_JMP_CALLERPC
-
         loadi g0 0x0
+        loadi g1 STD_NOERROR
         ret
 
         .label _std_jmpset_efault
@@ -74,14 +70,12 @@
         call std_address
         bz g0 _std_jmp_efault
 
-        # all the parameters must be restored before the fp is changed
-        loadri fp r0 STD_JMP_FP
-        loadri g0 r0 STD_JMP_CALLERFP
-        storeri fp g0 0xFFF8
-        loadri g0 r0 STD_JMP_CALLERPC
-        storeri fp g0 0xFFFC
-
         move g0 r1
+        move g1 r0
+        loadri wc g1 STD_JMP_WC
+        loadri lr g1 STD_JMP_LR
+        loadri fp g1 STD_JMP_FP
+        loadi g1 STD_NOERROR
         ret
 
         .label _std_jmp_einval
