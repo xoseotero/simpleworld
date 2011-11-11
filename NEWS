@@ -1,3 +1,34 @@
+-- Simple World 1.0b5 (2011/11/11) --
+
+In this version there are several changes to the CPU. In first
+place, the cs (control & status) register is replaced by two
+new registers: wc (window counter) and ip (interrupt table
+pointer). The old cs register used to store the window counter
+and the interrupt table pointer, among other not too usefull
+things. With the addition of the wc and ip registers it's
+easier to change the interrupt table pointer and the interrupt
+table pointer hadn't to be in the first 64KBs of the code.
+
+Other change to the CPU is the addition of the local lr (link
+register) register and the convertion of the fp (frame pointer)
+register to a local register. So, now there are only 6 local
+general purpose registers but in most of the cases when a
+function is called no space in the stack is needed.
+
+A important change in the World is that now every unit of time
+up to 16 CPU instructions are executed. So, bugs that do more
+calculus between actions have some advantage. Other change is
+that the food can be rot when is getting old.
+
+Finally, 3 new kinds of mutations are added:
+a) partial mutation: only some bytes of the word is mutated.
+b) permutation: the bytes of the word are permuted.
+c) duplication: the previous word is duplicated.
+
+The database format has changed again, so the database version was
+changed to 5.
+
+
 -- Simple World 1.0b4 (2011/01/10) --
 
 This is a small version in which most of the functionality found in

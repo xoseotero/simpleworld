@@ -1,4 +1,4 @@
-Simple World 1.0b5:
+Simple World 1.0b5 (2011/11/11):
 	* Replace the cs register by the registers wc and ip.
 	* Add the local register lr and make fp local.
 	* Execute 16 CPU cycles by unit of time in the World.
