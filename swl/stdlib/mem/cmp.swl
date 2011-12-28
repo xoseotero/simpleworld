@@ -1,0 +1,83 @@
+# @file stdlib/mem/cmp.swl
+# Compare two blocks of memory (quarter word by quarter word).
+#
+#  Copyright (C) 2008-2011  Xosé Otero <xoseotero@gmail.com>
+#
+#  This program is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+
+.include "stdlib/def.swl"
+.include "stdlib/error.swl"
+.include "stdlib/address.swl"
+
+
+# Compare two blocks of memory (quarter word by quarter word).
+# IN:  g0 pointeg1
+# IN:  g1 pointeg2
+# IN:  g2 size of the block of memory
+# OUT: g0 difference
+#      < 0: pointeg1 < pointeg2
+#      = 0: pointeg1 = pointeg2
+#      > 0: pointeg1 > pointeg2
+# OUT: g1 error status
+#      STD_NOERROR: no errors
+#      STD_EFAULT:  the pointers are not valid
+.label std_cmp
+        # check if the size is valid
+        bz g2 _std_cmp_einval
+
+        move r0 g0                      # pt1
+        move r1 g1                      # pt2
+        move r2 g2                      # size
+
+        # check if the first block is valid
+        move g1 g2
+        call std_address
+        bz g0 _std_cmp_efault
+
+        # check if the second block is valid
+        move g0 r1
+        move g1 r2
+        call std_address
+        bz g0 _std_cmp_efault
+
+        # compare the block
+        loadi r3 0x0                    # i
+
+        .label _std_cmp_loop
+        loadqrr g0 r0 r3
+        loadqrr g1 r1 r3
+        sub r4 g0 g1                    # diff
+        bnz r4 _std_cmp_notequal
+
+        addi r3 r3 STD_QWORDSIZE
+        bne r2 r3 _std_cmp_loop
+
+        .label _std_cmp_equal
+        loadi g0 0x0
+        loadi g1 STD_NOERROR
+        ret
+
+        .label _std_cmp_notequal
+        move g0 r4
+        loadi g1 STD_NOERROR
+        ret
+
+        .label _std_cmp_einval
+        loadi g1 STD_EINVAL
+        ret
+
+        .label _std_cmp_efault
+        loadi g1 STD_EFAULT
+        ret

@@ -21,7 +21,9 @@
 .include "stdlib/error.swl"
 .include "stdlib/address.swl"
 .include "stdlib/alloc.swl"
-.include "stdlib/mem.swl"
+.include "stdlib/mem/fill.swl"
+.include "stdlib/mem/find.swl"
+.include "stdlib/mem/count.swl"
 
 # Array struct
 .define _STD_ARRAY_STRUCT   0x8         # Size of the struct

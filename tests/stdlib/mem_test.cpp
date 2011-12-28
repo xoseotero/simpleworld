@@ -2,7 +2,7 @@
  * @file tests/stdlib/mem_test.cpp
  * Unit test for stdlib/mem.swl
  *
- *  Copyright (C) 2009-2010  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2009-2011  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -80,7 +80,7 @@ BOOST_AUTO_TEST_CASE(std_fill)
   source.insert(line++, "loada sp stack");
   source.insert(line++, "b main");
 
-  source.insert(line++, ".include \"stdlib/mem.swl\"");
+  source.insert(line++, ".include \"stdlib/mem/fill.swl\"");
 
   // Test
   source.insert(line++, ".label main");
@@ -131,7 +131,7 @@ BOOST_AUTO_TEST_CASE(std_fillh)
   source.insert(line++, "loada sp stack");
   source.insert(line++, "b main");
 
-  source.insert(line++, ".include \"stdlib/mem.swl\"");
+  source.insert(line++, ".include \"stdlib/mem/fillh.swl\"");
 
   // Test
   source.insert(line++, ".label main");
@@ -181,7 +181,7 @@ BOOST_AUTO_TEST_CASE(std_fillq)
   source.insert(line++, "loada sp stack");
   source.insert(line++, "b main");
 
-  source.insert(line++, ".include \"stdlib/mem.swl\"");
+  source.insert(line++, ".include \"stdlib/mem/fillq.swl\"");
 
   // Test
   source.insert(line++, ".label main");
@@ -231,7 +231,7 @@ BOOST_AUTO_TEST_CASE(std_copy)
   source.insert(line++, "loada sp stack");
   source.insert(line++, "b main");
 
-  source.insert(line++, ".include \"stdlib/mem.swl\"");
+  source.insert(line++, ".include \"stdlib/mem/copy.swl\"");
 
   // Test
   source.insert(line++, ".label main");
@@ -283,7 +283,7 @@ BOOST_AUTO_TEST_CASE(std_cmp)
   source.insert(line++, "loada sp stack");
   source.insert(line++, "b main");
 
-  source.insert(line++, ".include \"stdlib/mem.swl\"");
+  source.insert(line++, ".include \"stdlib/mem/cmp.swl\"");
 
   // Test with the same data
   source.insert(line++, ".label main");
@@ -347,7 +347,7 @@ BOOST_AUTO_TEST_CASE(std_find)
   source.insert(line++, "loada sp stack");
   source.insert(line++, "b main");
 
-  source.insert(line++, ".include \"stdlib/mem.swl\"");
+  source.insert(line++, ".include \"stdlib/mem/find.swl\"");
 
   // Test with a element that is not in the block
   source.insert(line++, ".label main");
@@ -413,7 +413,7 @@ BOOST_AUTO_TEST_CASE(std_findh)
   source.insert(line++, "loada sp stack");
   source.insert(line++, "b main");
 
-  source.insert(line++, ".include \"stdlib/mem.swl\"");
+  source.insert(line++, ".include \"stdlib/mem/findh.swl\"");
 
   // Test with a element that is not in the block
   source.insert(line++, ".label main");
@@ -479,7 +479,7 @@ BOOST_AUTO_TEST_CASE(std_findq)
   source.insert(line++, "loada sp stack");
   source.insert(line++, "b main");
 
-  source.insert(line++, ".include \"stdlib/mem.swl\"");
+  source.insert(line++, ".include \"stdlib/mem/findq.swl\"");
 
   // Test with a element that is not in the block
   source.insert(line++, ".label main");
@@ -545,7 +545,7 @@ BOOST_AUTO_TEST_CASE(std_count)
   source.insert(line++, "loada sp stack");
   source.insert(line++, "b main");
 
-  source.insert(line++, ".include \"stdlib/mem.swl\"");
+  source.insert(line++, ".include \"stdlib/mem/count.swl\"");
 
   // Test with a element that is not in the block
   source.insert(line++, ".label main");
@@ -606,7 +606,7 @@ BOOST_AUTO_TEST_CASE(std_counth)
   source.insert(line++, "loada sp stack");
   source.insert(line++, "b main");
 
-  source.insert(line++, ".include \"stdlib/mem.swl\"");
+  source.insert(line++, ".include \"stdlib/mem/counth.swl\"");
 
   // Test with a element that is not in the block
   source.insert(line++, ".label main");
@@ -667,7 +667,7 @@ BOOST_AUTO_TEST_CASE(std_countq)
   source.insert(line++, "loada sp stack");
   source.insert(line++, "b main");
 
-  source.insert(line++, ".include \"stdlib/mem.swl\"");
+  source.insert(line++, ".include \"stdlib/mem/countq.swl\"");
 
   // Test with a element that is not in the block
   source.insert(line++, ".label main");

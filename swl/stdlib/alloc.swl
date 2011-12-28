@@ -19,7 +19,7 @@
 .include "stdlib/def.swl"
 .include "stdlib/error.swl"
 .include "stdlib/address.swl"
-.include "stdlib/mem.swl"
+.include "stdlib/mem/copy.swl"
 
 # minfo struct
 .define STD_MINFO_STRUCT      0xC       # Size of the minfo struct

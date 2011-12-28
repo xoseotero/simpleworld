@@ -1,0 +1,61 @@
+# @file stdlib/mem/fillq.swl
+# Set all the quarter words of a block of memory to a value.
+#
+#  Copyright (C) 2008-2011  Xosé Otero <xoseotero@gmail.com>
+#
+#  This program is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+
+.include "stdlib/def.swl"
+.include "stdlib/error.swl"
+.include "stdlib/address.swl"
+
+
+# Set all the quarter words of a block of memory to a value.
+# IN:  g0 pointer
+# IN:  g1 size of the block of memory
+# IN:  g2 value
+# OUT: g1 error status
+#      STD_NOERROR: no errors
+#      STD_EINVAL:  size is not valid
+#      STD_EFAULT:  the pointer is not valid
+.label std_fillq
+        # check if the size is valid
+        bz g1 _std_fillq_einval
+
+        move r0 g0                      # pointer
+        move r1 g1                      # size
+        move r2 g2                      # value
+
+        # check if the block is valid
+        call std_address
+        bz g0 _std_fillq_efault
+
+        # set all the block to the value
+        .label _std_fillq_loop
+        subi r1 r1 STD_QWORDSIZE
+        storeqrr r0 r2 r1
+        bnz r1 _std_fillq_loop
+
+        .label _std_fillq_ok
+        loadi g1 STD_NOERROR
+        ret
+
+        .label _std_fillq_einval
+        loadi g1 STD_EINVAL
+        ret
+
+        .label _std_fillq_efault
+        loadi g1 STD_EFAULT
+        ret

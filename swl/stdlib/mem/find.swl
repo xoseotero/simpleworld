@@ -1,0 +1,69 @@
+# @file stdlib/mem/find.swl
+# Find a word in a block of memory.
+#
+#  Copyright (C) 2008-2011  Xosé Otero <xoseotero@gmail.com>
+#
+#  This program is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+
+.include "stdlib/def.swl"
+.include "stdlib/error.swl"
+.include "stdlib/address.swl"
+
+
+# Find a word in a block of memory.
+# IN:  g0 pointer
+# IN:  g1 size of the block of memory
+# IN:  g2 value
+# OUT: g0 offset of the value
+# OUT: g1 error status
+#      STD_NOERROR: no errors
+#      STD_EINVAL:  size is not valid or the value was not found
+#      STD_EFAULT:  the pointer is not valid
+.label std_find
+        # check if the size is valid
+        bz g1 _std_find_einval
+        modi g3 g1 STD_WORDSIZE
+        bnz g3 _std_find_einval
+
+        move r0 g0                      # pointer
+        move r1 g1                      # size
+        move r2 g2                      # value
+
+        # check if the block is valid
+        call std_address
+        bz g0 _std_find_efault
+
+        # find the value
+        loadi r3 0x0                    # offset
+
+        .label _std_find_loop
+        loadrr g0 r0 r3
+        beq r2 g0 _std_find_found
+
+        addi r3 r3 STD_WORDSIZE
+        bne r1 r3 _std_find_loop
+
+        .label _std_find_einval
+        loadi g1 STD_EINVAL
+        ret
+
+        .label _std_find_found
+        move g0 r3
+        loadi g1 STD_NOERROR
+        ret
+
+        .label _std_find_efault
+        loadi g1 STD_EFAULT
+        ret
