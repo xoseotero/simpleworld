@@ -1,0 +1,42 @@
+# @file stdlib/math/pow.swl
+# Calculate the pow.
+#
+#  Copyright (C) 2006-2011  Xosé Otero <xoseotero@gmail.com>
+#
+#  This program is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+
+#.include "stdlib/error.swl"
+.include "stdlib/math/_zero.swl"
+
+
+# Calculate the pow.
+# IN:  g0 base
+# IN:  g1 exponent
+# OUT: g0 the result
+# OUT: g1 error status
+#      STD_EOVERFLOW: value too large (not implemented)
+.label std_pow
+        move g2 g0
+        load g3 _std_math_word_zero
+        loadi g0 0x1
+
+        .label _std_math_pow_continue
+        beq g1 g3 _std_math_pow_return
+        mult g0 g0 g2
+        subi g1 g1 0x1
+        b _std_math_pow_continue
+
+        .label _std_math_pow_return
+        ret

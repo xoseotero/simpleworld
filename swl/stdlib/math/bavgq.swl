@@ -1,0 +1,49 @@
+# @file stdlib/math/bavgq.swl
+# Average (signed) value of a block of memory (quarter words).
+#
+#  Copyright (C) 2006-2011  Xosé Otero <xoseotero@gmail.com>
+#
+#  This program is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+
+.include "stdlib/error.swl"
+.include "stdlib/math/bsumq.swl"
+
+
+# Average (signed) value of a block of memory (quarter words).
+# IN:  g0 pointer to the block of memory
+# IN:  g1 size of the block of memory
+# OUT: g0 average value
+# OUT: g1 error status
+#      STD_NOERROR: no errors
+#      STD_EINVAL: size is not valid
+#      STD_EFAULT: the pointer is not valid
+.label std_bavgq
+        move r0 g1                      # size
+
+        # calculate the summation
+        call std_bsumq
+        bnz g1 _std_bavgq_error
+
+        # calculate the average value
+        #divi r0 r0 STD_QWORDSIZE
+        div g0 g0 r0
+
+        .label _std_bavgq_ok
+        loadi g1 STD_NOERROR
+        ret
+
+        .label _std_bavgq_error
+        # use the same error code from std_bsum
+        ret

@@ -2,7 +2,7 @@
  * @file tests/stdlib/math_test.cpp
  * Unit test for stdlib/math.swl
  *
- *  Copyright (C) 2009-2010  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2009-2011  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -80,7 +80,7 @@ BOOST_AUTO_TEST_CASE(std_neg)
   source.insert(line++, "loada sp stack");
   source.insert(line++, "b main");
 
-  source.insert(line++, ".include \"stdlib/math.swl\"");
+  source.insert(line++, ".include \"stdlib/math/neg.swl\"");
 
   // Test with a positive value
   source.insert(line++, ".label main");
@@ -143,7 +143,7 @@ BOOST_AUTO_TEST_CASE(std_abs)
   source.insert(line++, "loada sp stack");
   source.insert(line++, "b main");
 
-  source.insert(line++, ".include \"stdlib/math.swl\"");
+  source.insert(line++, ".include \"stdlib/math/abs.swl\"");
 
   // Test with a positive value
   source.insert(line++, ".label main");
@@ -206,7 +206,7 @@ BOOST_AUTO_TEST_CASE(std_pow)
   source.insert(line++, "loada sp stack");
   source.insert(line++, "b main");
 
-  source.insert(line++, ".include \"stdlib/math.swl\"");
+  source.insert(line++, ".include \"stdlib/math/pow.swl\"");
 
   // Test with a base zero
   source.insert(line++, ".label main");
@@ -279,7 +279,7 @@ BOOST_AUTO_TEST_CASE(std_min)
   source.insert(line++, "loada sp stack");
   source.insert(line++, "b main");
 
-  source.insert(line++, ".include \"stdlib/math.swl\"");
+  source.insert(line++, ".include \"stdlib/math/min.swl\"");
 
   // Test with 2 positive values
   source.insert(line++, ".label main");
@@ -339,7 +339,7 @@ BOOST_AUTO_TEST_CASE(std_bmin)
   source.insert(line++, "loada sp stack");
   source.insert(line++, "b main");
 
-  source.insert(line++, ".include \"stdlib/math.swl\"");
+  source.insert(line++, ".include \"stdlib/math/bmin.swl\"");
 
   // Test
   source.insert(line++, ".label main");
@@ -386,7 +386,7 @@ BOOST_AUTO_TEST_CASE(std_bminh)
   source.insert(line++, "loada sp stack");
   source.insert(line++, "b main");
 
-  source.insert(line++, ".include \"stdlib/math.swl\"");
+  source.insert(line++, ".include \"stdlib/math/bminh.swl\"");
 
   // Test
   source.insert(line++, ".label main");
@@ -433,7 +433,7 @@ BOOST_AUTO_TEST_CASE(std_bminq)
   source.insert(line++, "loada sp stack");
   source.insert(line++, "b main");
 
-  source.insert(line++, ".include \"stdlib/math.swl\"");
+  source.insert(line++, ".include \"stdlib/math/bminq.swl\"");
 
   // Test
   source.insert(line++, ".label main");
@@ -480,7 +480,7 @@ BOOST_AUTO_TEST_CASE(std_minu)
   source.insert(line++, "loada sp stack");
   source.insert(line++, "b main");
 
-  source.insert(line++, ".include \"stdlib/math.swl\"");
+  source.insert(line++, ".include \"stdlib/math/minu.swl\"");
 
   // Test with 2 positive values
   source.insert(line++, ".label main");
@@ -540,7 +540,7 @@ BOOST_AUTO_TEST_CASE(std_bminu)
   source.insert(line++, "loada sp stack");
   source.insert(line++, "b main");
 
-  source.insert(line++, ".include \"stdlib/math.swl\"");
+  source.insert(line++, ".include \"stdlib/math/bminu.swl\"");
 
   // Test
   source.insert(line++, ".label main");
@@ -587,7 +587,7 @@ BOOST_AUTO_TEST_CASE(std_bminuh)
   source.insert(line++, "loada sp stack");
   source.insert(line++, "b main");
 
-  source.insert(line++, ".include \"stdlib/math.swl\"");
+  source.insert(line++, ".include \"stdlib/math/bminuh.swl\"");
 
   // Test
   source.insert(line++, ".label main");
@@ -634,7 +634,7 @@ BOOST_AUTO_TEST_CASE(std_bminuq)
   source.insert(line++, "loada sp stack");
   source.insert(line++, "b main");
 
-  source.insert(line++, ".include \"stdlib/math.swl\"");
+  source.insert(line++, ".include \"stdlib/math/bminuq.swl\"");
 
   // Test
   source.insert(line++, ".label main");
@@ -681,7 +681,7 @@ BOOST_AUTO_TEST_CASE(std_max)
   source.insert(line++, "loada sp stack");
   source.insert(line++, "b main");
 
-  source.insert(line++, ".include \"stdlib/math.swl\"");
+  source.insert(line++, ".include \"stdlib/math/max.swl\"");
 
   // Test with 2 positive values
   source.insert(line++, ".label main");
@@ -741,7 +741,7 @@ BOOST_AUTO_TEST_CASE(std_bmax)
   source.insert(line++, "loada sp stack");
   source.insert(line++, "b main");
 
-  source.insert(line++, ".include \"stdlib/math.swl\"");
+  source.insert(line++, ".include \"stdlib/math/bmax.swl\"");
 
   // Test
   source.insert(line++, ".label main");
@@ -788,7 +788,7 @@ BOOST_AUTO_TEST_CASE(std_bmaxh)
   source.insert(line++, "loada sp stack");
   source.insert(line++, "b main");
 
-  source.insert(line++, ".include \"stdlib/math.swl\"");
+  source.insert(line++, ".include \"stdlib/math/bmaxh.swl\"");
 
   // Test
   source.insert(line++, ".label main");
@@ -835,7 +835,7 @@ BOOST_AUTO_TEST_CASE(std_bmaxq)
   source.insert(line++, "loada sp stack");
   source.insert(line++, "b main");
 
-  source.insert(line++, ".include \"stdlib/math.swl\"");
+  source.insert(line++, ".include \"stdlib/math/bmaxq.swl\"");
 
   // Test
   source.insert(line++, ".label main");
@@ -882,7 +882,7 @@ BOOST_AUTO_TEST_CASE(std_maxu)
   source.insert(line++, "loada sp stack");
   source.insert(line++, "b main");
 
-  source.insert(line++, ".include \"stdlib/math.swl\"");
+  source.insert(line++, ".include \"stdlib/math/maxu.swl\"");
 
   // Test with 2 positive values
   source.insert(line++, ".label main");
@@ -942,7 +942,7 @@ BOOST_AUTO_TEST_CASE(std_bmaxu)
   source.insert(line++, "loada sp stack");
   source.insert(line++, "b main");
 
-  source.insert(line++, ".include \"stdlib/math.swl\"");
+  source.insert(line++, ".include \"stdlib/math/bmaxu.swl\"");
 
   // Test
   source.insert(line++, ".label main");
@@ -989,7 +989,7 @@ BOOST_AUTO_TEST_CASE(std_bmaxuh)
   source.insert(line++, "loada sp stack");
   source.insert(line++, "b main");
 
-  source.insert(line++, ".include \"stdlib/math.swl\"");
+  source.insert(line++, ".include \"stdlib/math/bmaxuh.swl\"");
 
   // Test
   source.insert(line++, ".label main");
@@ -1036,7 +1036,7 @@ BOOST_AUTO_TEST_CASE(std_bmaxuq)
   source.insert(line++, "loada sp stack");
   source.insert(line++, "b main");
 
-  source.insert(line++, ".include \"stdlib/math.swl\"");
+  source.insert(line++, ".include \"stdlib/math/bmaxuq.swl\"");
 
   // Test
   source.insert(line++, ".label main");
@@ -1083,7 +1083,7 @@ BOOST_AUTO_TEST_CASE(std_bsum)
   source.insert(line++, "loada sp stack");
   source.insert(line++, "b main");
 
-  source.insert(line++, ".include \"stdlib/math.swl\"");
+  source.insert(line++, ".include \"stdlib/math/bsum.swl\"");
 
   // Test
   source.insert(line++, ".label main");
@@ -1130,7 +1130,7 @@ BOOST_AUTO_TEST_CASE(std_bsumh)
   source.insert(line++, "loada sp stack");
   source.insert(line++, "b main");
 
-  source.insert(line++, ".include \"stdlib/math.swl\"");
+  source.insert(line++, ".include \"stdlib/math/bsumh.swl\"");
 
   // Test
   source.insert(line++, ".label main");
@@ -1177,7 +1177,7 @@ BOOST_AUTO_TEST_CASE(std_bsumq)
   source.insert(line++, "loada sp stack");
   source.insert(line++, "b main");
 
-  source.insert(line++, ".include \"stdlib/math.swl\"");
+  source.insert(line++, ".include \"stdlib/math/bsumq.swl\"");
 
   // Test
   source.insert(line++, ".label main");
@@ -1224,7 +1224,7 @@ BOOST_AUTO_TEST_CASE(std_bavg)
   source.insert(line++, "loada sp stack");
   source.insert(line++, "b main");
 
-  source.insert(line++, ".include \"stdlib/math.swl\"");
+  source.insert(line++, ".include \"stdlib/math/bavg.swl\"");
 
   // Test
   source.insert(line++, ".label main");
@@ -1271,7 +1271,7 @@ BOOST_AUTO_TEST_CASE(std_bavgh)
   source.insert(line++, "loada sp stack");
   source.insert(line++, "b main");
 
-  source.insert(line++, ".include \"stdlib/math.swl\"");
+  source.insert(line++, ".include \"stdlib/math/bavgh.swl\"");
 
   // Test
   source.insert(line++, ".label main");
@@ -1318,7 +1318,7 @@ BOOST_AUTO_TEST_CASE(std_bavgq)
   source.insert(line++, "loada sp stack");
   source.insert(line++, "b main");
 
-  source.insert(line++, ".include \"stdlib/math.swl\"");
+  source.insert(line++, ".include \"stdlib/math/bavgq.swl\"");
 
   // Test
   source.insert(line++, ".label main");

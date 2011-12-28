@@ -1,0 +1,32 @@
+# @file stdlib/math/neg.swl
+# Calculate the negative value.
+#
+#  Copyright (C) 2006-2011  Xosé Otero <xoseotero@gmail.com>
+#
+#  This program is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+
+.include "stdlib/math/_full.swl"
+
+
+# Calculate the negative value.
+# 0x80000000 can't be converted to positive and the same value is returned
+# IN:  g0 the value
+# OUT: g0 the negative value
+.label std_neg
+        load g1 _std_math_word_full
+        xor g0 g0 g1
+        addi g0 g0 0x0001
+
+        ret

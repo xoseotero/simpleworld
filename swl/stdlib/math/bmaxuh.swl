@@ -1,0 +1,69 @@
+# @file stdlib/math/bmaxuh.swl
+# Maximum unsigned value of a block of memory (half words).
+#
+#  Copyright (C) 2006-2011  Xosé Otero <xoseotero@gmail.com>
+#
+#  This program is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+
+.include "stdlib/error.swl"
+.include "stdlib/address.swl"
+
+
+# Maximum unsigned value of a block of memory (half words).
+# IN:  g0 pointer to the block of memory
+# IN:  g1 size of the block of memory (must be a multiple of STD_HWORDSIZE)
+# OUT: g0 maximum value
+# OUT: g1 error status
+#      STD_NOERROR: no errors
+#      STD_EINVAL: size is not valid
+#      STD_EFAULT: the pointer is not valid
+.label std_bmaxuh
+        # check if the size is valid
+        bz g1 _std_bmaxuh_einval
+        modi g2 g1 STD_HWORDSIZE
+        bnz g2 _std_bmaxuh_einval
+
+        move r0 g0                      # pointer
+        move r1 g1                      # size
+
+        # check if the block is valid
+        call std_address
+        bz g0 _std_bmaxuh_efault
+
+        # search the maximum (unsigned) value
+        # load the first element as the minimum
+        loadhri r2 r0 0x0               # min
+
+        .label _std_bmaxuh_loop
+        subi r1 r1 STD_HWORDSIZE
+        loadhrr g0 r0 r1
+        bgeu r2 g0 _std_bmaxuh_continue
+        move r2 g0                      # found a new minimum
+
+        .label _std_bmaxuh_continue
+        bnz r1 _std_bmaxuh_loop
+
+        .label _std_bmaxuh_ok
+        move g0 r2
+        loadi g1 STD_NOERROR
+        ret
+
+        .label _std_bmaxuh_einval
+        loadi g1 STD_EINVAL
+        ret
+
+        .label _std_bmaxuh_efault
+        loadi g1 STD_EFAULT
+        ret
