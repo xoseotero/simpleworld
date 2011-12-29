@@ -1,0 +1,47 @@
+# @file stdlib/int/def.swl
+# Definitions.
+#
+#  Copyright (C) 2008-2011  Xosé Otero <xoseotero@gmail.com>
+#
+#  This program is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+
+# Interrupts
+.define STD_ITIMER            0x0       # Timer Interrupt
+.define STD_ISW               0x1       # Software Interrupt
+.define STD_IINST             0x2       # Invalid Instruction
+.define STD_IMEM              0x3       # Invalid Memory Location
+.define STD_IDIV              0x4       # Division by Zero
+
+
+# ints (interrupts) struct
+.define _STD_INTS_STRUCT      0x1C      # Size of the ints struct
+.define _STD_INTS_TIMER       0x00      # Offset to the timer handler
+.define _STD_INTS_SW          0x04      # Offset to the software handler
+.define _STD_INTS_INST        0x08      # Offset to the instruction handler
+.define _STD_INTS_MEM         0x0C      # Offset to the memory handler
+.define _STD_INTS_DIV         0x10      # Offset to the division handler
+.define _STD_INTS_ACTION      0x14      # Offset to the action handler
+.define _STD_INTS_EVENT       0x18      # Offset to the event handler
+
+
+# hnds (handlers) struct (same as ints)
+.define _STD_HNDS_STRUCT      _STD_INTS_STRUCT
+.define _STD_HNDS_TIMER       _STD_INTS_TIMER
+.define _STD_HNDS_SW          _STD_INTS_SW
+.define _STD_HNDS_INST        _STD_INTS_INST
+.define _STD_HNDS_MEM         _STD_INTS_MEM
+.define _STD_HNDS_DIV         _STD_INTS_DIV
+.define _STD_HNDS_ACTION      _STD_INTS_ACTION
+.define _STD_HNDS_EVENT       _STD_INTS_EVENT

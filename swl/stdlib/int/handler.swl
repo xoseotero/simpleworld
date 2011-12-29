@@ -1,0 +1,80 @@
+# @file stdlib/int/handler.swl
+# Add a handler to a interrupt.
+#
+#  Copyright (C) 2008-2011  Xosé Otero <xoseotero@gmail.com>
+#
+#  This program is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+
+.include "stdlib/def.swl"
+.include "stdlib/error.swl"
+.include "stdlib/address.swl"
+.include "stdlib/list/size.swl"
+.include "stdlib/list/insert.swl"
+.include "stdlib/int/_hnds.swl"
+.include "stdlib/int/_interrupt.swl"
+
+
+# Add a handler to a interrupt.
+# The handler must be a normal function but not a real interrupt handler, ie
+# the handler should use ret but not reti. The parameters passed to the
+# handler are the same as passed to a real interrupt handler.
+# IN:  g0 interrupt
+# IN:  g1 handler
+# OUT: g1 error status
+#      STD_NOERROR: no errors
+#      STD_EINVAL:  the interrupt is not valid
+#      STD_EFAULT:  the handler is not valid
+#      STD_ENOMEM:  there is not enough memory
+.label std_handler
+        move r0 g0                      # interrupt
+        move r1 g1                      # handler
+
+        # check if the interrupt is valid
+        call _std_interrupt
+        bz g0 _std_handler_einval
+
+        # check if the handler is valid
+        move g0 r1
+        loadi g1 STD_WORDSIZE
+        call std_address
+        bz g0 _std_handler_efault
+
+        # calculate the pointer to the list
+        loada g0 _std_hnds
+        multi g1 r0 STD_WORDSIZE
+        add g0 g0 g1
+        loadri r2 g0 0x0                # list
+
+        # calculate the size of the list
+        move g0 r2
+        call std_listsize
+        bnz g1 _std_handler_efault
+        move g1 g0                      # size is in g1
+
+        # add the handler to the end of interrupt handlers
+        # restore the parameters
+        move g0 r2
+        move g2 r1
+        call std_listinsert
+        ret                             # return the same error as
+                                        # std_listinsert
+
+        .label _std_handler_einval
+        loadi g1 STD_EINVAL
+        ret
+
+        .label _std_handler_efault
+        loadi g1 STD_EFAULT
+        ret

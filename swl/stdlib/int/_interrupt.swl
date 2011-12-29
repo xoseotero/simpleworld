@@ -1,5 +1,5 @@
-# @file stdlib/int.swl
-# Interrupt management.
+# @file stdlib/int/_interrupt.swl
+# Check that the interrupt is valid.
 #
 #  Copyright (C) 2008-2011  Xosé Otero <xoseotero@gmail.com>
 #
@@ -17,8 +17,22 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-.include "stdlib/int/_init.swl"
-.include "stdlib/int/enable.swl"
-.include "stdlib/int/disable.swl"
-.include "stdlib/int/handler.swl"
-.include "stdlib/int/rmhandler.swl"
+.include "stdlib/world.swl"
+
+
+# Check that the interrupt is valid.
+# IN:  g0 interrupt
+# OUT: g0 if the interrupt is valid
+#      STD_TRUE:  is valid
+#      STD_FALSE: is not valid
+.label _std_interrupt
+        loadi g1 STD_IEVENT
+        bgtu g0 g1 _std_interrupt_invalid
+
+        .label _std_interrupt_ok
+        loadi g0 STD_TRUE
+        ret
+
+        .label _std_interrupt_invalid
+        loadi g0 STD_FALSE
+        ret

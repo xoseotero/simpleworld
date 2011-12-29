@@ -1,5 +1,5 @@
-# @file stdlib/int.swl
-# Interrupt management.
+# @file stdlib/int/_hnds.swl
+# Handlers table.
 #
 #  Copyright (C) 2008-2011  Xosé Otero <xoseotero@gmail.com>
 #
@@ -17,8 +17,9 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-.include "stdlib/int/_init.swl"
-.include "stdlib/int/enable.swl"
-.include "stdlib/int/disable.swl"
-.include "stdlib/int/handler.swl"
-.include "stdlib/int/rmhandler.swl"
+.include "stdlib/int/def.swl"
+
+
+# Handlers table
+.label _std_hnds
+.block _STD_HNDS_STRUCT

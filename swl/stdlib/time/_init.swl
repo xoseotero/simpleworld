@@ -18,7 +18,8 @@
 
 
 .include "stdlib/error.swl"
-.include "stdlib/int.swl"
+.include "stdlib/int/def.swl"
+.include "stdlib/int/handler.swl"
 .include "stdlib/time/_time.swl"
 
 

@@ -1,0 +1,74 @@
+# @file stdlib/int/rmhandler.swl
+# Remove a handler from a interrupt.
+#
+#  Copyright (C) 2008-2011  Xosé Otero <xoseotero@gmail.com>
+#
+#  This program is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+
+.include "stdlib/def.swl"
+.include "stdlib/error.swl"
+.include "stdlib/list/remove.swl"
+.include "stdlib/list/find.swl"
+.include "stdlib/int/_hnds.swl"
+.include "stdlib/int/_interrupt.swl"
+
+
+# Remove a handler from a interrupt.
+# IN:  g0 interrupt
+# IN:  g1 handler
+# OUT: g1 error status
+#      STD_NOERROR: no errors
+#      STD_EINVAL:  the interrupt is not valid or the handler was not found
+#      STD_EFAULT:  the handler is not valid
+.label std_rmhandler
+        move r0 g0                      # interrupt
+        move r1 g1                      # handler
+
+        # check if the interrupt is valid
+        call _std_interrupt
+        bz g0 _std_rmhandler_einval
+
+        # check if the handler is valid
+        move g0 r1
+        loadi g1 STD_WORDSIZE
+        call std_address
+        bz g0 _std_rmhandler_efault
+
+        # calculate the pointer to the list
+        loada g0 _std_hnds
+        multi g1 r0 STD_WORDSIZE
+        add g0 g0 g1
+        loadri r2 g0 0x0                # list
+
+        # search the handler in the list
+        move g0 r2
+        loadi g1 0x0
+        call std_listfind
+        bnz g1 _std_rmhandler_einval
+        move g1 g0                      # position is in g1
+
+        # remove the handler from the interrupt handlers
+        move g0 r2
+        call std_listremove
+        ret                             # return the same error as
+                                        # std_listinsert
+
+        .label _std_rmhandler_einval
+        loadi g1 STD_EINVAL
+        ret
+
+        .label _std_rmhandler_efault
+        loadi g1 STD_EFAULT
+        ret

@@ -77,7 +77,7 @@ BOOST_AUTO_TEST_CASE(swl_definitions)
   cpu::File source;
   cpu::Source::size_type line = 0;
 
-  source.insert(line++, ".include \"stdlib/int.swl\"");
+  source.insert(line++, ".include \"stdlib/int/def.swl\"");
   source.insert(line++, "STD_ITIMER");
   source.insert(line++, "STD_ISW");
   source.insert(line++, "STD_IINST");
@@ -115,7 +115,8 @@ BOOST_AUTO_TEST_CASE(std_handler_timer)
 
   source.insert(line++, ".include \"stdlib/def.swl\"");
   source.insert(line++, ".include \"stdlib/init.swl\"");
-  source.insert(line++, ".include \"stdlib/int.swl\"");
+  source.insert(line++, ".include \"stdlib/int/def.swl\"");
+  source.insert(line++, ".include \"stdlib/int/handler.swl\"");
 
   // Handler for interrupt
   source.insert(line++, ".label handler");
@@ -185,7 +186,8 @@ BOOST_AUTO_TEST_CASE(std_handler_software)
 
   source.insert(line++, ".include \"stdlib/def.swl\"");
   source.insert(line++, ".include \"stdlib/init.swl\"");
-  source.insert(line++, ".include \"stdlib/int.swl\"");
+  source.insert(line++, ".include \"stdlib/int/def.swl\"");
+  source.insert(line++, ".include \"stdlib/int/handler.swl\"");
 
   // Handler for interrupt
   source.insert(line++, ".label handler");
@@ -246,7 +248,8 @@ BOOST_AUTO_TEST_CASE(std_handler_instruction)
 
   source.insert(line++, ".include \"stdlib/def.swl\"");
   source.insert(line++, ".include \"stdlib/init.swl\"");
-  source.insert(line++, ".include \"stdlib/int.swl\"");
+  source.insert(line++, ".include \"stdlib/int/def.swl\"");
+  source.insert(line++, ".include \"stdlib/int/handler.swl\"");
 
   // Handler for interrupt
   source.insert(line++, ".label handler");
@@ -307,7 +310,8 @@ BOOST_AUTO_TEST_CASE(std_handler_memory)
 
   source.insert(line++, ".include \"stdlib/def.swl\"");
   source.insert(line++, ".include \"stdlib/init.swl\"");
-  source.insert(line++, ".include \"stdlib/int.swl\"");
+  source.insert(line++, ".include \"stdlib/int/def.swl\"");
+  source.insert(line++, ".include \"stdlib/int/handler.swl\"");
 
   // Handler for interrupt
   source.insert(line++, ".label handler");
@@ -368,7 +372,8 @@ BOOST_AUTO_TEST_CASE(std_handler_division)
 
   source.insert(line++, ".include \"stdlib/def.swl\"");
   source.insert(line++, ".include \"stdlib/init.swl\"");
-  source.insert(line++, ".include \"stdlib/int.swl\"");
+  source.insert(line++, ".include \"stdlib/int/def.swl\"");
+  source.insert(line++, ".include \"stdlib/int/handler.swl\"");
 
   // Handler for interrupt
   source.insert(line++, ".label handler");
@@ -428,8 +433,9 @@ BOOST_AUTO_TEST_CASE(std_handler_worldaction)
   source.insert(line++, "b main");
 
   source.insert(line++, ".include \"stdlib/def.swl\"");
+  source.insert(line++, ".include \"stdlib/world.swl\"");
   source.insert(line++, ".include \"stdlib/init.swl\"");
-  source.insert(line++, ".include \"stdlib/int.swl\"");
+  source.insert(line++, ".include \"stdlib/int/handler.swl\"");
 
   // Handler for interrupt
   source.insert(line++, ".label handler");
@@ -502,8 +508,9 @@ BOOST_AUTO_TEST_CASE(std_handler_worldevent)
   source.insert(line++, "b main");
 
   source.insert(line++, ".include \"stdlib/def.swl\"");
+  source.insert(line++, ".include \"stdlib/world.swl\"");
   source.insert(line++, ".include \"stdlib/init.swl\"");
-  source.insert(line++, ".include \"stdlib/int.swl\"");
+  source.insert(line++, ".include \"stdlib/int/handler.swl\"");
 
   // Handler for interrupt
   source.insert(line++, ".label handler");

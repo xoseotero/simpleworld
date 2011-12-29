@@ -1,5 +1,5 @@
-# @file stdlib/int.swl
-# Interrupt management.
+# @file stdlib/int/enable.swl
+# Enable the interrupts.
 #
 #  Copyright (C) 2008-2011  Xosé Otero <xoseotero@gmail.com>
 #
@@ -17,8 +17,10 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-.include "stdlib/int/_init.swl"
-.include "stdlib/int/enable.swl"
-.include "stdlib/int/disable.swl"
-.include "stdlib/int/handler.swl"
-.include "stdlib/int/rmhandler.swl"
+.include "stdlib/int/_itp.swl"
+
+
+# Enable the interrupts.
+.label std_enable
+        loada ip _std_itp
+        ret
