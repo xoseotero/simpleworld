@@ -1,6 +1,5 @@
-# @file stdlib/time.swl
-# Management of the Timer Interrupt to calculate the cycles of the World.
-# std_init must be executed before using any of this functions.
+# @file stdlib/time/time.swl
+# Get the current time.
 #
 #  Copyright (C) 2006-2011  Xosé Otero <xoseotero@gmail.com>
 #
@@ -18,6 +17,11 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-.include "stdlib/time/_init.swl"
-.include "stdlib/time/time.swl"
-.include "stdlib/time/sleep.swl"
+.include "stdlib/time/_time.swl"
+
+
+# Get the current time.
+# OUT: g0 cycles
+.label std_time
+        load g0 _std_time
+        ret

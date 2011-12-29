@@ -84,7 +84,7 @@ BOOST_AUTO_TEST_CASE(std_time)
   source.insert(line++, "b main");
 
   source.insert(line++, ".include \"stdlib/init.swl\"");
-  source.insert(line++, ".include \"stdlib/time.swl\"");
+  source.insert(line++, ".include \"stdlib/time/time.swl\"");
 
   // Test
   source.insert(line++, ".label main");
@@ -146,7 +146,8 @@ BOOST_AUTO_TEST_CASE(std_sleep)
   source.insert(line++, "b main");
 
   source.insert(line++, ".include \"stdlib/init.swl\"");
-  source.insert(line++, ".include \"stdlib/time.swl\"");
+  source.insert(line++, ".include \"stdlib/time/time.swl\"");
+  source.insert(line++, ".include \"stdlib/time/sleep.swl\"");
 
   // Test
   source.insert(line++, ".label main");

@@ -1,6 +1,5 @@
-# @file stdlib/time.swl
-# Management of the Timer Interrupt to calculate the cycles of the World.
-# std_init must be executed before using any of this functions.
+# @file stdlib/time/sleep.swl
+# Sleep during some cycles.
 #
 #  Copyright (C) 2006-2011  Xosé Otero <xoseotero@gmail.com>
 #
@@ -18,6 +17,25 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-.include "stdlib/time/_init.swl"
-.include "stdlib/time/time.swl"
-.include "stdlib/time/sleep.swl"
+.include "stdlib/world.swl"
+.include "stdlib/time/_time.swl"
+
+
+# Sleep during some cycles.
+# IN:  g0 cycles to sleep
+.label std_sleep
+        # don't sleep if cycles are 0
+        bz g0 _std_sleep_ret
+
+        load r0 _std_time
+        add r0 g0 r0
+
+        # loop while time < g0
+        .label _std_sleep_loop
+        world STD_NOTHING
+
+        load g0 _std_time
+        bltu g0 r0 _std_sleep_loop
+
+        .label _std_sleep_ret
+        ret

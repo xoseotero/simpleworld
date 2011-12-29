@@ -24,7 +24,7 @@
 .include "stdlib/alloc/_init.swl"
 .include "stdlib/int.swl"
 .include "stdlib/address.swl"
-.include "stdlib/time.swl"
+.include "stdlib/time/_init.swl"
 .include "stdlib/random/_seed.swl"
 .include "stdlib/random/seed.swl"
 

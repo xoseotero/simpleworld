@@ -1,0 +1,54 @@
+# @file stdlib/time/_init.swl
+# Initialize the time.
+#
+#  Copyright (C) 2006-2011  Xosé Otero <xoseotero@gmail.com>
+#
+#  This program is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+
+.include "stdlib/error.swl"
+.include "stdlib/int.swl"
+.include "stdlib/time/_time.swl"
+
+
+# Handler for the timer interrupt.
+# IN:  g0 type of interrupt
+.label _std_timerhandler
+        load g0 _std_time
+        addi g0 g0 0x1
+        store g0 _std_time
+        ret
+
+# Initialize the time.
+# IN:  g0 cycles
+# OUT: g1 error status
+#      STD_NOERROR: no errors
+#      STD_ENOMEM:  there is not enough memory
+.label _std_timeinit
+        # initialize the time
+        store g0 _std_time
+
+        # insert the timer interrupt
+        loadi g0 STD_ITIMER
+        loada g1 _std_timerhandler
+        call std_handler
+        bnz g1 __std_timeinit_enomem
+
+        .label __std_timeinit_ok
+        loadi g1 STD_NOERROR
+        ret
+
+        .label __std_timeinit_enomem
+        #loadi g1 STD_ENOMEM  # not needed because std_handler already sets it
+        ret
