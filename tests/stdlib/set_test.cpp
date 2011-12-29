@@ -88,7 +88,8 @@ BOOST_AUTO_TEST_CASE(std_set)
   source.insert(line++, ".include \"stdlib/init.swl\"");
   source.insert(line++, ".include \"stdlib/alloc/def.swl\"");
   source.insert(line++, ".include \"stdlib/alloc/info.swl\"");
-  source.insert(line++, ".include \"stdlib/set.swl\"");
+  source.insert(line++, ".include \"stdlib/set/set.swl\"");
+  source.insert(line++, ".include \"stdlib/set/free.swl\"");
 
   // Test
   source.insert(line++, ".label main");
@@ -162,7 +163,8 @@ BOOST_AUTO_TEST_CASE(std_setsize)
   source.insert(line++, "b main");
 
   source.insert(line++, ".include \"stdlib/init.swl\"");
-  source.insert(line++, ".include \"stdlib/set.swl\"");
+  source.insert(line++, ".include \"stdlib/set/set.swl\"");
+  source.insert(line++, ".include \"stdlib/set/size.swl\"");
 
   // Test
   source.insert(line++, ".label main");
@@ -209,7 +211,10 @@ BOOST_AUTO_TEST_CASE(std_setinsert)
   source.insert(line++, "b main");
 
   source.insert(line++, ".include \"stdlib/init.swl\"");
-  source.insert(line++, ".include \"stdlib/set.swl\"");
+  source.insert(line++, ".include \"stdlib/set/set.swl\"");
+  source.insert(line++, ".include \"stdlib/set/size.swl\"");
+  source.insert(line++, ".include \"stdlib/set/insert.swl\"");
+  source.insert(line++, ".include \"stdlib/set/check.swl\"");
 
   // Test
   source.insert(line++, ".label main");
@@ -285,7 +290,11 @@ BOOST_AUTO_TEST_CASE(std_setremove)
   source.insert(line++, "b main");
 
   source.insert(line++, ".include \"stdlib/init.swl\"");
-  source.insert(line++, ".include \"stdlib/set.swl\"");
+  source.insert(line++, ".include \"stdlib/set/set.swl\"");
+  source.insert(line++, ".include \"stdlib/set/size.swl\"");
+  source.insert(line++, ".include \"stdlib/set/insert.swl\"");
+  source.insert(line++, ".include \"stdlib/set/remove.swl\"");
+  source.insert(line++, ".include \"stdlib/set/check.swl\"");
 
   // Test
   source.insert(line++, ".label main");
@@ -354,7 +363,9 @@ BOOST_AUTO_TEST_CASE(std_setcheck)
   source.insert(line++, "b main");
 
   source.insert(line++, ".include \"stdlib/init.swl\"");
-  source.insert(line++, ".include \"stdlib/set.swl\"");
+  source.insert(line++, ".include \"stdlib/set/set.swl\"");
+  source.insert(line++, ".include \"stdlib/set/insert.swl\"");
+  source.insert(line++, ".include \"stdlib/set/check.swl\"");
 
   // Test
   source.insert(line++, ".label main");

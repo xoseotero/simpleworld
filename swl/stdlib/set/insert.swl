@@ -1,0 +1,62 @@
+# @file stdlib/set/insert.swl
+# Insert a element in the set.
+#
+#  Copyright (C) 2008-2011  Xosé Otero <xoseotero@gmail.com>
+#
+#  This program is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+
+.include "stdlib/error.swl"
+.include "stdlib/address.swl"
+.include "stdlib/list/def.swl"
+.include "stdlib/list/insert.swl"
+.include "stdlib/list/find.swl"
+
+
+# Insert a element in the set.
+# IN:  g0 pointer to the set
+# IN:  g1 value
+# OUT: g1 error status
+#      STD_NOERROR: no errors
+#      STD_EFAULT: the pointer is not valid
+#      STD_ENOMEM: there is not memory enough
+.label std_setinsert
+        move r0 g0                      # pointer
+        move r1 g1                      # value
+
+        # check if the pointer is valid
+        loadi g1 _STD_LIST_STRUCT
+        call std_address
+        bz g0 _std_setinsert_efault
+
+        # check if the value is already in the set
+        move g0 r0
+        loadi g1 0x0
+        move g2 r1
+        call std_listfind
+        bnz g1 _std_setinsert_insert
+        loadi g1 STD_NOERROR
+        ret
+
+        # insert the value
+        .label _std_setinsert_insert
+        move g0 r0
+        loadi g1 0x0
+        move g2 r1
+        call std_listinsert
+        ret
+
+        .label _std_setinsert_efault
+        loadi g1 STD_EFAULT
+        ret

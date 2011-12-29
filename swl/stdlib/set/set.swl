@@ -1,6 +1,5 @@
-# @file stdlib/set.swl
-# Set data structure.
-# std_init must be executed before using any of this functions.
+# @file stdlib/set/set.swl
+# Create a new set.
 #
 #  Copyright (C) 2008-2011  Xosé Otero <xoseotero@gmail.com>
 #
@@ -18,10 +17,13 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-.include "stdlib/set/set.swl"
-.include "stdlib/set/free.swl"
-.include "stdlib/set/size.swl"
-.include "stdlib/set/get.swl"
-.include "stdlib/set/insert.swl"
-.include "stdlib/set/remove.swl"
-.include "stdlib/set/check.swl"
+.include "stdlib/list/list.swl"
+
+
+# Create a new set.
+# OUT: g0 pointer to the new set
+# OUT: g1 error status
+#      STD_ENOMEM: there is not memory enough
+.label std_set
+        call std_list
+        ret

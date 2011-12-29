@@ -1,6 +1,5 @@
-# @file stdlib/set.swl
-# Set data structure.
-# std_init must be executed before using any of this functions.
+# @file stdlib/set/free.swl
+# Free the set.
 #
 #  Copyright (C) 2008-2011  Xosé Otero <xoseotero@gmail.com>
 #
@@ -18,10 +17,14 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-.include "stdlib/set/set.swl"
-.include "stdlib/set/free.swl"
-.include "stdlib/set/size.swl"
-.include "stdlib/set/get.swl"
-.include "stdlib/set/insert.swl"
-.include "stdlib/set/remove.swl"
-.include "stdlib/set/check.swl"
+.include "stdlib/list/free.swl"
+
+
+# Free the set.
+# IN:  g0 pointer to the set.
+# OUT: g1 error status
+#      STD_NOERROR: no errors
+#      STD_EFAULT: the pointer is not valid.
+.label std_setfree
+        call std_listfree
+        ret

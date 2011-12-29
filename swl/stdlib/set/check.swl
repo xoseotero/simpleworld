@@ -1,0 +1,46 @@
+# @file stdlib/set/check.swl
+# Check if a element is in the set.
+#
+#  Copyright (C) 2008-2011  Xosé Otero <xoseotero@gmail.com>
+#
+#  This program is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+
+.include "stdlib/def.swl"
+.include "stdlib/list/find.swl"
+
+
+# Check if a element is in the set.
+# IN:  g0 pointer to the set
+# IN:  g1 value
+# OUT: g0 boolean value
+#      STD_TRUE: the value is in the set
+#      STD_FALSE: the value is not in the set
+# OUT: g1 error status
+#      STD_NOERROR: no errors
+#      STD_EFAULT: the pointer is not valid
+.label std_setcheck
+        # search the value in the set
+        move g2 g1
+        loadi g1 0x0
+        call std_listfind
+        bz g1 _std_setcheck_found
+        loadi g0 STD_FALSE
+        loadi g1 STD_NOERROR
+        ret
+
+        .label _std_setcheck_found
+        loadi g0 STD_TRUE
+        loadi g1 STD_NOERROR
+        ret
