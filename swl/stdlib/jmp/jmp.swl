@@ -1,0 +1,57 @@
+# @file stdlib/jmp/jmp.swl
+# # Non-local jump.
+#
+#  Copyright (C) 2008-2011  Xosé Otero <xoseotero@gmail.com>
+#
+#  This program is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+
+.include "stdlib/error.swl"
+.include "stdlib/address/address.swl"
+.include "stdlib/jmp/def.swl"
+
+
+# Non-local jump.
+# IN:  g0 jmp struct
+# IN:  g1 value (it must be greater than 0)
+# OUT: g1 error status
+#      STD_EINVAL: invalid value
+#      STD_EFAULT: the pointer is not valid
+.label std_jmp
+        # check if the value is correct
+        bz g1 _std_jmp_einval
+
+        move r0 g0                      # pointer
+        move r1 g1                      # value
+
+        # check if the pointer is valid
+        loadi g1 STD_JMP_STRUCT
+        call std_address
+        bz g0 _std_jmp_efault
+
+        move g0 r1
+        move g1 r0
+        loadri wc g1 STD_JMP_WC
+        loadri lr g1 STD_JMP_LR
+        loadri fp g1 STD_JMP_FP
+        loadi g1 STD_NOERROR
+        ret
+
+        .label _std_jmp_einval
+        loadi g1 STD_EINVAL
+        ret
+
+        .label _std_jmp_efault
+        loadi g1 STD_EFAULT
+        ret

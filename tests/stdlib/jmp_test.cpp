@@ -2,7 +2,7 @@
  * @file tests/stdlib/jmp_test.cpp
  * Unit test for stdlib/jmp.swl
  *
- *  Copyright (C) 2009-2010  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2009-2011  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -80,7 +80,8 @@ BOOST_AUTO_TEST_CASE(std_jmp)
   source.insert(line++, "loada sp stack");
   source.insert(line++, "b main");
 
-  source.insert(line++, ".include \"stdlib/jmp.swl\"");
+  source.insert(line++, ".include \"stdlib/jmp/set.swl\"");
+  source.insert(line++, ".include \"stdlib/jmp/jmp.swl\"");
 
   // Test
   source.insert(line++, ".label main");

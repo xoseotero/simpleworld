@@ -1,5 +1,5 @@
-# @file stdlib/jmp.swl
-# Non-local jump.
+# @file stdlib/jmp/def.swl
+# jmp struct to store the stack context.
 #
 #  Copyright (C) 2008-2011  Xosé Otero <xoseotero@gmail.com>
 #
@@ -17,5 +17,8 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-.include "stdlib/jmp/set.swl"
-.include "stdlib/jmp/jmp.swl"
+# jmp struct to store the stack context
+.define STD_JMP_STRUCT       0xC        # Size of the jmp struct
+.define STD_JMP_WC           0x0        # Offset to the window counter
+.define STD_JMP_LR           0x4        # Offset to the link register
+.define STD_JMP_FP           0x8        # Offset to the frame pointer
