@@ -1,0 +1,50 @@
+# @file stdlib/list/list.swl
+# Create a new list.
+#
+#  Copyright (C) 2008-2011  Xosé Otero <xoseotero@gmail.com>
+#
+#  This program is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+
+.include "stdlib/def.swl"
+.include "stdlib/error.swl"
+.include "stdlib/alloc/alloc.swl"
+.include "stdlib/list/def.swl"
+
+
+# Create a new list.
+# OUT: g0 pointer to the new list
+# OUT: g1 error status
+#      STD_NOERROR: no errors
+#      STD_ENOMEM: there is not memory enough
+.label std_list
+        # allocate the memory
+        loadi g0 _STD_LIST_STRUCT
+        call std_alloc
+        bnz g1 _std_list_enomem
+
+        # initialize the fields
+        loadi g1 STD_NULL
+        storeri g0 g1 _STD_LIST_FIRST
+
+        loadi g1 0x0
+        storeri g0 g1 _STD_LIST_SIZE
+
+        .label _std_list_ret
+        loadi g1 STD_NOERROR
+        ret
+
+        .label _std_list_enomem
+        loadi g1 STD_ENOMEM
+        ret

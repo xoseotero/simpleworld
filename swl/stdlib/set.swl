@@ -2,7 +2,7 @@
 # Set data structure.
 # std_init must be executed before using any of this functions.
 #
-#  Copyright (C) 2008-2010  Xosé Otero <xoseotero@gmail.com>
+#  Copyright (C) 2008-2011  Xosé Otero <xoseotero@gmail.com>
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -17,10 +17,18 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+
 .include "stdlib/def.swl"
 .include "stdlib/error.swl"
 .include "stdlib/address.swl"
-.include "stdlib/list.swl"
+.include "stdlib/list/list.swl"
+.include "stdlib/list/free.swl"
+.include "stdlib/list/size.swl"
+.include "stdlib/list/get.swl"
+.include "stdlib/list/insert.swl"
+.include "stdlib/list/remove.swl"
+.include "stdlib/list/find.swl"
+
 
 # Create a new set.
 # OUT: g0 pointer to the new set

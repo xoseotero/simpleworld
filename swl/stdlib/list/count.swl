@@ -1,0 +1,86 @@
+# @file stdlib/list/count.swl
+# Get the times a value is found in the list.
+#
+#  Copyright (C) 2008-2011  Xosé Otero <xoseotero@gmail.com>
+#
+#  This program is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+
+.include "stdlib/error.swl"
+.include "stdlib/address.swl"
+.include "stdlib/node/def.swl"
+.include "stdlib/node/next.swl"
+.include "stdlib/list/def.swl"
+
+
+# Get the times a value is found in the list.
+# IN:  g0 pointer to the list
+# IN:  g1 value
+# OUT: g0 the times the value was found
+# OUT: g1 error status
+#      STD_NOERROR: no errors
+#      STD_EFAULT: the pointer is not valid
+.label std_listcount
+        move r0 g0                      # pointer
+        move r1 g1                      # value
+
+        # check if the pointer is valid
+        loadi g1 _STD_LIST_STRUCT
+        call std_address
+        bz g0 _std_listcount_efault
+
+        # check if the size is 0
+        loadri r2 r0 _STD_LIST_SIZE     # size
+        bz r2 _std_listcount_empty
+
+        loadi r3 0x0                    # counter
+
+        # use g0 as the node in all the loop
+        loadri g0 r0 _STD_LIST_FIRST
+
+        # count the times the value is found
+        .label _std_listcount_loop
+        # compare the value
+        loadri g1 g0 _STD_NODE_DATA
+        bne g1 r1 _std_listcount_continue
+        # update the counter
+        addi r3 r3 0x1
+
+        .label _std_listcount_continue
+        # update the size
+        subi r2 r2 0x1
+        # check if there are more nodes
+        bz r2 _std_listcount_ret
+
+        # go to the next node
+        loadi g1 0x1
+        call std_next
+        bnz g1 _std_listcount_efault
+
+        b _std_listcount_loop
+
+
+        .label _std_listcount_ret
+        move g0 r3
+        loadi g1 STD_NOERROR
+        ret
+
+        .label _std_listcount_empty
+        loadi g0 0x0
+        loadi g1 STD_NOERROR
+        ret
+
+        .label _std_listcount_efault
+        loadi g1 STD_EFAULT
+        ret

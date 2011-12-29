@@ -16,11 +16,18 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+
 .include "stdlib/def.swl"
 .include "stdlib/error.swl"
 .include "stdlib/world.swl"
 .include "stdlib/address.swl"
-.include "stdlib/list.swl"
+.include "stdlib/list/list.swl"
+.include "stdlib/list/size.swl"
+.include "stdlib/list/get.swl"
+.include "stdlib/list/insert.swl"
+.include "stdlib/list/remove.swl"
+.include "stdlib/list/find.swl"
+
 
 # Interrupts
 .define STD_ITIMER            0x0       # Timer Interrupt

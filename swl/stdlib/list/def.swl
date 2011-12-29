@@ -1,6 +1,5 @@
-# @file stdlib/list.swl
-# List data structure.
-# std_init must be executed before using any of this functions.
+# @file stdlib/list/def.swl
+# List struct
 #
 #  Copyright (C) 2008-2011  Xosé Otero <xoseotero@gmail.com>
 #
@@ -18,11 +17,7 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-.include "stdlib/list/list.swl"
-.include "stdlib/list/free.swl"
-.include "stdlib/list/size.swl"
-.include "stdlib/list/get.swl"
-.include "stdlib/list/insert.swl"
-.include "stdlib/list/remove.swl"
-.include "stdlib/list/find.swl"
-.include "stdlib/list/count.swl"
+# List struct
+.define _STD_LIST_STRUCT  0x8           # Size of the struct
+.define _STD_LIST_FIRST   0x0           # Offset to the first field
+.define _STD_LIST_SIZE    0x4           # Offset to the size field

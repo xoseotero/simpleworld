@@ -1,0 +1,115 @@
+# @file stdlib/list/remove.swl
+# Remove a element from the list.
+#
+#  Copyright (C) 2008-2011  Xosé Otero <xoseotero@gmail.com>
+#
+#  This program is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+
+.include "stdlib/error.swl"
+.include "stdlib/address.swl"
+.include "stdlib/node/def.swl"
+.include "stdlib/node/free.swl"
+.include "stdlib/node/prev.swl"
+.include "stdlib/node/next.swl"
+.include "stdlib/list/def.swl"
+
+
+# Remove a element from the list.
+# IN:  g0 pointer to the list
+# IN:  g1 position
+# OUT: g1 error status
+#      STD_NOERROR: no errors
+#      STD_EINVAL: the position is out of range
+#      STD_EFAULT: the pointer is not valid
+.label std_listremove
+        move r0 g0                      # pointer
+        move r1 g1                      # position
+
+        # check if the pointer is valid
+        loadi g1 _STD_LIST_STRUCT
+        call std_address
+        bz g0 _std_listremove_efault
+
+        # check if the position is valid
+        loadri g0 r0 _STD_LIST_SIZE
+        bgeu r1 g0 _std_listremove_einval
+
+        # calculate the node to remove
+        loadri g0 r0 _STD_LIST_FIRST
+        move g1 r1
+        call std_next
+        bnz g1 _std_listremove_efault
+        move r2 g0                      # removed
+
+        # update the previous node
+        # previous.next = removed.next
+        # only if the the removed node is not the first one
+        bz r1 _std_listremove_next
+
+        move g0 r2
+        loadi g1 0x1
+        call std_prev
+        bnz g1 _std_listremove_efault
+        loadri g1 r2 _STD_NODE_NEXT
+        storeri g0 g1 _STD_NODE_NEXT
+
+        # update the next node
+        # next.prev = removed.prev
+        .label _std_listremove_next
+        # only if the removed node is not the last one
+        loadri g0 r0 _STD_LIST_SIZE
+        subi g0 g0 0x1
+        beq g0 r1 _std_listremove_first
+
+        move g0 r2
+        loadi g1 0x1
+        call std_next
+        bnz g1 _std_listremove_efault
+        loadri g1 r2 _STD_NODE_PREV
+        storeri g0 g1 _STD_NODE_PREV
+
+        # update the first node
+        # first = removed.next
+        .label _std_listremove_first
+        # only if the remove node is the first one
+        bnz r1 _std_listremove_free
+
+        move g0 r2
+        loadi g1 0x1
+        call std_next
+        bnz g1 _std_listremove_efault
+        storeri r0 g0 _STD_LIST_FIRST
+
+        # free the node
+        .label _std_listremove_free
+        move g0 r2
+        call std_nodefree
+
+        .label _std_listremove_ret
+        # update the size
+        loadri g0 r0 _STD_LIST_SIZE
+        subi g0 g0 0x1
+        storeri r0 g0 _STD_LIST_SIZE
+
+        loadi g1 STD_NOERROR
+        ret
+
+        .label _std_listremove_einval
+        loadi g1 STD_EINVAL
+        ret
+
+        .label _std_listremove_efault
+        loadi g1 STD_EFAULT
+        ret

@@ -88,7 +88,8 @@ BOOST_AUTO_TEST_CASE(std_list)
   source.insert(line++, ".include \"stdlib/init.swl\"");
   source.insert(line++, ".include \"stdlib/alloc/def.swl\"");
   source.insert(line++, ".include \"stdlib/alloc/info.swl\"");
-  source.insert(line++, ".include \"stdlib/list.swl\"");
+  source.insert(line++, ".include \"stdlib/list/list.swl\"");
+  source.insert(line++, ".include \"stdlib/list/free.swl\"");
 
   // Test
   source.insert(line++, ".label main");
@@ -162,7 +163,9 @@ BOOST_AUTO_TEST_CASE(std_listsize)
   source.insert(line++, "b main");
 
   source.insert(line++, ".include \"stdlib/init.swl\"");
-  source.insert(line++, ".include \"stdlib/list.swl\"");
+  source.insert(line++, ".include \"stdlib/list/list.swl\"");
+  source.insert(line++, ".include \"stdlib/list/size.swl\"");
+
 
   // Test
   source.insert(line++, ".label main");
@@ -209,7 +212,11 @@ BOOST_AUTO_TEST_CASE(std_listinsert)
   source.insert(line++, "b main");
 
   source.insert(line++, ".include \"stdlib/init.swl\"");
-  source.insert(line++, ".include \"stdlib/list.swl\"");
+  source.insert(line++, ".include \"stdlib/list/list.swl\"");
+  source.insert(line++, ".include \"stdlib/list/size.swl\"");
+  source.insert(line++, ".include \"stdlib/list/get.swl\"");
+  source.insert(line++, ".include \"stdlib/list/insert.swl\"");
+  
 
   // Test
   source.insert(line++, ".label main");
@@ -283,7 +290,11 @@ BOOST_AUTO_TEST_CASE(std_listremove)
   source.insert(line++, "b main");
 
   source.insert(line++, ".include \"stdlib/init.swl\"");
-  source.insert(line++, ".include \"stdlib/list.swl\"");
+  source.insert(line++, ".include \"stdlib/list/list.swl\"");
+  source.insert(line++, ".include \"stdlib/list/size.swl\"");
+  source.insert(line++, ".include \"stdlib/list/get.swl\"");
+  source.insert(line++, ".include \"stdlib/list/insert.swl\"");
+  source.insert(line++, ".include \"stdlib/list/remove.swl\"");
 
   // Test
   source.insert(line++, ".label main");
@@ -354,7 +365,9 @@ BOOST_AUTO_TEST_CASE(std_listfind)
   source.insert(line++, "b main");
 
   source.insert(line++, ".include \"stdlib/init.swl\"");
-  source.insert(line++, ".include \"stdlib/list.swl\"");
+  source.insert(line++, ".include \"stdlib/list/list.swl\"");
+  source.insert(line++, ".include \"stdlib/list/insert.swl\"");
+  source.insert(line++, ".include \"stdlib/list/find.swl\"");
 
   // Test
   source.insert(line++, ".label main");
@@ -424,7 +437,9 @@ BOOST_AUTO_TEST_CASE(std_listcount)
   source.insert(line++, "b main");
 
   source.insert(line++, ".include \"stdlib/init.swl\"");
-  source.insert(line++, ".include \"stdlib/list.swl\"");
+  source.insert(line++, ".include \"stdlib/list/list.swl\"");
+  source.insert(line++, ".include \"stdlib/list/insert.swl\"");
+  source.insert(line++, ".include \"stdlib/list/count.swl\"");
 
   // Test
   source.insert(line++, ".label main");
