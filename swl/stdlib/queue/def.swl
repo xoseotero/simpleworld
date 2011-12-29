@@ -1,6 +1,5 @@
-# @file stdlib/queue.swl
-# Queue data structure.
-# std_init must be executed before using any of this functions.
+# @file stdlib/queue/def.swl
+# Queue struct
 #
 #  Copyright (C) 2008-2011  Xosé Otero <xoseotero@gmail.com>
 #
@@ -18,8 +17,7 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-.include "stdlib/queue/queue.swl"
-.include "stdlib/queue/free.swl"
-.include "stdlib/queue/empty.swl"
-.include "stdlib/queue/push.swl"
-.include "stdlib/queue/pop.swl"
+# Queue struct
+.define _STD_QUEUE_STRUCT     0x8       # Size of the struct
+.define _STD_QUEUE_TOP        0x0       # Offset to the top field
+.define _STD_QUEUE_BOTTOM     0x4       # Offset to the bottom field

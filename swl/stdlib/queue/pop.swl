@@ -1,0 +1,84 @@
+# @file stdlib/queue/pop.swl
+# Remove a element from the queue.
+#
+#  Copyright (C) 2008-2011  Xosé Otero <xoseotero@gmail.com>
+#
+#  This program is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+
+.include "stdlib/def.swl"
+.include "stdlib/error.swl"
+.include "stdlib/address.swl"
+.include "stdlib/node/def.swl"
+.include "stdlib/node/node.swl"
+.include "stdlib/node/free.swl"
+.include "stdlib/queue/def.swl"
+
+
+# Remove a element from the queue.
+# IN:  g0 pointer to the queue
+# OUT: g0 element removed
+# OUT: g1 error status
+#      STD_NOERROR: no errors
+#      STD_EINVAL: the queue is empty
+#      STD_EFAULT: the pointer is not valid
+.label std_queuepop
+        move r0 g0                      # pointer
+
+        # check if the pointer is valid
+        loadi g1 _STD_QUEUE_STRUCT
+        call std_address
+        bz g0 _std_queuepop_efault
+
+        # check if the queue is empty
+        loadri g0 r0 _STD_QUEUE_TOP
+        bz g0 _std_queuepop_einval
+
+        # get the node to remove
+        loadri r1 r0 _STD_QUEUE_BOTTOM  # removed
+
+        # get the data
+        loadri r2 r1 _STD_NODE_DATA     # data
+
+        # update the bottom pointer
+        loadri g0 r1 _STD_NODE_NEXT
+        storeri r0 g0 _STD_QUEUE_BOTTOM
+
+        # check if the queue is empty
+        loadri g0 r0 _STD_QUEUE_BOTTOM
+        bnz g0 _std_queuepop_free
+
+        # update the top node
+        # top = NULL
+        .label _std_queuepop_empty
+        loadi g1 STD_NULL
+        storeri r0 g1 _STD_QUEUE_TOP
+
+        # free the node
+        .label _std_queuepop_free
+        move g0 r1
+        call std_nodefree
+
+        .label _std_queuepop_ret
+        move g0 r2
+        loadi g1 STD_NOERROR
+        ret
+
+        .label _std_queuepop_einval
+        loadi g1 STD_EINVAL
+        ret
+
+        .label _std_queuepop_efault
+        loadi g1 STD_EFAULT
+        ret

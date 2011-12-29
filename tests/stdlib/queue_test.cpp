@@ -88,7 +88,8 @@ BOOST_AUTO_TEST_CASE(std_queue)
   source.insert(line++, ".include \"stdlib/init.swl\"");
   source.insert(line++, ".include \"stdlib/alloc/def.swl\"");
   source.insert(line++, ".include \"stdlib/alloc/info.swl\"");
-  source.insert(line++, ".include \"stdlib/queue.swl\"");
+  source.insert(line++, ".include \"stdlib/queue/queue.swl\"");
+  source.insert(line++, ".include \"stdlib/queue/free.swl\"");
 
   // Test
   source.insert(line++, ".label main");
@@ -162,7 +163,9 @@ BOOST_AUTO_TEST_CASE(std_queueempty)
   source.insert(line++, "b main");
 
   source.insert(line++, ".include \"stdlib/init.swl\"");
-  source.insert(line++, ".include \"stdlib/queue.swl\"");
+  source.insert(line++, ".include \"stdlib/queue/queue.swl\"");
+  source.insert(line++, ".include \"stdlib/queue/empty.swl\"");
+  source.insert(line++, ".include \"stdlib/queue/push.swl\"");
 
   // Test
   source.insert(line++, ".label main");
@@ -222,7 +225,9 @@ BOOST_AUTO_TEST_CASE(std_queuepush)
   source.insert(line++, "b main");
 
   source.insert(line++, ".include \"stdlib/init.swl\"");
-  source.insert(line++, ".include \"stdlib/queue.swl\"");
+  source.insert(line++, ".include \"stdlib/queue/queue.swl\"");
+  source.insert(line++, ".include \"stdlib/queue/push.swl\"");
+  source.insert(line++, ".include \"stdlib/queue/pop.swl\"");
 
   // Test
   source.insert(line++, ".label main");
