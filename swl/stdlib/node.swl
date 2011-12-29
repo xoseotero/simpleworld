@@ -232,7 +232,7 @@
         loadri g0 r0 _STD_NODE_NEXT
 
         # check if it is the last node
-        bz g0 _std_first_ret
+        bz g0 _std_last_ret
 
         # update the node
         move r0 g0
