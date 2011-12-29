@@ -1,7 +1,7 @@
-# @file stdlib/random/seed.swl
-# Set the seed.
+# @file stdlib/bits/set.swl
+# Set the bits of a word to 1.
 #
-#  Copyright (C) 2007-2011  Xosé Otero <xoseotero@gmail.com>
+#  Copyright (C) 2009-2011  Xosé Otero <xoseotero@gmail.com>
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -16,24 +16,11 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# Linear Congruential Generator (LCG)
-# http://en.wikipedia.org/wiki/Linear_congruential_generator
-# The GNU libc LCG algorithm is used: Vi = (A * V(i-1) + B) & C
 
-
-.include "stdlib/bits/comp.swl"
-.include "stdlib/random/_seed.swl"
-
-
-# Set the seed.
-# IN:  g0 the seed
-.label std_seed
-        move r0 g0                      # seed
-
-        # the second word of the seed is the complement of the first one
-        call std_bitscomp
-
-        store g0 _std_random_seed1
-        store r0 _std_random_seed2
-
+# Set the bits of a word to 1.
+# IN:  g0 word
+# IN:  g1 bits
+# OUT: g0 new word
+.label std_bitsset
+        or g0 g0 g1
         ret

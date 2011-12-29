@@ -2,7 +2,7 @@
  * @file tests/stdlib/bits_test.cpp
  * Unit test for stdlib/bits.swl
  *
- *  Copyright (C) 2009-2010  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2009-2011  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -80,7 +80,7 @@ BOOST_AUTO_TEST_CASE(std_bitsset)
   source.insert(line++, "loada sp stack");
   source.insert(line++, "b main");
 
-  source.insert(line++, ".include \"stdlib/bits.swl\"");
+  source.insert(line++, ".include \"stdlib/bits/set.swl\"");
 
   // Test
   source.insert(line++, ".label main");
@@ -117,7 +117,7 @@ BOOST_AUTO_TEST_CASE(std_bitsclear)
   source.insert(line++, "loada sp stack");
   source.insert(line++, "b main");
 
-  source.insert(line++, ".include \"stdlib/bits.swl\"");
+  source.insert(line++, ".include \"stdlib/bits/clear.swl\"");
 
   // Test
   source.insert(line++, ".label main");
@@ -154,7 +154,7 @@ BOOST_AUTO_TEST_CASE(std_bitscomp)
   source.insert(line++, "loada sp stack");
   source.insert(line++, "b main");
 
-  source.insert(line++, ".include \"stdlib/bits.swl\"");
+  source.insert(line++, ".include \"stdlib/bits/comp.swl\"");
 
   // Test
   source.insert(line++, ".label main");

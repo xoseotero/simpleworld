@@ -1,7 +1,7 @@
 # @file stdlib/bits.swl
 # Minipulate the bits of a word.
 #
-#  Copyright (C) 2009-2010  Xosé Otero <xoseotero@gmail.com>
+#  Copyright (C) 2009-2011  Xosé Otero <xoseotero@gmail.com>
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -16,34 +16,7 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-.include "stdlib/def.swl"
 
-.label _std_bits_full
-STD_FULL
-
-
-# Set the bits of a word to 1.
-# IN:  g0 word
-# IN:  g1 bits
-# OUT: g0 new word
-.label std_bitsset
-        or g0 g0 g1
-        ret
-
-# Set the bits of a word to 0.
-# IN:  g0 word
-# IN:  g1 bits
-# OUT: g0 new word
-.label std_bitsclear
-        load g2 _std_bits_full
-        xor g1 g1 g2
-        and g0 g0 g1
-        ret
-
-# Get the complement of a word.
-# IN:  g0 word
-# OUT: g0 new word
-.label std_bitscomp
-        load g1 _std_bits_full
-        xor g0 g0 g1
-        ret
+.include "stdlib/bits/set.swl"
+.include "stdlib/bits/clear.swl"
+.include "stdlib/bits/comp.swl"
