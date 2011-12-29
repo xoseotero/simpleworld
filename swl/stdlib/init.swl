@@ -16,6 +16,7 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+
 .include "stdlib/def.swl"
 .include "stdlib/error.swl"
 .include "stdlib/world.swl"
@@ -24,7 +25,8 @@
 .include "stdlib/int.swl"
 .include "stdlib/address.swl"
 .include "stdlib/time.swl"
-.include "stdlib/random.swl"
+.include "stdlib/random/_seed.swl"
+.include "stdlib/random/seed.swl"
 
 
 # Flag to check if the standard library is initialized

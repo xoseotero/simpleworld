@@ -2,7 +2,7 @@
  * @file tests/stdlib/random_test.cpp
  * Unit test for stdlib/random.swl
  *
- *  Copyright (C) 2009-2010  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2009-2011  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -82,7 +82,7 @@ BOOST_AUTO_TEST_CASE(std_random)
   source.insert(line++, "loada sp stack");
   source.insert(line++, "b main");
 
-  source.insert(line++, ".include \"stdlib/random.swl\"");
+  source.insert(line++, ".include \"stdlib/random/random.swl\"");
 
   // Test
   source.insert(line++, ".label main");
@@ -123,7 +123,8 @@ BOOST_AUTO_TEST_CASE(std_seed)
   source.insert(line++, "loada sp stack");
   source.insert(line++, "b main");
 
-  source.insert(line++, ".include \"stdlib/random.swl\"");
+  source.insert(line++, ".include \"stdlib/random/seed.swl\"");
+  source.insert(line++, ".include \"stdlib/random/random.swl\"");
 
   // Test
   source.insert(line++, ".label main");

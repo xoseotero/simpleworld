@@ -1,0 +1,74 @@
+# @file stdlib/random/random.swl
+# Calculate a new random value.
+#
+#  Copyright (C) 2007-2011  Xosé Otero <xoseotero@gmail.com>
+#
+#  This program is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+# Linear Congruential Generator (LCG)
+# http://en.wikipedia.org/wiki/Linear_congruential_generator
+# The GNU libc LCG algorithm is used: Vi = (A * V(i-1) + B) & C
+
+
+.include "stdlib/def.swl"
+.include "stdlib/random/_seed.swl"
+
+
+# Constants for calculate next random value
+.label _std_random_a
+0x41c64e6d
+.label _std_random_b
+0x3039
+.label _std_random_c
+STD_MAX
+
+
+# Update the seed with a iteration of the LCG algorithm
+# IN:  g0 the seed
+# OUT: g0 the new value of the seed
+.label _std_random_lcg
+        load g1 _std_random_a
+        load g2 _std_random_b
+        load g3 _std_random_c
+
+        # LCG in the seed
+        mult g0 g0 g1
+        add g0 g0 g2
+        and g0 g0 g3
+
+        ret
+
+# Calculate a new random value.
+# OUT: g0 the random value
+.label std_random
+        # LCG in the two seeds
+        load g0 _std_random_seed1
+        call _std_random_lcg
+        move r0 g0                      # lcg
+
+        load g0 _std_random_seed2
+        call _std_random_lcg
+
+        # Update seeds
+        store r0 _std_random_seed1
+        store g0 _std_random_seed2
+
+        # Calculate the new word using the most value bits of the words
+        # (the LCG algorith only returns 31 bits, the MLB = 0)
+        srli g1 r0 0x0f
+        slli g1 g1 0x10
+        srli g0 g0 0x0f
+        or g0 g0 g1
+
+        ret
