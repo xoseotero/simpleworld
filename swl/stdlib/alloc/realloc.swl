@@ -1,0 +1,84 @@
+# @file stdlib/alloc/realloc.swl
+# Resize a block of previously allocated memory.
+#
+#  Copyright (C) 2008-2011  Xosé Otero <xoseotero@gmail.com>
+#
+#  This program is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+
+.include "stdlib/error.swl"
+.include "stdlib/mem/copy.swl"
+.include "stdlib/alloc/_address.swl"
+.include "stdlib/alloc/alloc.swl"
+.include "stdlib/alloc/free.swl"
+.include "stdlib/alloc/_mblock/def.swl"
+
+
+# Resize a block of previously allocated memory.
+# IN:  g0 pointer to the allocated memory
+# IN:  g1 new size
+# OUT: g0 pointer to the new allocated memory
+# OUT: g1 error status
+#      STD_NOERROR: no errors
+#      STD_EINVAL: the size is 0
+#      STD_EFAULT: the pointer is not valid
+#      STD_ENOMEM: there isn't memory enough
+.label std_realloc
+        # check if the size is 0
+        bz g0 _std_realloc_einval
+
+        move r0 g0                      # pointer
+        move r1 g1                      # size
+        subi g2 g0 _STD_MBLOCK_DATA
+        loadri r2 g2 _STD_MBLOCK_USED   # old size
+
+        # check if the pointer is valid
+        call _std_maddress
+        bz g0 _std_realloc_efault
+
+        # allocate the new block
+        move g0 r1
+        call std_alloc
+        bnz g1 _std_realloc_enomem
+
+        move r3 g0                      # new pointer
+
+        # copy the data
+        move g1 r0
+        move g2 r1
+        bleu g2 r2 _std_realloc_copy
+        move g2 r2
+        .label _std_realloc_copy
+        call std_copy
+
+        # free the old block
+        move g0 r0
+        call std_free
+
+        .label _std_realloc_ret
+        move g0 r3
+        loadi g1 STD_NOERROR
+        ret
+
+        .label _std_realloc_einval
+        loadi g1 STD_EINVAL
+        ret
+
+        .label _std_realloc_efault
+        loadi g1 STD_EFAULT
+        ret
+
+        .label _std_realloc_enomem
+        loadi g1 STD_ENOMEM
+        ret

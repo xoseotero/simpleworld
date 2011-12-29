@@ -1,5 +1,5 @@
-# @file stdlib/alloc.swl
-# Dynamic memory allocation.
+# @file stdlib/alloc/_mblock/def.swl
+# Structure of a block of memory
 #
 #  Copyright (C) 2008-2011  Xosé Otero <xoseotero@gmail.com>
 #
@@ -17,8 +17,15 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-.include "stdlib/alloc/_init.swl"
-.include "stdlib/alloc/info.swl"
-.include "stdlib/alloc/alloc.swl"
-.include "stdlib/alloc/free.swl"
-.include "stdlib/alloc/realloc.swl"
+# Structure of a block of memory:
+# size: size of the block
+# used: size of the data
+# data: any size
+# size: size of the data
+.define _STD_MBLOCK_OVERHEAD  0xC       # Memory not usable of a block
+
+.define _STD_MBLOCK_SIZE      0x0       # Offset to the size of the block
+.define _STD_MBLOCK_USED      0x4       # Offset to the size of the data
+.define _STD_MBLOCK_DATA      0x8       # Offset to the data of the block
+.define _STD_MBLOCK_SIZE2     0xFFFC    # Offset to the size of the block
+                                        # of the previous block

@@ -1,0 +1,65 @@
+# @file stdlib/alloc/free.swl
+# Free a previously allocated memory.
+#
+#  Copyright (C) 2008-2011  Xosé Otero <xoseotero@gmail.com>
+#
+#  This program is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+
+.include "stdlib/error.swl"
+.include "stdlib/alloc/def.swl"
+.include "stdlib/alloc/_minfo.swl"
+.include "stdlib/alloc/_address.swl"
+.include "stdlib/alloc/_mblock/def.swl"
+.include "stdlib/alloc/_mblock/join.swl"
+
+
+# Free a previously allocated memory.
+# IN:  g0 pointer to the allocated memory
+# OUT: g1 error status
+#      STD_NOERROR: no errors
+#      STD_EFAULT: the pointer is not valid
+.label std_free
+        subi g0 g0 _STD_MBLOCK_DATA
+        move r0 g0                      # block
+
+        # check if the pointer is valid
+        call _std_maddress
+        bz g0 _std_free_efault
+
+        # check that the block is used
+        loadri g0 r0 _STD_MBLOCK_SIZE
+        bz g0 _std_free_efault
+
+        subi r1 g0 _STD_MBLOCK_OVERHEAD # size
+
+        # set the block as not used
+        loadi g1 0x0
+        storeri r0 g1 _STD_MBLOCK_USED
+
+        # update the free memory
+        loada g0 _std_minfo
+        loadri g1 g0 STD_MINFO_FREE
+        add g1 g1 r1
+        storeri g0 g1 STD_MINFO_FREE
+
+        move g0 r0
+        call _std_mblockjoin
+
+        loadi g1 STD_NOERROR
+        ret
+
+        .label _std_free_efault
+        loadi g1 STD_EFAULT
+        ret

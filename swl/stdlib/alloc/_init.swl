@@ -1,0 +1,70 @@
+# @file stdlib/alloc/_init.swl
+# Initialize the memory allocator
+#
+#  Copyright (C) 2008-2011  Xosé Otero <xoseotero@gmail.com>
+#
+#  This program is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+
+.include "stdlib/error.swl"
+.include "stdlib/address.swl"
+.include "stdlib/alloc/def.swl"
+.include "stdlib/alloc/_minfo.swl"
+.include "stdlib/alloc/_mblock/def.swl"
+.include "stdlib/alloc/_mblock/init.swl"
+
+
+# Initialize the memory allocator
+# It should not be called directly but by std_init.
+# IN:  g0 memory start
+# IN:  g1 size
+# OUT: g1 error status
+#      STD_NOERROR: no errors
+#      STD_ENOMEM: the size if not enough
+#      STD_EFAULT: the pointer is not valid
+.label _std_minit
+        # Check if the size is enough
+        loadi g2 _STD_MBLOCK_OVERHEAD
+        ble g1 g2 __std_minit_enomem
+
+        move r0 g0                      # memory
+        move r1 g1                      # size
+
+        # check if the pointer is valid
+        call std_address
+        bz g0 __std_minit_efault
+
+        # Initialize the block
+        move g0 r0
+        move g1 r1
+        call _std_mblockinit
+
+        # Set the values
+        loada g0 _std_minfo
+        storeri g0 r0 STD_MINFO_MEM
+        storeri g0 r1 STD_MINFO_TOTAL
+        subi g1 r1 _STD_MBLOCK_OVERHEAD
+        storeri g0 g1 STD_MINFO_FREE
+
+        .label __std_minit_ret
+        loadi g1 STD_NOERROR
+        ret
+
+        .label __std_minit_enomem
+        loadi g1 STD_ENOMEM
+        ret
+
+        .label __std_minit_efault
+        loadi g1 STD_EFAULT
+        ret

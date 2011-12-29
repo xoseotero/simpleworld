@@ -1,0 +1,79 @@
+# @file stdlib/alloc/_mblock/divide.swl
+# Divide a free block into two blocks.
+#
+#  Copyright (C) 2008-2011  Xosé Otero <xoseotero@gmail.com>
+#
+#  This program is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+
+.include "stdlib/def.swl"
+.include "stdlib/error.swl"
+.include "stdlib/alloc/def.swl"
+.include "stdlib/alloc/_minfo.swl"
+.include "stdlib/alloc/_mblock/def.swl"
+.include "stdlib/alloc/_mblock/init.swl"
+.include "stdlib/alloc/_mblock/next.swl"
+
+
+# Divide a free block into two blocks.
+# IN:  g0 pointer to the block of memory
+# IN:  g1 size of the data of the first block
+# OUT: g1 error status3C8
+#      STD_NOERROR: no errors
+#      STD_EINVAL: the bloock is in use
+#      STD_ENOMEM: there is not enough space
+.label _std_mblockdivide
+        # check if the block is in use
+        loadri g2 g0 _STD_MBLOCK_USED
+        bnz g2 __std_mblockdivide_einval
+
+        # check if there is enough space in the block to be divided in 2
+        loadi g3 STD_QWORDSIZE
+        addi g3 g3 _STD_MBLOCK_OVERHEAD
+        multi g3 g3 0x2
+        add g3 g3 g1
+        loadri r0 g0 _STD_MBLOCK_SIZE   # total
+        bltu r0 g3 __std_mblockdivide_enomem
+
+        # divide the block
+        move r1 g0                      # block
+        addi g1 g1 _STD_MBLOCK_OVERHEAD
+        move r2 g1                      # size
+
+        # first block
+        call _std_mblockinit
+
+        # second block
+        move g0 r1
+        call _std_mblocknext
+        move g1 r2
+        move g2 r0
+        sub g1 g2 g1
+        call _std_mblockinit
+
+        # update the free memory
+        loada g0 _std_minfo
+        loadri g1 g0 STD_MINFO_FREE
+        subi g1 g1 _STD_MBLOCK_OVERHEAD
+        storeri g0 g1 STD_MINFO_FREE
+
+        ret
+
+        .label __std_mblockdivide_einval
+        loadi g1 STD_EINVAL
+        ret
+
+        .label __std_mblockdivide_enomem
+        loadi g1 STD_ENOMEM
+        ret

@@ -1,0 +1,48 @@
+# @file stdlib/alloc/_mblock/init.swl
+# Initialize a block of memory.
+#
+#  Copyright (C) 2008-2011  Xosé Otero <xoseotero@gmail.com>
+#
+#  This program is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+
+.include "stdlib/def.swl"
+.include "stdlib/error.swl"
+.include "stdlib/alloc/_mblock/def.swl"
+
+
+# Initialize a block of memory.
+# IN:  g0 pointer to a block of memory
+# IN:  g1 size of the block
+# OUT: g1 error status
+#      STD_NOERROR: no errors
+#      STD_ENOMEM: block too small
+.label _std_mblockinit
+        # Check if the block is large enough
+        loadi g2 _STD_MBLOCK_OVERHEAD
+        addi g2 g2 STD_QWORDSIZE
+        blt g1 g2 __std_mblockinit_enomem
+
+        storeri g0 g1 _STD_MBLOCK_SIZE
+        loadi g2 0x0
+        storeri g0 g2 _STD_MBLOCK_USED
+        add g0 g0 g1
+        storeri g0 g1 _STD_MBLOCK_SIZE2
+
+        loadi g1 STD_NOERROR
+        ret
+
+        .label __std_mblockinit_enomem
+        loadi g1 STD_ENOMEM
+        ret

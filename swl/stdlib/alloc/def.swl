@@ -1,5 +1,5 @@
-# @file stdlib/alloc.swl
-# Dynamic memory allocation.
+# @file stdlib/alloc/def.swl
+# minfo struct
 #
 #  Copyright (C) 2008-2011  Xosé Otero <xoseotero@gmail.com>
 #
@@ -17,8 +17,8 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-.include "stdlib/alloc/_init.swl"
-.include "stdlib/alloc/info.swl"
-.include "stdlib/alloc/alloc.swl"
-.include "stdlib/alloc/free.swl"
-.include "stdlib/alloc/realloc.swl"
+# minfo struct
+.define STD_MINFO_STRUCT      0xC       # Size of the minfo struct
+.define STD_MINFO_MEM         0x0       # Offset to the memory
+.define STD_MINFO_TOTAL       0x4       # Offset to the total field
+.define STD_MINFO_FREE        0x8       # Offset to the free field

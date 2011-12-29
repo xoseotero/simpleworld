@@ -2,7 +2,7 @@
 # Array data structure.
 # std_init must be executed before using any of this functions.
 #
-#  Copyright (C) 2008-2010  Xosé Otero <xoseotero@gmail.com>
+#  Copyright (C) 2008-2011  Xosé Otero <xoseotero@gmail.com>
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -20,7 +20,9 @@
 .include "stdlib/def.swl"
 .include "stdlib/error.swl"
 .include "stdlib/address.swl"
-.include "stdlib/alloc.swl"
+.include "stdlib/alloc/alloc.swl"
+.include "stdlib/alloc/free.swl"
+.include "stdlib/alloc/realloc.swl"
 .include "stdlib/mem/fill.swl"
 .include "stdlib/mem/find.swl"
 .include "stdlib/mem/count.swl"

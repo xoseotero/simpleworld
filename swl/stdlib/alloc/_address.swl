@@ -1,0 +1,45 @@
+# @file stdlib/alloc/_address.swl
+# Check if a address to a block of memory is valid.
+#
+#  Copyright (C) 2008-2011  Xosé Otero <xoseotero@gmail.com>
+#
+#  This program is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+
+.include "stdlib/def.swl"
+.include "stdlib/alloc/def.swl"
+.include "stdlib/alloc/_minfo.swl"
+
+
+# Check if a address to a block of memory is valid.
+# IN:  g0 block
+# OUT: g0 if the address is valid
+#      STD_TRUE: if the address is valid
+#      STD_FALSE: if the address is not valid
+.label _std_maddress
+        loada g1 _std_minfo
+        loadri g2 g1 STD_MINFO_MEM
+        blt g0 g2 __std_maddress_invalid
+
+        loadri g3 g1 STD_MINFO_TOTAL
+        add g3 g2 g3
+        bge g0 g3 __std_maddress_invalid
+
+        .label __std_maddress_valid
+        loadi g0 STD_TRUE
+        ret
+
+        .label __std_maddress_invalid
+        loadi g0 STD_FALSE
+        ret

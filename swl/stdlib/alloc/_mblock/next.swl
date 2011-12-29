@@ -1,0 +1,49 @@
+# @file stdlib/alloc/_mblock/next.swl
+# Go to the next block of memory.
+#
+#  Copyright (C) 2008-2011  Xosé Otero <xoseotero@gmail.com>
+#
+#  This program is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+
+.include "stdlib/error.swl"
+.include "stdlib/alloc/def.swl"
+.include "stdlib/alloc/_minfo.swl"
+.include "stdlib/alloc/_mblock/def.swl"
+
+
+# Go to the next block of memory.
+# IN:  g0 pointer to a block of memory
+# OUT: g0 the next block
+# OUT: g1 error status
+#      STD_NOERROR: no errors
+#      STD_EINVAL: this is the last block
+.label _std_mblocknext
+        loadri g1 g0 _STD_MBLOCK_SIZE
+        add g0 g0 g1
+
+        # check if this is the last block
+        loada g1 _std_minfo
+        loadri g2 g1 STD_MINFO_MEM
+        loadri g3 g1 STD_MINFO_TOTAL
+        add g3 g3 g2                    # g3 is the top of the memory
+        beq g0 g3 _std_mblocknext_einval
+
+        # the next block is correct
+        loadi g1 STD_NOERROR
+        ret
+
+        .label _std_mblocknext_einval
+        loadi g1 STD_EINVAL
+        ret

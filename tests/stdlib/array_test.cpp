@@ -86,7 +86,8 @@ BOOST_AUTO_TEST_CASE(std_array)
   source.insert(line++, "b main");
 
   source.insert(line++, ".include \"stdlib/init.swl\"");
-  source.insert(line++, ".include \"stdlib/alloc.swl\"");
+  source.insert(line++, ".include \"stdlib/alloc/def.swl\"");
+  source.insert(line++, ".include \"stdlib/alloc/info.swl\"");
   source.insert(line++, ".include \"stdlib/array.swl\"");
 
   // Test

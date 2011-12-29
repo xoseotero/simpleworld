@@ -1,0 +1,96 @@
+# @file stdlib/alloc/_mblock/join.swl
+# Try to join a free block of memory with the previous one and the next one.
+#
+#  Copyright (C) 2008-2011  Xosé Otero <xoseotero@gmail.com>
+#
+#  This program is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+
+.include "stdlib/error.swl"
+.include "stdlib/alloc/def.swl"
+.include "stdlib/alloc/_minfo.swl"
+.include "stdlib/alloc/_mblock/def.swl"
+.include "stdlib/alloc/_mblock/init.swl"
+.include "stdlib/alloc/_mblock/prev.swl"
+.include "stdlib/alloc/_mblock/next.swl"
+
+
+# Try to join a free block of memory with the previous one and the next one.
+# IN:  g0 pointer to the block of memory
+# OUT: g1 error status
+#      STD_NOERROR: no errors
+#      STD_EINVAL: the block is in use
+.label _std_mblockjoin
+        # check if the block is in use
+        loadri g1 g0 _STD_MBLOCK_USED
+        bnz g1 __std_mblockjoin_einval
+
+        move r0 g0                      # block
+        loadri r1 g0 _STD_MBLOCK_SIZE   # size
+
+        # join with the next block
+        .label __std_mblockjoin_next
+        # check if the block exist
+        call _std_mblocknext
+        bnz g1 __std_mblockjoin_previous
+
+        # check if the block is in use
+        loadri g1 g0 _STD_MBLOCK_USED
+        bnz g1 __std_mblockjoin_previous
+
+        # calculate the size
+        loadri g2 g0 _STD_MBLOCK_SIZE
+        add r1 r1 g2
+
+        # join with the next block
+        move g0 r0
+        move g1 r1
+        call _std_mblockinit
+
+        # update the free memory
+        loada r2 _std_minfo             # _std_minfo
+        loadri g0 r2 STD_MINFO_FREE
+        addi g0 g0 _STD_MBLOCK_OVERHEAD
+        storeri r2 g0 STD_MINFO_FREE
+
+        # join with the previous block
+        .label __std_mblockjoin_previous
+        # check if the block exists
+        move g0 r0
+        call _std_mblockprev
+        bnz g1 __std_mblockjoin_ret
+
+        # check if the block is in use
+        loadri g1 g0 _STD_MBLOCK_USED
+        bnz g1 __std_mblockjoin_ret
+
+        # calculate the size
+        loadri g1 g0 _STD_MBLOCK_SIZE
+        add g1 g1 r1
+
+        # join with the previous block
+        call _std_mblockinit
+
+        # update the free memory
+        loadri g1 r2 STD_MINFO_FREE
+        addi g1 g1 _STD_MBLOCK_OVERHEAD
+        storeri r2 g1 STD_MINFO_FREE
+
+        .label __std_mblockjoin_ret
+        loadi g1 STD_NOERROR
+        ret
+
+        .label __std_mblockjoin_einval
+        loadi g1 STD_EINVAL
+        ret

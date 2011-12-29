@@ -21,7 +21,7 @@
 .include "stdlib/error.swl"
 .include "stdlib/world.swl"
 
-.include "stdlib/alloc.swl"
+.include "stdlib/alloc/_init.swl"
 .include "stdlib/int.swl"
 .include "stdlib/address.swl"
 .include "stdlib/time.swl"

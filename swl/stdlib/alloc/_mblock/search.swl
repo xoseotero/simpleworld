@@ -1,0 +1,57 @@
+# @file stdlib/alloc/_mblock/search.swl
+# Search a free block of at least size bytes for the data.
+#
+#  Copyright (C) 2008-2011  Xosé Otero <xoseotero@gmail.com>
+#
+#  This program is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+
+.include "stdlib/error.swl"
+.include "stdlib/alloc/def.swl"
+.include "stdlib/alloc/_minfo.swl"
+.include "stdlib/alloc/_mblock/def.swl"
+.include "stdlib/alloc/_mblock/next.swl"
+
+
+# Search a free block of at least size bytes for the data.
+# IN:  g0 size of the data
+# OUT: g0 the free block
+# OUT: g1 error status
+#      STD_NOERROR: no errors
+#      STD_ENOMEM: there isn't memory enough
+.label _std_mblocksearch
+        addi r0 g0 _STD_MBLOCK_OVERHEAD # size
+
+        # search from the begining
+        loada g0 _std_minfo
+        loadri g0 g0 STD_MINFO_MEM
+
+        .label __std_mblocksearch_loop
+        loadri g1 g0 _STD_MBLOCK_USED
+        bnz g1 __std_mblocksearch_next
+        loadri g1 g0 _STD_MBLOCK_SIZE
+        blt g1 r0 __std_mblocksearch_next
+
+        # block found
+        loadi g1 STD_NOERROR
+        ret
+
+        # try with the next block
+        .label __std_mblocksearch_next
+        call _std_mblocknext
+        bz g1 __std_mblocksearch_loop
+
+        .label __std_msearch_notfound
+        loadi g1 STD_ENOMEM
+        ret

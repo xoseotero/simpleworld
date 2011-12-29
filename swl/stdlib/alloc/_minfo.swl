@@ -1,5 +1,5 @@
-# @file stdlib/alloc.swl
-# Dynamic memory allocation.
+# @file stdlib/alloc/_minfo.swl
+# State of the memory allocator.
 #
 #  Copyright (C) 2008-2011  Xosé Otero <xoseotero@gmail.com>
 #
@@ -17,8 +17,9 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-.include "stdlib/alloc/_init.swl"
-.include "stdlib/alloc/info.swl"
-.include "stdlib/alloc/alloc.swl"
-.include "stdlib/alloc/free.swl"
-.include "stdlib/alloc/realloc.swl"
+.include "stdlib/alloc/def.swl"
+
+
+# State of the memory allocator.
+.label _std_minfo
+.block STD_MINFO_STRUCT

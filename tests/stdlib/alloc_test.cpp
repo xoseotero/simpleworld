@@ -2,7 +2,7 @@
  * @file tests/stdlib/alloc_test.cpp
  * Unit test for stdlib/alloc.swl
  *
- *  Copyright (C) 2009-2010  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2009-2011  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -80,7 +80,9 @@ BOOST_AUTO_TEST_CASE(std_minfo)
   source.insert(line++, "loada sp stack");
   source.insert(line++, "b main");
 
-  source.insert(line++, ".include \"stdlib/alloc.swl\"");
+  source.insert(line++, ".include \"stdlib/alloc/def.swl\"");
+  source.insert(line++, ".include \"stdlib/alloc/_init.swl\"");
+  source.insert(line++, ".include \"stdlib/alloc/info.swl\"");
 
   // Test
   source.insert(line++, ".label main");
@@ -139,7 +141,10 @@ BOOST_AUTO_TEST_CASE(std_alloc)
   source.insert(line++, "loada sp stack");
   source.insert(line++, "b main");
 
-  source.insert(line++, ".include \"stdlib/alloc.swl\"");
+  source.insert(line++, ".include \"stdlib/alloc/def.swl\"");
+  source.insert(line++, ".include \"stdlib/alloc/_init.swl\"");
+  source.insert(line++, ".include \"stdlib/alloc/info.swl\"");
+  source.insert(line++, ".include \"stdlib/alloc/alloc.swl\"");
 
   // Test
   source.insert(line++, ".label main");
@@ -211,7 +216,11 @@ BOOST_AUTO_TEST_CASE(std_free)
   source.insert(line++, "loada sp stack");
   source.insert(line++, "b main");
 
-  source.insert(line++, ".include \"stdlib/alloc.swl\"");
+  source.insert(line++, ".include \"stdlib/alloc/def.swl\"");
+  source.insert(line++, ".include \"stdlib/alloc/_init.swl\"");
+  source.insert(line++, ".include \"stdlib/alloc/info.swl\"");
+  source.insert(line++, ".include \"stdlib/alloc/alloc.swl\"");
+  source.insert(line++, ".include \"stdlib/alloc/free.swl\"");
 
   // Test
   source.insert(line++, ".label main");
@@ -276,7 +285,11 @@ BOOST_AUTO_TEST_CASE(std_realloc)
   source.insert(line++, "move fp sp");
   source.insert(line++, "b main");
 
-  source.insert(line++, ".include \"stdlib/alloc.swl\"");
+  source.insert(line++, ".include \"stdlib/alloc/def.swl\"");
+  source.insert(line++, ".include \"stdlib/alloc/_init.swl\"");
+  source.insert(line++, ".include \"stdlib/alloc/info.swl\"");
+  source.insert(line++, ".include \"stdlib/alloc/alloc.swl\"");
+  source.insert(line++, ".include \"stdlib/alloc/realloc.swl\"");
 
   // Test
   source.insert(line++, ".label main");
