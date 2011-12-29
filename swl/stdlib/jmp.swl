@@ -17,7 +17,7 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 .include "stdlib/error.swl"
-.include "stdlib/address.swl"
+.include "stdlib/address/address.swl"
 
 # jmp struct to store the stack context
 .define STD_JMP_STRUCT       0xC        # Size of the jmp struct

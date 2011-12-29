@@ -19,7 +19,7 @@
 
 .include "stdlib/def.swl"
 .include "stdlib/error.swl"
-.include "stdlib/address.swl"
+.include "stdlib/address/address.swl"
 
 
 # Set all the words of a block of memory to a value.

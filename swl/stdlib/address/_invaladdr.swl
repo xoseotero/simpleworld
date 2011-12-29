@@ -1,6 +1,5 @@
-# @file stdlib/address.swl
-# Check if a address or block is valid.
-# std_init must be executed before using any of this functions.
+# @file stdlib/address/_invaladdr.swl
+# Lowest invalid address.
 #
 #  Copyright (C) 2008-2011  Xosé Otero <xoseotero@gmail.com>
 #
@@ -18,5 +17,9 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-.include "stdlib/address/_init.swl"
-.include "stdlib/address/address.swl"
+.include "stdlib/def.swl"
+
+
+# Lowest invalid address.
+.label _std_invaladdr
+STD_MAXU

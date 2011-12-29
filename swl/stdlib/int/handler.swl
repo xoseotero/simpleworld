@@ -19,7 +19,7 @@
 
 .include "stdlib/def.swl"
 .include "stdlib/error.swl"
-.include "stdlib/address.swl"
+.include "stdlib/address/address.swl"
 .include "stdlib/list/size.swl"
 .include "stdlib/list/insert.swl"
 .include "stdlib/int/_hnds.swl"

@@ -19,7 +19,7 @@
 
 .include "stdlib/def.swl"
 .include "stdlib/error.swl"
-.include "stdlib/address.swl"
+.include "stdlib/address/address.swl"
 
 
 # Count the times that a word is found in a block of memory.

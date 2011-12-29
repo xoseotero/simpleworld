@@ -92,7 +92,7 @@ BOOST_AUTO_TEST_CASE(std_address)
 
   source.insert(line++, ".include \"stdlib/def.swl\"");
   source.insert(line++, ".include \"stdlib/init.swl\"");
-  source.insert(line++, ".include \"stdlib/address.swl\"");
+  source.insert(line++, ".include \"stdlib/address/address.swl\"");
 
   // Test
   source.insert(line++, ".label main");
@@ -145,7 +145,7 @@ BOOST_AUTO_TEST_CASE(std_address_limit_word)
 
   source.insert(line++, ".include \"stdlib/def.swl\"");
   source.insert(line++, ".include \"stdlib/init.swl\"");
-  source.insert(line++, ".include \"stdlib/address.swl\"");
+  source.insert(line++, ".include \"stdlib/address/address.swl\"");
 
   // Test
   source.insert(line++, ".label main");
@@ -202,7 +202,7 @@ BOOST_AUTO_TEST_CASE(std_address_limit_halfword)
 
   source.insert(line++, ".include \"stdlib/def.swl\"");
   source.insert(line++, ".include \"stdlib/init.swl\"");
-  source.insert(line++, ".include \"stdlib/address.swl\"");
+  source.insert(line++, ".include \"stdlib/address/address.swl\"");
 
   // Test
   source.insert(line++, ".label main");
@@ -259,7 +259,7 @@ BOOST_AUTO_TEST_CASE(std_address_limit_quarterword)
 
   source.insert(line++, ".include \"stdlib/def.swl\"");
   source.insert(line++, ".include \"stdlib/init.swl\"");
-  source.insert(line++, ".include \"stdlib/address.swl\"");
+  source.insert(line++, ".include \"stdlib/address/address.swl\"");
 
   // Test
   source.insert(line++, ".label main");
@@ -316,7 +316,7 @@ BOOST_AUTO_TEST_CASE(std_address_null)
 
   source.insert(line++, ".include \"stdlib/def.swl\"");
   source.insert(line++, ".include \"stdlib/init.swl\"");
-  source.insert(line++, ".include \"stdlib/address.swl\"");
+  source.insert(line++, ".include \"stdlib/address/address.swl\"");
 
   // Test
   source.insert(line++, ".label main");
@@ -368,7 +368,7 @@ BOOST_AUTO_TEST_CASE(std_address_inval)
   source.insert(line++, "b main");
 
   source.insert(line++, ".include \"stdlib/init.swl\"");
-  source.insert(line++, ".include \"stdlib/address.swl\"");
+  source.insert(line++, ".include \"stdlib/address/address.swl\"");
 
   // Test
   source.insert(line++, ".label main");

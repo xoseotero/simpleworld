@@ -18,7 +18,7 @@
 
 
 .include "stdlib/error.swl"
-.include "stdlib/address.swl"
+.include "stdlib/address/address.swl"
 
 
 # Maximum signed value of a block of memory (quarter words).

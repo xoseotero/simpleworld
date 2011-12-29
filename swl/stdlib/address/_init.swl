@@ -1,0 +1,49 @@
+# @file stdlib/address/_init.swl
+# Initialize the address check.
+#
+#  Copyright (C) 2008-2011  Xosé Otero <xoseotero@gmail.com>
+#
+#  This program is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+
+.include "stdlib/int/def.swl"
+.include "stdlib/int/handler.swl"
+.include "stdlib/address/_invaladdr.swl"
+
+
+# Handler for the invalid memory location interrupt.
+# IN:  g0 type of interrupt
+# IN:  g1 location of the instruction
+# IN:  g2 address
+.label _std_memhandler
+        load g0 _std_invaladdr
+        bltu g2 g0 __std_memhandler_update
+        ret
+
+        .label __std_memhandler_update
+        store g2 _std_invaladdr
+        ret
+
+# Initialize the address check.
+# OUT: g1 error status
+#      STD_NOERROR: no errors
+#      STD_ENOMEM:  there is not enough memory
+.label _std_addressinit
+        # insert the invalid memory location interrupt
+        loadi g0 STD_IMEM
+        loada g1 _std_memhandler
+        call std_handler
+
+        .label __std_addressinit_ret
+        ret                   # return the same error than std_handler

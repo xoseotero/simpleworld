@@ -18,7 +18,7 @@
 
 
 .include "stdlib/error.swl"
-.include "stdlib/address.swl"
+.include "stdlib/address/address.swl"
 .include "stdlib/node/def.swl"
 .include "stdlib/node/next.swl"
 .include "stdlib/list/def.swl"

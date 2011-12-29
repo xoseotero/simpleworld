@@ -18,7 +18,7 @@
 
 
 .include "stdlib/error.swl"
-.include "stdlib/address.swl"
+.include "stdlib/address/address.swl"
 .include "stdlib/alloc/def.swl"
 .include "stdlib/alloc/_minfo.swl"
 .include "stdlib/alloc/_mblock/def.swl"

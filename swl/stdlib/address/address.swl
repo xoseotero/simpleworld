@@ -1,0 +1,62 @@
+# @file stdlib/address/address.swl
+# Check if a address is valid.
+#
+#  Copyright (C) 2008-2011  Xosé Otero <xoseotero@gmail.com>
+#
+#  This program is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+
+.include "stdlib/def.swl"
+.include "stdlib/address/_invaladdr.swl"
+
+
+# Check if a address is valid.
+# A address is valid if it is not STD_NULL and doesn't throw a STD_IMEM when
+# it is accessed.
+# IN:  g0 address
+# IN:  g1 size of the block of memory
+# OUT: g0 if the address is valid
+#      STD_TRUE: if the address is valid
+#      STD_FALSE: if the address is not valid
+.label std_address
+        # this method only works if the interrupts are enabled and
+        # _std_addressinit was called
+
+        # check if the address is STD_NULL (0)
+        bz g0 _std_address_invalid
+
+        # check if the size is 0
+        bz g1 _std_address_ok
+
+        # calculate the highest word containing the memory to check
+        subi g1 g1 0x1
+        add g0 g0 g1
+        divi g0 g0 STD_WORDSIZE
+        multi g0 g0 STD_WORDSIZE
+
+        # check if the word is accessible
+        load g1 _std_invaladdr
+        bgeu g0 g1 _std_address_invalid
+
+        loadri g2 g0 0x0
+        load g1 _std_invaladdr
+        bgeu g0 g1 _std_address_invalid
+
+        .label _std_address_ok
+        loadi g0 STD_TRUE
+        ret
+
+        .label _std_address_invalid
+        loadi g0 STD_FALSE
+        ret

@@ -19,7 +19,7 @@
 
 .include "stdlib/def.swl"
 .include "stdlib/error.swl"
-.include "stdlib/address.swl"
+.include "stdlib/address/address.swl"
 
 
 # Compare two blocks of memory (quarter word by quarter word).

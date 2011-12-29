@@ -19,7 +19,7 @@
 
 .include "stdlib/def.swl"
 .include "stdlib/error.swl"
-.include "stdlib/address.swl"
+.include "stdlib/address/address.swl"
 .include "stdlib/node/def.swl"
 .include "stdlib/node/node.swl"
 .include "stdlib/queue/def.swl"
