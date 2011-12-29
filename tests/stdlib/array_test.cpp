@@ -88,7 +88,8 @@ BOOST_AUTO_TEST_CASE(std_array)
   source.insert(line++, ".include \"stdlib/init.swl\"");
   source.insert(line++, ".include \"stdlib/alloc/def.swl\"");
   source.insert(line++, ".include \"stdlib/alloc/info.swl\"");
-  source.insert(line++, ".include \"stdlib/array.swl\"");
+  source.insert(line++, ".include \"stdlib/array/array.swl\"");
+  source.insert(line++, ".include \"stdlib/array/free.swl\"");
 
   // Test
   source.insert(line++, ".label main");
@@ -163,7 +164,9 @@ BOOST_AUTO_TEST_CASE(std_arraysize)
   source.insert(line++, "b main");
 
   source.insert(line++, ".include \"stdlib/init.swl\"");
-  source.insert(line++, ".include \"stdlib/array.swl\"");
+  source.insert(line++, ".include \"stdlib/array/array.swl\"");
+  source.insert(line++, ".include \"stdlib/array/size.swl\"");
+  source.insert(line++, ".include \"stdlib/array/resize.swl\"");
 
   // Test
   source.insert(line++, ".label main");
@@ -224,7 +227,9 @@ BOOST_AUTO_TEST_CASE(std_arrayget)
   source.insert(line++, "b main");
 
   source.insert(line++, ".include \"stdlib/init.swl\"");
-  source.insert(line++, ".include \"stdlib/array.swl\"");
+  source.insert(line++, ".include \"stdlib/array/array.swl\"");
+  source.insert(line++, ".include \"stdlib/array/get.swl\"");
+  source.insert(line++, ".include \"stdlib/array/set.swl\"");
 
   // Test
   source.insert(line++, ".label main");
@@ -293,7 +298,9 @@ BOOST_AUTO_TEST_CASE(std_arrayfill)
   source.insert(line++, "b main");
 
   source.insert(line++, ".include \"stdlib/init.swl\"");
-  source.insert(line++, ".include \"stdlib/array.swl\"");
+  source.insert(line++, ".include \"stdlib/array/array.swl\"");
+  source.insert(line++, ".include \"stdlib/array/get.swl\"");
+  source.insert(line++, ".include \"stdlib/array/fill.swl\"");
 
   // Test
   source.insert(line++, ".label main");
@@ -356,7 +363,9 @@ BOOST_AUTO_TEST_CASE(std_arrayfind)
   source.insert(line++, "b main");
 
   source.insert(line++, ".include \"stdlib/init.swl\"");
-  source.insert(line++, ".include \"stdlib/array.swl\"");
+  source.insert(line++, ".include \"stdlib/array/array.swl\"");
+  source.insert(line++, ".include \"stdlib/array/set.swl\"");
+  source.insert(line++, ".include \"stdlib/array/find.swl\"");
 
   // Test
   source.insert(line++, ".label main");
@@ -427,7 +436,9 @@ BOOST_AUTO_TEST_CASE(std_arraycount)
   source.insert(line++, "b main");
 
   source.insert(line++, ".include \"stdlib/init.swl\"");
-  source.insert(line++, ".include \"stdlib/array.swl\"");
+  source.insert(line++, ".include \"stdlib/array/array.swl\"");
+  source.insert(line++, ".include \"stdlib/array/set.swl\"");
+  source.insert(line++, ".include \"stdlib/array/count.swl\"");
 
   // Test
   source.insert(line++, ".label main");

@@ -1,0 +1,49 @@
+# @file stdlib/array/resize.swl
+# Resize the array.
+#
+#  Copyright (C) 2008-2011  Xosé Otero <xoseotero@gmail.com>
+#
+#  This program is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+
+.include "stdlib/def.swl"
+.include "stdlib/error.swl"
+.include "stdlib/alloc/realloc.swl"
+.include "stdlib/array/def.swl"
+
+
+# Resize the array.
+# IN:  g0 pointer to the array
+# IN:  g1 number of elements
+# OUT: g1 error status
+#      STD_NOERROR: no errors
+#      STD_EFAULT: the pointer is not valid
+#      STD_ENOMEM: there is not memory enough
+.label std_arrayresize
+        move r0 g0                      # pointer
+        move r1 g1                      # elements
+
+        multi g1 g1 STD_WORDSIZE
+        addi g1 g1 _STD_ARRAY_MEM
+        call std_realloc
+        bz g1 _std_arrayresize_ok
+        ret
+
+        .label _std_arrayresize_ok
+        # update the size
+        storeri r0 r1 _STD_ARRAY_SIZE
+
+        .label _std_arrayresize_ret
+        loadi g1 STD_NOERROR
+        ret

@@ -1,6 +1,5 @@
-# @file stdlib/array.swl
-# Array data structure.
-# std_init must be executed before using any of this functions.
+# @file stdlib/array/free.swl
+# Free the array.
 #
 #  Copyright (C) 2008-2011  Xosé Otero <xoseotero@gmail.com>
 #
@@ -18,12 +17,14 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-.include "stdlib/array/array.swl"
-.include "stdlib/array/free.swl"
-.include "stdlib/array/size.swl"
-.include "stdlib/array/resize.swl"
-.include "stdlib/array/get.swl"
-.include "stdlib/array/set.swl"
-.include "stdlib/array/fill.swl"
-.include "stdlib/array/find.swl"
-.include "stdlib/array/count.swl"
+.include "stdlib/alloc/free.swl"
+
+
+# Free the array.
+# IN:  g0 pointer to the array.
+# OUT: g1 error status
+#      STD_NOERROR: no errors
+#      STD_EFAULT: the pointer is not valid.
+.label std_arrayfree
+        call std_free
+        ret

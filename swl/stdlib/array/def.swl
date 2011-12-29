@@ -1,6 +1,5 @@
-# @file stdlib/array.swl
-# Array data structure.
-# std_init must be executed before using any of this functions.
+# @file stdlib/array/def.swl
+# Array struct
 #
 #  Copyright (C) 2008-2011  Xosé Otero <xoseotero@gmail.com>
 #
@@ -18,12 +17,7 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-.include "stdlib/array/array.swl"
-.include "stdlib/array/free.swl"
-.include "stdlib/array/size.swl"
-.include "stdlib/array/resize.swl"
-.include "stdlib/array/get.swl"
-.include "stdlib/array/set.swl"
-.include "stdlib/array/fill.swl"
-.include "stdlib/array/find.swl"
-.include "stdlib/array/count.swl"
+# Array struct
+.define _STD_ARRAY_STRUCT   0x8         # Size of the struct
+.define _STD_ARRAY_SIZE     0x0         # Offset to the size field
+.define _STD_ARRAY_MEM      0x4         # Offset to the mem field

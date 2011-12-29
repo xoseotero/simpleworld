@@ -1,0 +1,72 @@
+# @file stdlib/array/find.swl
+# Find a value in a array.
+#
+#  Copyright (C) 2008-2011  Xosé Otero <xoseotero@gmail.com>
+#
+#  This program is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+
+.include "stdlib/def.swl"
+.include "stdlib/error.swl"
+.include "stdlib/address.swl"
+.include "stdlib/mem/find.swl"
+.include "stdlib/array/def.swl"
+
+
+# Find a value in a array.
+# IN:  g0 pointer to the array
+# IN:  g1 start position
+# IN:  g2 value
+# OUT: g0 poisition of the value
+# OUT: g1 error status
+#      STD_NOERROR: no errors
+#      STD_EINVAL: the value was not found
+#      STD_EFAULT: the pointer is not valid
+.label std_arrayfind
+        move r0 g0                      # pointer
+        move r1 g1                      # position
+        move r2 g2                      # value
+
+        # check if the pointer is valid
+        loadi g1 _STD_ARRAY_STRUCT
+        call std_address
+        bz g0 _std_arrayfind_efault
+
+        # check if the position is valid
+        loadri g0 r0 _STD_ARRAY_SIZE
+        bgeu r1 g0 _std_arrayfind_einval
+
+        # search the element
+        addi g0 r0 _STD_ARRAY_MEM
+        loadri g1 r0 _STD_ARRAY_SIZE
+        sub g1 g1 r1
+        multi g1 g1 STD_WORDSIZE
+        move g2 r2
+        call std_find
+        bz g1 _std_arrayfind_ret
+        ret
+
+        .label _std_arrayfind_ret
+        divi g0 g0 STD_WORDSIZE
+        add g0 g0 r1
+        loadi g1 STD_NOERROR
+        ret
+
+        .label _std_arrayfind_einval
+        loadi g1 STD_EINVAL
+        ret
+
+        .label _std_arrayfind_efault
+        loadi g1 STD_EFAULT
+        ret

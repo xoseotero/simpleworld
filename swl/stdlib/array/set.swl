@@ -1,0 +1,64 @@
+# @file stdlib/array/set.swl
+# Set the value of a element of the array.
+#
+#  Copyright (C) 2008-2011  Xosé Otero <xoseotero@gmail.com>
+#
+#  This program is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+
+.include "stdlib/def.swl"
+.include "stdlib/error.swl"
+.include "stdlib/address.swl"
+.include "stdlib/array/def.swl"
+
+
+# Set the value of a element of the array.
+# IN:  g0 pointer to the array
+# IN:  g1 position
+# IN:  g2 value
+# OUT: g0 element
+# OUT: g1 error status
+#      STD_NOERROR: no errors
+#      STD_EINVAL: the position is out of range
+#      STD_EFAULT: the pointer is not valid
+.label std_arrayset
+        move r0 g0                      # pointer
+        move r1 g1                      # position
+        move r2 g2                      # value
+
+        # check if the pointer is valid
+        loadi g1 _STD_ARRAY_STRUCT
+        call std_address
+        bz g0 _std_arrayset_efault
+
+        # check if the position is valid
+        loadri g0 r0 _STD_ARRAY_SIZE
+        bgeu r1 g0 _std_arrayset_einval
+
+        # set the element
+        addi g0 r0 _STD_ARRAY_MEM
+        multi g1 r1 STD_WORDSIZE
+        storerr g0 r2 g1
+
+        .label _std_arrayset_ret
+        loadi g1 STD_NOERROR
+        ret
+
+        .label _std_arrayset_einval
+        loadi g1 STD_EINVAL
+        ret
+
+        .label _std_arrayset_efault
+        loadi g1 STD_EFAULT
+        ret
