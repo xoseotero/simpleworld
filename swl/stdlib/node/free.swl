@@ -1,6 +1,5 @@
-# @file stdlib/node.swl
-# Node data structure used for stacks, queues, sets and lists.
-# std_init must be executed before using any of this functions.
+# @file stdlib/node/free.swl
+# Free the node.
 #
 #  Copyright (C) 2008-2011  Xosé Otero <xoseotero@gmail.com>
 #
@@ -18,10 +17,14 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-.include "stdlib/node/def.swl"
-.include "stdlib/node/node.swl"
-.include "stdlib/node/free.swl"
-.include "stdlib/node/prev.swl"
-.include "stdlib/node/next.swl"
-.include "stdlib/node/first.swl"
-.include "stdlib/node/last.swl"
+.include "stdlib/alloc/free.swl"
+
+
+# Free the node.
+# IN:  g0 pointer to the node.
+# OUT: g1 error status
+#      STD_NOERROR: no errors
+#      STD_EFAULT: the pointer is not valid.
+.label std_nodefree
+        call std_free
+        ret

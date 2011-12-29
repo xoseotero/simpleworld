@@ -1,0 +1,72 @@
+# @file stdlib/node/next.swl
+# Go to the next nodes.
+#
+#  Copyright (C) 2008-2011  Xosé Otero <xoseotero@gmail.com>
+#
+#  This program is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+
+.include "stdlib/error.swl"
+.include "stdlib/address.swl"
+.include "stdlib/node/def.swl"
+
+
+# Go to the next nodes.
+# IN:  g0 pointer to the node.
+# IN:  g1 nodes to follow.
+# OUT: g0 pointer to the node.
+# OUT: g1 error status
+#      STD_NOERROR: no errors
+#      STD_EINVAL: there are not enough nodes
+#      STD_EFAULT: the pointer is not valid.
+.label std_next
+        move r0 g0                      # pointer
+        move r1 g1                      # nodes
+
+        # check if the pointer is valid
+        loadi g1 _STD_NODE_STRUCT
+        call std_address
+        bz g0 _std_next_efault
+
+        # go to the node selected
+        .label _std_next_loop
+        # check if this is the desired node
+        bz r1 _std_next_ret
+
+        # update the counter
+        subi r1 r1 0x1
+
+        # calculate the next node
+        loadri r0 r0 _STD_NODE_NEXT
+
+        # check if the pointer is valid
+        move g0 r0
+        loadi g1 _STD_NODE_STRUCT
+        call std_address
+        bz g0 _std_next_einval
+
+        b _std_next_loop
+
+        .label _std_next_ret
+        move g0 r0
+        loadi g1 STD_NOERROR
+        ret
+
+        .label _std_next_einval
+        loadi g1 STD_EINVAL
+        ret
+
+        .label _std_next_efault
+        loadi g1 STD_EFAULT
+        ret

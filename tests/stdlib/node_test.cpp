@@ -88,7 +88,8 @@ BOOST_AUTO_TEST_CASE(std_node)
   source.insert(line++, ".include \"stdlib/init.swl\"");
   source.insert(line++, ".include \"stdlib/alloc/def.swl\"");
   source.insert(line++, ".include \"stdlib/alloc/info.swl\"");
-  source.insert(line++, ".include \"stdlib/node.swl\"");
+  source.insert(line++, ".include \"stdlib/node/node.swl\"");
+  source.insert(line++, ".include \"stdlib/node/free.swl\"");
 
   // Test
   source.insert(line++, ".label main");
@@ -163,7 +164,8 @@ BOOST_AUTO_TEST_CASE(std_prev)
 
   source.insert(line++, ".include \"stdlib/def.swl\"");
   source.insert(line++, ".include \"stdlib/init.swl\"");
-  source.insert(line++, ".include \"stdlib/node.swl\"");
+  source.insert(line++, ".include \"stdlib/node/node.swl\"");
+  source.insert(line++, ".include \"stdlib/node/prev.swl\"");
 
   // Test
   source.insert(line++, ".label main");
@@ -223,7 +225,8 @@ BOOST_AUTO_TEST_CASE(std_next)
 
   source.insert(line++, ".include \"stdlib/def.swl\"");
   source.insert(line++, ".include \"stdlib/init.swl\"");
-  source.insert(line++, ".include \"stdlib/node.swl\"");
+  source.insert(line++, ".include \"stdlib/node/node.swl\"");
+  source.insert(line++, ".include \"stdlib/node/next.swl\"");
 
   // Test
   source.insert(line++, ".label main");
@@ -284,7 +287,8 @@ BOOST_AUTO_TEST_CASE(std_first)
 
   source.insert(line++, ".include \"stdlib/def.swl\"");
   source.insert(line++, ".include \"stdlib/init.swl\"");
-  source.insert(line++, ".include \"stdlib/node.swl\"");
+  source.insert(line++, ".include \"stdlib/node/node.swl\"");
+  source.insert(line++, ".include \"stdlib/node/first.swl\"");
 
   // Test
   source.insert(line++, ".label main");
@@ -347,7 +351,8 @@ BOOST_AUTO_TEST_CASE(std_last)
 
   source.insert(line++, ".include \"stdlib/def.swl\"");
   source.insert(line++, ".include \"stdlib/init.swl\"");
-  source.insert(line++, ".include \"stdlib/node.swl\"");
+  source.insert(line++, ".include \"stdlib/node/node.swl\"");
+  source.insert(line++, ".include \"stdlib/node/last.swl\"");
 
   // Test
   source.insert(line++, ".label main");

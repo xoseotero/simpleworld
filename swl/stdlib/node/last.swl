@@ -1,0 +1,65 @@
+# @file stdlib/node/last.swl
+# Go to the last node.
+#
+#  Copyright (C) 2008-2011  Xosé Otero <xoseotero@gmail.com>
+#
+#  This program is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+
+.include "stdlib/error.swl"
+.include "stdlib/address.swl"
+.include "stdlib/node/def.swl"
+
+
+# Go to the last node.
+# A infinite loop is created if there are loops in the nodes.
+# IN:  g0 pointer to the node.
+# OUT: g0 pointer to the last node.
+# OUT: g1 error status
+#      STD_NOERROR: no errors
+#      STD_EFAULT: the pointer is not valid.
+.label std_last
+        move r0 g0                      # pointer
+
+        # check if the pointer is valid
+        loadi g1 _STD_NODE_STRUCT
+        call std_address
+        bz g0 _std_last_efault
+
+        # go to the last node
+        .label _std_last_loop
+        # calculate the next node
+        loadri g0 r0 _STD_NODE_NEXT
+
+        # check if it is the last node
+        bz g0 _std_last_ret
+
+        # update the node
+        move r0 g0
+
+        # check if the pointer is valid
+        loadi g1 _STD_NODE_STRUCT
+        call std_address
+        bz g0 _std_last_ret
+
+        b _std_last_loop
+
+        .label _std_last_ret
+        move g0 r0
+        loadi g1 STD_NOERROR
+        ret
+
+        .label _std_last_efault
+        loadi g1 STD_EFAULT
+        ret

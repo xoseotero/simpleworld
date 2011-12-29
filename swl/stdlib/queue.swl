@@ -17,12 +17,17 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+
 .include "stdlib/def.swl"
 .include "stdlib/error.swl"
 .include "stdlib/address.swl"
 .include "stdlib/alloc/alloc.swl"
 .include "stdlib/alloc/free.swl"
-.include "stdlib/node.swl"
+.include "stdlib/node/def.swl"
+.include "stdlib/node/node.swl"
+.include "stdlib/node/free.swl"
+.include "stdlib/node/next.swl"
+
 
 # Queue struct
 .define _STD_QUEUE_STRUCT     0x8       # Size of the struct
