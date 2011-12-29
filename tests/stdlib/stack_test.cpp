@@ -88,7 +88,8 @@ BOOST_AUTO_TEST_CASE(std_stack)
   source.insert(line++, ".include \"stdlib/init.swl\"");
   source.insert(line++, ".include \"stdlib/alloc/def.swl\"");
   source.insert(line++, ".include \"stdlib/alloc/info.swl\"");
-  source.insert(line++, ".include \"stdlib/stack.swl\"");
+  source.insert(line++, ".include \"stdlib/stack/stack.swl\"");
+  source.insert(line++, ".include \"stdlib/stack/free.swl\"");
 
   // Test
   source.insert(line++, ".label main");
@@ -162,7 +163,9 @@ BOOST_AUTO_TEST_CASE(std_stackempty)
   source.insert(line++, "b main");
 
   source.insert(line++, ".include \"stdlib/init.swl\"");
-  source.insert(line++, ".include \"stdlib/stack.swl\"");
+  source.insert(line++, ".include \"stdlib/stack/stack.swl\"");
+  source.insert(line++, ".include \"stdlib/stack/empty.swl\"");
+  source.insert(line++, ".include \"stdlib/stack/push.swl\"");
 
   // Test
   source.insert(line++, ".label main");
@@ -222,7 +225,9 @@ BOOST_AUTO_TEST_CASE(std_stackpush)
   source.insert(line++, "b main");
 
   source.insert(line++, ".include \"stdlib/init.swl\"");
-  source.insert(line++, ".include \"stdlib/stack.swl\"");
+  source.insert(line++, ".include \"stdlib/stack/stack.swl\"");
+  source.insert(line++, ".include \"stdlib/stack/push.swl\"");
+  source.insert(line++, ".include \"stdlib/stack/pop.swl\"");
 
   // Test
   source.insert(line++, ".label main");

@@ -1,0 +1,80 @@
+# @file stdlib/stack/pop.swl
+# Remove a element from the stack.
+#
+#  Copyright (C) 2008-2011  Xosé Otero <xoseotero@gmail.com>
+#
+#  This program is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+
+.include "stdlib/def.swl"
+.include "stdlib/error.swl"
+.include "stdlib/address.swl"
+.include "stdlib/node/def.swl"
+.include "stdlib/node/node.swl"
+.include "stdlib/node/free.swl"
+.include "stdlib/node/next.swl"
+.include "stdlib/stack/def.swl"
+
+
+# Remove a element from the stack.
+# IN:  g0 pointer to the stack
+# OUT: g0 element removed
+# OUT: g1 error status
+#      STD_NOERROR: no errors
+#      STD_EINVAL: the stack is empty
+#      STD_EFAULT: the pointer is not valid
+.label std_stackpop
+        move r0 g0                      # pointer
+
+        # check if the pointer is valid
+        loadi g1 _STD_STACK_STRUCT
+        call std_address
+        bz g0 _std_stackpop_efault
+
+        # check if the stack is empty
+        loadri g0 r0 _STD_STACK_TOP
+        bz g0 _std_stackpop_einval
+
+        # get the node to remove
+        loadri r1 r0 _STD_STACK_TOP     # removed
+
+        # get the data
+        loadri r2 r1 _STD_NODE_DATA     # data
+
+        # update the top node
+        # top = removed.next
+        move g0 r1
+        loadi g1 0x1
+        call std_next
+        bz g1 _std_stackpop_notempty
+        loadi g0 STD_NULL
+        .label _std_stackpop_notempty
+        storeri r0 g0 _STD_STACK_TOP
+
+        # free the node
+        move g0 r1
+        call std_nodefree
+
+        .label _std_stackpop_ret
+        move g0 r2
+        loadi g1 STD_NOERROR
+        ret
+
+        .label _std_stackpop_einval
+        loadi g1 STD_EINVAL
+        ret
+
+        .label _std_stackpop_efault
+        loadi g1 STD_EFAULT
+        ret

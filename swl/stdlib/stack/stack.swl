@@ -1,6 +1,5 @@
-# @file stdlib/stack.swl
-# Stack data structure.
-# std_init must be executed before using any of this functions.
+# @file stdlib/stack/stack.swl
+# Create a new stack.
 #
 #  Copyright (C) 2008-2011  Xosé Otero <xoseotero@gmail.com>
 #
@@ -18,8 +17,31 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-.include "stdlib/stack/stack.swl"
-.include "stdlib/stack/free.swl"
-.include "stdlib/stack/empty.swl"
-.include "stdlib/stack/push.swl"
-.include "stdlib/stack/pop.swl"
+.include "stdlib/def.swl"
+.include "stdlib/error.swl"
+.include "stdlib/alloc/alloc.swl"
+.include "stdlib/stack/def.swl"
+
+
+# Create a new stack.
+# OUT: g0 pointer to the new stack
+# OUT: g1 error status
+#      STD_NOERROR: no errors
+#      STD_ENOMEM: there is not memory enough
+.label std_stack
+        # allocate the memory
+        loadi g0 _STD_STACK_STRUCT
+        call std_alloc
+        bnz g1 _std_stack_enomem
+
+        # initialize the fields
+        loadi g1 STD_NULL
+        storeri g0 g1 _STD_STACK_TOP
+
+        .label _std_stack_ret
+        loadi g1 STD_NOERROR
+        ret
+
+        .label _std_stack_enomem
+        loadi g1 STD_ENOMEM
+        ret

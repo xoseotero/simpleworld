@@ -1,6 +1,5 @@
-# @file stdlib/stack.swl
-# Stack data structure.
-# std_init must be executed before using any of this functions.
+# @file stdlib/stack/def.swl
+# Stack struct
 #
 #  Copyright (C) 2008-2011  Xosé Otero <xoseotero@gmail.com>
 #
@@ -18,8 +17,6 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-.include "stdlib/stack/stack.swl"
-.include "stdlib/stack/free.swl"
-.include "stdlib/stack/empty.swl"
-.include "stdlib/stack/push.swl"
-.include "stdlib/stack/pop.swl"
+# Stack struct
+.define _STD_STACK_STRUCT     0x4       # Size of the struct
+.define _STD_STACK_TOP        0x0       # Offset to the top field
