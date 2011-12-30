@@ -68,9 +68,9 @@ BOOST_AUTO_TEST_CASE(swl_compile)
 }
 
 /**
- * Check std_bitsclear.
+ * Check std_clear.
  */
-BOOST_AUTO_TEST_CASE(std_bitsclear)
+BOOST_AUTO_TEST_CASE(std_clear)
 {
   cpu::File source;
   cpu::Source::size_type line = 0;
@@ -86,7 +86,7 @@ BOOST_AUTO_TEST_CASE(std_bitsclear)
   source.insert(line++, ".label main");
   source.insert(line++, "loadi g0 0xF050");
   source.insert(line++, "loadi g1 0x2222");
-  source.insert(line++, "call std_bitsclear");
+  source.insert(line++, "call std_clear");
   source.insert(line++, "stop");
 
   // Space for 16 words in the stack

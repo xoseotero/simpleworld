@@ -24,7 +24,7 @@
 # IN:  g0 word
 # IN:  g1 bits
 # OUT: g0 new word
-.label std_bitsclear
+.label std_clear
         load g2 _std_bits_full
         xor g1 g1 g2
         and g0 g0 g1
