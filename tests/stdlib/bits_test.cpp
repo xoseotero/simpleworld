@@ -105,9 +105,9 @@ BOOST_AUTO_TEST_CASE(std_clear)
 }
 
 /**
- * Check std_bitscomp.
+ * Check std_comp.
  */
-BOOST_AUTO_TEST_CASE(std_bitscomp)
+BOOST_AUTO_TEST_CASE(std_comp)
 {
   cpu::File source;
   cpu::Source::size_type line = 0;
@@ -122,7 +122,7 @@ BOOST_AUTO_TEST_CASE(std_bitscomp)
   // Test
   source.insert(line++, ".label main");
   source.insert(line++, "loadi g0 0xF050");
-  source.insert(line++, "call std_bitscomp");
+  source.insert(line++, "call std_comp");
   source.insert(line++, "stop");
 
   // Space for 16 words in the stack

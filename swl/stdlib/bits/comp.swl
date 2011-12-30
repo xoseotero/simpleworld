@@ -23,7 +23,7 @@
 # Get the complement of a word.
 # IN:  g0 word
 # OUT: g0 new word
-.label std_bitscomp
+.label std_comp
         load g1 _std_bits_full
         xor g0 g0 g1
         ret

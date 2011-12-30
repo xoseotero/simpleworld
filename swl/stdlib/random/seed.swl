@@ -31,7 +31,7 @@
         move r0 g0                      # seed
 
         # the second word of the seed is the complement of the first one
-        call std_bitscomp
+        call std_comp
 
         store g0 _std_random_seed1
         store r0 _std_random_seed2
