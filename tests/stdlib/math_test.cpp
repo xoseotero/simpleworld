@@ -269,7 +269,7 @@ BOOST_AUTO_TEST_CASE(std_pow)
 /**
  * Check std_min.
  */
-BOOST_AUTO_TEST_CASE(std_min)
+BOOST_AUTO_TEST_CASE(STD_MIN)
 {
   cpu::File source;
   cpu::Source::size_type line = 0;
@@ -279,13 +279,13 @@ BOOST_AUTO_TEST_CASE(std_min)
   source.insert(line++, "loada sp stack");
   source.insert(line++, "b main");
 
-  source.insert(line++, ".include \"stdlib/math/min.swl\"");
+  source.insert(line++, ".include \"stdlib/math/def.swl\"");
 
   // Test with 2 positive values
   source.insert(line++, ".label main");
   source.insert(line++, "loadi g0 0x0");
   source.insert(line++, "loadi g1 0x3");
-  source.insert(line++, "call std_min");
+  source.insert(line++, "STD_MIN g0 g0 g1");
   source.insert(line++, "push g0");
 
   // Test with 2 negative values
@@ -293,14 +293,14 @@ BOOST_AUTO_TEST_CASE(std_min)
   source.insert(line++, "loadhi g0 0xFFFF");
   source.insert(line++, "loadi g1 0x4");
   source.insert(line++, "loadhi g1 0xFFFF");
-  source.insert(line++, "call std_min");
+  source.insert(line++, "STD_MIN_SHORT g0 g1");
   source.insert(line++, "push g0");
 
   // Test with a positive and a negative value
   source.insert(line++, "loadi g0 0x3");
   source.insert(line++, "loadi g1 0x0");
   source.insert(line++, "loadhi g1 0xFFFF");
-  source.insert(line++, "call std_min");
+  source.insert(line++, "STD_MIN_SHORT g0 g1");
   source.insert(line++, "move g2 g0");
 
   // Put the results in registers
@@ -470,7 +470,7 @@ BOOST_AUTO_TEST_CASE(std_bminq)
 /**
  * Check std_minu.
  */
-BOOST_AUTO_TEST_CASE(std_minu)
+BOOST_AUTO_TEST_CASE(STD_MINU)
 {
   cpu::File source;
   cpu::Source::size_type line = 0;
@@ -480,13 +480,13 @@ BOOST_AUTO_TEST_CASE(std_minu)
   source.insert(line++, "loada sp stack");
   source.insert(line++, "b main");
 
-  source.insert(line++, ".include \"stdlib/math/minu.swl\"");
+  source.insert(line++, ".include \"stdlib/math/def.swl\"");
 
   // Test with 2 positive values
   source.insert(line++, ".label main");
   source.insert(line++, "loadi g0 0x0");
   source.insert(line++, "loadi g1 0x3");
-  source.insert(line++, "call std_minu");
+  source.insert(line++, "STD_MINU g0 g0 g1");
   source.insert(line++, "push g0");
 
   // Test with 2 negative values
@@ -494,14 +494,14 @@ BOOST_AUTO_TEST_CASE(std_minu)
   source.insert(line++, "loadhi g0 0xFFFF");
   source.insert(line++, "loadi g1 0x4");
   source.insert(line++, "loadhi g1 0xFFFF");
-  source.insert(line++, "call std_minu");
+  source.insert(line++, "STD_MINU_SHORT g0 g1");
   source.insert(line++, "push g0");
 
   // Test with a positive and a negative value
   source.insert(line++, "loadi g0 0x3");
   source.insert(line++, "loadi g1 0x0");
   source.insert(line++, "loadhi g1 0xFFFF");
-  source.insert(line++, "call std_minu");
+  source.insert(line++, "STD_MINU_SHORT g0 g1");
   source.insert(line++, "move g2 g0");
 
   // Put the results in registers
@@ -671,7 +671,7 @@ BOOST_AUTO_TEST_CASE(std_bminuq)
 /**
  * Check std_max.
  */
-BOOST_AUTO_TEST_CASE(std_max)
+BOOST_AUTO_TEST_CASE(STD_MAX)
 {
   cpu::File source;
   cpu::Source::size_type line = 0;
@@ -681,13 +681,13 @@ BOOST_AUTO_TEST_CASE(std_max)
   source.insert(line++, "loada sp stack");
   source.insert(line++, "b main");
 
-  source.insert(line++, ".include \"stdlib/math/max.swl\"");
+  source.insert(line++, ".include \"stdlib/math/def.swl\"");
 
   // Test with 2 positive values
   source.insert(line++, ".label main");
   source.insert(line++, "loadi g0 0x0");
   source.insert(line++, "loadi g1 0x3");
-  source.insert(line++, "call std_max");
+  source.insert(line++, "STD_MAX g0 g0 g1");
   source.insert(line++, "push g0");
 
   // Test with 2 negative values
@@ -695,14 +695,14 @@ BOOST_AUTO_TEST_CASE(std_max)
   source.insert(line++, "loadhi g0 0xFFFF");
   source.insert(line++, "loadi g1 0x4");
   source.insert(line++, "loadhi g1 0xFFFF");
-  source.insert(line++, "call std_max");
+  source.insert(line++, "STD_MAX_SHORT g0 g1");
   source.insert(line++, "push g0");
 
   // Test with a positive and a negative value
   source.insert(line++, "loadi g0 0x3");
   source.insert(line++, "loadi g1 0x0");
   source.insert(line++, "loadhi g1 0xFFFF");
-  source.insert(line++, "call std_max");
+  source.insert(line++, "STD_MAX_SHORT g0 g1");
   source.insert(line++, "move g2 g0");
 
   // Put the results in registers
@@ -872,7 +872,7 @@ BOOST_AUTO_TEST_CASE(std_bmaxq)
 /**
  * Check std_maxu.
  */
-BOOST_AUTO_TEST_CASE(std_maxu)
+BOOST_AUTO_TEST_CASE(STD_MAXU)
 {
   cpu::File source;
   cpu::Source::size_type line = 0;
@@ -882,13 +882,13 @@ BOOST_AUTO_TEST_CASE(std_maxu)
   source.insert(line++, "loada sp stack");
   source.insert(line++, "b main");
 
-  source.insert(line++, ".include \"stdlib/math/maxu.swl\"");
+  source.insert(line++, ".include \"stdlib/math/def.swl\"");
 
   // Test with 2 positive values
   source.insert(line++, ".label main");
   source.insert(line++, "loadi g0 0x0");
   source.insert(line++, "loadi g1 0x3");
-  source.insert(line++, "call std_maxu");
+  source.insert(line++, "STD_MAXU g0 g0 g1");
   source.insert(line++, "push g0");
 
   // Test with 2 negative values
@@ -896,14 +896,14 @@ BOOST_AUTO_TEST_CASE(std_maxu)
   source.insert(line++, "loadhi g0 0xFFFF");
   source.insert(line++, "loadi g1 0x4");
   source.insert(line++, "loadhi g1 0xFFFF");
-  source.insert(line++, "call std_maxu");
+  source.insert(line++, "STD_MAXU_SHORT g0 g1");
   source.insert(line++, "push g0");
 
   // Test with a positive and a negative value
   source.insert(line++, "loadi g0 0x3");
   source.insert(line++, "loadi g1 0x0");
   source.insert(line++, "loadhi g1 0xFFFF");
-  source.insert(line++, "call std_maxu");
+  source.insert(line++, "STD_MAXU_SHORT g0 g1");
   source.insert(line++, "move g2 g0");
 
   // Put the results in registers

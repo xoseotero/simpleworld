@@ -1,0 +1,101 @@
+# @file stdlib/math/def.swl
+# Macros.
+#
+#  Copyright (C) 2011  Xosé Otero <xoseotero@gmail.com>
+#
+#  This program is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+
+# Minimum signed value.
+# IN:  REG1 first value
+# IN:  REG2 second value
+# OUT: REGMIN minimum value
+.macro STD_MIN REGMIN REG1 REG2
+blt REG1 REG2 0x000C
+move REGMIN REG2
+b 0x0008
+move REGMIN REG1
+.endmacro
+
+# Minimum signed value (REG1 is input and output).
+# IN:  REG1 first value
+# IN:  REG2 second value
+# OUT: REG1 minimum value
+.macro STD_MIN_SHORT REG1 REG2
+blt REG1 REG2 0x0008
+move REG1 REG2
+.endmacro
+
+
+# Minimum unsigned value.
+# IN:  REG1 first value
+# IN:  REG2 second value
+# OUT: REGMIN minimum value
+.macro STD_MINU REGMIN REG1 REG2
+bltu REG1 REG2 0x000C
+move REGMIN REG2
+b 0x0008
+move REGMIN REG1
+.endmacro
+
+# Minimum unsigned value (REG1 is input and output).
+# IN:  REG1 first value
+# IN:  REG2 second value
+# OUT: REG1 minimum value
+.macro STD_MINU_SHORT REG1 REG2
+bltu REG1 REG2 0x0008
+move REG1 REG2
+.endmacro
+
+
+# Maximum signed value.
+# IN:  REG1 first value
+# IN:  REG2 second value
+# OUT: REGMAX maximum value
+.macro STD_MAX REGMAX REG1 REG2
+bgt REG1 REG2 0x000C
+move REGMAX REG2
+b 0x0008
+move REGMAX REG1
+.endmacro
+
+# Maximum signed value (REG1 is input and output).
+# IN:  REG1 first value
+# IN:  REG2 second value
+# OUT: REG1 maximum value
+.macro STD_MAX_SHORT REG1 REG2
+bgt REG1 REG2 0x0008
+move REG1 REG2
+.endmacro
+
+
+# Maximum unsigned value.
+# IN:  REG1 first value
+# IN:  REG2 second value
+# OUT: REGMAX maximum value
+.macro STD_MAXU REGMAX REG1 REG2
+bgtu REG1 REG2 0x000C
+move REGMAX REG2
+b 0x0008
+move REGMAX REG1
+.endmacro
+
+# Maximum unsigned value (REG1 is input and output).
+# IN:  REG1 first value
+# IN:  REG2 second value
+# OUT: REG1 maximum value
+.macro STD_MAXU_SHORT REG1 REG2
+bgtu REG1 REG2 0x0008
+move REG1 REG2
+.endmacro
