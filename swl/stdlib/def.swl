@@ -29,15 +29,15 @@
 .define STD_QWORDSIZE   0x1
 
 # Word with all bits to 0.
-.define STD_ZERO        0x00000000
+.define STD_WORDZERO    0x00000000
 # Word with all bits to 1.
-.define STD_FULL        0xFFFFFFFF
+.define STD_WORDFULL    0xFFFFFFFF
 
 # Minimum signed value.
-.define STD_MIN         0x80000000
+.define STD_WORDMIN     0x80000000
 # Maximum signed value.
-.define STD_MAX         0x7FFFFFFF
+.define STD_WORDMAX     0x7FFFFFFF
 # Minimum unsigned value.
-.define STD_MINU        0x00000000
+.define STD_WORDMINU    0x00000000
 # Maximum unsigned value.
-.define STD_MAXU        0xFFFFFFFF
+.define STD_WORDMAXU    0xFFFFFFFF

@@ -2,7 +2,7 @@
  * @file tests/stdlib/def_test.cpp
  * Unit test for stdlib/def.swl
  *
- *  Copyright (C) 2009-2010  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2009-2011  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -85,13 +85,13 @@ BOOST_AUTO_TEST_CASE(swl_definitions)
   source.insert(line++, "STD_HWORDSIZE");
   source.insert(line++, "STD_QWORDSIZE");
 
-  source.insert(line++, "STD_ZERO");
-  source.insert(line++, "STD_FULL");
+  source.insert(line++, "STD_WORDZERO");
+  source.insert(line++, "STD_WORDFULL");
 
-  source.insert(line++, "STD_MIN");
-  source.insert(line++, "STD_MAX");
-  source.insert(line++, "STD_MINU");
-  source.insert(line++, "STD_MAXU");
+  source.insert(line++, "STD_WORDMIN");
+  source.insert(line++, "STD_WORDMAX");
+  source.insert(line++, "STD_WORDMINU");
+  source.insert(line++, "STD_WORDMAXU");
   compile(source);
 
   cpu::Memory registers;

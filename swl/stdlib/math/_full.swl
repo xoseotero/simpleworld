@@ -22,4 +22,4 @@
 
 # A word with all the bits to 1
 .label _std_math_word_full
-STD_FULL
+STD_WORDFULL

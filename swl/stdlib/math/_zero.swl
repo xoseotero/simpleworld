@@ -22,4 +22,4 @@
 
 # A word with all the bits to 0
 .label _std_math_word_zero
-STD_ZERO
+STD_WORDZERO

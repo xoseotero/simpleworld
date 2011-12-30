@@ -26,6 +26,6 @@
 
 # Seed zero by default
 .label _std_random_seed1
-STD_ZERO
+STD_WORDZERO
 .label _std_random_seed2
-STD_FULL
+STD_WORDFULL

@@ -31,7 +31,7 @@
 .label _std_random_b
 0x3039
 .label _std_random_c
-STD_MAX
+STD_WORDMAX
 
 
 # Update the seed with a iteration of the LCG algorithm

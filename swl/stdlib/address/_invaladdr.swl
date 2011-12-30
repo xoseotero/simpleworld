@@ -22,4 +22,4 @@
 
 # Lowest invalid address.
 .label _std_invaladdr
-STD_MAXU
+STD_WORDMAXU
