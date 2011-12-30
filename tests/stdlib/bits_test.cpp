@@ -68,43 +68,6 @@ BOOST_AUTO_TEST_CASE(swl_compile)
 }
 
 /**
- * Check std_bitsset.
- */
-BOOST_AUTO_TEST_CASE(std_bitsset)
-{
-  cpu::File source;
-  cpu::Source::size_type line = 0;
-
-  // Initialize the stack pointer
-  source.insert(line++, ".label init");
-  source.insert(line++, "loada sp stack");
-  source.insert(line++, "b main");
-
-  source.insert(line++, ".include \"stdlib/bits/set.swl\"");
-
-  // Test
-  source.insert(line++, ".label main");
-  source.insert(line++, "loadi g0 0xF050");
-  source.insert(line++, "loadi g1 0x2222");
-  source.insert(line++, "call std_bitsset");
-  source.insert(line++, "stop");
-
-  // Space for 16 words in the stack
-  source.insert(line++, ".label stack");
-  source.insert(line++, ".block 0x40");
-
-  compile(source);
-
-  cpu::Memory registers;
-  cpu::MemoryFile memory(CPU_SAVE);
-  FakeCPU cpu(&registers, &memory);
-  cpu.execute(MAX_CYCLES);
-
-  BOOST_CHECK(not cpu.running());
-  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "g0")], 0xF272);
-}
-
-/**
  * Check std_bitsclear.
  */
 BOOST_AUTO_TEST_CASE(std_bitsclear)

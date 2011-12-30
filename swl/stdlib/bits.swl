@@ -17,6 +17,5 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-.include "stdlib/bits/set.swl"
 .include "stdlib/bits/clear.swl"
 .include "stdlib/bits/comp.swl"
