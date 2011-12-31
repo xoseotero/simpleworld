@@ -28,6 +28,4 @@
 #      STD_NOERROR: no errors
 #      STD_EINVAL: the position is out of range
 #      STD_EFAULT: the pointer is not valid
-.label std_setget
-        call std_listget
-        ret
+.define std_setget std_listget

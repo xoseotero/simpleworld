@@ -24,6 +24,4 @@
 # OUT: g0 pointer to the new set
 # OUT: g1 error status
 #      STD_ENOMEM: there is not memory enough
-.label std_set
-        call std_list
-        ret
+.define std_set std_list

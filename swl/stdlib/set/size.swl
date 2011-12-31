@@ -26,6 +26,4 @@
 # OUT: g1 error status
 #      STD_NOERROR: no errors
 #      STD_EFAULT: the pointer is not valid
-.label std_setsize
-        call std_listsize
-        ret
+.define std_setsize std_listsize

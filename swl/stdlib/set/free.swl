@@ -25,6 +25,4 @@
 # OUT: g1 error status
 #      STD_NOERROR: no errors
 #      STD_EFAULT: the pointer is not valid.
-.label std_setfree
-        call std_listfree
-        ret
+.define std_setfree std_listfree
