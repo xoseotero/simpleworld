@@ -36,14 +36,14 @@
         move r2 g2                      # data
 
         # allocate the memory
-        loadi g0 _STD_NODE_STRUCT
+        loadi g0 STD_NODE_STRUCT
         call std_alloc
         bnz g1 _std_node_enomem
 
         # set the fields
         storeri g0 r0 _STD_NODE_PREV
         storeri g0 r1 _STD_NODE_NEXT
-        storeri g0 r2 _STD_NODE_DATA
+        storeri g0 r2 STD_NODE_DATA
 
         .label _std_node_ret
         loadi g1 STD_NOERROR

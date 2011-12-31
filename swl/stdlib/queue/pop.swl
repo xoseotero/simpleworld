@@ -37,7 +37,7 @@
         move r0 g0                      # pointer
 
         # check if the pointer is valid
-        loadi g1 _STD_QUEUE_STRUCT
+        loadi g1 STD_QUEUE_STRUCT
         call std_address
         bz g0 _std_queuepop_efault
 
@@ -49,7 +49,7 @@
         loadri r1 r0 _STD_QUEUE_BOTTOM  # removed
 
         # get the data
-        loadri r2 r1 _STD_NODE_DATA     # data
+        loadri r2 r1 STD_NODE_DATA      # data
 
         # update the bottom pointer
         loadri g0 r1 _STD_NODE_NEXT

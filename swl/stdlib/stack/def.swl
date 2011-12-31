@@ -18,5 +18,5 @@
 
 
 # Stack struct
-.define _STD_STACK_STRUCT     0x4       # Size of the struct
+.define STD_STACK_STRUCT     0x4       # Size of the struct
 .define _STD_STACK_TOP        0x0       # Offset to the top field

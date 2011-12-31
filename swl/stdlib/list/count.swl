@@ -36,7 +36,7 @@
         move r1 g1                      # value
 
         # check if the pointer is valid
-        loadi g1 _STD_LIST_STRUCT
+        loadi g1 STD_LIST_STRUCT
         call std_address
         bz g0 _std_listcount_efault
 
@@ -52,7 +52,7 @@
         # count the times the value is found
         .label _std_listcount_loop
         # compare the value
-        loadri g1 g0 _STD_NODE_DATA
+        loadri g1 g0 STD_NODE_DATA
         bne g1 r1 _std_listcount_continue
         # update the counter
         addi r3 r3 0x1

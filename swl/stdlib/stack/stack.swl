@@ -30,7 +30,7 @@
 #      STD_ENOMEM: there is not memory enough
 .label std_stack
         # allocate the memory
-        loadi g0 _STD_STACK_STRUCT
+        loadi g0 STD_STACK_STRUCT
         call std_alloc
         bnz g1 _std_stack_enomem
 

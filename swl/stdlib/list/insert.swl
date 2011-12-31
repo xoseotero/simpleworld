@@ -41,7 +41,7 @@
         move r2 g2                      # value
 
         # check if the pointer is valid
-        loadi g1 _STD_LIST_STRUCT
+        loadi g1 STD_LIST_STRUCT
         call std_address
         bz g0 _std_listinsert_efault
 

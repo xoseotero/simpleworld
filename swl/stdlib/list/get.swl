@@ -36,7 +36,7 @@
         move r1 g1                      # position
 
         # check if the pointer is valid
-        loadi g1 _STD_LIST_STRUCT
+        loadi g1 STD_LIST_STRUCT
         call std_address
         bz g0 _std_listget_efault
 
@@ -54,7 +54,7 @@
         ret
 
         .label _std_listget_ret
-        loadri g0 g0 _STD_NODE_DATA
+        loadri g0 g0 STD_NODE_DATA
         loadi g1 STD_NOERROR
         ret
 

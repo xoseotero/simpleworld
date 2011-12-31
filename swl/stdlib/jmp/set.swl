@@ -37,9 +37,9 @@
         call std_address
         bz g0 _std_jmpset_efault
 
-        storeri r0 wc STD_JMP_WC
-        storeri r0 lr STD_JMP_LR
-        storeri r0 fp STD_JMP_FP
+        storeri r0 wc _STD_JMP_WC
+        storeri r0 lr _STD_JMP_LR
+        storeri r0 fp _STD_JMP_FP
         loadi g0 0x0
         loadi g1 STD_NOERROR
         ret

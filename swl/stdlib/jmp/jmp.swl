@@ -42,9 +42,9 @@
 
         move g0 r1
         move g1 r0
-        loadri wc g1 STD_JMP_WC
-        loadri lr g1 STD_JMP_LR
-        loadri fp g1 STD_JMP_FP
+        loadri wc g1 _STD_JMP_WC
+        loadri lr g1 _STD_JMP_LR
+        loadri fp g1 _STD_JMP_FP
         loadi g1 STD_NOERROR
         ret
 

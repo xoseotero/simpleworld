@@ -1,8 +1,7 @@
-# @file stdlib/set.swl
-# Set data structure.
-# std_init must be executed before using any of this functions.
+# @file stdlib/set/def.swl
+# Set struct.
 #
-#  Copyright (C) 2008-2011  Xosé Otero <xoseotero@gmail.com>
+#  Copyright (C) 2011  Xosé Otero <xoseotero@gmail.com>
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -18,11 +17,8 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-.include "stdlib/set/def.swl"
-.include "stdlib/set/set.swl"
-.include "stdlib/set/free.swl"
-.include "stdlib/set/size.swl"
-.include "stdlib/set/get.swl"
-.include "stdlib/set/insert.swl"
-.include "stdlib/set/remove.swl"
-.include "stdlib/set/check.swl"
+.include "stdlib/list/def.swl"
+
+
+# Set struct
+.define STD_SET_STRUCT    STD_LIST_STRUCT         # Size of the struct

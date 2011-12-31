@@ -19,6 +19,6 @@
 
 # jmp struct to store the stack context
 .define STD_JMP_STRUCT       0xC        # Size of the jmp struct
-.define STD_JMP_WC           0x0        # Offset to the window counter
-.define STD_JMP_LR           0x4        # Offset to the link register
-.define STD_JMP_FP           0x8        # Offset to the frame pointer
+.define _STD_JMP_WC          0x0        # Offset to the window counter
+.define _STD_JMP_LR          0x4        # Offset to the link register
+.define _STD_JMP_FP          0x8        # Offset to the frame pointer

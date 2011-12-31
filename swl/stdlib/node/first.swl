@@ -33,7 +33,7 @@
         move r0 g0                      # pointer
 
         # check if the pointer is valid
-        loadi g1 _STD_NODE_STRUCT
+        loadi g1 STD_NODE_STRUCT
         call std_address
         bz g0 _std_first_efault
 
@@ -49,7 +49,7 @@
         move r0 g0
 
         # check if the pointer is valid
-        loadi g1 _STD_NODE_STRUCT
+        loadi g1 STD_NODE_STRUCT
         call std_address
         bz g0 _std_first_efault
 

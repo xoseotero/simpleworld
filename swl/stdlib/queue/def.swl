@@ -18,6 +18,6 @@
 
 
 # Queue struct
-.define _STD_QUEUE_STRUCT     0x8       # Size of the struct
+.define STD_QUEUE_STRUCT      0x8       # Size of the struct
 .define _STD_QUEUE_TOP        0x0       # Offset to the top field
 .define _STD_QUEUE_BOTTOM     0x4       # Offset to the bottom field

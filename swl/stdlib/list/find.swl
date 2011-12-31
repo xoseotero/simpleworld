@@ -39,7 +39,7 @@
         move r2 g2                      # value
 
         # check if the pointer is valid
-        loadi g1 _STD_LIST_STRUCT
+        loadi g1 STD_LIST_STRUCT
         call std_address
         bz g0 _std_listfind_efault
 
@@ -61,7 +61,7 @@
         # use g0 as the node in all the loop
         .label _std_listfind_loop
         # compare the value
-        loadri g1 g0 _STD_NODE_DATA
+        loadri g1 g0 STD_NODE_DATA
         beq g1 r2 _std_listfind_ret
 
         # update the position
