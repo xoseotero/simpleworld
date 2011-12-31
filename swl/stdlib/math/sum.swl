@@ -1,5 +1,5 @@
-# @file stdlib/math/bmaxuh.swl
-# Maximum unsigned value of a block of memory (half words).
+# @file stdlib/math/sum.swl
+# Summation of a block of memory.
 #
 #  Copyright (C) 2006-2011  Xosé Otero <xoseotero@gmail.com>
 #
@@ -21,49 +21,45 @@
 .include "stdlib/address/address.swl"
 
 
-# Maximum unsigned value of a block of memory (half words).
+# Summation of a block of memory.
 # IN:  g0 pointer to the block of memory
-# IN:  g1 size of the block of memory (must be a multiple of STD_HWORDSIZE)
-# OUT: g0 maximum value
+# IN:  g1 size of the block of memory (must be a multiple of STD_WORDSIZE)
+# OUT: g0 summation value
 # OUT: g1 error status
 #      STD_NOERROR: no errors
 #      STD_EINVAL: size is not valid
 #      STD_EFAULT: the pointer is not valid
-.label std_bmaxuh
+.label std_sum
         # check if the size is valid
-        bz g1 _std_bmaxuh_einval
-        modi g2 g1 STD_HWORDSIZE
-        bnz g2 _std_bmaxuh_einval
+        bz g1 _std_sum_einval
+        modi g2 g1 STD_WORDSIZE
+        bnz g2 _std_sum_einval
 
         move r0 g0                      # pointer
         move r1 g1                      # size
 
         # check if the block is valid
         call std_address
-        bz g0 _std_bmaxuh_efault
+        bz g0 _std_sum_efault
 
-        # search the maximum (unsigned) value
-        # load the first element as the minimum
-        loadhri r2 r0 0x0               # min
+        # calculate the summation
+        loadi r2 0x0                    # sum
 
-        .label _std_bmaxuh_loop
-        subi r1 r1 STD_HWORDSIZE
-        loadhrr g0 r0 r1
-        bgeu r2 g0 _std_bmaxuh_continue
-        move r2 g0                      # found a new minimum
+        .label _std_sum_loop
+        subi r1 r1 STD_WORDSIZE
+        loadrr g0 r0 r1
+        add r2 r2 g0
+        bnz r1 _std_sum_loop
 
-        .label _std_bmaxuh_continue
-        bnz r1 _std_bmaxuh_loop
-
-        .label _std_bmaxuh_ok
+        .label _std_sum_ok
         move g0 r2
         loadi g1 STD_NOERROR
         ret
 
-        .label _std_bmaxuh_einval
+        .label _std_sum_einval
         loadi g1 STD_EINVAL
         ret
 
-        .label _std_bmaxuh_efault
+        .label _std_sum_efault
         loadi g1 STD_EFAULT
         ret

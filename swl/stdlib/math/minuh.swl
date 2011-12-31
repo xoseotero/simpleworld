@@ -1,5 +1,5 @@
-# @file stdlib/math/bmin.swl
-# Minimum signed value of a block of memory.
+# @file stdlib/math/minuh.swl
+# Minimum unsigned value of a block of memory (half words).
 #
 #  Copyright (C) 2006-2011  Xosé Otero <xoseotero@gmail.com>
 #
@@ -21,49 +21,49 @@
 .include "stdlib/address/address.swl"
 
 
-# Minimum signed value of a block of memory.
+# Minimum unsigned value of a block of memory (half words).
 # IN:  g0 pointer to the block of memory
-# IN:  g1 size of the block of memory (must be a multiple of STD_WORDSIZE)
+# IN:  g1 size of the block of memory (must be a multiple of STD_HWORDSIZE)
 # OUT: g0 minimum value
 # OUT: g1 error status
 #      STD_NOERROR: no errors
 #      STD_EINVAL: size is not valid
 #      STD_EFAULT: the pointer is not valid
-.label std_bmin
+.label std_minuh
         # check if the size is valid
-        bz g1 _std_bmin_einval
-        modi g2 g1 STD_WORDSIZE
-        bnz g2 _std_bmin_einval
+        bz g1 _std_minuh_einval
+        modi g2 g1 STD_HWORDSIZE
+        bnz g2 _std_minuh_einval
 
         move r0 g0                      # pointer
         move r1 g1                      # size
 
         # check if the block is valid
         call std_address
-        bz g0 _std_bmin_efault
+        bz g0 _std_minuh_efault
 
-        # search the minimum value
+        # search the minimum unsigned value
         # load the first element as the minimum
-        loadri r2 r0 0x0                # min
+        loadhri r2 r0 0x0               # min
 
-        .label _std_bmin_loop
-        subi r1 r1 STD_WORDSIZE
-        loadrr g0 r0 r1
-        ble r2 g0 _std_bmin_continue
+        .label _std_minuh_loop
+        subi r1 r1 STD_HWORDSIZE
+        loadhrr g0 r0 r1
+        bleu r2 g0 _std_minuh_continue
         move r2 g0                      # found a new minimum
 
-        .label _std_bmin_continue
-        bnz r1 _std_bmin_loop
+        .label _std_minuh_continue
+        bnz r1 _std_minuh_loop
 
-        .label _std_bmin_ok
+        .label _std_minuh_ok
         move g0 r2
         loadi g1 STD_NOERROR
         ret
 
-        .label _std_bmin_einval
+        .label _std_minuh_einval
         loadi g1 STD_EINVAL
         ret
 
-        .label _std_bmin_efault
+        .label _std_minuh_efault
         loadi g1 STD_EFAULT
         ret

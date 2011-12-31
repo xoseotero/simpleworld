@@ -1,5 +1,5 @@
-# @file stdlib/math/bsumq.swl
-# Summation of a block of memory (quarter words).
+# @file stdlib/math/avg.swl
+# Average (signed) value of a block of memory.
 #
 #  Copyright (C) 2006-2011  Xosé Otero <xoseotero@gmail.com>
 #
@@ -18,46 +18,32 @@
 
 
 .include "stdlib/error.swl"
-.include "stdlib/address/address.swl"
+.include "stdlib/math/sum.swl"
 
 
-# Summation of a block of memory (quarter words).
+# Average (signed) value of a block of memory.
 # IN:  g0 pointer to the block of memory
-# IN:  g1 size of the block of memory
-# OUT: g0 summation value
+# IN:  g1 size of the block of memory (must be a multiple of STD_WORDSIZE)
+# OUT: g0 average value
 # OUT: g1 error status
 #      STD_NOERROR: no errors
 #      STD_EINVAL: size is not valid
 #      STD_EFAULT: the pointer is not valid
-.label std_bsumq
-        # check if the size is valid
-        bz g1 _std_bsumq_einval
-
-        move r0 g0                      # pointer
-        move r1 g1                      # size
-
-        # check if the block is valid
-        call std_address
-        bz g0 _std_bsumq_efault
+.label std_avg
+        move r0 g1                      # size
 
         # calculate the summation
-        loadi r2 0x0                    # sum
+        call std_sum
+        bnz g1 _std_avg_error
 
-        .label _std_bsumq_loop
-        subi r1 r1 STD_QWORDSIZE
-        loadqrr g0 r0 r1
-        add r2 r2 g0
-        bnz r1 _std_bsumq_loop
+        # calculate the average value
+        divi r0 r0 STD_WORDSIZE
+        div g0 g0 r0
 
-        .label _std_bsumq_ok
-        move g0 r2
+        .label _std_avg_ok
         loadi g1 STD_NOERROR
         ret
 
-        .label _std_bsumq_einval
-        loadi g1 STD_EINVAL
-        ret
-
-        .label _std_bsumq_efault
-        loadi g1 STD_EFAULT
+        .label _std_avg_error
+        # use the same error code from std_sum
         ret

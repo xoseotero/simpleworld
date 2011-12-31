@@ -1,5 +1,5 @@
-# @file stdlib/math/bavg.swl
-# Average (signed) value of a block of memory.
+# @file stdlib/math/avgq.swl
+# Average (signed) value of a block of memory (quarter words).
 #
 #  Copyright (C) 2006-2011  Xosé Otero <xoseotero@gmail.com>
 #
@@ -18,32 +18,32 @@
 
 
 .include "stdlib/error.swl"
-.include "stdlib/math/bsum.swl"
+.include "stdlib/math/sumq.swl"
 
 
-# Average (signed) value of a block of memory.
+# Average (signed) value of a block of memory (quarter words).
 # IN:  g0 pointer to the block of memory
-# IN:  g1 size of the block of memory (must be a multiple of STD_WORDSIZE)
+# IN:  g1 size of the block of memory
 # OUT: g0 average value
 # OUT: g1 error status
 #      STD_NOERROR: no errors
 #      STD_EINVAL: size is not valid
 #      STD_EFAULT: the pointer is not valid
-.label std_bavg
+.label std_avgq
         move r0 g1                      # size
 
         # calculate the summation
-        call std_bsum
-        bnz g1 _std_bavg_error
+        call std_sumq
+        bnz g1 _std_avgq_error
 
         # calculate the average value
-        divi r0 r0 STD_WORDSIZE
+        #divi r0 r0 STD_QWORDSIZE
         div g0 g0 r0
 
-        .label _std_bavg_ok
+        .label _std_avgq_ok
         loadi g1 STD_NOERROR
         ret
 
-        .label _std_bavg_error
-        # use the same error code from std_bsum
+        .label _std_avgq_error
+        # use the same error code from std_sum
         ret

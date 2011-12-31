@@ -327,9 +327,9 @@ BOOST_AUTO_TEST_CASE(STD_MIN)
 }
 
 /**
- * Check std_bmin.
+ * Check std_min.
  */
-BOOST_AUTO_TEST_CASE(std_bmin)
+BOOST_AUTO_TEST_CASE(std_min)
 {
   cpu::File source;
   cpu::Source::size_type line = 0;
@@ -339,14 +339,14 @@ BOOST_AUTO_TEST_CASE(std_bmin)
   source.insert(line++, "loada sp stack");
   source.insert(line++, "b main");
 
-  source.insert(line++, ".include \"stdlib/math/bmin.swl\"");
+  source.insert(line++, ".include \"stdlib/math/min.swl\"");
 
   // Test
   source.insert(line++, ".label main");
   source.insert(line++, "loada g0 data");
   source.insert(line++, "loada g1 data_end");
   source.insert(line++, "sub g1 g1 g0");
-  source.insert(line++, "call std_bmin");
+  source.insert(line++, "call std_min");
 
   source.insert(line++, "stop");
 
@@ -374,9 +374,9 @@ BOOST_AUTO_TEST_CASE(std_bmin)
 }
 
 /**
- * Check std_bminh.
+ * Check std_minh.
  */
-BOOST_AUTO_TEST_CASE(std_bminh)
+BOOST_AUTO_TEST_CASE(std_minh)
 {
   cpu::File source;
   cpu::Source::size_type line = 0;
@@ -386,14 +386,14 @@ BOOST_AUTO_TEST_CASE(std_bminh)
   source.insert(line++, "loada sp stack");
   source.insert(line++, "b main");
 
-  source.insert(line++, ".include \"stdlib/math/bminh.swl\"");
+  source.insert(line++, ".include \"stdlib/math/minh.swl\"");
 
   // Test
   source.insert(line++, ".label main");
   source.insert(line++, "loada g0 data");
   source.insert(line++, "loada g1 data_end");
   source.insert(line++, "sub g1 g1 g0");
-  source.insert(line++, "call std_bminh");
+  source.insert(line++, "call std_minh");
 
   source.insert(line++, "stop");
 
@@ -421,9 +421,9 @@ BOOST_AUTO_TEST_CASE(std_bminh)
 }
 
 /**
- * Check std_bminq.
+ * Check std_minq.
  */
-BOOST_AUTO_TEST_CASE(std_bminq)
+BOOST_AUTO_TEST_CASE(std_minq)
 {
   cpu::File source;
   cpu::Source::size_type line = 0;
@@ -433,14 +433,14 @@ BOOST_AUTO_TEST_CASE(std_bminq)
   source.insert(line++, "loada sp stack");
   source.insert(line++, "b main");
 
-  source.insert(line++, ".include \"stdlib/math/bminq.swl\"");
+  source.insert(line++, ".include \"stdlib/math/minq.swl\"");
 
   // Test
   source.insert(line++, ".label main");
   source.insert(line++, "loada g0 data");
   source.insert(line++, "loada g1 data_end");
   source.insert(line++, "sub g1 g1 g0");
-  source.insert(line++, "call std_bminq");
+  source.insert(line++, "call std_minq");
 
   source.insert(line++, "stop");
 
@@ -528,9 +528,9 @@ BOOST_AUTO_TEST_CASE(STD_MINU)
 }
 
 /**
- * Check std_bminu.
+ * Check std_minu.
  */
-BOOST_AUTO_TEST_CASE(std_bminu)
+BOOST_AUTO_TEST_CASE(std_minu)
 {
   cpu::File source;
   cpu::Source::size_type line = 0;
@@ -540,14 +540,14 @@ BOOST_AUTO_TEST_CASE(std_bminu)
   source.insert(line++, "loada sp stack");
   source.insert(line++, "b main");
 
-  source.insert(line++, ".include \"stdlib/math/bminu.swl\"");
+  source.insert(line++, ".include \"stdlib/math/minu.swl\"");
 
   // Test
   source.insert(line++, ".label main");
   source.insert(line++, "loada g0 data");
   source.insert(line++, "loada g1 data_end");
   source.insert(line++, "sub g1 g1 g0");
-  source.insert(line++, "call std_bminu");
+  source.insert(line++, "call std_minu");
 
   source.insert(line++, "stop");
 
@@ -575,9 +575,9 @@ BOOST_AUTO_TEST_CASE(std_bminu)
 }
 
 /**
- * Check std_bminuh.
+ * Check std_minuh.
  */
-BOOST_AUTO_TEST_CASE(std_bminuh)
+BOOST_AUTO_TEST_CASE(std_minuh)
 {
   cpu::File source;
   cpu::Source::size_type line = 0;
@@ -587,14 +587,14 @@ BOOST_AUTO_TEST_CASE(std_bminuh)
   source.insert(line++, "loada sp stack");
   source.insert(line++, "b main");
 
-  source.insert(line++, ".include \"stdlib/math/bminuh.swl\"");
+  source.insert(line++, ".include \"stdlib/math/minuh.swl\"");
 
   // Test
   source.insert(line++, ".label main");
   source.insert(line++, "loada g0 data");
   source.insert(line++, "loada g1 data_end");
   source.insert(line++, "sub g1 g1 g0");
-  source.insert(line++, "call std_bminuh");
+  source.insert(line++, "call std_minuh");
 
   source.insert(line++, "stop");
 
@@ -622,9 +622,9 @@ BOOST_AUTO_TEST_CASE(std_bminuh)
 }
 
 /**
- * Check std_bminuq.
+ * Check std_minuq.
  */
-BOOST_AUTO_TEST_CASE(std_bminuq)
+BOOST_AUTO_TEST_CASE(std_minuq)
 {
   cpu::File source;
   cpu::Source::size_type line = 0;
@@ -634,14 +634,14 @@ BOOST_AUTO_TEST_CASE(std_bminuq)
   source.insert(line++, "loada sp stack");
   source.insert(line++, "b main");
 
-  source.insert(line++, ".include \"stdlib/math/bminuq.swl\"");
+  source.insert(line++, ".include \"stdlib/math/minuq.swl\"");
 
   // Test
   source.insert(line++, ".label main");
   source.insert(line++, "loada g0 data");
   source.insert(line++, "loada g1 data_end");
   source.insert(line++, "sub g1 g1 g0");
-  source.insert(line++, "call std_bminuq");
+  source.insert(line++, "call std_minuq");
 
   source.insert(line++, "stop");
 
@@ -729,9 +729,9 @@ BOOST_AUTO_TEST_CASE(STD_MAX)
 }
 
 /**
- * Check std_bmax.
+ * Check std_max.
  */
-BOOST_AUTO_TEST_CASE(std_bmax)
+BOOST_AUTO_TEST_CASE(std_max)
 {
   cpu::File source;
   cpu::Source::size_type line = 0;
@@ -741,14 +741,14 @@ BOOST_AUTO_TEST_CASE(std_bmax)
   source.insert(line++, "loada sp stack");
   source.insert(line++, "b main");
 
-  source.insert(line++, ".include \"stdlib/math/bmax.swl\"");
+  source.insert(line++, ".include \"stdlib/math/max.swl\"");
 
   // Test
   source.insert(line++, ".label main");
   source.insert(line++, "loada g0 data");
   source.insert(line++, "loada g1 data_end");
   source.insert(line++, "sub g1 g1 g0");
-  source.insert(line++, "call std_bmax");
+  source.insert(line++, "call std_max");
 
   source.insert(line++, "stop");
 
@@ -776,9 +776,9 @@ BOOST_AUTO_TEST_CASE(std_bmax)
 }
 
 /**
- * Check std_bmaxh.
+ * Check std_maxh.
  */
-BOOST_AUTO_TEST_CASE(std_bmaxh)
+BOOST_AUTO_TEST_CASE(std_maxh)
 {
   cpu::File source;
   cpu::Source::size_type line = 0;
@@ -788,14 +788,14 @@ BOOST_AUTO_TEST_CASE(std_bmaxh)
   source.insert(line++, "loada sp stack");
   source.insert(line++, "b main");
 
-  source.insert(line++, ".include \"stdlib/math/bmaxh.swl\"");
+  source.insert(line++, ".include \"stdlib/math/maxh.swl\"");
 
   // Test
   source.insert(line++, ".label main");
   source.insert(line++, "loada g0 data");
   source.insert(line++, "loada g1 data_end");
   source.insert(line++, "sub g1 g1 g0");
-  source.insert(line++, "call std_bmaxh");
+  source.insert(line++, "call std_maxh");
 
   source.insert(line++, "stop");
 
@@ -823,9 +823,9 @@ BOOST_AUTO_TEST_CASE(std_bmaxh)
 }
 
 /**
- * Check std_bmaxq.
+ * Check std_maxq.
  */
-BOOST_AUTO_TEST_CASE(std_bmaxq)
+BOOST_AUTO_TEST_CASE(std_maxq)
 {
   cpu::File source;
   cpu::Source::size_type line = 0;
@@ -835,14 +835,14 @@ BOOST_AUTO_TEST_CASE(std_bmaxq)
   source.insert(line++, "loada sp stack");
   source.insert(line++, "b main");
 
-  source.insert(line++, ".include \"stdlib/math/bmaxq.swl\"");
+  source.insert(line++, ".include \"stdlib/math/maxq.swl\"");
 
   // Test
   source.insert(line++, ".label main");
   source.insert(line++, "loada g0 data");
   source.insert(line++, "loada g1 data_end");
   source.insert(line++, "sub g1 g1 g0");
-  source.insert(line++, "call std_bmaxq");
+  source.insert(line++, "call std_maxq");
 
   source.insert(line++, "stop");
 
@@ -930,9 +930,9 @@ BOOST_AUTO_TEST_CASE(STD_MAXU)
 }
 
 /**
- * Check std_bmaxu.
+ * Check std_maxu.
  */
-BOOST_AUTO_TEST_CASE(std_bmaxu)
+BOOST_AUTO_TEST_CASE(std_maxu)
 {
   cpu::File source;
   cpu::Source::size_type line = 0;
@@ -942,14 +942,14 @@ BOOST_AUTO_TEST_CASE(std_bmaxu)
   source.insert(line++, "loada sp stack");
   source.insert(line++, "b main");
 
-  source.insert(line++, ".include \"stdlib/math/bmaxu.swl\"");
+  source.insert(line++, ".include \"stdlib/math/maxu.swl\"");
 
   // Test
   source.insert(line++, ".label main");
   source.insert(line++, "loada g0 data");
   source.insert(line++, "loada g1 data_end");
   source.insert(line++, "sub g1 g1 g0");
-  source.insert(line++, "call std_bmaxu");
+  source.insert(line++, "call std_maxu");
 
   source.insert(line++, "stop");
 
@@ -977,9 +977,9 @@ BOOST_AUTO_TEST_CASE(std_bmaxu)
 }
 
 /**
- * Check std_bmaxuh.
+ * Check std_maxuh.
  */
-BOOST_AUTO_TEST_CASE(std_bmaxuh)
+BOOST_AUTO_TEST_CASE(std_maxuh)
 {
   cpu::File source;
   cpu::Source::size_type line = 0;
@@ -989,14 +989,14 @@ BOOST_AUTO_TEST_CASE(std_bmaxuh)
   source.insert(line++, "loada sp stack");
   source.insert(line++, "b main");
 
-  source.insert(line++, ".include \"stdlib/math/bmaxuh.swl\"");
+  source.insert(line++, ".include \"stdlib/math/maxuh.swl\"");
 
   // Test
   source.insert(line++, ".label main");
   source.insert(line++, "loada g0 data");
   source.insert(line++, "loada g1 data_end");
   source.insert(line++, "sub g1 g1 g0");
-  source.insert(line++, "call std_bmaxuh");
+  source.insert(line++, "call std_maxuh");
 
   source.insert(line++, "stop");
 
@@ -1024,9 +1024,9 @@ BOOST_AUTO_TEST_CASE(std_bmaxuh)
 }
 
 /**
- * Check std_bmaxuq.
+ * Check std_maxuq.
  */
-BOOST_AUTO_TEST_CASE(std_bmaxuq)
+BOOST_AUTO_TEST_CASE(std_maxuq)
 {
   cpu::File source;
   cpu::Source::size_type line = 0;
@@ -1036,14 +1036,14 @@ BOOST_AUTO_TEST_CASE(std_bmaxuq)
   source.insert(line++, "loada sp stack");
   source.insert(line++, "b main");
 
-  source.insert(line++, ".include \"stdlib/math/bmaxuq.swl\"");
+  source.insert(line++, ".include \"stdlib/math/maxuq.swl\"");
 
   // Test
   source.insert(line++, ".label main");
   source.insert(line++, "loada g0 data");
   source.insert(line++, "loada g1 data_end");
   source.insert(line++, "sub g1 g1 g0");
-  source.insert(line++, "call std_bmaxuq");
+  source.insert(line++, "call std_maxuq");
 
   source.insert(line++, "stop");
 
@@ -1071,9 +1071,9 @@ BOOST_AUTO_TEST_CASE(std_bmaxuq)
 }
 
 /**
- * Check std_bsum.
+ * Check std_sum.
  */
-BOOST_AUTO_TEST_CASE(std_bsum)
+BOOST_AUTO_TEST_CASE(std_sum)
 {
   cpu::File source;
   cpu::Source::size_type line = 0;
@@ -1083,14 +1083,14 @@ BOOST_AUTO_TEST_CASE(std_bsum)
   source.insert(line++, "loada sp stack");
   source.insert(line++, "b main");
 
-  source.insert(line++, ".include \"stdlib/math/bsum.swl\"");
+  source.insert(line++, ".include \"stdlib/math/sum.swl\"");
 
   // Test
   source.insert(line++, ".label main");
   source.insert(line++, "loada g0 data");
   source.insert(line++, "loada g1 data_end");
   source.insert(line++, "sub g1 g1 g0");
-  source.insert(line++, "call std_bsum");
+  source.insert(line++, "call std_sum");
 
   source.insert(line++, "stop");
 
@@ -1118,9 +1118,9 @@ BOOST_AUTO_TEST_CASE(std_bsum)
 }
 
 /**
- * Check std_bsumh.
+ * Check std_sumh.
  */
-BOOST_AUTO_TEST_CASE(std_bsumh)
+BOOST_AUTO_TEST_CASE(std_sumh)
 {
   cpu::File source;
   cpu::Source::size_type line = 0;
@@ -1130,14 +1130,14 @@ BOOST_AUTO_TEST_CASE(std_bsumh)
   source.insert(line++, "loada sp stack");
   source.insert(line++, "b main");
 
-  source.insert(line++, ".include \"stdlib/math/bsumh.swl\"");
+  source.insert(line++, ".include \"stdlib/math/sumh.swl\"");
 
   // Test
   source.insert(line++, ".label main");
   source.insert(line++, "loada g0 data");
   source.insert(line++, "loada g1 data_end");
   source.insert(line++, "sub g1 g1 g0");
-  source.insert(line++, "call std_bsumh");
+  source.insert(line++, "call std_sumh");
 
   source.insert(line++, "stop");
 
@@ -1165,9 +1165,9 @@ BOOST_AUTO_TEST_CASE(std_bsumh)
 }
 
 /**
- * Check std_bsumq.
+ * Check std_sumq.
  */
-BOOST_AUTO_TEST_CASE(std_bsumq)
+BOOST_AUTO_TEST_CASE(std_sumq)
 {
   cpu::File source;
   cpu::Source::size_type line = 0;
@@ -1177,14 +1177,14 @@ BOOST_AUTO_TEST_CASE(std_bsumq)
   source.insert(line++, "loada sp stack");
   source.insert(line++, "b main");
 
-  source.insert(line++, ".include \"stdlib/math/bsumq.swl\"");
+  source.insert(line++, ".include \"stdlib/math/sumq.swl\"");
 
   // Test
   source.insert(line++, ".label main");
   source.insert(line++, "loada g0 data");
   source.insert(line++, "loada g1 data_end");
   source.insert(line++, "sub g1 g1 g0");
-  source.insert(line++, "call std_bsumq");
+  source.insert(line++, "call std_sumq");
 
   source.insert(line++, "stop");
 
@@ -1212,9 +1212,9 @@ BOOST_AUTO_TEST_CASE(std_bsumq)
 }
 
 /**
- * Check std_bavg.
+ * Check std_avg.
  */
-BOOST_AUTO_TEST_CASE(std_bavg)
+BOOST_AUTO_TEST_CASE(std_avg)
 {
   cpu::File source;
   cpu::Source::size_type line = 0;
@@ -1224,14 +1224,14 @@ BOOST_AUTO_TEST_CASE(std_bavg)
   source.insert(line++, "loada sp stack");
   source.insert(line++, "b main");
 
-  source.insert(line++, ".include \"stdlib/math/bavg.swl\"");
+  source.insert(line++, ".include \"stdlib/math/avg.swl\"");
 
   // Test
   source.insert(line++, ".label main");
   source.insert(line++, "loada g0 data");
   source.insert(line++, "loada g1 data_end");
   source.insert(line++, "sub g1 g1 g0");
-  source.insert(line++, "call std_bavg");
+  source.insert(line++, "call std_avg");
 
   source.insert(line++, "stop");
 
@@ -1259,9 +1259,9 @@ BOOST_AUTO_TEST_CASE(std_bavg)
 }
 
 /**
- * Check std_bavgh.
+ * Check std_avgh.
  */
-BOOST_AUTO_TEST_CASE(std_bavgh)
+BOOST_AUTO_TEST_CASE(std_avgh)
 {
   cpu::File source;
   cpu::Source::size_type line = 0;
@@ -1271,14 +1271,14 @@ BOOST_AUTO_TEST_CASE(std_bavgh)
   source.insert(line++, "loada sp stack");
   source.insert(line++, "b main");
 
-  source.insert(line++, ".include \"stdlib/math/bavgh.swl\"");
+  source.insert(line++, ".include \"stdlib/math/avgh.swl\"");
 
   // Test
   source.insert(line++, ".label main");
   source.insert(line++, "loada g0 data");
   source.insert(line++, "loada g1 data_end");
   source.insert(line++, "sub g1 g1 g0");
-  source.insert(line++, "call std_bavgh");
+  source.insert(line++, "call std_avgh");
 
   source.insert(line++, "stop");
 
@@ -1306,9 +1306,9 @@ BOOST_AUTO_TEST_CASE(std_bavgh)
 }
 
 /**
- * Check std_bavgq.
+ * Check std_avgq.
  */
-BOOST_AUTO_TEST_CASE(std_bavgq)
+BOOST_AUTO_TEST_CASE(std_avgq)
 {
   cpu::File source;
   cpu::Source::size_type line = 0;
@@ -1318,14 +1318,14 @@ BOOST_AUTO_TEST_CASE(std_bavgq)
   source.insert(line++, "loada sp stack");
   source.insert(line++, "b main");
 
-  source.insert(line++, ".include \"stdlib/math/bavgq.swl\"");
+  source.insert(line++, ".include \"stdlib/math/avgq.swl\"");
 
   // Test
   source.insert(line++, ".label main");
   source.insert(line++, "loada g0 data");
   source.insert(line++, "loada g1 data_end");
   source.insert(line++, "sub g1 g1 g0");
-  source.insert(line++, "call std_bavgq");
+  source.insert(line++, "call std_avgq");
 
   source.insert(line++, "stop");
 

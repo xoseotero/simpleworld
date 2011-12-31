@@ -1,5 +1,5 @@
-# @file stdlib/math/bmaxuq.swl
-# Maximum unsigned value of a block of memory (quarter words).
+# @file stdlib/math/min.swl
+# Minimum signed value of a block of memory.
 #
 #  Copyright (C) 2006-2011  Xosé Otero <xoseotero@gmail.com>
 #
@@ -21,47 +21,49 @@
 .include "stdlib/address/address.swl"
 
 
-# Maximum unsigned value of a block of memory (quarter words).
+# Minimum signed value of a block of memory.
 # IN:  g0 pointer to the block of memory
-# IN:  g1 size of the block of memory
-# OUT: g0 maximum value
+# IN:  g1 size of the block of memory (must be a multiple of STD_WORDSIZE)
+# OUT: g0 minimum value
 # OUT: g1 error status
 #      STD_NOERROR: no errors
 #      STD_EINVAL: size is not valid
 #      STD_EFAULT: the pointer is not valid
-.label std_bmaxuq
+.label std_min
         # check if the size is valid
-        bz g1 _std_bmaxuq_einval
+        bz g1 _std_min_einval
+        modi g2 g1 STD_WORDSIZE
+        bnz g2 _std_min_einval
 
         move r0 g0                      # pointer
         move r1 g1                      # size
 
         # check if the block is valid
         call std_address
-        bz g0 _std_bmaxuq_efault
+        bz g0 _std_min_efault
 
-        # search the maximum (unsigned) value
+        # search the minimum value
         # load the first element as the minimum
-        loadqri g2 g0 0x0               # min
+        loadri r2 r0 0x0                # min
 
-        .label _std_bmaxuq_loop
-        subi r1 r1 STD_QWORDSIZE
-        loadqrr g0 r0 r1
-        bgeu r2 g0 _std_bmaxuq_continue
+        .label _std_min_loop
+        subi r1 r1 STD_WORDSIZE
+        loadrr g0 r0 r1
+        ble r2 g0 _std_min_continue
         move r2 g0                      # found a new minimum
 
-        .label _std_bmaxuq_continue
-        bnz r1 _std_bmaxuq_loop
+        .label _std_min_continue
+        bnz r1 _std_min_loop
 
-        .label _std_bmaxuq_ok
+        .label _std_min_ok
         move g0 r2
         loadi g1 STD_NOERROR
         ret
 
-        .label _std_bmaxuq_einval
+        .label _std_min_einval
         loadi g1 STD_EINVAL
         ret
 
-        .label _std_bmaxuq_efault
+        .label _std_min_efault
         loadi g1 STD_EFAULT
         ret

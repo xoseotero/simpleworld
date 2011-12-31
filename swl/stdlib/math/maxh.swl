@@ -1,5 +1,5 @@
-# @file stdlib/math/bminh.swl
-# Minimum signed value of a block of memory (half words).
+# @file stdlib/math/maxh.swl
+# Maximum signed value of a block of memory (half words).
 #
 #  Copyright (C) 2006-2011  Xosé Otero <xoseotero@gmail.com>
 #
@@ -21,51 +21,51 @@
 .include "stdlib/address/address.swl"
 
 
-# Minimum signed value of a block of memory (half words).
+# Maximum signed value of a block of memory (half words).
 # IN:  g0 pointer to the block of memory
-# IN:  g1 size of the block of memory (must be a multiple of STD_WORDSIZE)
-# OUT: g0 minimum value
+# IN:  g1 size of the block of memory (must be a multiple of STD_HWORDSIZE)
+# OUT: g0 maximum value
 # OUT: g1 error status
 #      STD_NOERROR: no errors
 #      STD_EINVAL: size is not valid
 #      STD_EFAULT: the pointer is not valid
-.label std_bminh
+.label std_maxh
         # check if the size is valid
-        bz g1 _std_bminh_einval
+        bz g1 _std_maxh_einval
         modi g2 g1 STD_HWORDSIZE
-        bnz g2 _std_bminh_einval
+        bnz g2 _std_maxh_einval
 
         move r0 g0                      # pointer
         move r1 g1                      # size
 
         # check if the block is valid
         call std_address
-        bz g0 _std_bminh_efault
+        bz g0 _std_maxh_efault
 
-        # search the minimum value
+        # search the maximum value
         # load the first element as the minimum
         loadhri r2 r0 0x0               # min
         signh r2 r2
 
-        .label _std_bminh_loop
+        .label _std_maxh_loop
         subi r1 r1 STD_HWORDSIZE
         loadhrr g0 r0 r1
         signh g0 g0
-        ble r2 g0 _std_bminh_continue
+        bge r2 g0 _std_maxh_continue
         move r2 g0                      # found a new minimum
 
-        .label _std_bminh_continue
-        bnz r1 _std_bminh_loop
+        .label _std_maxh_continue
+        bnz r1 _std_maxh_loop
 
-        .label _std_bminh_ok
+        .label _std_maxh_ok
         move g0 r2
         loadi g1 STD_NOERROR
         ret
 
-        .label _std_bminh_einval
+        .label _std_maxh_einval
         loadi g1 STD_EINVAL
         ret
 
-        .label _std_bminh_efault
+        .label _std_maxh_efault
         loadi g1 STD_EFAULT
         ret

@@ -1,5 +1,5 @@
-# @file stdlib/math/bminuh.swl
-# Minimum unsigned value of a block of memory (half words).
+# @file stdlib/math/minuq.swl
+# Minimum unsigned value of a block of memory (quarter words).
 #
 #  Copyright (C) 2006-2011  Xosé Otero <xoseotero@gmail.com>
 #
@@ -21,49 +21,47 @@
 .include "stdlib/address/address.swl"
 
 
-# Minimum unsigned value of a block of memory (half words).
+# Minimum unsigned value of a block of memory (quarter words).
 # IN:  g0 pointer to the block of memory
-# IN:  g1 size of the block of memory (must be a multiple of STD_HWORDSIZE)
+# IN:  g1 size of the block of memory
 # OUT: g0 minimum value
 # OUT: g1 error status
 #      STD_NOERROR: no errors
 #      STD_EINVAL: size is not valid
 #      STD_EFAULT: the pointer is not valid
-.label std_bminuh
+.label std_minuq
         # check if the size is valid
-        bz g1 _std_bminuh_einval
-        modi g2 g1 STD_HWORDSIZE
-        bnz g2 _std_bminuh_einval
+        bz g1 _std_minuq_einval
 
         move r0 g0                      # pointer
         move r1 g1                      # size
 
         # check if the block is valid
         call std_address
-        bz g0 _std_bminuh_efault
+        bz g0 _std_minuq_efault
 
         # search the minimum unsigned value
         # load the first element as the minimum
-        loadhri r2 r0 0x0               # min
+        loadqri r2 r0 0x0               # min
 
-        .label _std_bminuh_loop
-        subi r1 r1 STD_HWORDSIZE
-        loadhrr g0 r0 r1
-        bleu r2 g0 _std_bminuh_continue
+        .label _std_minuq_loop
+        subi r1 r1 STD_QWORDSIZE
+        loadqrr g0 r0 r1
+        bleu r2 g0 _std_minuq_continue
         move r2 g0                      # found a new minimum
 
-        .label _std_bminuh_continue
-        bnz r1 _std_bminuh_loop
+        .label _std_minuq_continue
+        bnz r1 _std_minuq_loop
 
-        .label _std_bminuh_ok
+        .label _std_minuq_ok
         move g0 r2
         loadi g1 STD_NOERROR
         ret
 
-        .label _std_bminuh_einval
+        .label _std_minuq_einval
         loadi g1 STD_EINVAL
         ret
 
-        .label _std_bminuh_efault
+        .label _std_minuq_efault
         loadi g1 STD_EFAULT
         ret
