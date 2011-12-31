@@ -18,6 +18,7 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
+.include "stdlib/list/def.swl"
 .include "stdlib/list/list.swl"
 .include "stdlib/list/free.swl"
 .include "stdlib/list/size.swl"

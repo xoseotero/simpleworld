@@ -18,6 +18,7 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
+.include "stdlib/queue/def.swl"
 .include "stdlib/queue/queue.swl"
 .include "stdlib/queue/free.swl"
 .include "stdlib/queue/empty.swl"

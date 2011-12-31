@@ -17,5 +17,6 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
+.include "stdlib/jmp/def.swl"
 .include "stdlib/jmp/set.swl"
 .include "stdlib/jmp/jmp.swl"

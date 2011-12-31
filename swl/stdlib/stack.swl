@@ -18,6 +18,7 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
+.include "stdlib/stack/def.swl"
 .include "stdlib/stack/stack.swl"
 .include "stdlib/stack/free.swl"
 .include "stdlib/stack/empty.swl"
