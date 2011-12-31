@@ -66,6 +66,17 @@ BOOST_AUTO_TEST_CASE(swl_compile)
   cpu::Source::size_type line = 0;
 
   source.insert(line++, ".include \"stdlib/int.swl\"");
+
+  source.insert(line++, "STD_ITIMER");
+  source.insert(line++, "STD_ISW");
+  source.insert(line++, "STD_IINST");
+  source.insert(line++, "STD_IMEM");
+  source.insert(line++, "STD_IDIV");
+  source.insert(line++, "std_enable");
+  source.insert(line++, "std_disable");
+  source.insert(line++, "std_handler");
+  source.insert(line++, "std_rmhandler");
+
   BOOST_CHECK_NO_THROW(compile(source));
 }
 

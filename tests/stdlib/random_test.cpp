@@ -64,6 +64,10 @@ BOOST_AUTO_TEST_CASE(swl_compile)
   cpu::Source::size_type line = 0;
 
   source.insert(line++, ".include \"stdlib/random.swl\"");
+
+  source.insert(line++, "std_seed");
+  source.insert(line++, "std_random");
+
   BOOST_CHECK_NO_THROW(compile(source));
 }
 

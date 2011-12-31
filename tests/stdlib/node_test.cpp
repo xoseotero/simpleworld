@@ -64,6 +64,16 @@ BOOST_AUTO_TEST_CASE(swl_compile)
   cpu::Source::size_type line = 0;
 
   source.insert(line++, ".include \"stdlib/node.swl\"");
+
+  source.insert(line++, "STD_NODE_STRUCT");
+  source.insert(line++, "STD_NODE_DATA");
+  source.insert(line++, "std_node");
+  source.insert(line++, "std_nodefree");
+  source.insert(line++, "std_prev");
+  source.insert(line++, "std_next");
+  source.insert(line++, "std_first");
+  source.insert(line++, "std_last");
+
   BOOST_CHECK_NO_THROW(compile(source));
 }
 

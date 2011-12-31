@@ -64,6 +64,17 @@ BOOST_AUTO_TEST_CASE(swl_compile)
   cpu::Source::size_type line = 0;
 
   source.insert(line++, ".include \"stdlib/array.swl\"");
+
+  source.insert(line++, "std_array");
+  source.insert(line++, "std_arrayfree");
+  source.insert(line++, "std_arraysize");
+  source.insert(line++, "std_arrayresize");
+  source.insert(line++, "std_arrayget");
+  source.insert(line++, "std_arrayset");
+  source.insert(line++, "std_arrayfill");
+  source.insert(line++, "std_arrayfind");
+  source.insert(line++, "std_arraycount");
+
   BOOST_CHECK_NO_THROW(compile(source));
 }
 

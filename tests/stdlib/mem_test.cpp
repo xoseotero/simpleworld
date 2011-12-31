@@ -64,6 +64,19 @@ BOOST_AUTO_TEST_CASE(swl_compile)
   cpu::Source::size_type line = 0;
 
   source.insert(line++, ".include \"stdlib/mem.swl\"");
+
+  source.insert(line++, "std_fill");
+  source.insert(line++, "std_fillh");
+  source.insert(line++, "std_fillq");
+  source.insert(line++, "std_copy");
+  source.insert(line++, "std_cmp");
+  source.insert(line++, "std_find");
+  source.insert(line++, "std_findh");
+  source.insert(line++, "std_findq");
+  source.insert(line++, "std_count");
+  source.insert(line++, "std_counth");
+  source.insert(line++, "std_countq");
+
   BOOST_CHECK_NO_THROW(compile(source));
 }
 

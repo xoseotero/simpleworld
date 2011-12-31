@@ -64,6 +64,14 @@ BOOST_AUTO_TEST_CASE(swl_compile)
   cpu::Source::size_type line = 0;
 
   source.insert(line++, ".include \"stdlib/queue.swl\"");
+
+  source.insert(line++, "STD_QUEUE_STRUCT");
+  source.insert(line++, "std_queue");
+  source.insert(line++, "std_queuefree");
+  source.insert(line++, "std_queueempty");
+  source.insert(line++, "std_queuepush");
+  source.insert(line++, "std_queuepop");
+
   BOOST_CHECK_NO_THROW(compile(source));
 }
 

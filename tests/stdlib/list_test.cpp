@@ -64,6 +64,17 @@ BOOST_AUTO_TEST_CASE(swl_compile)
   cpu::Source::size_type line = 0;
 
   source.insert(line++, ".include \"stdlib/list.swl\"");
+
+  source.insert(line++, "STD_LIST_STRUCT");
+  source.insert(line++, "std_list");
+  source.insert(line++, "std_listfree");
+  source.insert(line++, "std_listsize");
+  source.insert(line++, "std_listget");
+  source.insert(line++, "std_listinsert");
+  source.insert(line++, "std_listremove");
+  source.insert(line++, "std_listfind");
+  source.insert(line++, "std_listcount");
+
   BOOST_CHECK_NO_THROW(compile(source));
 }
 

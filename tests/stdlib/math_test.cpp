@@ -64,6 +64,37 @@ BOOST_AUTO_TEST_CASE(swl_compile)
   cpu::Source::size_type line = 0;
 
   source.insert(line++, ".include \"stdlib/math.swl\"");
+
+  source.insert(line++, "STD_MIN g0 g1 g2");
+  source.insert(line++, "STD_MIN_SHORT g0 g1");
+  source.insert(line++, "STD_MINU g0 g1 g2");
+  source.insert(line++, "STD_MINU_SHORT g0 g1");
+  source.insert(line++, "STD_MAX g0 g1 g2");
+  source.insert(line++, "STD_MAX_SHORT g0 g1");
+  source.insert(line++, "STD_MAXU g0 g1 g2");
+  source.insert(line++, "STD_MAXU_SHORT g0 g1");
+  source.insert(line++, "std_neg");
+  source.insert(line++, "std_abs");
+  source.insert(line++, "std_pow");
+  source.insert(line++, "std_min");
+  source.insert(line++, "std_minh");
+  source.insert(line++, "std_minq");
+  source.insert(line++, "std_minu");
+  source.insert(line++, "std_minuh");
+  source.insert(line++, "std_minuq");
+  source.insert(line++, "std_max");
+  source.insert(line++, "std_maxh");
+  source.insert(line++, "std_maxq");
+  source.insert(line++, "std_maxu");
+  source.insert(line++, "std_maxuh");
+  source.insert(line++, "std_maxuq");
+  source.insert(line++, "std_sum");
+  source.insert(line++, "std_sumh");
+  source.insert(line++, "std_sumq");
+  source.insert(line++, "std_avg");
+  source.insert(line++, "std_avgh");
+  source.insert(line++, "std_avgq");
+
   BOOST_CHECK_NO_THROW(compile(source));
 }
 

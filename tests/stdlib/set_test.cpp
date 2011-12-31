@@ -64,6 +64,16 @@ BOOST_AUTO_TEST_CASE(swl_compile)
   cpu::Source::size_type line = 0;
 
   source.insert(line++, ".include \"stdlib/set.swl\"");
+
+  source.insert(line++, "STD_SET_STRUCT");
+  source.insert(line++, "std_set");
+  source.insert(line++, "std_setfree");
+  source.insert(line++, "std_setsize");
+  source.insert(line++, "std_setget");
+  source.insert(line++, "std_setinsert");
+  source.insert(line++, "std_setremove");
+  source.insert(line++, "std_setcheck");
+
   BOOST_CHECK_NO_THROW(compile(source));
 }
 

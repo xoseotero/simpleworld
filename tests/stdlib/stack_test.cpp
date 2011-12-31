@@ -64,6 +64,14 @@ BOOST_AUTO_TEST_CASE(swl_compile)
   cpu::Source::size_type line = 0;
 
   source.insert(line++, ".include \"stdlib/stack.swl\"");
+
+  source.insert(line++, "STD_STACK_STRUCT");
+  source.insert(line++, "std_stack");
+  source.insert(line++, "std_stackfree");
+  source.insert(line++, "std_stackempty");
+  source.insert(line++, "std_stackpush");
+  source.insert(line++, "std_stackpop");
+
   BOOST_CHECK_NO_THROW(compile(source));
 }
 

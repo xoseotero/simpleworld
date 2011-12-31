@@ -64,6 +64,16 @@ BOOST_AUTO_TEST_CASE(swl_compile)
   cpu::Source::size_type line = 0;
 
   source.insert(line++, ".include \"stdlib/alloc.swl\"");
+
+  source.insert(line++, "STD_MINFO_STRUCT");
+  source.insert(line++, "STD_MINFO_MEM");
+  source.insert(line++, "STD_MINFO_TOTAL");
+  source.insert(line++, "STD_MINFO_FREE");
+  source.insert(line++, "std_minfo");
+  source.insert(line++, "std_alloc");
+  source.insert(line++, "std_free");
+  source.insert(line++, "std_realloc");
+
   BOOST_CHECK_NO_THROW(compile(source));
 }
 

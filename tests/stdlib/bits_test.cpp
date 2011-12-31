@@ -64,6 +64,10 @@ BOOST_AUTO_TEST_CASE(swl_compile)
   cpu::Source::size_type line = 0;
 
   source.insert(line++, ".include \"stdlib/bits.swl\"");
+
+  source.insert(line++, "std_clear");
+  source.insert(line++, "std_comp");
+
   BOOST_CHECK_NO_THROW(compile(source));
 }
 
