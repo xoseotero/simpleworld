@@ -17,7 +17,6 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-.include "stdlib/alloc/_init.swl"
 .include "stdlib/alloc/info.swl"
 .include "stdlib/alloc/alloc.swl"
 .include "stdlib/alloc/free.swl"

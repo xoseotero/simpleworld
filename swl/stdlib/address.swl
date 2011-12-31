@@ -18,5 +18,4 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-.include "stdlib/address/_init.swl"
 .include "stdlib/address/address.swl"

@@ -18,6 +18,5 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-.include "stdlib/time/_init.swl"
 .include "stdlib/time/time.swl"
 .include "stdlib/time/sleep.swl"
