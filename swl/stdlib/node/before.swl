@@ -1,0 +1,72 @@
+# @file stdlib/node/before.swl
+# Create a new node before other one.
+#
+#  Copyright (C) 2012  Xosé Otero <xoseotero@gmail.com>
+#
+#  This program is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+
+.include "stdlib/error.swl"
+.include "stdlib/address/address.swl"
+.include "stdlib/alloc/alloc.swl"
+.include "stdlib/node/def.swl"
+
+
+# Create a new node before other one.
+# IN:  g0 next node.
+# IN:  g1 data.
+# OUT: g0 pointer to the new node.
+# OUT: g1 error status
+#      STD_NOERROR: no errors
+#      STD_EFAULT: node is STD_NULL
+#      STD_ENOMEM: there is not memory enough
+.label std_nodebefore
+        move r0 g0                      # next
+        move r1 g1                      # data
+
+        loadi g1 STD_NODE_STRUCT
+        call std_address
+        bz g0 __std_nodebefore_efault
+
+        loadri r2 r0 _STD_NODE_PREV     # prev
+
+        # allocate the memory
+        loadi g0 STD_NODE_STRUCT
+        call std_alloc
+        bnz g1 _std_nodebefore_enomem
+
+        # set the fields
+        storeri g0 r2 _STD_NODE_PREV
+        storeri g0 r0 _STD_NODE_NEXT
+        storeri g0 r1 STD_NODE_DATA
+
+        # update the previous node
+        bz r2 _std_nodebefore_next
+        storeri r2 g0 _STD_NODE_NEXT
+
+        # update the next node
+        .label _std_nodebefore_next
+        storeri r0 g0 _STD_NODE_PREV
+
+        .label _std_nodebefore_ret
+        loadi g1 STD_NOERROR
+        ret
+
+        .label _std_nodebefore_efault
+        loadi g1 STD_EFAULT
+        ret
+
+        .label _std_nodebefore_enomem
+        loadi g1 STD_ENOMEM
+        ret

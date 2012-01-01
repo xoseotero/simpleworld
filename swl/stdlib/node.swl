@@ -2,7 +2,7 @@
 # Node data structure used for stacks, queues, sets and lists.
 # std_init must be executed before using any of this functions.
 #
-#  Copyright (C) 2008-2011  Xosé Otero <xoseotero@gmail.com>
+#  Copyright (C) 2008-2012  Xosé Otero <xoseotero@gmail.com>
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -20,6 +20,7 @@
 
 .include "stdlib/node/def.swl"
 .include "stdlib/node/node.swl"
+.include "stdlib/node/before.swl"
 .include "stdlib/node/free.swl"
 .include "stdlib/node/prev.swl"
 .include "stdlib/node/next.swl"
