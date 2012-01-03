@@ -1,7 +1,7 @@
 # @file stdlib/list/remove.swl
 # Remove a element from the list.
 #
-#  Copyright (C) 2008-2011  Xosé Otero <xoseotero@gmail.com>
+#  Copyright (C) 2008-2012  Xosé Otero <xoseotero@gmail.com>
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -18,10 +18,9 @@
 
 
 .include "stdlib/error.swl"
+.include "stdlib/def.swl"
 .include "stdlib/address/address.swl"
-.include "stdlib/node/def.swl"
-.include "stdlib/node/free.swl"
-.include "stdlib/node/prev.swl"
+.include "stdlib/node/remove.swl"
 .include "stdlib/node/next.swl"
 .include "stdlib/list/def.swl"
 
@@ -43,65 +42,44 @@
         bz g0 _std_listremove_efault
 
         # check if the position is valid
-        loadri g0 r0 _STD_LIST_SIZE
-        bgeu r1 g0 _std_listremove_einval
+        loadri r2 r0 _STD_LIST_SIZE     # size
+        bgeu r1 r2 _std_listremove_einval
 
-        # calculate the node to remove
+        # check if the list will be empty
+        loadi g0 0x1
+        beq r2 g0 _std_listremove_empty
+        # check if the remove is at the begining of the list
+        bz r1 _std_listremove_beginning
+
+        .label _std_listremove_notbeginning
         loadri g0 r0 _STD_LIST_FIRST
         move g1 r1
         call std_next
         bnz g1 _std_listremove_efault
-        move r2 g0                      # removed
+        call std_noderemove
+        b _std_listremove_ret
 
-        # update the previous node
-        # previous.next = removed.next
-        # only if the the removed node is not the first one
-        bz r1 _std_listremove_next
-
-        move g0 r2
-        loadi g1 0x1
-        call std_prev
-        bnz g1 _std_listremove_efault
-        loadri g1 r2 _STD_NODE_NEXT
-        storeri g0 g1 _STD_NODE_NEXT
-
-        # update the next node
-        # next.prev = removed.prev
-        .label _std_listremove_next
-        # only if the removed node is not the last one
-        loadri g0 r0 _STD_LIST_SIZE
-        subi g0 g0 0x1
-        beq g0 r1 _std_listremove_first
-
-        move g0 r2
-        loadi g1 0x1
-        call std_next
-        bnz g1 _std_listremove_efault
-        loadri g1 r2 _STD_NODE_PREV
-        storeri g0 g1 _STD_NODE_PREV
-
-        # update the first node
-        # first = removed.next
-        .label _std_listremove_first
-        # only if the remove node is the first one
-        bnz r1 _std_listremove_free
-
-        move g0 r2
-        loadi g1 0x1
-        call std_next
-        bnz g1 _std_listremove_efault
+        .label _std_listremove_empty
+        loadri g0 r0 _STD_LIST_FIRST
+        call std_noderemove
+        loadi g0 STD_NULL
         storeri r0 g0 _STD_LIST_FIRST
+        b _std_listremove_ret
 
-        # free the node
-        .label _std_listremove_free
-        move g0 r2
-        call std_nodefree
+        .label _std_listremove_beginning
+        loadri g0 r0 _STD_LIST_FIRST
+        loadi g1 0x1
+        call std_next
+        bnz g1 _std_listremove_efault
+        move r3 g0                      # new first node
+        loadri g0 r0 _STD_LIST_FIRST
+        call std_nodebefore
+        storeri r0 r3 _STD_LIST_FIRST
 
         .label _std_listremove_ret
         # update the size
-        loadri g0 r0 _STD_LIST_SIZE
-        subi g0 g0 0x1
-        storeri r0 g0 _STD_LIST_SIZE
+        subi r2 r2 0x1
+        storeri r0 r2 _STD_LIST_SIZE
 
         loadi g1 STD_NOERROR
         ret
