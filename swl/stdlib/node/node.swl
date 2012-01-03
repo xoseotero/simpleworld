@@ -1,7 +1,7 @@
 # @file stdlib/node/node.swl
 # Create a new node.
 #
-#  Copyright (C) 2008-2011  Xosé Otero <xoseotero@gmail.com>
+#  Copyright (C) 2008-2012  Xosé Otero <xoseotero@gmail.com>
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -17,23 +17,20 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
+.include "stdlib/def.swl"
 .include "stdlib/error.swl"
 .include "stdlib/alloc/alloc.swl"
 .include "stdlib/node/def.swl"
 
 
-# Create a new node.
-# IN:  g0 pointer to the previous node.
-# IN:  g1 pointer to the next node.
-# IN:  g2 data.
+# Create a new node (prev and next set to STD_NULL).
+# IN:  g0 data.
 # OUT: g0 pointer to the new node.
 # OUT: g1 error status
 #      STD_NOERROR: no errors
 #      STD_ENOMEM: there is not memory enough
 .label std_node
-        move r0 g0                      # prev
-        move r1 g1                      # next
-        move r2 g2                      # data
+        move r0 g0                      # data
 
         # allocate the memory
         loadi g0 STD_NODE_STRUCT
@@ -41,9 +38,10 @@
         bnz g1 _std_node_enomem
 
         # set the fields
-        storeri g0 r0 _STD_NODE_PREV
-        storeri g0 r1 _STD_NODE_NEXT
-        storeri g0 r2 STD_NODE_DATA
+        loadi g1 STD_NULL
+        storeri g0 g1 _STD_NODE_PREV
+        storeri g0 g1 _STD_NODE_NEXT
+        storeri g0 r0 STD_NODE_DATA
 
         .label _std_node_ret
         loadi g1 STD_NOERROR

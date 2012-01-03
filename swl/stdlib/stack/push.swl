@@ -17,7 +17,6 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-.include "stdlib/def.swl"
 .include "stdlib/error.swl"
 .include "stdlib/address/address.swl"
 .include "stdlib/node/node.swl"
@@ -51,9 +50,7 @@
         b _std_stackpush_ret
 
         .label _std_stackpush_empty
-        loadi g0 STD_NULL
-        loadi g1 STD_NULL
-        move g2 r1
+        move g0 r1
         call std_node
         bnz g1 _std_stackpush_enomem
 

@@ -175,7 +175,6 @@ BOOST_AUTO_TEST_CASE(std_nodebefore)
   source.insert(line++, "call std_init");
   source.insert(line++, "b main");
 
-  source.insert(line++, ".include \"stdlib/def.swl\"");
   source.insert(line++, ".include \"stdlib/init.swl\"");
   source.insert(line++, ".include \"stdlib/node/def.swl\"");
   source.insert(line++, ".include \"stdlib/node/node.swl\"");
@@ -184,9 +183,7 @@ BOOST_AUTO_TEST_CASE(std_nodebefore)
 
   // Test
   source.insert(line++, ".label main");
-  source.insert(line++, "loadi g0 STD_NULL");
-  source.insert(line++, "loadi g1 STD_NULL");
-  source.insert(line++, "loadi g2 0x0");
+  source.insert(line++, "loadi g0 0x0");
   source.insert(line++, "call std_node");
   source.insert(line++, "move r0 g0");
 
@@ -239,7 +236,6 @@ BOOST_AUTO_TEST_CASE(std_nodeafter)
   source.insert(line++, "call std_init");
   source.insert(line++, "b main");
 
-  source.insert(line++, ".include \"stdlib/def.swl\"");
   source.insert(line++, ".include \"stdlib/init.swl\"");
   source.insert(line++, ".include \"stdlib/node/def.swl\"");
   source.insert(line++, ".include \"stdlib/node/node.swl\"");
@@ -248,9 +244,7 @@ BOOST_AUTO_TEST_CASE(std_nodeafter)
 
   // Test
   source.insert(line++, ".label main");
-  source.insert(line++, "loadi g0 STD_NULL");
-  source.insert(line++, "loadi g1 STD_NULL");
-  source.insert(line++, "loadi g2 0x0");
+  source.insert(line++, "loadi g0 0x0");
   source.insert(line++, "call std_node");
   source.insert(line++, "move r0 g0");
 
@@ -304,7 +298,6 @@ BOOST_AUTO_TEST_CASE(std_noderemove)
   source.insert(line++, "call std_init");
   source.insert(line++, "b main");
 
-  source.insert(line++, ".include \"stdlib/def.swl\"");
   source.insert(line++, ".include \"stdlib/init.swl\"");
   source.insert(line++, ".include \"stdlib/alloc/def.swl\"");
   source.insert(line++, ".include \"stdlib/alloc/info.swl\"");
@@ -317,9 +310,7 @@ BOOST_AUTO_TEST_CASE(std_noderemove)
 
   // Test
   source.insert(line++, ".label main");
-  source.insert(line++, "loadi g0 STD_NULL");
-  source.insert(line++, "loadi g1 STD_NULL");
-  source.insert(line++, "loadi g2 0x0");
+  source.insert(line++, "loadi g0 0x0");
   source.insert(line++, "call std_node");
   source.insert(line++, "move r0 g0");
 
@@ -393,22 +384,19 @@ BOOST_AUTO_TEST_CASE(std_prev)
   source.insert(line++, "call std_init");
   source.insert(line++, "b main");
 
-  source.insert(line++, ".include \"stdlib/def.swl\"");
   source.insert(line++, ".include \"stdlib/init.swl\"");
   source.insert(line++, ".include \"stdlib/node/node.swl\"");
+  source.insert(line++, ".include \"stdlib/node/after.swl\"");
   source.insert(line++, ".include \"stdlib/node/prev.swl\"");
 
   // Test
   source.insert(line++, ".label main");
-  source.insert(line++, "loadi g0 STD_NULL");
-  source.insert(line++, "loadi g1 STD_NULL");
-  source.insert(line++, "loadi g2 0x0");
+  source.insert(line++, "loadi g0 0x0");
   source.insert(line++, "call std_node");
   source.insert(line++, "push g0");
 
-  source.insert(line++, "loadi g1 STD_NULL");
-  source.insert(line++, "loadi g2 0x0");
-  source.insert(line++, "call std_node");
+  source.insert(line++, "loadi g1 0x0");
+  source.insert(line++, "call std_nodeafter");
 
   source.insert(line++, "loadi g1 0x1");
   source.insert(line++, "call std_prev");
@@ -454,23 +442,19 @@ BOOST_AUTO_TEST_CASE(std_next)
   source.insert(line++, "call std_init");
   source.insert(line++, "b main");
 
-  source.insert(line++, ".include \"stdlib/def.swl\"");
   source.insert(line++, ".include \"stdlib/init.swl\"");
   source.insert(line++, ".include \"stdlib/node/node.swl\"");
+  source.insert(line++, ".include \"stdlib/node/before.swl\"");
   source.insert(line++, ".include \"stdlib/node/next.swl\"");
 
   // Test
   source.insert(line++, ".label main");
-  source.insert(line++, "loadi g0 STD_NULL");
-  source.insert(line++, "loadi g1 STD_NULL");
-  source.insert(line++, "loadi g2 0x0");
+  source.insert(line++, "loadi g0 0x0");
   source.insert(line++, "call std_node");
   source.insert(line++, "push g0");
 
-  source.insert(line++, "move g1 g0");
-  source.insert(line++, "loadi g0 STD_NULL");
-  source.insert(line++, "loadi g2 0x0");
-  source.insert(line++, "call std_node");
+  source.insert(line++, "loadi g1 0x0");
+  source.insert(line++, "call std_nodebefore");
 
   source.insert(line++, "loadi g1 0x1");
   source.insert(line++, "call std_next");
@@ -516,26 +500,22 @@ BOOST_AUTO_TEST_CASE(std_first)
   source.insert(line++, "call std_init");
   source.insert(line++, "b main");
 
-  source.insert(line++, ".include \"stdlib/def.swl\"");
   source.insert(line++, ".include \"stdlib/init.swl\"");
   source.insert(line++, ".include \"stdlib/node/node.swl\"");
+  source.insert(line++, ".include \"stdlib/node/after.swl\"");
   source.insert(line++, ".include \"stdlib/node/first.swl\"");
 
   // Test
   source.insert(line++, ".label main");
-  source.insert(line++, "loadi g0 STD_NULL");
-  source.insert(line++, "loadi g1 STD_NULL");
-  source.insert(line++, "loadi g2 0x0");
+  source.insert(line++, "loadi g0 0x0");
   source.insert(line++, "call std_node");
   source.insert(line++, "push g0");
 
-  source.insert(line++, "loadi g1 STD_NULL");
-  source.insert(line++, "loadi g2 0x0");
-  source.insert(line++, "call std_node");
+  source.insert(line++, "loadi g1 0x0");
+  source.insert(line++, "call std_nodeafter");
 
-  source.insert(line++, "loadi g1 STD_NULL");
-  source.insert(line++, "loadi g2 0x0");
-  source.insert(line++, "call std_node");
+  source.insert(line++, "loadi g1 0x0");
+  source.insert(line++, "call std_nodeafter");
 
   source.insert(line++, "call std_first");
 
@@ -580,28 +560,22 @@ BOOST_AUTO_TEST_CASE(std_last)
   source.insert(line++, "call std_init");
   source.insert(line++, "b main");
 
-  source.insert(line++, ".include \"stdlib/def.swl\"");
   source.insert(line++, ".include \"stdlib/init.swl\"");
   source.insert(line++, ".include \"stdlib/node/node.swl\"");
+  source.insert(line++, ".include \"stdlib/node/before.swl\"");
   source.insert(line++, ".include \"stdlib/node/last.swl\"");
 
   // Test
   source.insert(line++, ".label main");
-  source.insert(line++, "loadi g0 STD_NULL");
-  source.insert(line++, "loadi g1 STD_NULL");
-  source.insert(line++, "loadi g2 0x0");
+  source.insert(line++, "loadi g0 0x0");
   source.insert(line++, "call std_node");
   source.insert(line++, "push g0");
 
-  source.insert(line++, "move g1 g0");
-  source.insert(line++, "loadi g0 STD_NULL");
-  source.insert(line++, "loadi g2 0x0");
-  source.insert(line++, "call std_node");
+  source.insert(line++, "loadi g1 0x0");
+  source.insert(line++, "call std_nodebefore");
 
-  source.insert(line++, "move g1 g0");
-  source.insert(line++, "loadi g0 STD_NULL");
-  source.insert(line++, "loadi g2 0x0");
-  source.insert(line++, "call std_node");
+  source.insert(line++, "loadi g1 0x0");
+  source.insert(line++, "call std_nodebefore");
 
   source.insert(line++, "loadi g1 0x1");
   source.insert(line++, "call std_last");
