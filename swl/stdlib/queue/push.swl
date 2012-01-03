@@ -1,7 +1,7 @@
 # @file stdlib/queue/push.swl
 # Insert a element in the queue.
 #
-#  Copyright (C) 2008-2011  Xosé Otero <xoseotero@gmail.com>
+#  Copyright (C) 2008-2012  Xosé Otero <xoseotero@gmail.com>
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -20,8 +20,8 @@
 .include "stdlib/def.swl"
 .include "stdlib/error.swl"
 .include "stdlib/address/address.swl"
-.include "stdlib/node/def.swl"
 .include "stdlib/node/node.swl"
+.include "stdlib/node/after.swl"
 .include "stdlib/queue/def.swl"
 
 
@@ -41,36 +41,32 @@
         call std_address
         bz g0 _std_queuepush_efault
 
-        # allocate the new node
-        # node.prev = STD_NULL
-        # node.next = STD_NULL
+        # check if the queue is empty
+        loadri g0 r0 _STD_QUEUE_BOTTOM
+        bz g0 _std_queuepush_empty
+
+        # the queue is not empty
+        .label _std_queuepush_notempty
+        move g1 r1
+        call std_nodeafter
+        bnz g1 _std_queuepush_enomem
+        b _std_queuepush_ret
+
+        # the queue is empty
+        .label _std_queuepush_empty
         loadi g0 STD_NULL
         loadi g1 STD_NULL
         move g2 r1
         call std_node
         bnz g1 _std_queuepush_enomem
-        move r2 g0                      # node
 
-        # check if the queue is empty
-        loadri g0 r0 _STD_QUEUE_TOP
-        bz g0 _std_queuepush_empty
-
-        # update the previous node
-        # previous.next = node
-        storeri g0 r2 _STD_NODE_NEXT
-        b _std_queuepush_top
-
-        .label _std_queuepush_empty
-        # update the bottom pointer
-        # bottom = node
-        storeri r0 r2 _STD_QUEUE_BOTTOM
-
-        .label _std_queuepush_top
-        # update the top pointer
-        # top = node
-        storeri r0 r2 _STD_QUEUE_TOP
+        # update bottom
+        storeri r0 g0 _STD_QUEUE_BOTTOM
 
         .label _std_queuepush_ret
+        # update top
+        storeri r0 g0 _STD_QUEUE_TOP
+
         loadi g1 STD_NOERROR
         ret
 

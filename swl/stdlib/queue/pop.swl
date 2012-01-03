@@ -1,7 +1,7 @@
 # @file stdlib/queue/pop.swl
 # Remove a element from the queue.
 #
-#  Copyright (C) 2008-2011  Xosé Otero <xoseotero@gmail.com>
+#  Copyright (C) 2008-2012  Xosé Otero <xoseotero@gmail.com>
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -21,8 +21,7 @@
 .include "stdlib/error.swl"
 .include "stdlib/address/address.swl"
 .include "stdlib/node/def.swl"
-.include "stdlib/node/node.swl"
-.include "stdlib/node/free.swl"
+.include "stdlib/node/remove.swl"
 .include "stdlib/queue/def.swl"
 
 
@@ -42,33 +41,23 @@
         bz g0 _std_queuepop_efault
 
         # check if the queue is empty
-        loadri g0 r0 _STD_QUEUE_TOP
+        loadri g0 r0 _STD_QUEUE_BOTTOM
         bz g0 _std_queuepop_einval
 
-        # get the node to remove
-        loadri r1 r0 _STD_QUEUE_BOTTOM  # removed
+        loadri r1 g0 _STD_NODE_NEXT     # newbottom
+        loadri r2 g0 STD_NODE_DATA      # data
 
-        # get the data
-        loadri r2 r1 STD_NODE_DATA      # data
+        # remove the bottom node
+        call std_noderemove
+        bnz g1 _std_queuepop_efault
 
-        # update the bottom pointer
-        loadri g0 r1 _STD_NODE_NEXT
-        storeri r0 g0 _STD_QUEUE_BOTTOM
+        # update bottom
+        storeri r0 r1 _STD_QUEUE_BOTTOM
 
         # check if the queue is empty
-        loadri g0 r0 _STD_QUEUE_BOTTOM
-        bnz g0 _std_queuepop_free
-
-        # update the top node
-        # top = NULL
-        .label _std_queuepop_empty
-        loadi g1 STD_NULL
-        storeri r0 g1 _STD_QUEUE_TOP
-
-        # free the node
-        .label _std_queuepop_free
-        move g0 r1
-        call std_nodefree
+        bnz r1 _std_queuepop_ret
+        # update top
+        storeri r0 r1 _STD_QUEUE_TOP
 
         .label _std_queuepop_ret
         move g0 r2
