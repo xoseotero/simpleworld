@@ -1,7 +1,7 @@
 # @file stdlib/stack/pop.swl
 # Remove a element from the stack.
 #
-#  Copyright (C) 2008-2011  Xosé Otero <xoseotero@gmail.com>
+#  Copyright (C) 2008-2012  Xosé Otero <xoseotero@gmail.com>
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -21,9 +21,7 @@
 .include "stdlib/error.swl"
 .include "stdlib/address/address.swl"
 .include "stdlib/node/def.swl"
-.include "stdlib/node/node.swl"
-.include "stdlib/node/free.swl"
-.include "stdlib/node/next.swl"
+.include "stdlib/node/remove.swl"
 .include "stdlib/stack/def.swl"
 
 
@@ -43,28 +41,19 @@
         bz g0 _std_stackpop_efault
 
         # check if the stack is empty
-        loadri g0 r0 _STD_STACK_TOP
-        bz g0 _std_stackpop_einval
-
-        # get the node to remove
         loadri r1 r0 _STD_STACK_TOP     # removed
+        bz r1 _std_stackpop_einval
 
         # get the data
         loadri r2 r1 STD_NODE_DATA      # data
 
         # update the top node
-        # top = removed.next
-        move g0 r1
-        loadi g1 0x1
-        call std_next
-        bz g1 _std_stackpop_notempty
-        loadi g0 STD_NULL
-        .label _std_stackpop_notempty
+        loadri g0 r1 _STD_NODE_NEXT
         storeri r0 g0 _STD_STACK_TOP
 
         # free the node
         move g0 r1
-        call std_nodefree
+        call std_noderemove
 
         .label _std_stackpop_ret
         move g0 r2

@@ -1,7 +1,7 @@
 # @file stdlib/stack/push.swl
 # Insert a element in the stack.
 #
-#  Copyright (C) 2008-2011  Xosé Otero <xoseotero@gmail.com>
+#  Copyright (C) 2008-2012  Xosé Otero <xoseotero@gmail.com>
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -21,6 +21,7 @@
 .include "stdlib/error.swl"
 .include "stdlib/address/address.swl"
 .include "stdlib/node/node.swl"
+.include "stdlib/node/before.swl"
 .include "stdlib/stack/def.swl"
 
 
@@ -40,20 +41,26 @@
         call std_address
         bz g0 _std_stackpush_efault
 
-        # allocate the new node
-        # node.prev = STD_NULL
-        # node.next = top
+
+        loadri g0 r0 _STD_STACK_TOP
+        bz g0 _std_stackpush_empty
+        .label _std_stackpush_notempty
+        move g1 r1
+        call std_nodebefore
+        bnz g1 _std_stackpush_enomem
+        b _std_stackpush_ret
+
+        .label _std_stackpush_empty
         loadi g0 STD_NULL
-        loadri g1 r0 _STD_STACK_TOP
+        loadi g1 STD_NULL
         move g2 r1
         call std_node
         bnz g1 _std_stackpush_enomem
 
+        .label _std_stackpush_ret
         # update the top pointer
-        # top = node
         storeri r0 g0 _STD_STACK_TOP
 
-        .label _std_stackpush_ret
         loadi g1 STD_NOERROR
         ret
 
