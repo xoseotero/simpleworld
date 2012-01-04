@@ -2,7 +2,7 @@
  * @file tests/stdlib/stack_test.cpp
  * Unit test for stdlib/stack.swl
  *
- *  Copyright (C) 2009-2011  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2009-2012  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -71,6 +71,7 @@ BOOST_AUTO_TEST_CASE(swl_compile)
   source.insert(line++, "std_stackempty");
   source.insert(line++, "std_stackpush");
   source.insert(line++, "std_stackpop");
+  source.insert(line++, "std_stackiterator");
 
   BOOST_CHECK_NO_THROW(compile(source));
 }
@@ -258,6 +259,77 @@ BOOST_AUTO_TEST_CASE(std_stackpush)
 
   source.insert(line++, "move g1 g0");
   source.insert(line++, "pop g0");
+
+  source.insert(line++, "stop");
+
+  // Space for 256 words in the heap
+  source.insert(line++, ".label heap");
+  source.insert(line++, ".block 0x400");
+
+  // Space for 32 words in the stack
+  source.insert(line++, ".label stack");
+  source.insert(line++, ".block 0x80");
+
+  compile(source);
+
+  cpu::Memory registers;
+  cpu::MemoryFile memory(CPU_SAVE);
+  FakeCPU cpu(&registers, &memory);
+  cpu.execute(MAX_CYCLES);
+
+  BOOST_CHECK(not cpu.running());
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "g0")], 0x3F3);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "g1")], 0xF3F);
+}
+
+/**
+ * Check std_stackiterator.
+ */
+BOOST_AUTO_TEST_CASE(std_stackiterator)
+{
+  cpu::File source;
+  cpu::Source::size_type line = 0;
+
+  // Initialize the stack pointer
+  source.insert(line++, ".label init");
+  source.insert(line++, "loada sp stack");
+  source.insert(line++, "move fp sp");
+  source.insert(line++, "loada g0 heap");
+  source.insert(line++, "loadi g1 0x400");
+  source.insert(line++, "call std_init");
+  source.insert(line++, "b main");
+
+  source.insert(line++, ".include \"stdlib/init.swl\"");
+  source.insert(line++, ".include \"stdlib/node/def.swl\"");
+  source.insert(line++, ".include \"stdlib/node/next.swl\"");
+  source.insert(line++, ".include \"stdlib/stack/stack.swl\"");
+  source.insert(line++, ".include \"stdlib/stack/push.swl\"");
+  source.insert(line++, ".include \"stdlib/stack/iterator.swl\"");
+
+  // Test
+  source.insert(line++, ".label main");
+  source.insert(line++, "call std_stack");
+  source.insert(line++, "move r0 g0");
+
+  source.insert(line++, "loadi g1 0xF3F");
+  source.insert(line++, "call std_stackpush");
+
+  source.insert(line++, "move g0 r0");
+  source.insert(line++, "loadi g1 0x3F3");
+  source.insert(line++, "call std_stackpush");
+
+  source.insert(line++, "move g0 r0");
+  source.insert(line++, "call std_stackiterator");
+  source.insert(line++, "move r1 g0");
+
+  source.insert(line++, "loadri r2 g0 STD_NODE_DATA");
+
+  source.insert(line++, "loadi g1 0x1");
+  source.insert(line++, "call std_next");
+  source.insert(line++, "loadri r3 g0 STD_NODE_DATA");
+
+  source.insert(line++, "move g0 r2");
+  source.insert(line++, "move g1 r3");
 
   source.insert(line++, "stop");
 
