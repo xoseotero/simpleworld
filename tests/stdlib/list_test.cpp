@@ -2,7 +2,7 @@
  * @file tests/stdlib/list_test.cpp
  * Unit test for stdlib/list.swl
  *
- *  Copyright (C) 2009-2011  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2009-2012  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -72,6 +72,7 @@ BOOST_AUTO_TEST_CASE(swl_compile)
   source.insert(line++, "std_listget");
   source.insert(line++, "std_listinsert");
   source.insert(line++, "std_listremove");
+  source.insert(line++, "std_listiterator");
   source.insert(line++, "std_listfind");
   source.insert(line++, "std_listcount");
 
@@ -356,6 +357,80 @@ BOOST_AUTO_TEST_CASE(std_listremove)
   BOOST_CHECK(not cpu.running());
   BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "g0")], 0x3F3);
   BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "g1")], 0x1);
+}
+
+/**
+ * Check std_listiterator.
+ */
+BOOST_AUTO_TEST_CASE(std_listiterator)
+{
+  cpu::File source;
+  cpu::Source::size_type line = 0;
+
+  // Initialize the stack pointer
+  source.insert(line++, ".label init");
+  source.insert(line++, "loada sp stack");
+  source.insert(line++, "move fp sp");
+  source.insert(line++, "loada g0 heap");
+  source.insert(line++, "loadi g1 0x400");
+  source.insert(line++, "call std_init");
+  source.insert(line++, "b main");
+
+  source.insert(line++, ".include \"stdlib/init.swl\"");
+  source.insert(line++, ".include \"stdlib/node/def.swl\"");
+  source.insert(line++, ".include \"stdlib/node/next.swl\"");
+  source.insert(line++, ".include \"stdlib/list/list.swl\"");
+  source.insert(line++, ".include \"stdlib/list/insert.swl\"");
+  source.insert(line++, ".include \"stdlib/list/iterator.swl\"");
+  
+
+  // Test
+  source.insert(line++, ".label main");
+  source.insert(line++, "call std_list");
+  source.insert(line++, "move r0 g0");
+
+  source.insert(line++, "loadi g1 0x0");
+  source.insert(line++, "loadi g2 0xF3F");
+  source.insert(line++, "call std_listinsert");
+
+  source.insert(line++, "move g0 r0");
+  source.insert(line++, "loadi g1 0x1");
+  source.insert(line++, "loadi g2 0x3F3");
+  source.insert(line++, "call std_listinsert");
+
+  source.insert(line++, "move g0 r0");
+  source.insert(line++, "call std_listiterator");
+  source.insert(line++, "move r1 g0");
+
+  source.insert(line++, "loadri r2 g0 STD_NODE_DATA");
+
+  source.insert(line++, "loadi g1 0x1");
+  source.insert(line++, "call std_next");
+  source.insert(line++, "loadri r3 g0 STD_NODE_DATA");
+
+  source.insert(line++, "move g0 r2");
+  source.insert(line++, "move g1 r3");
+
+  source.insert(line++, "stop");
+
+  // Space for 256 words in the heap
+  source.insert(line++, ".label heap");
+  source.insert(line++, ".block 0x400");
+
+  // Space for 32 words in the stack
+  source.insert(line++, ".label stack");
+  source.insert(line++, ".block 0x80");
+
+  compile(source);
+
+  cpu::Memory registers;
+  cpu::MemoryFile memory(CPU_SAVE);
+  FakeCPU cpu(&registers, &memory);
+  cpu.execute(MAX_CYCLES);
+
+  BOOST_CHECK(not cpu.running());
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "g0")], 0xF3F);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "g1")], 0x3F3);
 }
 
 /**

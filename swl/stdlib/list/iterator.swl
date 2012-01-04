@@ -1,0 +1,59 @@
+# @file stdlib/list/iterator.swl
+# Get a iterator of the list.
+#
+#  Copyright (C) 2012  Xosé Otero <xoseotero@gmail.com>
+#
+#  This program is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+
+.include "stdlib/error.swl"
+.include "stdlib/address/address.swl"
+.include "stdlib/list/def.swl"
+
+
+# Get a iterator of the list.
+# The node returned is part of the hierarchy of nodes, not a copy. The only
+# secure calls that can be made over the node returned are std_prev and
+# std_next.
+# If the list is changed after the call to this function the behaviour is
+# undefined.
+# IN:  g0 pointer to the list
+# OUT: g0 first node
+# OUT: g1 error status
+#      STD_NOERROR: no errors
+#      STD_EINVAL: the list is empty
+#      STD_EFAULT: the pointer is not valid
+.label std_listiterator
+        move r0 g0                      # pointer
+
+        # check if the pointer is valid
+        loadi g1 STD_LIST_STRUCT
+        call std_address
+        bz g0 _std_listiterator_efault
+
+        # check if the list is empty
+        loadri g0 r0 _STD_LIST_FIRST
+        bz g0 _std_listiterator_einval
+
+        .label _std_listiterator_ret
+        loadi g1 STD_NOERROR
+        ret
+
+        .label _std_listiterator_einval
+        loadi g1 STD_EINVAL
+        ret
+
+        .label _std_listiterator_efault
+        loadi g1 STD_EFAULT
+        ret
