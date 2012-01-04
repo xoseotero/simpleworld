@@ -1,7 +1,7 @@
 # @file stdlib/set/insert.swl
 # Insert a element in the set.
 #
-#  Copyright (C) 2008-2011  Xosé Otero <xoseotero@gmail.com>
+#  Copyright (C) 2008-2012  Xosé Otero <xoseotero@gmail.com>
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -25,6 +25,7 @@
 
 
 # Insert a element in the set.
+# For speed purposes the new value is inserted at the begining of the hierarchy.
 # IN:  g0 pointer to the set
 # IN:  g1 value
 # OUT: g1 error status
