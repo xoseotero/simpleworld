@@ -22,3 +22,5 @@
 .define _STD_NODE_PREV        0x0       # Offset to the prev field
 .define _STD_NODE_NEXT        0x4       # Offset to the next field
 .define STD_NODE_DATA         0x8       # Offset to the data field
+
+.define STD_VNODE_STRUCT      0x8       # Minimum size of vnode

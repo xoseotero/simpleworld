@@ -1,0 +1,77 @@
+# @file stdlib/node/vnode.swl
+# Create variable size node.
+#
+#  Copyright (C) 2012  Xosé Otero <xoseotero@gmail.com>
+#
+#  This program is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+
+.include "stdlib/def.swl"
+.include "stdlib/error.swl"
+.include "stdlib/mem/copy.swl"
+.include "stdlib/alloc/alloc.swl"
+.include "stdlib/node/def.swl"
+
+
+# Create a variable size node (prev and next set to STD_NULL).
+# IN:  g0 pointer.
+# IN:  g1 size.
+# OUT: g0 pointer to the new node.
+# OUT: g1 error status
+#      STD_NOERROR: no errors
+#      STD_EINVAL:  size is 0
+#      STD_EFAULT:  the pointers are not valid
+#      STD_ENOMEM:  there is not memory enough
+.label std_vnode
+        # check if the size is 0
+        bz g1 _std_vnode_einval
+
+        move r0 g0                      # pointer
+        move r1 g1                      # size
+
+        # allocate the memory
+        addi g0 g1 STD_VNODE_STRUCT
+        call std_alloc
+        bnz g1 _std_vnode_enomem
+        move r2 g0                      # node
+
+        # set the fields
+        addi g0 g0 STD_NODE_DATA
+        move g1 r0
+        move g2 r1
+        call std_copy
+        bz g1 _std_vnode_continue
+        ret                             # return the same error than std_copy
+
+        .label _std_vnode_continue
+        loadi g0 STD_NULL
+        storeri r2 g0 _STD_NODE_PREV
+        storeri r2 g0 _STD_NODE_NEXT
+
+        .label _std_vnode_ret
+        move g0 r2
+        loadi g1 STD_NOERROR
+        ret
+
+        .label _std_vnode_einval
+        loadi g1 STD_EINVAL
+        ret
+
+        .label _std_vnode_efault
+        loadi g1 STD_EFAULT
+        ret
+
+        .label _std_vnode_enomem
+        loadi g1 STD_ENOMEM
+        ret

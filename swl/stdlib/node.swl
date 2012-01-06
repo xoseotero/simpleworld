@@ -20,6 +20,7 @@
 
 .include "stdlib/node/def.swl"
 .include "stdlib/node/node.swl"
+.include "stdlib/node/vnode.swl"
 .include "stdlib/node/before.swl"
 .include "stdlib/node/after.swl"
 .include "stdlib/node/free.swl"
