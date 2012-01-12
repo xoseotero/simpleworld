@@ -22,6 +22,7 @@
 .include "stdlib/node/node.swl"
 .include "stdlib/node/vnode.swl"
 .include "stdlib/node/before.swl"
+.include "stdlib/node/vbefore.swl"
 .include "stdlib/node/after.swl"
 .include "stdlib/node/free.swl"
 .include "stdlib/node/remove.swl"

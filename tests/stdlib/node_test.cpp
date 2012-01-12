@@ -70,6 +70,7 @@ BOOST_AUTO_TEST_CASE(swl_compile)
   source.insert(line++, "std_node");
   source.insert(line++, "std_vnode");
   source.insert(line++, "std_nodebefore");
+  source.insert(line++, "std_vnodebefore");
   source.insert(line++, "std_nodeafter");
   source.insert(line++, "std_nodefree");
   source.insert(line++, "std_noderemove");
@@ -278,6 +279,73 @@ BOOST_AUTO_TEST_CASE(std_nodebefore)
   source.insert(line++, "loadri g2 r1 STD_NODE_DATA");
 
   source.insert(line++, "stop");
+
+  // Space for 256 words in the heap
+  source.insert(line++, ".label heap");
+  source.insert(line++, ".block 0x400");
+
+  // Space for 32 words in the stack
+  source.insert(line++, ".label stack");
+  source.insert(line++, ".block 0x80");
+
+  compile(source);
+
+  cpu::Memory registers;
+  cpu::MemoryFile memory(CPU_SAVE);
+  FakeCPU cpu(&registers, &memory);
+  cpu.execute(MAX_CYCLES);
+
+  BOOST_CHECK(not cpu.running());
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "g0")], 0x0);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "g1")],
+                    registers[REGISTER(cpu, "r0")]);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "g2")], 0x1);
+}
+
+/**
+ * Check std_vnodebefore.
+ */
+BOOST_AUTO_TEST_CASE(std_vnodebefore)
+{
+  cpu::File source;
+  cpu::Source::size_type line = 0;
+
+  // Initialize the stack pointer
+  source.insert(line++, ".label init");
+  source.insert(line++, "loada sp stack");
+  source.insert(line++, "move fp sp");
+  source.insert(line++, "loada g0 heap");
+  source.insert(line++, "loadi g1 0x400");
+  source.insert(line++, "call std_init");
+  source.insert(line++, "b main");
+
+  source.insert(line++, ".include \"stdlib/def.swl\"");
+  source.insert(line++, ".include \"stdlib/init.swl\"");
+  source.insert(line++, ".include \"stdlib/node/def.swl\"");
+  source.insert(line++, ".include \"stdlib/node/vnode.swl\"");
+  source.insert(line++, ".include \"stdlib/node/vbefore.swl\"");
+  source.insert(line++, ".include \"stdlib/node/free.swl\"");
+
+  // Test
+  source.insert(line++, ".label main");
+  source.insert(line++, "loada g0 main");
+  source.insert(line++, "loadi g1 STD_WORDSIZE");
+  source.insert(line++, "call std_vnode");
+  source.insert(line++, "move r0 g0");
+
+  source.insert(line++, "loada g1 data");
+  source.insert(line++, "loadi g2 STD_WORDSIZE");
+  source.insert(line++, "call std_vnodebefore");
+  source.insert(line++, "move r1 g0");
+
+  source.insert(line++, "loadri g0 r1 _STD_NODE_PREV");
+  source.insert(line++, "loadri g1 r1 _STD_NODE_NEXT");
+  source.insert(line++, "loadri g2 r1 STD_NODE_DATA");
+
+  source.insert(line++, "stop");
+
+  source.insert(line++, ".label data");
+  source.insert(line++, "0x1");
 
   // Space for 256 words in the heap
   source.insert(line++, ".label heap");
