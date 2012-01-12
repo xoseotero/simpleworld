@@ -21,6 +21,7 @@
 .include "stdlib/address/address.swl"
 .include "stdlib/mem/copy.swl"
 .include "stdlib/alloc/alloc.swl"
+.include "stdlib/alloc/free.swl"
 .include "stdlib/node/def.swl"
 
 
@@ -59,8 +60,7 @@
         move g1 r1
         move g2 r2
         call std_copy
-        bz g1 _std_vnodeafter_continue
-        ret                             # return the same error than std_copy
+        bnz g1 _std_vnodeafter_copyerror
 
         .label _std_vnodeafter_continue
         storeri r4 r0 _STD_NODE_PREV
@@ -89,4 +89,15 @@
 
         .label _std_vnodeafter_enomem
         loadi g1 STD_ENOMEM
+        ret
+
+        .label _std_vnodeafter_copyerror
+        # save the error returned by std_copy
+        move r5 g1
+
+        # free the node
+        move g0 r4
+        call std_free
+
+        move g1 r5
         ret
