@@ -2,7 +2,7 @@
  * @file tests/stdlib/error_test.cpp
  * Unit test for stdlib/error.swl
  *
- *  Copyright (C) 2009-2010  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2009-2012  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -61,9 +61,8 @@ void compile(const cpu::File& file)
 BOOST_AUTO_TEST_CASE(swl_compile)
 {
   cpu::File source;
-  cpu::Source::size_type line = 0;
 
-  source.insert(line++, ".include \"stdlib/error.swl\"");
+  source.insert(".include \"stdlib/error.swl\"");
   BOOST_CHECK_NO_THROW(compile(source));
 }
 
@@ -73,14 +72,13 @@ BOOST_AUTO_TEST_CASE(swl_compile)
 BOOST_AUTO_TEST_CASE(swl_definitions)
 {
   cpu::File source;
-  cpu::Source::size_type line = 0;
 
-  source.insert(line++, ".include \"stdlib/error.swl\"");
-  source.insert(line++, "STD_NOERROR");
-  source.insert(line++, "STD_EINVAL");
-  source.insert(line++, "STD_EFAULT");
-  source.insert(line++, "STD_EOVERFLOW");
-  source.insert(line++, "STD_ENOMEM");
+  source.insert(".include \"stdlib/error.swl\"");
+  source.insert("STD_NOERROR");
+  source.insert("STD_EINVAL");
+  source.insert("STD_EFAULT");
+  source.insert("STD_EOVERFLOW");
+  source.insert("STD_ENOMEM");
   compile(source);
 
   cpu::Memory registers;

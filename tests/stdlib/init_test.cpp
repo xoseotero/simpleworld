@@ -2,7 +2,7 @@
  * @file tests/stdlib/init_test.cpp
  * Unit test for stdlib/init.swl
  *
- *  Copyright (C) 2009-2010  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2009-2012  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -61,8 +61,7 @@ void compile(const cpu::File& file)
 BOOST_AUTO_TEST_CASE(swl_compile)
 {
   cpu::File source;
-  cpu::Source::size_type line = 0;
 
-  source.insert(line++, ".include \"stdlib/init.swl\"");
+  source.insert(".include \"stdlib/init.swl\"");
   BOOST_CHECK_NO_THROW(compile(source));
 }

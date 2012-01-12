@@ -2,7 +2,7 @@
  * @file tests/cpu/file_test.cpp
  * Unit test for CPU::File.
  *
- *  Copyright (C) 2007  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2007-2012  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -109,9 +109,9 @@ BOOST_AUTO_TEST_CASE(file_remove)
 {
   cpu::File file;
 
-  file.insert(0, "First line");
-  file.insert(1, "Second line");
-  file.insert(2, "Third line");
+  file.insert("First line");
+  file.insert("Second line");
+  file.insert("Third line");
 
   // Remove 0 elements
   file.remove(0, 0);
@@ -165,9 +165,9 @@ BOOST_AUTO_TEST_CASE(file_save)
 {
   cpu::File file;
 
-  file.insert(0, "First line");
-  file.insert(1, "Second line");
-  file.insert(2, "Third line");
+  file.insert("First line");
+  file.insert("Second line");
+  file.insert("Third line");
 
   file.save(FILE_SAVE);
 

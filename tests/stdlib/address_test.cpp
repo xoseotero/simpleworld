@@ -2,7 +2,7 @@
  * @file tests/stdlib/address_test.cpp
  * Unit test for stdlib/address.swl
  *
- *  Copyright (C) 2009-2011  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2009-2012  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -61,11 +61,10 @@ void compile(const cpu::File& file)
 BOOST_AUTO_TEST_CASE(swl_compile)
 {
   cpu::File source;
-  cpu::Source::size_type line = 0;
 
-  source.insert(line++, ".include \"stdlib/address.swl\"");
+  source.insert(".include \"stdlib/address.swl\"");
 
-  source.insert(line++, "std_address");
+  source.insert("std_address");
 
   BOOST_CHECK_NO_THROW(compile(source));
 }
@@ -78,39 +77,38 @@ BOOST_AUTO_TEST_CASE(swl_compile)
 BOOST_AUTO_TEST_CASE(std_address)
 {
   cpu::File source;
-  cpu::Source::size_type line = 0;
 
   // Initialization code
-  source.insert(line++, ".label init");
+  source.insert(".label init");
   // Initialize the stack pointer
-  source.insert(line++, "loada sp stack");
+  source.insert("loada sp stack");
 
   // Initialize the stdlib
-  source.insert(line++, ".define HEAP_SIZE 0x400");
-  source.insert(line++, "loada g0 heap");
-  source.insert(line++, "loadi g1 HEAP_SIZE");
-  source.insert(line++, "call std_init");
+  source.insert(".define HEAP_SIZE 0x400");
+  source.insert("loada g0 heap");
+  source.insert("loadi g1 HEAP_SIZE");
+  source.insert("call std_init");
 
-  source.insert(line++, "b main");
+  source.insert("b main");
 
-  source.insert(line++, ".include \"stdlib/def.swl\"");
-  source.insert(line++, ".include \"stdlib/init.swl\"");
-  source.insert(line++, ".include \"stdlib/address/address.swl\"");
+  source.insert(".include \"stdlib/def.swl\"");
+  source.insert(".include \"stdlib/init.swl\"");
+  source.insert(".include \"stdlib/address/address.swl\"");
 
   // Test
-  source.insert(line++, ".label main");
-  source.insert(line++, "loada g0 main");
-  source.insert(line++, "loadi g1 STD_WORDSIZE");
-  source.insert(line++, "call std_address");
-  source.insert(line++, "stop");
+  source.insert(".label main");
+  source.insert("loada g0 main");
+  source.insert("loadi g1 STD_WORDSIZE");
+  source.insert("call std_address");
+  source.insert("stop");
 
   // Space for the heap
-  source.insert(line++, ".label heap");
-  source.insert(line++, ".block HEAP_SIZE");
+  source.insert(".label heap");
+  source.insert(".block HEAP_SIZE");
 
   // Space for 32 words in the stack
-  source.insert(line++, ".label stack");
-  source.insert(line++, ".block 0x80");
+  source.insert(".label stack");
+  source.insert(".block 0x80");
 
   compile(source);
 
@@ -131,43 +129,42 @@ BOOST_AUTO_TEST_CASE(std_address)
 BOOST_AUTO_TEST_CASE(std_address_limit_word)
 {
   cpu::File source;
-  cpu::Source::size_type line = 0;
 
   // Initialization code
-  source.insert(line++, ".label init");
+  source.insert(".label init");
   // Initialize the stack pointer
-  source.insert(line++, "loada sp stack");
+  source.insert("loada sp stack");
 
   // Initialize the stdlib
-  source.insert(line++, ".define HEAP_SIZE 0x400");
-  source.insert(line++, "loada g0 heap");
-  source.insert(line++, "loadi g1 HEAP_SIZE");
-  source.insert(line++, "call std_init");
+  source.insert(".define HEAP_SIZE 0x400");
+  source.insert("loada g0 heap");
+  source.insert("loadi g1 HEAP_SIZE");
+  source.insert("call std_init");
 
-  source.insert(line++, "b main");
+  source.insert("b main");
 
-  source.insert(line++, ".include \"stdlib/def.swl\"");
-  source.insert(line++, ".include \"stdlib/init.swl\"");
-  source.insert(line++, ".include \"stdlib/address/address.swl\"");
+  source.insert(".include \"stdlib/def.swl\"");
+  source.insert(".include \"stdlib/init.swl\"");
+  source.insert(".include \"stdlib/address/address.swl\"");
 
   // Test
-  source.insert(line++, ".label main");
-  source.insert(line++, "loada g0 end");
-  source.insert(line++, "subi g0 g0 STD_WORDSIZE");
-  source.insert(line++, "loadi g1 STD_WORDSIZE");
-  source.insert(line++, "call std_address");
-  source.insert(line++, "stop");
+  source.insert(".label main");
+  source.insert("loada g0 end");
+  source.insert("subi g0 g0 STD_WORDSIZE");
+  source.insert("loadi g1 STD_WORDSIZE");
+  source.insert("call std_address");
+  source.insert("stop");
 
   // Space for the heap
-  source.insert(line++, ".label heap");
-  source.insert(line++, ".block HEAP_SIZE");
+  source.insert(".label heap");
+  source.insert(".block HEAP_SIZE");
 
   // Space for 32 words in the stack
-  source.insert(line++, ".label stack");
-  source.insert(line++, ".block 0x80");
+  source.insert(".label stack");
+  source.insert(".block 0x80");
 
   // End of the memory
-  source.insert(line++, ".label end");
+  source.insert(".label end");
 
   compile(source);
 
@@ -188,43 +185,42 @@ BOOST_AUTO_TEST_CASE(std_address_limit_word)
 BOOST_AUTO_TEST_CASE(std_address_limit_halfword)
 {
   cpu::File source;
-  cpu::Source::size_type line = 0;
 
   // Initialization code
-  source.insert(line++, ".label init");
+  source.insert(".label init");
   // Initialize the stack pointer
-  source.insert(line++, "loada sp stack");
+  source.insert("loada sp stack");
 
   // Initialize the stdlib
-  source.insert(line++, ".define HEAP_SIZE 0x400");
-  source.insert(line++, "loada g0 heap");
-  source.insert(line++, "loadi g1 HEAP_SIZE");
-  source.insert(line++, "call std_init");
+  source.insert(".define HEAP_SIZE 0x400");
+  source.insert("loada g0 heap");
+  source.insert("loadi g1 HEAP_SIZE");
+  source.insert("call std_init");
 
-  source.insert(line++, "b main");
+  source.insert("b main");
 
-  source.insert(line++, ".include \"stdlib/def.swl\"");
-  source.insert(line++, ".include \"stdlib/init.swl\"");
-  source.insert(line++, ".include \"stdlib/address/address.swl\"");
+  source.insert(".include \"stdlib/def.swl\"");
+  source.insert(".include \"stdlib/init.swl\"");
+  source.insert(".include \"stdlib/address/address.swl\"");
 
   // Test
-  source.insert(line++, ".label main");
-  source.insert(line++, "loada g0 end");
-  source.insert(line++, "subi g0 g0 STD_HWORDSIZE");
-  source.insert(line++, "loadi g1 STD_HWORDSIZE");
-  source.insert(line++, "call std_address");
-  source.insert(line++, "stop");
+  source.insert(".label main");
+  source.insert("loada g0 end");
+  source.insert("subi g0 g0 STD_HWORDSIZE");
+  source.insert("loadi g1 STD_HWORDSIZE");
+  source.insert("call std_address");
+  source.insert("stop");
 
   // Space for the heap
-  source.insert(line++, ".label heap");
-  source.insert(line++, ".block HEAP_SIZE");
+  source.insert(".label heap");
+  source.insert(".block HEAP_SIZE");
 
   // Space for 32 words in the stack
-  source.insert(line++, ".label stack");
-  source.insert(line++, ".block 0x80");
+  source.insert(".label stack");
+  source.insert(".block 0x80");
 
   // End of the memory
-  source.insert(line++, ".label end");
+  source.insert(".label end");
 
   compile(source);
 
@@ -245,43 +241,42 @@ BOOST_AUTO_TEST_CASE(std_address_limit_halfword)
 BOOST_AUTO_TEST_CASE(std_address_limit_quarterword)
 {
   cpu::File source;
-  cpu::Source::size_type line = 0;
 
   // Initialization code
-  source.insert(line++, ".label init");
+  source.insert(".label init");
   // Initialize the stack pointer
-  source.insert(line++, "loada sp stack");
+  source.insert("loada sp stack");
 
   // Initialize the stdlib
-  source.insert(line++, ".define HEAP_SIZE 0x400");
-  source.insert(line++, "loada g0 heap");
-  source.insert(line++, "loadi g1 HEAP_SIZE");
-  source.insert(line++, "call std_init");
+  source.insert(".define HEAP_SIZE 0x400");
+  source.insert("loada g0 heap");
+  source.insert("loadi g1 HEAP_SIZE");
+  source.insert("call std_init");
 
-  source.insert(line++, "b main");
+  source.insert("b main");
 
-  source.insert(line++, ".include \"stdlib/def.swl\"");
-  source.insert(line++, ".include \"stdlib/init.swl\"");
-  source.insert(line++, ".include \"stdlib/address/address.swl\"");
+  source.insert(".include \"stdlib/def.swl\"");
+  source.insert(".include \"stdlib/init.swl\"");
+  source.insert(".include \"stdlib/address/address.swl\"");
 
   // Test
-  source.insert(line++, ".label main");
-  source.insert(line++, "loada g0 end");
-  source.insert(line++, "subi g0 g0 STD_QWORDSIZE");
-  source.insert(line++, "loadi g1 STD_QWORDSIZE");
-  source.insert(line++, "call std_address");
-  source.insert(line++, "stop");
+  source.insert(".label main");
+  source.insert("loada g0 end");
+  source.insert("subi g0 g0 STD_QWORDSIZE");
+  source.insert("loadi g1 STD_QWORDSIZE");
+  source.insert("call std_address");
+  source.insert("stop");
 
   // Space for the heap
-  source.insert(line++, ".label heap");
-  source.insert(line++, ".block HEAP_SIZE");
+  source.insert(".label heap");
+  source.insert(".block HEAP_SIZE");
 
   // Space for 32 words in the stack
-  source.insert(line++, ".label stack");
-  source.insert(line++, ".block 0x80");
+  source.insert(".label stack");
+  source.insert(".block 0x80");
 
   // End of the memory
-  source.insert(line++, ".label end");
+  source.insert(".label end");
 
   compile(source);
 
@@ -302,39 +297,38 @@ BOOST_AUTO_TEST_CASE(std_address_limit_quarterword)
 BOOST_AUTO_TEST_CASE(std_address_null)
 {
   cpu::File source;
-  cpu::Source::size_type line = 0;
 
   // Initialization code
-  source.insert(line++, ".label init");
+  source.insert(".label init");
   // Initialize the stack pointer
-  source.insert(line++, "loada sp stack");
+  source.insert("loada sp stack");
 
   // Initialize the stdlib
-  source.insert(line++, ".define HEAP_SIZE 0x400");
-  source.insert(line++, "loada g0 heap");
-  source.insert(line++, "loadi g1 HEAP_SIZE");
-  source.insert(line++, "call std_init");
+  source.insert(".define HEAP_SIZE 0x400");
+  source.insert("loada g0 heap");
+  source.insert("loadi g1 HEAP_SIZE");
+  source.insert("call std_init");
 
-  source.insert(line++, "b main");
+  source.insert("b main");
 
-  source.insert(line++, ".include \"stdlib/def.swl\"");
-  source.insert(line++, ".include \"stdlib/init.swl\"");
-  source.insert(line++, ".include \"stdlib/address/address.swl\"");
+  source.insert(".include \"stdlib/def.swl\"");
+  source.insert(".include \"stdlib/init.swl\"");
+  source.insert(".include \"stdlib/address/address.swl\"");
 
   // Test
-  source.insert(line++, ".label main");
-  source.insert(line++, "loadi g0 STD_NULL");
-  source.insert(line++, "loadi g1 STD_WORDSIZE");
-  source.insert(line++, "call std_address");
-  source.insert(line++, "stop");
+  source.insert(".label main");
+  source.insert("loadi g0 STD_NULL");
+  source.insert("loadi g1 STD_WORDSIZE");
+  source.insert("call std_address");
+  source.insert("stop");
 
   // Space for the heap
-  source.insert(line++, ".label heap");
-  source.insert(line++, ".block HEAP_SIZE");
+  source.insert(".label heap");
+  source.insert(".block HEAP_SIZE");
 
   // Space for 32 words in the stack
-  source.insert(line++, ".label stack");
-  source.insert(line++, ".block 0x80");
+  source.insert(".label stack");
+  source.insert(".block 0x80");
 
   compile(source);
 
@@ -355,41 +349,40 @@ BOOST_AUTO_TEST_CASE(std_address_null)
 BOOST_AUTO_TEST_CASE(std_address_inval)
 {
   cpu::File source;
-  cpu::Source::size_type line = 0;
 
   // Initialization code
-  source.insert(line++, ".label init");
+  source.insert(".label init");
   // Initialize the stack pointer
-  source.insert(line++, "loada sp stack");
+  source.insert("loada sp stack");
 
   // Initialize the stdlib
-  source.insert(line++, ".define HEAP_SIZE 0x400");
-  source.insert(line++, "loada g0 heap");
-  source.insert(line++, "loadi g1 HEAP_SIZE");
-  source.insert(line++, "call std_init");
+  source.insert(".define HEAP_SIZE 0x400");
+  source.insert("loada g0 heap");
+  source.insert("loadi g1 HEAP_SIZE");
+  source.insert("call std_init");
 
-  source.insert(line++, "b main");
+  source.insert("b main");
 
-  source.insert(line++, ".include \"stdlib/init.swl\"");
-  source.insert(line++, ".include \"stdlib/address/address.swl\"");
+  source.insert(".include \"stdlib/init.swl\"");
+  source.insert(".include \"stdlib/address/address.swl\"");
 
   // Test
-  source.insert(line++, ".label main");
-  source.insert(line++, "loada g0 end");
-  source.insert(line++, "loadi g1 STD_WORDSIZE");
-  source.insert(line++, "call std_address");
-  source.insert(line++, "stop");
+  source.insert(".label main");
+  source.insert("loada g0 end");
+  source.insert("loadi g1 STD_WORDSIZE");
+  source.insert("call std_address");
+  source.insert("stop");
 
   // Space for the heap
-  source.insert(line++, ".label heap");
-  source.insert(line++, ".block HEAP_SIZE");
+  source.insert(".label heap");
+  source.insert(".block HEAP_SIZE");
 
   // Space for 32 words in the stack
-  source.insert(line++, ".label stack");
-  source.insert(line++, ".block 0x80");
+  source.insert(".label stack");
+  source.insert(".block 0x80");
 
   // End of the memory
-  source.insert(line++, ".label end");
+  source.insert(".label end");
 
   compile(source);
 

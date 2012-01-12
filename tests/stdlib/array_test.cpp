@@ -2,7 +2,7 @@
  * @file tests/stdlib/array_test.cpp
  * Unit test for stdlib/array.swl
  *
- *  Copyright (C) 2009-2011  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2009-2012  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -61,19 +61,18 @@ void compile(const cpu::File& file)
 BOOST_AUTO_TEST_CASE(swl_compile)
 {
   cpu::File source;
-  cpu::Source::size_type line = 0;
 
-  source.insert(line++, ".include \"stdlib/array.swl\"");
+  source.insert(".include \"stdlib/array.swl\"");
 
-  source.insert(line++, "std_array");
-  source.insert(line++, "std_arrayfree");
-  source.insert(line++, "std_arraysize");
-  source.insert(line++, "std_arrayresize");
-  source.insert(line++, "std_arrayget");
-  source.insert(line++, "std_arrayset");
-  source.insert(line++, "std_arrayfill");
-  source.insert(line++, "std_arrayfind");
-  source.insert(line++, "std_arraycount");
+  source.insert("std_array");
+  source.insert("std_arrayfree");
+  source.insert("std_arraysize");
+  source.insert("std_arrayresize");
+  source.insert("std_arrayget");
+  source.insert("std_arrayset");
+  source.insert("std_arrayfill");
+  source.insert("std_arrayfind");
+  source.insert("std_arraycount");
 
   BOOST_CHECK_NO_THROW(compile(source));
 }
@@ -85,61 +84,60 @@ BOOST_AUTO_TEST_CASE(swl_compile)
 BOOST_AUTO_TEST_CASE(std_array)
 {
   cpu::File source;
-  cpu::Source::size_type line = 0;
 
   // Initialize the stack pointer
-  source.insert(line++, ".label init");
-  source.insert(line++, "loada sp stack");
-  source.insert(line++, "move fp sp");
-  source.insert(line++, "loada g0 heap");
-  source.insert(line++, "loadi g1 0x400");
-  source.insert(line++, "call std_init");
-  source.insert(line++, "b main");
+  source.insert(".label init");
+  source.insert("loada sp stack");
+  source.insert("move fp sp");
+  source.insert("loada g0 heap");
+  source.insert("loadi g1 0x400");
+  source.insert("call std_init");
+  source.insert("b main");
 
-  source.insert(line++, ".include \"stdlib/init.swl\"");
-  source.insert(line++, ".include \"stdlib/alloc/def.swl\"");
-  source.insert(line++, ".include \"stdlib/alloc/info.swl\"");
-  source.insert(line++, ".include \"stdlib/array/array.swl\"");
-  source.insert(line++, ".include \"stdlib/array/free.swl\"");
+  source.insert(".include \"stdlib/init.swl\"");
+  source.insert(".include \"stdlib/alloc/def.swl\"");
+  source.insert(".include \"stdlib/alloc/info.swl\"");
+  source.insert(".include \"stdlib/array/array.swl\"");
+  source.insert(".include \"stdlib/array/free.swl\"");
 
   // Test
-  source.insert(line++, ".label main");
-  source.insert(line++, "loada g0 minfo");
-  source.insert(line++, "call std_minfo");
-  source.insert(line++, "loadri g0 g0 STD_MINFO_FREE");
-  source.insert(line++, "push g0");
+  source.insert(".label main");
+  source.insert("loada g0 minfo");
+  source.insert("call std_minfo");
+  source.insert("loadri g0 g0 STD_MINFO_FREE");
+  source.insert("push g0");
 
-  source.insert(line++, "loadi g0 0x8");
-  source.insert(line++, "call std_array");
-  source.insert(line++, "push g0");
+  source.insert("loadi g0 0x8");
+  source.insert("call std_array");
+  source.insert("push g0");
 
-  source.insert(line++, "loada g0 minfo");
-  source.insert(line++, "call std_minfo");
-  source.insert(line++, "loadri g0 g0 STD_MINFO_FREE");
-  source.insert(line++, "push g0");
+  source.insert("loada g0 minfo");
+  source.insert("call std_minfo");
+  source.insert("loadri g0 g0 STD_MINFO_FREE");
+  source.insert("push g0");
 
-  source.insert(line++, "loadri g0 fp 0x4");
-  source.insert(line++, "call std_arrayfree");
+  source.insert("loadri g0 fp 0x4");
+  source.insert("call std_arrayfree");
 
-  source.insert(line++, "loada g0 minfo");
-  source.insert(line++, "call std_minfo");
-  source.insert(line++, "loadri g2 g0 STD_MINFO_FREE");
-  source.insert(line++, "loadri g0 fp 0x0");
-  source.insert(line++, "loadri g1 fp 0x8");
+  source.insert("loada g0 minfo");
+  source.insert("call std_minfo");
+  source.insert("loadri g2 g0 STD_MINFO_FREE");
+  source.insert("loadri g0 fp 0x0");
+  source.insert("loadri g1 fp 0x8");
 
-  source.insert(line++, "stop");
+  source.insert("stop");
 
   // Space for the minfo struct
-  source.insert(line++, ".label minfo");
-  source.insert(line++, ".block STD_MINFO_STRUCT");
+  source.insert(".label minfo");
+  source.insert(".block STD_MINFO_STRUCT");
 
   // Space for 256 words in the heap
-  source.insert(line++, ".label heap");
-  source.insert(line++, ".block 0x400");
+  source.insert(".label heap");
+  source.insert(".block 0x400");
 
   // Space for 32 words in the stack
-  source.insert(line++, ".label stack");
-  source.insert(line++, ".block 0x80");
+  source.insert(".label stack");
+  source.insert(".block 0x80");
 
   compile(source);
 
@@ -163,50 +161,49 @@ BOOST_AUTO_TEST_CASE(std_array)
 BOOST_AUTO_TEST_CASE(std_arraysize)
 {
   cpu::File source;
-  cpu::Source::size_type line = 0;
 
   // Initialize the stack pointer
-  source.insert(line++, ".label init");
-  source.insert(line++, "loada sp stack");
-  source.insert(line++, "move fp sp");
-  source.insert(line++, "loada g0 heap");
-  source.insert(line++, "loadi g1 0x400");
-  source.insert(line++, "call std_init");
-  source.insert(line++, "b main");
+  source.insert(".label init");
+  source.insert("loada sp stack");
+  source.insert("move fp sp");
+  source.insert("loada g0 heap");
+  source.insert("loadi g1 0x400");
+  source.insert("call std_init");
+  source.insert("b main");
 
-  source.insert(line++, ".include \"stdlib/init.swl\"");
-  source.insert(line++, ".include \"stdlib/array/array.swl\"");
-  source.insert(line++, ".include \"stdlib/array/size.swl\"");
-  source.insert(line++, ".include \"stdlib/array/resize.swl\"");
+  source.insert(".include \"stdlib/init.swl\"");
+  source.insert(".include \"stdlib/array/array.swl\"");
+  source.insert(".include \"stdlib/array/size.swl\"");
+  source.insert(".include \"stdlib/array/resize.swl\"");
 
   // Test
-  source.insert(line++, ".label main");
-  source.insert(line++, "loadi g0 0x8");
-  source.insert(line++, "call std_array");
-  source.insert(line++, "push g0");
+  source.insert(".label main");
+  source.insert("loadi g0 0x8");
+  source.insert("call std_array");
+  source.insert("push g0");
 
-  source.insert(line++, "call std_arraysize");
-  source.insert(line++, "push g0");
+  source.insert("call std_arraysize");
+  source.insert("push g0");
 
-  source.insert(line++, "loadri g0 fp 0x0");
-  source.insert(line++, "loadi g1 0x4");
-  source.insert(line++, "call std_arrayresize");
+  source.insert("loadri g0 fp 0x0");
+  source.insert("loadi g1 0x4");
+  source.insert("call std_arrayresize");
 
-  source.insert(line++, "loadri g0 fp 0x0");
-  source.insert(line++, "call std_arraysize");
+  source.insert("loadri g0 fp 0x0");
+  source.insert("call std_arraysize");
 
-  source.insert(line++, "move g1 g0");
-  source.insert(line++, "pop g0");
+  source.insert("move g1 g0");
+  source.insert("pop g0");
 
-  source.insert(line++, "stop");
+  source.insert("stop");
 
   // Space for 256 words in the heap
-  source.insert(line++, ".label heap");
-  source.insert(line++, ".block 0x400");
+  source.insert(".label heap");
+  source.insert(".block 0x400");
 
   // Space for 32 words in the stack
-  source.insert(line++, ".label stack");
-  source.insert(line++, ".block 0x80");
+  source.insert(".label stack");
+  source.insert(".block 0x80");
 
   compile(source);
 
@@ -226,58 +223,57 @@ BOOST_AUTO_TEST_CASE(std_arraysize)
 BOOST_AUTO_TEST_CASE(std_arrayget)
 {
   cpu::File source;
-  cpu::Source::size_type line = 0;
 
   // Initialize the stack pointer
-  source.insert(line++, ".label init");
-  source.insert(line++, "loada sp stack");
-  source.insert(line++, "move fp sp");
-  source.insert(line++, "loada g0 heap");
-  source.insert(line++, "loadi g1 0x400");
-  source.insert(line++, "call std_init");
-  source.insert(line++, "b main");
+  source.insert(".label init");
+  source.insert("loada sp stack");
+  source.insert("move fp sp");
+  source.insert("loada g0 heap");
+  source.insert("loadi g1 0x400");
+  source.insert("call std_init");
+  source.insert("b main");
 
-  source.insert(line++, ".include \"stdlib/init.swl\"");
-  source.insert(line++, ".include \"stdlib/array/array.swl\"");
-  source.insert(line++, ".include \"stdlib/array/get.swl\"");
-  source.insert(line++, ".include \"stdlib/array/set.swl\"");
+  source.insert(".include \"stdlib/init.swl\"");
+  source.insert(".include \"stdlib/array/array.swl\"");
+  source.insert(".include \"stdlib/array/get.swl\"");
+  source.insert(".include \"stdlib/array/set.swl\"");
 
   // Test
-  source.insert(line++, ".label main");
-  source.insert(line++, "loadi g0 0x2");
-  source.insert(line++, "call std_array");
-  source.insert(line++, "push g0");
+  source.insert(".label main");
+  source.insert("loadi g0 0x2");
+  source.insert("call std_array");
+  source.insert("push g0");
 
-  source.insert(line++, "loadi g1 0x0");
-  source.insert(line++, "loadi g2 0xF3F");
-  source.insert(line++, "call std_arrayset");
+  source.insert("loadi g1 0x0");
+  source.insert("loadi g2 0xF3F");
+  source.insert("call std_arrayset");
 
-  source.insert(line++, "loadri g0 fp 0x0");
-  source.insert(line++, "loadi g1 0x1");
-  source.insert(line++, "loadi g2 0x3F3");
-  source.insert(line++, "call std_arrayset");
+  source.insert("loadri g0 fp 0x0");
+  source.insert("loadi g1 0x1");
+  source.insert("loadi g2 0x3F3");
+  source.insert("call std_arrayset");
 
-  source.insert(line++, "loadri g0 fp 0x0");
-  source.insert(line++, "loadi g1 0x0");
-  source.insert(line++, "call std_arrayget");
-  source.insert(line++, "push g0");
+  source.insert("loadri g0 fp 0x0");
+  source.insert("loadi g1 0x0");
+  source.insert("call std_arrayget");
+  source.insert("push g0");
 
-  source.insert(line++, "loadri g0 fp 0x0");
-  source.insert(line++, "loadi g1 0x1");
-  source.insert(line++, "call std_arrayget");
+  source.insert("loadri g0 fp 0x0");
+  source.insert("loadi g1 0x1");
+  source.insert("call std_arrayget");
 
-  source.insert(line++, "move g1 g0");
-  source.insert(line++, "pop g0");
+  source.insert("move g1 g0");
+  source.insert("pop g0");
 
-  source.insert(line++, "stop");
+  source.insert("stop");
 
   // Space for 256 words in the heap
-  source.insert(line++, ".label heap");
-  source.insert(line++, ".block 0x400");
+  source.insert(".label heap");
+  source.insert(".block 0x400");
 
   // Space for 32 words in the stack
-  source.insert(line++, ".label stack");
-  source.insert(line++, ".block 0x80");
+  source.insert(".label stack");
+  source.insert(".block 0x80");
 
   compile(source);
 
@@ -297,52 +293,51 @@ BOOST_AUTO_TEST_CASE(std_arrayget)
 BOOST_AUTO_TEST_CASE(std_arrayfill)
 {
   cpu::File source;
-  cpu::Source::size_type line = 0;
 
   // Initialize the stack pointer
-  source.insert(line++, ".label init");
-  source.insert(line++, "loada sp stack");
-  source.insert(line++, "move fp sp");
-  source.insert(line++, "loada g0 heap");
-  source.insert(line++, "loadi g1 0x400");
-  source.insert(line++, "call std_init");
-  source.insert(line++, "b main");
+  source.insert(".label init");
+  source.insert("loada sp stack");
+  source.insert("move fp sp");
+  source.insert("loada g0 heap");
+  source.insert("loadi g1 0x400");
+  source.insert("call std_init");
+  source.insert("b main");
 
-  source.insert(line++, ".include \"stdlib/init.swl\"");
-  source.insert(line++, ".include \"stdlib/array/array.swl\"");
-  source.insert(line++, ".include \"stdlib/array/get.swl\"");
-  source.insert(line++, ".include \"stdlib/array/fill.swl\"");
+  source.insert(".include \"stdlib/init.swl\"");
+  source.insert(".include \"stdlib/array/array.swl\"");
+  source.insert(".include \"stdlib/array/get.swl\"");
+  source.insert(".include \"stdlib/array/fill.swl\"");
 
   // Test
-  source.insert(line++, ".label main");
-  source.insert(line++, "loadi g0 0x2");
-  source.insert(line++, "call std_array");
-  source.insert(line++, "push g0");
+  source.insert(".label main");
+  source.insert("loadi g0 0x2");
+  source.insert("call std_array");
+  source.insert("push g0");
 
-  source.insert(line++, "loadi g1 0xF3F");
-  source.insert(line++, "call std_arrayfill");
+  source.insert("loadi g1 0xF3F");
+  source.insert("call std_arrayfill");
 
-  source.insert(line++, "loadri g0 fp 0x0");
-  source.insert(line++, "loadi g1 0x0");
-  source.insert(line++, "call std_arrayget");
-  source.insert(line++, "push g0");
+  source.insert("loadri g0 fp 0x0");
+  source.insert("loadi g1 0x0");
+  source.insert("call std_arrayget");
+  source.insert("push g0");
 
-  source.insert(line++, "loadri g0 fp 0x0");
-  source.insert(line++, "loadi g1 0x1");
-  source.insert(line++, "call std_arrayget");
+  source.insert("loadri g0 fp 0x0");
+  source.insert("loadi g1 0x1");
+  source.insert("call std_arrayget");
 
-  source.insert(line++, "move g1 g0");
-  source.insert(line++, "pop g0");
+  source.insert("move g1 g0");
+  source.insert("pop g0");
 
-  source.insert(line++, "stop");
+  source.insert("stop");
 
   // Space for 256 words in the heap
-  source.insert(line++, ".label heap");
-  source.insert(line++, ".block 0x400");
+  source.insert(".label heap");
+  source.insert(".block 0x400");
 
   // Space for 32 words in the stack
-  source.insert(line++, ".label stack");
-  source.insert(line++, ".block 0x80");
+  source.insert(".label stack");
+  source.insert(".block 0x80");
 
   compile(source);
 
@@ -362,60 +357,59 @@ BOOST_AUTO_TEST_CASE(std_arrayfill)
 BOOST_AUTO_TEST_CASE(std_arrayfind)
 {
   cpu::File source;
-  cpu::Source::size_type line = 0;
 
   // Initialize the stack pointer
-  source.insert(line++, ".label init");
-  source.insert(line++, "loada sp stack");
-  source.insert(line++, "move fp sp");
-  source.insert(line++, "loada g0 heap");
-  source.insert(line++, "loadi g1 0x400");
-  source.insert(line++, "call std_init");
-  source.insert(line++, "b main");
+  source.insert(".label init");
+  source.insert("loada sp stack");
+  source.insert("move fp sp");
+  source.insert("loada g0 heap");
+  source.insert("loadi g1 0x400");
+  source.insert("call std_init");
+  source.insert("b main");
 
-  source.insert(line++, ".include \"stdlib/init.swl\"");
-  source.insert(line++, ".include \"stdlib/array/array.swl\"");
-  source.insert(line++, ".include \"stdlib/array/set.swl\"");
-  source.insert(line++, ".include \"stdlib/array/find.swl\"");
+  source.insert(".include \"stdlib/init.swl\"");
+  source.insert(".include \"stdlib/array/array.swl\"");
+  source.insert(".include \"stdlib/array/set.swl\"");
+  source.insert(".include \"stdlib/array/find.swl\"");
 
   // Test
-  source.insert(line++, ".label main");
-  source.insert(line++, "loadi g0 0x2");
-  source.insert(line++, "call std_array");
-  source.insert(line++, "push g0");
+  source.insert(".label main");
+  source.insert("loadi g0 0x2");
+  source.insert("call std_array");
+  source.insert("push g0");
 
-  source.insert(line++, "loadi g1 0x0");
-  source.insert(line++, "loadi g2 0x50");
-  source.insert(line++, "call std_arrayset");
+  source.insert("loadi g1 0x0");
+  source.insert("loadi g2 0x50");
+  source.insert("call std_arrayset");
 
-  source.insert(line++, "loadri g0 fp 0x0");
-  source.insert(line++, "loadi g1 0x1");
-  source.insert(line++, "loadi g2 0x40");
-  source.insert(line++, "call std_arrayset");
+  source.insert("loadri g0 fp 0x0");
+  source.insert("loadi g1 0x1");
+  source.insert("loadi g2 0x40");
+  source.insert("call std_arrayset");
 
-  source.insert(line++, "loadri g0 fp 0x0");
-  source.insert(line++, "loadi g1 0x0");
-  source.insert(line++, "loadi g2 0x50");
-  source.insert(line++, "call std_arrayfind");
-  source.insert(line++, "push g0");
+  source.insert("loadri g0 fp 0x0");
+  source.insert("loadi g1 0x0");
+  source.insert("loadi g2 0x50");
+  source.insert("call std_arrayfind");
+  source.insert("push g0");
 
-  source.insert(line++, "loadri g0 fp 0x0");
-  source.insert(line++, "loadi g1 0x0");
-  source.insert(line++, "loadi g2 0x40");
-  source.insert(line++, "call std_arrayfind");
+  source.insert("loadri g0 fp 0x0");
+  source.insert("loadi g1 0x0");
+  source.insert("loadi g2 0x40");
+  source.insert("call std_arrayfind");
 
-  source.insert(line++, "move g1 g0");
-  source.insert(line++, "pop g0");
+  source.insert("move g1 g0");
+  source.insert("pop g0");
 
-  source.insert(line++, "stop");
+  source.insert("stop");
 
   // Space for 256 words in the heap
-  source.insert(line++, ".label heap");
-  source.insert(line++, ".block 0x400");
+  source.insert(".label heap");
+  source.insert(".block 0x400");
 
   // Space for 32 words in the stack
-  source.insert(line++, ".label stack");
-  source.insert(line++, ".block 0x80");
+  source.insert(".label stack");
+  source.insert(".block 0x80");
 
   compile(source);
 
@@ -435,58 +429,57 @@ BOOST_AUTO_TEST_CASE(std_arrayfind)
 BOOST_AUTO_TEST_CASE(std_arraycount)
 {
   cpu::File source;
-  cpu::Source::size_type line = 0;
 
   // Initialize the stack pointer
-  source.insert(line++, ".label init");
-  source.insert(line++, "loada sp stack");
-  source.insert(line++, "move fp sp");
-  source.insert(line++, "loada g0 heap");
-  source.insert(line++, "loadi g1 0x400");
-  source.insert(line++, "call std_init");
-  source.insert(line++, "b main");
+  source.insert(".label init");
+  source.insert("loada sp stack");
+  source.insert("move fp sp");
+  source.insert("loada g0 heap");
+  source.insert("loadi g1 0x400");
+  source.insert("call std_init");
+  source.insert("b main");
 
-  source.insert(line++, ".include \"stdlib/init.swl\"");
-  source.insert(line++, ".include \"stdlib/array/array.swl\"");
-  source.insert(line++, ".include \"stdlib/array/set.swl\"");
-  source.insert(line++, ".include \"stdlib/array/count.swl\"");
+  source.insert(".include \"stdlib/init.swl\"");
+  source.insert(".include \"stdlib/array/array.swl\"");
+  source.insert(".include \"stdlib/array/set.swl\"");
+  source.insert(".include \"stdlib/array/count.swl\"");
 
   // Test
-  source.insert(line++, ".label main");
-  source.insert(line++, "loadi g0 0x2");
-  source.insert(line++, "call std_array");
-  source.insert(line++, "push g0");
+  source.insert(".label main");
+  source.insert("loadi g0 0x2");
+  source.insert("call std_array");
+  source.insert("push g0");
 
-  source.insert(line++, "loadi g1 0x0");
-  source.insert(line++, "loadi g2 0x50");
-  source.insert(line++, "call std_arrayset");
+  source.insert("loadi g1 0x0");
+  source.insert("loadi g2 0x50");
+  source.insert("call std_arrayset");
 
-  source.insert(line++, "loadri g0 fp 0x0");
-  source.insert(line++, "loadi g1 0x1");
-  source.insert(line++, "loadi g2 0x40");
-  source.insert(line++, "call std_arrayset");
+  source.insert("loadri g0 fp 0x0");
+  source.insert("loadi g1 0x1");
+  source.insert("loadi g2 0x40");
+  source.insert("call std_arrayset");
 
-  source.insert(line++, "loadri g0 fp 0x0");
-  source.insert(line++, "loadi g1 0x40");
-  source.insert(line++, "call std_arraycount");
-  source.insert(line++, "push g0");
+  source.insert("loadri g0 fp 0x0");
+  source.insert("loadi g1 0x40");
+  source.insert("call std_arraycount");
+  source.insert("push g0");
 
-  source.insert(line++, "loadri g0 fp 0x0");
-  source.insert(line++, "loadi g1 0x20");
-  source.insert(line++, "call std_arraycount");
+  source.insert("loadri g0 fp 0x0");
+  source.insert("loadi g1 0x20");
+  source.insert("call std_arraycount");
 
-  source.insert(line++, "move g1 g0");
-  source.insert(line++, "pop g0");
+  source.insert("move g1 g0");
+  source.insert("pop g0");
 
-  source.insert(line++, "stop");
+  source.insert("stop");
 
   // Space for 256 words in the heap
-  source.insert(line++, ".label heap");
-  source.insert(line++, ".block 0x400");
+  source.insert(".label heap");
+  source.insert(".block 0x400");
 
   // Space for 32 words in the stack
-  source.insert(line++, ".label stack");
-  source.insert(line++, ".block 0x80");
+  source.insert(".label stack");
+  source.insert(".block 0x80");
 
   compile(source);
 

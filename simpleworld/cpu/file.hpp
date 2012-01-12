@@ -2,7 +2,7 @@
  * @file simpleworld/cpu/file.hpp
  * A file as a array of lines.
  *
- *  Copyright (C) 2006-2007  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2006-2012  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -94,12 +94,30 @@ public:
   void insert(size_type pos, const std::string& line);
 
   /**
+   * Insert a new line at the end of the file.
+   * @param line Line to insert.
+   * @exception CPUException if pos > lines
+   */
+  void insert(const std::string& line) {
+    this->insert(this->lines(), line);
+  }
+
+  /**
    * Insert the lines of a File in the file.
    * @param pos Position of the new line.
    * @param file File to insert.
    * @exception CPUException if pos > lines
    */
   void insert(size_type pos, const File& file);
+
+  /**
+   * Insert the lines of a File at the end of the file.
+   * @param file File to insert.
+   * @exception CPUException if pos > lines
+   */
+  void insert(const File& file) {
+    this->insert(this->lines(), file);
+  }
 
   /**
    * Remove n lines from the file.

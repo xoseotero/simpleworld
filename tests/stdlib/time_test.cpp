@@ -2,7 +2,7 @@
  * @file tests/stdlib/time_test.cpp
  * Unit test for stdlib/time.swl
  *
- *  Copyright (C) 2009-2011  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2009-2012  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -61,12 +61,11 @@ void compile(const cpu::File& file)
 BOOST_AUTO_TEST_CASE(swl_compile)
 {
   cpu::File source;
-  cpu::Source::size_type line = 0;
 
-  source.insert(line++, ".include \"stdlib/time.swl\"");
+  source.insert(".include \"stdlib/time.swl\"");
 
-  source.insert(line++, "std_time");
-  source.insert(line++, "std_sleep");
+  source.insert("std_time");
+  source.insert("std_sleep");
 
   BOOST_CHECK_NO_THROW(compile(source));
 }
@@ -77,41 +76,40 @@ BOOST_AUTO_TEST_CASE(swl_compile)
 BOOST_AUTO_TEST_CASE(std_time)
 {
   cpu::File source;
-  cpu::Source::size_type line = 0;
 
   // Initialize the stack pointer
-  source.insert(line++, ".label init");
-  source.insert(line++, "loada sp stack");
-  source.insert(line++, "loada g0 heap");
-  source.insert(line++, "loadi g1 0x400");
-  source.insert(line++, "call std_init");
-  source.insert(line++, "b main");
+  source.insert(".label init");
+  source.insert("loada sp stack");
+  source.insert("loada g0 heap");
+  source.insert("loadi g1 0x400");
+  source.insert("call std_init");
+  source.insert("b main");
 
-  source.insert(line++, ".include \"stdlib/init.swl\"");
-  source.insert(line++, ".include \"stdlib/time/time.swl\"");
+  source.insert(".include \"stdlib/init.swl\"");
+  source.insert(".include \"stdlib/time/time.swl\"");
 
   // Test
-  source.insert(line++, ".label main");
-  source.insert(line++, "call std_time");
-  source.insert(line++, "push g0");
+  source.insert(".label main");
+  source.insert("call std_time");
+  source.insert("push g0");
 
   // Flag
-  source.insert(line++, "loadi r5 0xF894");
+  source.insert("loadi r5 0xF894");
 
-  source.insert(line++, "call std_time");
+  source.insert("call std_time");
 
-  source.insert(line++, "move g1 g0");
-  source.insert(line++, "pop g0");
+  source.insert("move g1 g0");
+  source.insert("pop g0");
 
-  source.insert(line++, "stop");
+  source.insert("stop");
 
   // Space for 256 words in the heap
-  source.insert(line++, ".label heap");
-  source.insert(line++, ".block 0x400");
+  source.insert(".label heap");
+  source.insert(".block 0x400");
 
   // Space for 32 words in the stack
-  source.insert(line++, ".label stack");
-  source.insert(line++, ".block 0x80");
+  source.insert(".label stack");
+  source.insert(".block 0x80");
 
   compile(source);
 
@@ -139,36 +137,35 @@ BOOST_AUTO_TEST_CASE(std_time)
 BOOST_AUTO_TEST_CASE(std_sleep)
 {
   cpu::File source;
-  cpu::Source::size_type line = 0;
 
   // Initialize the stack pointer
-  source.insert(line++, ".label init");
-  source.insert(line++, "loada sp stack");
-  source.insert(line++, "loada g0 heap");
-  source.insert(line++, "loadi g1 0x400");
-  source.insert(line++, "call std_init");
-  source.insert(line++, "b main");
+  source.insert(".label init");
+  source.insert("loada sp stack");
+  source.insert("loada g0 heap");
+  source.insert("loadi g1 0x400");
+  source.insert("call std_init");
+  source.insert("b main");
 
-  source.insert(line++, ".include \"stdlib/init.swl\"");
-  source.insert(line++, ".include \"stdlib/time/time.swl\"");
-  source.insert(line++, ".include \"stdlib/time/sleep.swl\"");
+  source.insert(".include \"stdlib/init.swl\"");
+  source.insert(".include \"stdlib/time/time.swl\"");
+  source.insert(".include \"stdlib/time/sleep.swl\"");
 
   // Test
-  source.insert(line++, ".label main");
-  source.insert(line++, "loadi g0 0x1");
-  source.insert(line++, "call std_sleep");
+  source.insert(".label main");
+  source.insert("loadi g0 0x1");
+  source.insert("call std_sleep");
 
-  source.insert(line++, "call std_time");
+  source.insert("call std_time");
 
-  source.insert(line++, "stop");
+  source.insert("stop");
 
   // Space for 256 words in the heap
-  source.insert(line++, ".label heap");
-  source.insert(line++, ".block 0x400");
+  source.insert(".label heap");
+  source.insert(".block 0x400");
 
   // Space for 32 words in the stack
-  source.insert(line++, ".label stack");
-  source.insert(line++, ".block 0x80");
+  source.insert(".label stack");
+  source.insert(".block 0x80");
 
   compile(source);
 

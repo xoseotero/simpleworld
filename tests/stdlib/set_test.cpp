@@ -61,19 +61,18 @@ void compile(const cpu::File& file)
 BOOST_AUTO_TEST_CASE(swl_compile)
 {
   cpu::File source;
-  cpu::Source::size_type line = 0;
 
-  source.insert(line++, ".include \"stdlib/set.swl\"");
+  source.insert(".include \"stdlib/set.swl\"");
 
-  source.insert(line++, "STD_SET_STRUCT");
-  source.insert(line++, "std_set");
-  source.insert(line++, "std_setfree");
-  source.insert(line++, "std_setsize");
-  source.insert(line++, "std_setget");
-  source.insert(line++, "std_setinsert");
-  source.insert(line++, "std_setremove");
-  source.insert(line++, "std_setiterator");
-  source.insert(line++, "std_setcheck");
+  source.insert("STD_SET_STRUCT");
+  source.insert("std_set");
+  source.insert("std_setfree");
+  source.insert("std_setsize");
+  source.insert("std_setget");
+  source.insert("std_setinsert");
+  source.insert("std_setremove");
+  source.insert("std_setiterator");
+  source.insert("std_setcheck");
 
   BOOST_CHECK_NO_THROW(compile(source));
 }
@@ -85,60 +84,59 @@ BOOST_AUTO_TEST_CASE(swl_compile)
 BOOST_AUTO_TEST_CASE(std_set)
 {
   cpu::File source;
-  cpu::Source::size_type line = 0;
 
   // Initialize the stack pointer
-  source.insert(line++, ".label init");
-  source.insert(line++, "loada sp stack");
-  source.insert(line++, "move fp sp");
-  source.insert(line++, "loada g0 heap");
-  source.insert(line++, "loadi g1 0x400");
-  source.insert(line++, "call std_init");
-  source.insert(line++, "b main");
+  source.insert(".label init");
+  source.insert("loada sp stack");
+  source.insert("move fp sp");
+  source.insert("loada g0 heap");
+  source.insert("loadi g1 0x400");
+  source.insert("call std_init");
+  source.insert("b main");
 
-  source.insert(line++, ".include \"stdlib/init.swl\"");
-  source.insert(line++, ".include \"stdlib/alloc/def.swl\"");
-  source.insert(line++, ".include \"stdlib/alloc/info.swl\"");
-  source.insert(line++, ".include \"stdlib/set/set.swl\"");
-  source.insert(line++, ".include \"stdlib/set/free.swl\"");
+  source.insert(".include \"stdlib/init.swl\"");
+  source.insert(".include \"stdlib/alloc/def.swl\"");
+  source.insert(".include \"stdlib/alloc/info.swl\"");
+  source.insert(".include \"stdlib/set/set.swl\"");
+  source.insert(".include \"stdlib/set/free.swl\"");
 
   // Test
-  source.insert(line++, ".label main");
-  source.insert(line++, "loada g0 minfo");
-  source.insert(line++, "call std_minfo");
-  source.insert(line++, "loadri g0 g0 STD_MINFO_FREE");
-  source.insert(line++, "push g0");
+  source.insert(".label main");
+  source.insert("loada g0 minfo");
+  source.insert("call std_minfo");
+  source.insert("loadri g0 g0 STD_MINFO_FREE");
+  source.insert("push g0");
 
-  source.insert(line++, "call std_set");
-  source.insert(line++, "push g0");
+  source.insert("call std_set");
+  source.insert("push g0");
 
-  source.insert(line++, "loada g0 minfo");
-  source.insert(line++, "call std_minfo");
-  source.insert(line++, "loadri g0 g0 STD_MINFO_FREE");
-  source.insert(line++, "push g0");
+  source.insert("loada g0 minfo");
+  source.insert("call std_minfo");
+  source.insert("loadri g0 g0 STD_MINFO_FREE");
+  source.insert("push g0");
 
-  source.insert(line++, "loadri g0 fp 0x4");
-  source.insert(line++, "call std_setfree");
+  source.insert("loadri g0 fp 0x4");
+  source.insert("call std_setfree");
 
-  source.insert(line++, "loada g0 minfo");
-  source.insert(line++, "call std_minfo");
-  source.insert(line++, "loadri g2 g0 STD_MINFO_FREE");
-  source.insert(line++, "loadri g0 fp 0x0");
-  source.insert(line++, "loadri g1 fp 0x8");
+  source.insert("loada g0 minfo");
+  source.insert("call std_minfo");
+  source.insert("loadri g2 g0 STD_MINFO_FREE");
+  source.insert("loadri g0 fp 0x0");
+  source.insert("loadri g1 fp 0x8");
 
-  source.insert(line++, "stop");
+  source.insert("stop");
 
   // Space for the minfo struct
-  source.insert(line++, ".label minfo");
-  source.insert(line++, ".block STD_MINFO_STRUCT");
+  source.insert(".label minfo");
+  source.insert(".block STD_MINFO_STRUCT");
 
   // Space for 256 words in the heap
-  source.insert(line++, ".label heap");
-  source.insert(line++, ".block 0x400");
+  source.insert(".label heap");
+  source.insert(".block 0x400");
 
   // Space for 32 words in the stack
-  source.insert(line++, ".label stack");
-  source.insert(line++, ".block 0x80");
+  source.insert(".label stack");
+  source.insert(".block 0x80");
 
   compile(source);
 
@@ -162,36 +160,35 @@ BOOST_AUTO_TEST_CASE(std_set)
 BOOST_AUTO_TEST_CASE(std_setsize)
 {
   cpu::File source;
-  cpu::Source::size_type line = 0;
 
   // Initialize the stack pointer
-  source.insert(line++, ".label init");
-  source.insert(line++, "loada sp stack");
-  source.insert(line++, "move fp sp");
-  source.insert(line++, "loada g0 heap");
-  source.insert(line++, "loadi g1 0x400");
-  source.insert(line++, "call std_init");
-  source.insert(line++, "b main");
+  source.insert(".label init");
+  source.insert("loada sp stack");
+  source.insert("move fp sp");
+  source.insert("loada g0 heap");
+  source.insert("loadi g1 0x400");
+  source.insert("call std_init");
+  source.insert("b main");
 
-  source.insert(line++, ".include \"stdlib/init.swl\"");
-  source.insert(line++, ".include \"stdlib/set/set.swl\"");
-  source.insert(line++, ".include \"stdlib/set/size.swl\"");
+  source.insert(".include \"stdlib/init.swl\"");
+  source.insert(".include \"stdlib/set/set.swl\"");
+  source.insert(".include \"stdlib/set/size.swl\"");
 
   // Test
-  source.insert(line++, ".label main");
-  source.insert(line++, "call std_set");
+  source.insert(".label main");
+  source.insert("call std_set");
 
-  source.insert(line++, "call std_setsize");
+  source.insert("call std_setsize");
 
-  source.insert(line++, "stop");
+  source.insert("stop");
 
   // Space for 256 words in the heap
-  source.insert(line++, ".label heap");
-  source.insert(line++, ".block 0x400");
+  source.insert(".label heap");
+  source.insert(".block 0x400");
 
   // Space for 32 words in the stack
-  source.insert(line++, ".label stack");
-  source.insert(line++, ".block 0x80");
+  source.insert(".label stack");
+  source.insert(".block 0x80");
 
   compile(source);
 
@@ -210,65 +207,64 @@ BOOST_AUTO_TEST_CASE(std_setsize)
 BOOST_AUTO_TEST_CASE(std_setinsert)
 {
   cpu::File source;
-  cpu::Source::size_type line = 0;
 
   // Initialize the stack pointer
-  source.insert(line++, ".label init");
-  source.insert(line++, "loada sp stack");
-  source.insert(line++, "move fp sp");
-  source.insert(line++, "loada g0 heap");
-  source.insert(line++, "loadi g1 0x400");
-  source.insert(line++, "call std_init");
-  source.insert(line++, "b main");
+  source.insert(".label init");
+  source.insert("loada sp stack");
+  source.insert("move fp sp");
+  source.insert("loada g0 heap");
+  source.insert("loadi g1 0x400");
+  source.insert("call std_init");
+  source.insert("b main");
 
-  source.insert(line++, ".include \"stdlib/init.swl\"");
-  source.insert(line++, ".include \"stdlib/set/set.swl\"");
-  source.insert(line++, ".include \"stdlib/set/size.swl\"");
-  source.insert(line++, ".include \"stdlib/set/insert.swl\"");
-  source.insert(line++, ".include \"stdlib/set/check.swl\"");
+  source.insert(".include \"stdlib/init.swl\"");
+  source.insert(".include \"stdlib/set/set.swl\"");
+  source.insert(".include \"stdlib/set/size.swl\"");
+  source.insert(".include \"stdlib/set/insert.swl\"");
+  source.insert(".include \"stdlib/set/check.swl\"");
 
   // Test
-  source.insert(line++, ".label main");
-  source.insert(line++, "call std_set");
-  source.insert(line++, "push g0");
+  source.insert(".label main");
+  source.insert("call std_set");
+  source.insert("push g0");
 
-  source.insert(line++, "loadi g1 0xF3F");
-  source.insert(line++, "call std_setinsert");
+  source.insert("loadi g1 0xF3F");
+  source.insert("call std_setinsert");
 
-  source.insert(line++, "loadri g0 fp 0x0");
-  source.insert(line++, "loadi g1 0x3F3");
-  source.insert(line++, "call std_setinsert");
+  source.insert("loadri g0 fp 0x0");
+  source.insert("loadi g1 0x3F3");
+  source.insert("call std_setinsert");
 
-  source.insert(line++, "loadri g0 fp 0x0");
-  source.insert(line++, "loadi g1 0xF3F");
-  source.insert(line++, "call std_setinsert");
+  source.insert("loadri g0 fp 0x0");
+  source.insert("loadi g1 0xF3F");
+  source.insert("call std_setinsert");
 
-  source.insert(line++, "loadri g0 fp 0x0");
-  source.insert(line++, "loadi g1 0x3F3");
-  source.insert(line++, "call std_setcheck");
-  source.insert(line++, "push g0");
+  source.insert("loadri g0 fp 0x0");
+  source.insert("loadi g1 0x3F3");
+  source.insert("call std_setcheck");
+  source.insert("push g0");
 
-  source.insert(line++, "loadri g0 fp 0x0");
-  source.insert(line++, "loadi g1 0xF3F");
-  source.insert(line++, "call std_setcheck");
-  source.insert(line++, "push g0");
+  source.insert("loadri g0 fp 0x0");
+  source.insert("loadi g1 0xF3F");
+  source.insert("call std_setcheck");
+  source.insert("push g0");
 
-  source.insert(line++, "loadri g0 fp 0x0");
-  source.insert(line++, "call std_setsize");
+  source.insert("loadri g0 fp 0x0");
+  source.insert("call std_setsize");
 
-  source.insert(line++, "move g2 g0");
-  source.insert(line++, "pop g1");
-  source.insert(line++, "pop g0");
+  source.insert("move g2 g0");
+  source.insert("pop g1");
+  source.insert("pop g0");
 
-  source.insert(line++, "stop");
+  source.insert("stop");
 
   // Space for 256 words in the heap
-  source.insert(line++, ".label heap");
-  source.insert(line++, ".block 0x400");
+  source.insert(".label heap");
+  source.insert(".block 0x400");
 
   // Space for 32 words in the stack
-  source.insert(line++, ".label stack");
-  source.insert(line++, ".block 0x80");
+  source.insert(".label stack");
+  source.insert(".block 0x80");
 
   compile(source);
 
@@ -289,60 +285,59 @@ BOOST_AUTO_TEST_CASE(std_setinsert)
 BOOST_AUTO_TEST_CASE(std_setremove)
 {
   cpu::File source;
-  cpu::Source::size_type line = 0;
 
   // Initialize the stack pointer
-  source.insert(line++, ".label init");
-  source.insert(line++, "loada sp stack");
-  source.insert(line++, "move fp sp");
-  source.insert(line++, "loada g0 heap");
-  source.insert(line++, "loadi g1 0x400");
-  source.insert(line++, "call std_init");
-  source.insert(line++, "b main");
+  source.insert(".label init");
+  source.insert("loada sp stack");
+  source.insert("move fp sp");
+  source.insert("loada g0 heap");
+  source.insert("loadi g1 0x400");
+  source.insert("call std_init");
+  source.insert("b main");
 
-  source.insert(line++, ".include \"stdlib/init.swl\"");
-  source.insert(line++, ".include \"stdlib/set/set.swl\"");
-  source.insert(line++, ".include \"stdlib/set/size.swl\"");
-  source.insert(line++, ".include \"stdlib/set/insert.swl\"");
-  source.insert(line++, ".include \"stdlib/set/remove.swl\"");
-  source.insert(line++, ".include \"stdlib/set/check.swl\"");
+  source.insert(".include \"stdlib/init.swl\"");
+  source.insert(".include \"stdlib/set/set.swl\"");
+  source.insert(".include \"stdlib/set/size.swl\"");
+  source.insert(".include \"stdlib/set/insert.swl\"");
+  source.insert(".include \"stdlib/set/remove.swl\"");
+  source.insert(".include \"stdlib/set/check.swl\"");
 
   // Test
-  source.insert(line++, ".label main");
-  source.insert(line++, "call std_set");
-  source.insert(line++, "push g0");
+  source.insert(".label main");
+  source.insert("call std_set");
+  source.insert("push g0");
 
-  source.insert(line++, "loadi g1 0xF3F");
-  source.insert(line++, "call std_setinsert");
+  source.insert("loadi g1 0xF3F");
+  source.insert("call std_setinsert");
 
-  source.insert(line++, "loadri g0 fp 0x0");
-  source.insert(line++, "loadi g1 0x3F3");
-  source.insert(line++, "call std_setinsert");
+  source.insert("loadri g0 fp 0x0");
+  source.insert("loadi g1 0x3F3");
+  source.insert("call std_setinsert");
 
-  source.insert(line++, "loadri g0 fp 0x0");
-  source.insert(line++, "loadi g1 0xF3F");
-  source.insert(line++, "call std_setremove");
+  source.insert("loadri g0 fp 0x0");
+  source.insert("loadi g1 0xF3F");
+  source.insert("call std_setremove");
 
-  source.insert(line++, "loadri g0 fp 0x0");
-  source.insert(line++, "loadi g1 0xF3F");
-  source.insert(line++, "call std_setcheck");
-  source.insert(line++, "push g0");
+  source.insert("loadri g0 fp 0x0");
+  source.insert("loadi g1 0xF3F");
+  source.insert("call std_setcheck");
+  source.insert("push g0");
 
-  source.insert(line++, "loadri g0 fp 0x0");
-  source.insert(line++, "call std_setsize");
+  source.insert("loadri g0 fp 0x0");
+  source.insert("call std_setsize");
 
-  source.insert(line++, "move g1 g0");
-  source.insert(line++, "pop g0");
+  source.insert("move g1 g0");
+  source.insert("pop g0");
 
-  source.insert(line++, "stop");
+  source.insert("stop");
 
   // Space for 256 words in the heap
-  source.insert(line++, ".label heap");
-  source.insert(line++, ".block 0x400");
+  source.insert(".label heap");
+  source.insert(".block 0x400");
 
   // Space for 32 words in the stack
-  source.insert(line++, ".label stack");
-  source.insert(line++, ".block 0x80");
+  source.insert(".label stack");
+  source.insert(".block 0x80");
 
   compile(source);
 
@@ -362,62 +357,61 @@ BOOST_AUTO_TEST_CASE(std_setremove)
 BOOST_AUTO_TEST_CASE(std_setiterator)
 {
   cpu::File source;
-  cpu::Source::size_type line = 0;
 
   // Initialize the stack pointer
-  source.insert(line++, ".label init");
-  source.insert(line++, "loada sp stack");
-  source.insert(line++, "move fp sp");
-  source.insert(line++, "loada g0 heap");
-  source.insert(line++, "loadi g1 0x400");
-  source.insert(line++, "call std_init");
-  source.insert(line++, "b main");
+  source.insert(".label init");
+  source.insert("loada sp stack");
+  source.insert("move fp sp");
+  source.insert("loada g0 heap");
+  source.insert("loadi g1 0x400");
+  source.insert("call std_init");
+  source.insert("b main");
 
-  source.insert(line++, ".include \"stdlib/init.swl\"");
-  source.insert(line++, ".include \"stdlib/node/def.swl\"");
-  source.insert(line++, ".include \"stdlib/node/next.swl\"");
-  source.insert(line++, ".include \"stdlib/set/set.swl\"");
-  source.insert(line++, ".include \"stdlib/set/insert.swl\"");
-  source.insert(line++, ".include \"stdlib/set/iterator.swl\"");
+  source.insert(".include \"stdlib/init.swl\"");
+  source.insert(".include \"stdlib/node/def.swl\"");
+  source.insert(".include \"stdlib/node/next.swl\"");
+  source.insert(".include \"stdlib/set/set.swl\"");
+  source.insert(".include \"stdlib/set/insert.swl\"");
+  source.insert(".include \"stdlib/set/iterator.swl\"");
 
   // Test
-  source.insert(line++, ".label main");
-  source.insert(line++, "call std_set");
-  source.insert(line++, "move r0 g0");
+  source.insert(".label main");
+  source.insert("call std_set");
+  source.insert("move r0 g0");
 
-  source.insert(line++, "loadi g1 0xF3F");
-  source.insert(line++, "call std_setinsert");
+  source.insert("loadi g1 0xF3F");
+  source.insert("call std_setinsert");
 
-  source.insert(line++, "move g0 r0");
-  source.insert(line++, "loadi g1 0x3F3");
-  source.insert(line++, "call std_setinsert");
+  source.insert("move g0 r0");
+  source.insert("loadi g1 0x3F3");
+  source.insert("call std_setinsert");
 
-  source.insert(line++, "move g0 r0");
-  source.insert(line++, "loadi g1 0xF3F");
-  source.insert(line++, "call std_setinsert");
+  source.insert("move g0 r0");
+  source.insert("loadi g1 0xF3F");
+  source.insert("call std_setinsert");
 
-  source.insert(line++, "move g0 r0");
-  source.insert(line++, "call std_setiterator");
-  source.insert(line++, "move r1 g0");
+  source.insert("move g0 r0");
+  source.insert("call std_setiterator");
+  source.insert("move r1 g0");
 
-  source.insert(line++, "loadri r2 g0 STD_NODE_DATA");
+  source.insert("loadri r2 g0 STD_NODE_DATA");
 
-  source.insert(line++, "loadi g1 0x1");
-  source.insert(line++, "call std_next");
-  source.insert(line++, "loadri r3 g0 STD_NODE_DATA");
+  source.insert("loadi g1 0x1");
+  source.insert("call std_next");
+  source.insert("loadri r3 g0 STD_NODE_DATA");
 
-  source.insert(line++, "move g0 r2");
-  source.insert(line++, "move g1 r3");
+  source.insert("move g0 r2");
+  source.insert("move g1 r3");
 
-  source.insert(line++, "stop");
+  source.insert("stop");
 
   // Space for 256 words in the heap
-  source.insert(line++, ".label heap");
-  source.insert(line++, ".block 0x400");
+  source.insert(".label heap");
+  source.insert(".block 0x400");
 
   // Space for 32 words in the stack
-  source.insert(line++, ".label stack");
-  source.insert(line++, ".block 0x80");
+  source.insert(".label stack");
+  source.insert(".block 0x80");
 
   compile(source);
 
@@ -437,55 +431,54 @@ BOOST_AUTO_TEST_CASE(std_setiterator)
 BOOST_AUTO_TEST_CASE(std_setcheck)
 {
   cpu::File source;
-  cpu::Source::size_type line = 0;
 
   // Initialize the stack pointer
-  source.insert(line++, ".label init");
-  source.insert(line++, "loada sp stack");
-  source.insert(line++, "move fp sp");
-  source.insert(line++, "loada g0 heap");
-  source.insert(line++, "loadi g1 0x400");
-  source.insert(line++, "call std_init");
-  source.insert(line++, "b main");
+  source.insert(".label init");
+  source.insert("loada sp stack");
+  source.insert("move fp sp");
+  source.insert("loada g0 heap");
+  source.insert("loadi g1 0x400");
+  source.insert("call std_init");
+  source.insert("b main");
 
-  source.insert(line++, ".include \"stdlib/init.swl\"");
-  source.insert(line++, ".include \"stdlib/set/set.swl\"");
-  source.insert(line++, ".include \"stdlib/set/insert.swl\"");
-  source.insert(line++, ".include \"stdlib/set/check.swl\"");
+  source.insert(".include \"stdlib/init.swl\"");
+  source.insert(".include \"stdlib/set/set.swl\"");
+  source.insert(".include \"stdlib/set/insert.swl\"");
+  source.insert(".include \"stdlib/set/check.swl\"");
 
   // Test
-  source.insert(line++, ".label main");
-  source.insert(line++, "call std_set");
-  source.insert(line++, "push g0");
+  source.insert(".label main");
+  source.insert("call std_set");
+  source.insert("push g0");
 
-  source.insert(line++, "loadi g1 0x50");
-  source.insert(line++, "call std_setinsert");
+  source.insert("loadi g1 0x50");
+  source.insert("call std_setinsert");
 
-  source.insert(line++, "loadri g0 fp 0x0");
-  source.insert(line++, "loadi g1 0x40");
-  source.insert(line++, "call std_setinsert");
+  source.insert("loadri g0 fp 0x0");
+  source.insert("loadi g1 0x40");
+  source.insert("call std_setinsert");
 
-  source.insert(line++, "loadri g0 fp 0x0");
-  source.insert(line++, "loadi g1 0x50");
-  source.insert(line++, "call std_setcheck");
-  source.insert(line++, "push g0");
+  source.insert("loadri g0 fp 0x0");
+  source.insert("loadi g1 0x50");
+  source.insert("call std_setcheck");
+  source.insert("push g0");
 
-  source.insert(line++, "loadri g0 fp 0x0");
-  source.insert(line++, "loadi g1 0x20");
-  source.insert(line++, "call std_setcheck");
+  source.insert("loadri g0 fp 0x0");
+  source.insert("loadi g1 0x20");
+  source.insert("call std_setcheck");
 
-  source.insert(line++, "move g1 g0");
-  source.insert(line++, "pop g0");
+  source.insert("move g1 g0");
+  source.insert("pop g0");
 
-  source.insert(line++, "stop");
+  source.insert("stop");
 
   // Space for 256 words in the heap
-  source.insert(line++, ".label heap");
-  source.insert(line++, ".block 0x400");
+  source.insert(".label heap");
+  source.insert(".block 0x400");
 
   // Space for 32 words in the stack
-  source.insert(line++, ".label stack");
-  source.insert(line++, ".block 0x80");
+  source.insert(".label stack");
+  source.insert(".block 0x80");
 
   compile(source);
 

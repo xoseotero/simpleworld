@@ -2,7 +2,7 @@
  * @file tests/stdlib/world_test.cpp
  * Unit test for stdlib/world.swl
  *
- *  Copyright (C) 2009-2010  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2009-2012  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -61,9 +61,8 @@ void compile(const cpu::File& file)
 BOOST_AUTO_TEST_CASE(swl_compile)
 {
   cpu::File source;
-  cpu::Source::size_type line = 0;
 
-  source.insert(line++, ".include \"stdlib/world.swl\"");
+  source.insert(".include \"stdlib/world.swl\"");
   BOOST_CHECK_NO_THROW(compile(source));
 }
 
@@ -73,45 +72,44 @@ BOOST_AUTO_TEST_CASE(swl_compile)
 BOOST_AUTO_TEST_CASE(swl_definitions)
 {
   cpu::File source;
-  cpu::Source::size_type line = 0;
 
-  source.insert(line++, ".include \"stdlib/world.swl\"");
-  source.insert(line++, "STD_SUCCESS");
-  source.insert(line++, "STD_FAILURE");
+  source.insert(".include \"stdlib/world.swl\"");
+  source.insert("STD_SUCCESS");
+  source.insert("STD_FAILURE");
 
-  source.insert(line++, "STD_NOTHING");
+  source.insert("STD_NOTHING");
 
-  source.insert(line++, "STD_MYID");
-  source.insert(line++, "STD_MYSIZE");
-  source.insert(line++, "STD_MYENERGY");
-  source.insert(line++, "STD_MYPOSITION");
-  source.insert(line++, "STD_MYORIENTATION");
-  source.insert(line++, "STD_DETECT");
-  source.insert(line++, "STD_INFOID");
-  source.insert(line++, "STD_INFOSIZE");
-  source.insert(line++, "STD_INFOENERGY");
-  source.insert(line++, "STD_INFOPOSITION");
-  source.insert(line++, "STD_INFOORIENTATION");
-  source.insert(line++, "STD_MOVEFORWARD");
-  source.insert(line++, "STD_MOVEBACKWARD");
-  source.insert(line++, "STD_TURNLEFT");
-  source.insert(line++, "STD_TURNRIGHT");
-  source.insert(line++, "STD_ATTACK");
-  source.insert(line++, "STD_EAT");
-  source.insert(line++, "STD_EGG");
+  source.insert("STD_MYID");
+  source.insert("STD_MYSIZE");
+  source.insert("STD_MYENERGY");
+  source.insert("STD_MYPOSITION");
+  source.insert("STD_MYORIENTATION");
+  source.insert("STD_DETECT");
+  source.insert("STD_INFOID");
+  source.insert("STD_INFOSIZE");
+  source.insert("STD_INFOENERGY");
+  source.insert("STD_INFOPOSITION");
+  source.insert("STD_INFOORIENTATION");
+  source.insert("STD_MOVEFORWARD");
+  source.insert("STD_MOVEBACKWARD");
+  source.insert("STD_TURNLEFT");
+  source.insert("STD_TURNRIGHT");
+  source.insert("STD_ATTACK");
+  source.insert("STD_EAT");
+  source.insert("STD_EGG");
 
-  source.insert(line++, "STD_ONORTH");
-  source.insert(line++, "STD_OEAST");
-  source.insert(line++, "STD_OSOUTH");
-  source.insert(line++, "STD_OWEST");
+  source.insert("STD_ONORTH");
+  source.insert("STD_OEAST");
+  source.insert("STD_OSOUTH");
+  source.insert("STD_OWEST");
 
-  source.insert(line++, "STD_LNOTHING");
-  source.insert(line++, "STD_LEGG");
-  source.insert(line++, "STD_LBUG");
-  source.insert(line++, "STD_LFOOD");
+  source.insert("STD_LNOTHING");
+  source.insert("STD_LEGG");
+  source.insert("STD_LBUG");
+  source.insert("STD_LFOOD");
 
-  source.insert(line++, "STD_IACTION");
-  source.insert(line++, "STD_IEVENT");
+  source.insert("STD_IACTION");
+  source.insert("STD_IEVENT");
   compile(source);
 
   cpu::Memory registers;

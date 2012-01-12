@@ -2,7 +2,7 @@
  * @file tests/stdlib/int_test.cpp
  * Unit test for stdlib/int.swl
  *
- *  Copyright (C) 2009-2011  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2009-2012  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -63,19 +63,18 @@ void compile(const cpu::File& file)
 BOOST_AUTO_TEST_CASE(swl_compile)
 {
   cpu::File source;
-  cpu::Source::size_type line = 0;
 
-  source.insert(line++, ".include \"stdlib/int.swl\"");
+  source.insert(".include \"stdlib/int.swl\"");
 
-  source.insert(line++, "STD_ITIMER");
-  source.insert(line++, "STD_ISW");
-  source.insert(line++, "STD_IINST");
-  source.insert(line++, "STD_IMEM");
-  source.insert(line++, "STD_IDIV");
-  source.insert(line++, "std_enable");
-  source.insert(line++, "std_disable");
-  source.insert(line++, "std_handler");
-  source.insert(line++, "std_rmhandler");
+  source.insert("STD_ITIMER");
+  source.insert("STD_ISW");
+  source.insert("STD_IINST");
+  source.insert("STD_IMEM");
+  source.insert("STD_IDIV");
+  source.insert("std_enable");
+  source.insert("std_disable");
+  source.insert("std_handler");
+  source.insert("std_rmhandler");
 
   BOOST_CHECK_NO_THROW(compile(source));
 }
@@ -86,14 +85,13 @@ BOOST_AUTO_TEST_CASE(swl_compile)
 BOOST_AUTO_TEST_CASE(swl_definitions)
 {
   cpu::File source;
-  cpu::Source::size_type line = 0;
 
-  source.insert(line++, ".include \"stdlib/int/def.swl\"");
-  source.insert(line++, "STD_ITIMER");
-  source.insert(line++, "STD_ISW");
-  source.insert(line++, "STD_IINST");
-  source.insert(line++, "STD_IMEM");
-  source.insert(line++, "STD_IDIV");
+  source.insert(".include \"stdlib/int/def.swl\"");
+  source.insert("STD_ITIMER");
+  source.insert("STD_ISW");
+  source.insert("STD_IINST");
+  source.insert("STD_IMEM");
+  source.insert("STD_IDIV");
   compile(source);
 
   cpu::Memory registers;
@@ -113,51 +111,50 @@ BOOST_AUTO_TEST_CASE(swl_definitions)
 BOOST_AUTO_TEST_CASE(std_handler_timer)
 {
   cpu::File source;
-  cpu::Source::size_type line = 0;
 
   // Initialize the stack pointer
-  source.insert(line++, ".label init");
-  source.insert(line++, "loada sp stack");
-  source.insert(line++, "move fp sp");
-  source.insert(line++, "loada g0 heap");
-  source.insert(line++, "loadi g1 0x400");
-  source.insert(line++, "call std_init");
-  source.insert(line++, "b main");
+  source.insert(".label init");
+  source.insert("loada sp stack");
+  source.insert("move fp sp");
+  source.insert("loada g0 heap");
+  source.insert("loadi g1 0x400");
+  source.insert("call std_init");
+  source.insert("b main");
 
-  source.insert(line++, ".include \"stdlib/def.swl\"");
-  source.insert(line++, ".include \"stdlib/init.swl\"");
-  source.insert(line++, ".include \"stdlib/int/def.swl\"");
-  source.insert(line++, ".include \"stdlib/int/handler.swl\"");
+  source.insert(".include \"stdlib/def.swl\"");
+  source.insert(".include \"stdlib/init.swl\"");
+  source.insert(".include \"stdlib/int/def.swl\"");
+  source.insert(".include \"stdlib/int/handler.swl\"");
 
   // Handler for interrupt
-  source.insert(line++, ".label handler");
-  source.insert(line++, "loadi g0 0xF505");
-  source.insert(line++, "store g0 data");
-  source.insert(line++, "ret");
+  source.insert(".label handler");
+  source.insert("loadi g0 0xF505");
+  source.insert("store g0 data");
+  source.insert("ret");
 
   // Test
-  source.insert(line++, ".label main");
-  source.insert(line++, "loadi g0 STD_ITIMER");
-  source.insert(line++, "loada g1 handler");
-  source.insert(line++, "call std_handler");
+  source.insert(".label main");
+  source.insert("loadi g0 STD_ITIMER");
+  source.insert("loada g1 handler");
+  source.insert("call std_handler");
 
   // Flag
-  source.insert(line++, "loadi r5 0xF1F1");
+  source.insert("loadi r5 0xF1F1");
 
-  source.insert(line++, "load g0 data");
-  source.insert(line++, "stop");
+  source.insert("load g0 data");
+  source.insert("stop");
 
   // Space for 1 words
-  source.insert(line++, ".label data");
-  source.insert(line++, ".block STD_WORDSIZE");
+  source.insert(".label data");
+  source.insert(".block STD_WORDSIZE");
 
   // Space for 256 words in the heap
-  source.insert(line++, ".label heap");
-  source.insert(line++, ".block 0x400");
+  source.insert(".label heap");
+  source.insert(".block 0x400");
 
   // Space for 32 words in the stack
-  source.insert(line++, ".label stack");
-  source.insert(line++, ".block 0x80");
+  source.insert(".label stack");
+  source.insert(".block 0x80");
 
   compile(source);
 
@@ -184,50 +181,49 @@ BOOST_AUTO_TEST_CASE(std_handler_timer)
 BOOST_AUTO_TEST_CASE(std_handler_software)
 {
   cpu::File source;
-  cpu::Source::size_type line = 0;
 
   // Initialize the stack pointer
-  source.insert(line++, ".label init");
-  source.insert(line++, "loada sp stack");
-  source.insert(line++, "move fp sp");
-  source.insert(line++, "loada g0 heap");
-  source.insert(line++, "loadi g1 0x400");
-  source.insert(line++, "call std_init");
-  source.insert(line++, "b main");
+  source.insert(".label init");
+  source.insert("loada sp stack");
+  source.insert("move fp sp");
+  source.insert("loada g0 heap");
+  source.insert("loadi g1 0x400");
+  source.insert("call std_init");
+  source.insert("b main");
 
-  source.insert(line++, ".include \"stdlib/def.swl\"");
-  source.insert(line++, ".include \"stdlib/init.swl\"");
-  source.insert(line++, ".include \"stdlib/int/def.swl\"");
-  source.insert(line++, ".include \"stdlib/int/handler.swl\"");
+  source.insert(".include \"stdlib/def.swl\"");
+  source.insert(".include \"stdlib/init.swl\"");
+  source.insert(".include \"stdlib/int/def.swl\"");
+  source.insert(".include \"stdlib/int/handler.swl\"");
 
   // Handler for interrupt
-  source.insert(line++, ".label handler");
-  source.insert(line++, "loadi g0 0xF505");
-  source.insert(line++, "store g0 data");
-  source.insert(line++, "ret");
+  source.insert(".label handler");
+  source.insert("loadi g0 0xF505");
+  source.insert("store g0 data");
+  source.insert("ret");
 
   // Test
-  source.insert(line++, ".label main");
-  source.insert(line++, "loadi g0 STD_ISW");
-  source.insert(line++, "loada g1 handler");
-  source.insert(line++, "call std_handler");
+  source.insert(".label main");
+  source.insert("loadi g0 STD_ISW");
+  source.insert("loada g1 handler");
+  source.insert("call std_handler");
 
-  source.insert(line++, "int 0x0");
+  source.insert("int 0x0");
 
-  source.insert(line++, "load g0 data");
-  source.insert(line++, "stop");
+  source.insert("load g0 data");
+  source.insert("stop");
 
   // Space for 1 words
-  source.insert(line++, ".label data");
-  source.insert(line++, ".block STD_WORDSIZE");
+  source.insert(".label data");
+  source.insert(".block STD_WORDSIZE");
 
   // Space for 256 words in the heap
-  source.insert(line++, ".label heap");
-  source.insert(line++, ".block 0x400");
+  source.insert(".label heap");
+  source.insert(".block 0x400");
 
   // Space for 32 words in the stack
-  source.insert(line++, ".label stack");
-  source.insert(line++, ".block 0x80");
+  source.insert(".label stack");
+  source.insert(".block 0x80");
 
   compile(source);
 
@@ -246,50 +242,49 @@ BOOST_AUTO_TEST_CASE(std_handler_software)
 BOOST_AUTO_TEST_CASE(std_handler_instruction)
 {
   cpu::File source;
-  cpu::Source::size_type line = 0;
 
   // Initialize the stack pointer
-  source.insert(line++, ".label init");
-  source.insert(line++, "loada sp stack");
-  source.insert(line++, "move fp sp");
-  source.insert(line++, "loada g0 heap");
-  source.insert(line++, "loadi g1 0x400");
-  source.insert(line++, "call std_init");
-  source.insert(line++, "b main");
+  source.insert(".label init");
+  source.insert("loada sp stack");
+  source.insert("move fp sp");
+  source.insert("loada g0 heap");
+  source.insert("loadi g1 0x400");
+  source.insert("call std_init");
+  source.insert("b main");
 
-  source.insert(line++, ".include \"stdlib/def.swl\"");
-  source.insert(line++, ".include \"stdlib/init.swl\"");
-  source.insert(line++, ".include \"stdlib/int/def.swl\"");
-  source.insert(line++, ".include \"stdlib/int/handler.swl\"");
+  source.insert(".include \"stdlib/def.swl\"");
+  source.insert(".include \"stdlib/init.swl\"");
+  source.insert(".include \"stdlib/int/def.swl\"");
+  source.insert(".include \"stdlib/int/handler.swl\"");
 
   // Handler for interrupt
-  source.insert(line++, ".label handler");
-  source.insert(line++, "loadi g0 0xF505");
-  source.insert(line++, "store g0 data");
-  source.insert(line++, "ret");
+  source.insert(".label handler");
+  source.insert("loadi g0 0xF505");
+  source.insert("store g0 data");
+  source.insert("ret");
 
   // Test
-  source.insert(line++, ".label main");
-  source.insert(line++, "loadi g0 STD_IINST");
-  source.insert(line++, "loada g1 handler");
-  source.insert(line++, "call std_handler");
+  source.insert(".label main");
+  source.insert("loadi g0 STD_IINST");
+  source.insert("loada g1 handler");
+  source.insert("call std_handler");
 
-  source.insert(line++, "0xFFFFFFFF");
+  source.insert("0xFFFFFFFF");
 
-  source.insert(line++, "load g0 data");
-  source.insert(line++, "stop");
+  source.insert("load g0 data");
+  source.insert("stop");
 
   // Space for 1 words
-  source.insert(line++, ".label data");
-  source.insert(line++, ".block STD_WORDSIZE");
+  source.insert(".label data");
+  source.insert(".block STD_WORDSIZE");
 
   // Space for 256 words in the heap
-  source.insert(line++, ".label heap");
-  source.insert(line++, ".block 0x400");
+  source.insert(".label heap");
+  source.insert(".block 0x400");
 
   // Space for 32 words in the stack
-  source.insert(line++, ".label stack");
-  source.insert(line++, ".block 0x80");
+  source.insert(".label stack");
+  source.insert(".block 0x80");
 
   compile(source);
 
@@ -308,50 +303,49 @@ BOOST_AUTO_TEST_CASE(std_handler_instruction)
 BOOST_AUTO_TEST_CASE(std_handler_memory)
 {
   cpu::File source;
-  cpu::Source::size_type line = 0;
 
   // Initialize the stack pointer
-  source.insert(line++, ".label init");
-  source.insert(line++, "loada sp stack");
-  source.insert(line++, "move fp sp");
-  source.insert(line++, "loada g0 heap");
-  source.insert(line++, "loadi g1 0x400");
-  source.insert(line++, "call std_init");
-  source.insert(line++, "b main");
+  source.insert(".label init");
+  source.insert("loada sp stack");
+  source.insert("move fp sp");
+  source.insert("loada g0 heap");
+  source.insert("loadi g1 0x400");
+  source.insert("call std_init");
+  source.insert("b main");
 
-  source.insert(line++, ".include \"stdlib/def.swl\"");
-  source.insert(line++, ".include \"stdlib/init.swl\"");
-  source.insert(line++, ".include \"stdlib/int/def.swl\"");
-  source.insert(line++, ".include \"stdlib/int/handler.swl\"");
+  source.insert(".include \"stdlib/def.swl\"");
+  source.insert(".include \"stdlib/init.swl\"");
+  source.insert(".include \"stdlib/int/def.swl\"");
+  source.insert(".include \"stdlib/int/handler.swl\"");
 
   // Handler for interrupt
-  source.insert(line++, ".label handler");
-  source.insert(line++, "loadi g0 0xF505");
-  source.insert(line++, "store g0 data");
-  source.insert(line++, "ret");
+  source.insert(".label handler");
+  source.insert("loadi g0 0xF505");
+  source.insert("store g0 data");
+  source.insert("ret");
 
   // Test
-  source.insert(line++, ".label main");
-  source.insert(line++, "loadi g0 STD_IMEM");
-  source.insert(line++, "loada g1 handler");
-  source.insert(line++, "call std_handler");
+  source.insert(".label main");
+  source.insert("loadi g0 STD_IMEM");
+  source.insert("loada g1 handler");
+  source.insert("call std_handler");
 
-  source.insert(line++, "load g0 0x7FFF");
+  source.insert("load g0 0x7FFF");
 
-  source.insert(line++, "load g0 data");
-  source.insert(line++, "stop");
+  source.insert("load g0 data");
+  source.insert("stop");
 
   // Space for 1 words
-  source.insert(line++, ".label data");
-  source.insert(line++, ".block STD_WORDSIZE");
+  source.insert(".label data");
+  source.insert(".block STD_WORDSIZE");
 
   // Space for 256 words in the heap
-  source.insert(line++, ".label heap");
-  source.insert(line++, ".block 0x400");
+  source.insert(".label heap");
+  source.insert(".block 0x400");
 
   // Space for 32 words in the stack
-  source.insert(line++, ".label stack");
-  source.insert(line++, ".block 0x80");
+  source.insert(".label stack");
+  source.insert(".block 0x80");
 
   compile(source);
 
@@ -370,50 +364,49 @@ BOOST_AUTO_TEST_CASE(std_handler_memory)
 BOOST_AUTO_TEST_CASE(std_handler_division)
 {
   cpu::File source;
-  cpu::Source::size_type line = 0;
 
   // Initialize the stack pointer
-  source.insert(line++, ".label init");
-  source.insert(line++, "loada sp stack");
-  source.insert(line++, "move fp sp");
-  source.insert(line++, "loada g0 heap");
-  source.insert(line++, "loadi g1 0x400");
-  source.insert(line++, "call std_init");
-  source.insert(line++, "b main");
+  source.insert(".label init");
+  source.insert("loada sp stack");
+  source.insert("move fp sp");
+  source.insert("loada g0 heap");
+  source.insert("loadi g1 0x400");
+  source.insert("call std_init");
+  source.insert("b main");
 
-  source.insert(line++, ".include \"stdlib/def.swl\"");
-  source.insert(line++, ".include \"stdlib/init.swl\"");
-  source.insert(line++, ".include \"stdlib/int/def.swl\"");
-  source.insert(line++, ".include \"stdlib/int/handler.swl\"");
+  source.insert(".include \"stdlib/def.swl\"");
+  source.insert(".include \"stdlib/init.swl\"");
+  source.insert(".include \"stdlib/int/def.swl\"");
+  source.insert(".include \"stdlib/int/handler.swl\"");
 
   // Handler for interrupt
-  source.insert(line++, ".label handler");
-  source.insert(line++, "loadi g0 0xF505");
-  source.insert(line++, "store g0 data");
-  source.insert(line++, "ret");
+  source.insert(".label handler");
+  source.insert("loadi g0 0xF505");
+  source.insert("store g0 data");
+  source.insert("ret");
 
   // Test
-  source.insert(line++, ".label main");
-  source.insert(line++, "loadi g0 STD_IDIV");
-  source.insert(line++, "loada g1 handler");
-  source.insert(line++, "call std_handler");
+  source.insert(".label main");
+  source.insert("loadi g0 STD_IDIV");
+  source.insert("loada g1 handler");
+  source.insert("call std_handler");
 
-  source.insert(line++, "divi g0 g0 0x0");
+  source.insert("divi g0 g0 0x0");
 
-  source.insert(line++, "load g0 data");
-  source.insert(line++, "stop");
+  source.insert("load g0 data");
+  source.insert("stop");
 
   // Space for 1 words
-  source.insert(line++, ".label data");
-  source.insert(line++, ".block STD_WORDSIZE");
+  source.insert(".label data");
+  source.insert(".block STD_WORDSIZE");
 
   // Space for 256 words in the heap
-  source.insert(line++, ".label heap");
-  source.insert(line++, ".block 0x400");
+  source.insert(".label heap");
+  source.insert(".block 0x400");
 
   // Space for 32 words in the stack
-  source.insert(line++, ".label stack");
-  source.insert(line++, ".block 0x80");
+  source.insert(".label stack");
+  source.insert(".block 0x80");
 
   compile(source);
 
@@ -432,55 +425,54 @@ BOOST_AUTO_TEST_CASE(std_handler_division)
 BOOST_AUTO_TEST_CASE(std_handler_worldaction)
 {
   cpu::File source;
-  cpu::Source::size_type line = 0;
 
   // Initialize the stack pointer
-  source.insert(line++, ".label init");
-  source.insert(line++, "loada sp stack");
-  source.insert(line++, "move fp sp");
-  source.insert(line++, "loada g0 heap");
-  source.insert(line++, "loadi g1 0x400");
-  source.insert(line++, "call std_init");
-  source.insert(line++, "b main");
+  source.insert(".label init");
+  source.insert("loada sp stack");
+  source.insert("move fp sp");
+  source.insert("loada g0 heap");
+  source.insert("loadi g1 0x400");
+  source.insert("call std_init");
+  source.insert("b main");
 
-  source.insert(line++, ".include \"stdlib/def.swl\"");
-  source.insert(line++, ".include \"stdlib/world.swl\"");
-  source.insert(line++, ".include \"stdlib/init.swl\"");
-  source.insert(line++, ".include \"stdlib/int/handler.swl\"");
+  source.insert(".include \"stdlib/def.swl\"");
+  source.insert(".include \"stdlib/world.swl\"");
+  source.insert(".include \"stdlib/init.swl\"");
+  source.insert(".include \"stdlib/int/handler.swl\"");
 
   // Handler for interrupt
-  source.insert(line++, ".label handler");
-  source.insert(line++, "loadi g0 0xF505");
-  source.insert(line++, "store g0 data");
-  source.insert(line++, "ret");
+  source.insert(".label handler");
+  source.insert("loadi g0 0xF505");
+  source.insert("store g0 data");
+  source.insert("ret");
 
   // Test
-  source.insert(line++, ".label main");
-  source.insert(line++, "loadi g0 STD_IACTION");
-  source.insert(line++, "loada g1 handler");
-  source.insert(line++, "call std_handler");
+  source.insert(".label main");
+  source.insert("loadi g0 STD_IACTION");
+  source.insert("loada g1 handler");
+  source.insert("call std_handler");
 
   // Flag
-  source.insert(line++, "loadi r5 0xF1F1");
+  source.insert("loadi r5 0xF1F1");
 
   // NOP needed because World Action interrupts are thrown by instructions
   // and when caught a instruction is skipped
-  source.insert(line++, "or g0 g0 g0");
+  source.insert("or g0 g0 g0");
 
-  source.insert(line++, "load g0 data");
-  source.insert(line++, "stop");
+  source.insert("load g0 data");
+  source.insert("stop");
 
   // Space for 1 words
-  source.insert(line++, ".label data");
-  source.insert(line++, ".block STD_WORDSIZE");
+  source.insert(".label data");
+  source.insert(".block STD_WORDSIZE");
 
   // Space for 256 words in the heap
-  source.insert(line++, ".label heap");
-  source.insert(line++, ".block 0x400");
+  source.insert(".label heap");
+  source.insert(".block 0x400");
 
   // Space for 32 words in the stack
-  source.insert(line++, ".label stack");
-  source.insert(line++, ".block 0x80");
+  source.insert(".label stack");
+  source.insert(".block 0x80");
 
   compile(source);
 
@@ -507,51 +499,50 @@ BOOST_AUTO_TEST_CASE(std_handler_worldaction)
 BOOST_AUTO_TEST_CASE(std_handler_worldevent)
 {
   cpu::File source;
-  cpu::Source::size_type line = 0;
 
   // Initialize the stack pointer
-  source.insert(line++, ".label init");
-  source.insert(line++, "loada sp stack");
-  source.insert(line++, "move fp sp");
-  source.insert(line++, "loada g0 heap");
-  source.insert(line++, "loadi g1 0x400");
-  source.insert(line++, "call std_init");
-  source.insert(line++, "b main");
+  source.insert(".label init");
+  source.insert("loada sp stack");
+  source.insert("move fp sp");
+  source.insert("loada g0 heap");
+  source.insert("loadi g1 0x400");
+  source.insert("call std_init");
+  source.insert("b main");
 
-  source.insert(line++, ".include \"stdlib/def.swl\"");
-  source.insert(line++, ".include \"stdlib/world.swl\"");
-  source.insert(line++, ".include \"stdlib/init.swl\"");
-  source.insert(line++, ".include \"stdlib/int/handler.swl\"");
+  source.insert(".include \"stdlib/def.swl\"");
+  source.insert(".include \"stdlib/world.swl\"");
+  source.insert(".include \"stdlib/init.swl\"");
+  source.insert(".include \"stdlib/int/handler.swl\"");
 
   // Handler for interrupt
-  source.insert(line++, ".label handler");
-  source.insert(line++, "loadi g0 0xF505");
-  source.insert(line++, "store g0 data");
-  source.insert(line++, "ret");
+  source.insert(".label handler");
+  source.insert("loadi g0 0xF505");
+  source.insert("store g0 data");
+  source.insert("ret");
 
   // Test
-  source.insert(line++, ".label main");
-  source.insert(line++, "loadi g0 STD_IEVENT");
-  source.insert(line++, "loada g1 handler");
-  source.insert(line++, "call std_handler");
+  source.insert(".label main");
+  source.insert("loadi g0 STD_IEVENT");
+  source.insert("loada g1 handler");
+  source.insert("call std_handler");
 
   // Flag
-  source.insert(line++, "loadi r5 0xF1F1");
+  source.insert("loadi r5 0xF1F1");
 
-  source.insert(line++, "load g0 data");
-  source.insert(line++, "stop");
+  source.insert("load g0 data");
+  source.insert("stop");
 
   // Space for 1 words
-  source.insert(line++, ".label data");
-  source.insert(line++, ".block STD_WORDSIZE");
+  source.insert(".label data");
+  source.insert(".block STD_WORDSIZE");
 
   // Space for 256 words in the heap
-  source.insert(line++, ".label heap");
-  source.insert(line++, ".block 0x400");
+  source.insert(".label heap");
+  source.insert(".block 0x400");
 
   // Space for 32 words in the stack
-  source.insert(line++, ".label stack");
-  source.insert(line++, ".block 0x80");
+  source.insert(".label stack");
+  source.insert(".block 0x80");
 
   compile(source);
 

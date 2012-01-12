@@ -2,7 +2,7 @@
  * @file tests/stdlib/def_test.cpp
  * Unit test for stdlib/def.swl
  *
- *  Copyright (C) 2009-2011  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2009-2012  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -61,9 +61,8 @@ void compile(const cpu::File& file)
 BOOST_AUTO_TEST_CASE(swl_compile)
 {
   cpu::File source;
-  cpu::Source::size_type line = 0;
 
-  source.insert(line++, ".include \"stdlib/def.swl\"");
+  source.insert(".include \"stdlib/def.swl\"");
   BOOST_CHECK_NO_THROW(compile(source));
 }
 
@@ -73,25 +72,24 @@ BOOST_AUTO_TEST_CASE(swl_compile)
 BOOST_AUTO_TEST_CASE(swl_definitions)
 {
   cpu::File source;
-  cpu::Source::size_type line = 0;
 
-  source.insert(line++, ".include \"stdlib/def.swl\"");
-  source.insert(line++, "STD_FALSE");
-  source.insert(line++, "STD_TRUE");
+  source.insert(".include \"stdlib/def.swl\"");
+  source.insert("STD_FALSE");
+  source.insert("STD_TRUE");
 
-  source.insert(line++, "STD_NULL");
+  source.insert("STD_NULL");
 
-  source.insert(line++, "STD_WORDSIZE");
-  source.insert(line++, "STD_HWORDSIZE");
-  source.insert(line++, "STD_QWORDSIZE");
+  source.insert("STD_WORDSIZE");
+  source.insert("STD_HWORDSIZE");
+  source.insert("STD_QWORDSIZE");
 
-  source.insert(line++, "STD_WORDZERO");
-  source.insert(line++, "STD_WORDFULL");
+  source.insert("STD_WORDZERO");
+  source.insert("STD_WORDFULL");
 
-  source.insert(line++, "STD_WORDMIN");
-  source.insert(line++, "STD_WORDMAX");
-  source.insert(line++, "STD_WORDMINU");
-  source.insert(line++, "STD_WORDMAXU");
+  source.insert("STD_WORDMIN");
+  source.insert("STD_WORDMAX");
+  source.insert("STD_WORDMINU");
+  source.insert("STD_WORDMAXU");
   compile(source);
 
   cpu::Memory registers;

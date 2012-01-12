@@ -2,7 +2,7 @@
  * @file tests/stdlib/math_test.cpp
  * Unit test for stdlib/math.swl
  *
- *  Copyright (C) 2009-2011  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2009-2012  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -61,39 +61,38 @@ void compile(const cpu::File& file)
 BOOST_AUTO_TEST_CASE(swl_compile)
 {
   cpu::File source;
-  cpu::Source::size_type line = 0;
 
-  source.insert(line++, ".include \"stdlib/math.swl\"");
+  source.insert(".include \"stdlib/math.swl\"");
 
-  source.insert(line++, "STD_MIN g0 g1 g2");
-  source.insert(line++, "STD_MIN_SHORT g0 g1");
-  source.insert(line++, "STD_MINU g0 g1 g2");
-  source.insert(line++, "STD_MINU_SHORT g0 g1");
-  source.insert(line++, "STD_MAX g0 g1 g2");
-  source.insert(line++, "STD_MAX_SHORT g0 g1");
-  source.insert(line++, "STD_MAXU g0 g1 g2");
-  source.insert(line++, "STD_MAXU_SHORT g0 g1");
-  source.insert(line++, "std_neg");
-  source.insert(line++, "std_abs");
-  source.insert(line++, "std_pow");
-  source.insert(line++, "std_min");
-  source.insert(line++, "std_minh");
-  source.insert(line++, "std_minq");
-  source.insert(line++, "std_minu");
-  source.insert(line++, "std_minuh");
-  source.insert(line++, "std_minuq");
-  source.insert(line++, "std_max");
-  source.insert(line++, "std_maxh");
-  source.insert(line++, "std_maxq");
-  source.insert(line++, "std_maxu");
-  source.insert(line++, "std_maxuh");
-  source.insert(line++, "std_maxuq");
-  source.insert(line++, "std_sum");
-  source.insert(line++, "std_sumh");
-  source.insert(line++, "std_sumq");
-  source.insert(line++, "std_avg");
-  source.insert(line++, "std_avgh");
-  source.insert(line++, "std_avgq");
+  source.insert("STD_MIN g0 g1 g2");
+  source.insert("STD_MIN_SHORT g0 g1");
+  source.insert("STD_MINU g0 g1 g2");
+  source.insert("STD_MINU_SHORT g0 g1");
+  source.insert("STD_MAX g0 g1 g2");
+  source.insert("STD_MAX_SHORT g0 g1");
+  source.insert("STD_MAXU g0 g1 g2");
+  source.insert("STD_MAXU_SHORT g0 g1");
+  source.insert("std_neg");
+  source.insert("std_abs");
+  source.insert("std_pow");
+  source.insert("std_min");
+  source.insert("std_minh");
+  source.insert("std_minq");
+  source.insert("std_minu");
+  source.insert("std_minuh");
+  source.insert("std_minuq");
+  source.insert("std_max");
+  source.insert("std_maxh");
+  source.insert("std_maxq");
+  source.insert("std_maxu");
+  source.insert("std_maxuh");
+  source.insert("std_maxuq");
+  source.insert("std_sum");
+  source.insert("std_sumh");
+  source.insert("std_sumq");
+  source.insert("std_avg");
+  source.insert("std_avgh");
+  source.insert("std_avgq");
 
   BOOST_CHECK_NO_THROW(compile(source));
 }
@@ -104,48 +103,47 @@ BOOST_AUTO_TEST_CASE(swl_compile)
 BOOST_AUTO_TEST_CASE(std_neg)
 {
   cpu::File source;
-  cpu::Source::size_type line = 0;
 
   // Initialize the stack pointer
-  source.insert(line++, ".label init");
-  source.insert(line++, "loada sp stack");
-  source.insert(line++, "b main");
+  source.insert(".label init");
+  source.insert("loada sp stack");
+  source.insert("b main");
 
-  source.insert(line++, ".include \"stdlib/math/neg.swl\"");
+  source.insert(".include \"stdlib/math/neg.swl\"");
 
   // Test with a positive value
-  source.insert(line++, ".label main");
-  source.insert(line++, "loadi g0 0xF");
-  source.insert(line++, "call std_neg");
-  source.insert(line++, "push g0");
+  source.insert(".label main");
+  source.insert("loadi g0 0xF");
+  source.insert("call std_neg");
+  source.insert("push g0");
 
   // Test with a negative value
-  source.insert(line++, "loadi g0 0xFFF1");
-  source.insert(line++, "loadhi g0 0xFFFF");
-  source.insert(line++, "call std_neg");
-  source.insert(line++, "push g0");
+  source.insert("loadi g0 0xFFF1");
+  source.insert("loadhi g0 0xFFFF");
+  source.insert("call std_neg");
+  source.insert("push g0");
 
   // Test with zero
-  source.insert(line++, "loadi g0 0x0");
-  source.insert(line++, "call std_neg");
-  source.insert(line++, "push g0");
+  source.insert("loadi g0 0x0");
+  source.insert("call std_neg");
+  source.insert("push g0");
 
   // Test with 0x80000000
-  source.insert(line++, "loadi g0 0x0000");
-  source.insert(line++, "loadhi g0 0x8000");
-  source.insert(line++, "call std_neg");
-  source.insert(line++, "move g3 g0");
+  source.insert("loadi g0 0x0000");
+  source.insert("loadhi g0 0x8000");
+  source.insert("call std_neg");
+  source.insert("move g3 g0");
 
   // Put the results in registers
-  source.insert(line++, "pop g2");
-  source.insert(line++, "pop g1");
-  source.insert(line++, "pop g0");
+  source.insert("pop g2");
+  source.insert("pop g1");
+  source.insert("pop g0");
 
-  source.insert(line++, "stop");
+  source.insert("stop");
 
   // Space for 16 words in the stack
-  source.insert(line++, ".label stack");
-  source.insert(line++, ".block 0x40");
+  source.insert(".label stack");
+  source.insert(".block 0x40");
 
   compile(source);
 
@@ -167,48 +165,47 @@ BOOST_AUTO_TEST_CASE(std_neg)
 BOOST_AUTO_TEST_CASE(std_abs)
 {
   cpu::File source;
-  cpu::Source::size_type line = 0;
 
   // Initialize the stack pointer
-  source.insert(line++, ".label init");
-  source.insert(line++, "loada sp stack");
-  source.insert(line++, "b main");
+  source.insert(".label init");
+  source.insert("loada sp stack");
+  source.insert("b main");
 
-  source.insert(line++, ".include \"stdlib/math/abs.swl\"");
+  source.insert(".include \"stdlib/math/abs.swl\"");
 
   // Test with a positive value
-  source.insert(line++, ".label main");
-  source.insert(line++, "loadi g0 0xF");
-  source.insert(line++, "call std_abs");
-  source.insert(line++, "push g0");
+  source.insert(".label main");
+  source.insert("loadi g0 0xF");
+  source.insert("call std_abs");
+  source.insert("push g0");
 
   // Test with a negative value
-  source.insert(line++, "loadi g0 0xFFF1");
-  source.insert(line++, "loadhi g0 0xFFFF");
-  source.insert(line++, "call std_abs");
-  source.insert(line++, "push g0");
+  source.insert("loadi g0 0xFFF1");
+  source.insert("loadhi g0 0xFFFF");
+  source.insert("call std_abs");
+  source.insert("push g0");
 
   // Test with zero
-  source.insert(line++, "loadi g0 0x0");
-  source.insert(line++, "call std_abs");
-  source.insert(line++, "push g0");
+  source.insert("loadi g0 0x0");
+  source.insert("call std_abs");
+  source.insert("push g0");
 
   // Test with 0x80000000
-  source.insert(line++, "loadi g0 0x0000");
-  source.insert(line++, "loadhi g0 0x8000");
-  source.insert(line++, "call std_abs");
-  source.insert(line++, "move g3 g0");
+  source.insert("loadi g0 0x0000");
+  source.insert("loadhi g0 0x8000");
+  source.insert("call std_abs");
+  source.insert("move g3 g0");
 
   // Put the results in registers
-  source.insert(line++, "pop g2");
-  source.insert(line++, "pop g1");
-  source.insert(line++, "pop g0");
+  source.insert("pop g2");
+  source.insert("pop g1");
+  source.insert("pop g0");
 
-  source.insert(line++, "stop");
+  source.insert("stop");
 
   // Space for 16 words in the stack
-  source.insert(line++, ".label stack");
-  source.insert(line++, ".block 0x40");
+  source.insert(".label stack");
+  source.insert(".block 0x40");
 
   compile(source);
 
@@ -230,57 +227,56 @@ BOOST_AUTO_TEST_CASE(std_abs)
 BOOST_AUTO_TEST_CASE(std_pow)
 {
   cpu::File source;
-  cpu::Source::size_type line = 0;
 
   // Initialize the stack pointer
-  source.insert(line++, ".label init");
-  source.insert(line++, "loada sp stack");
-  source.insert(line++, "b main");
+  source.insert(".label init");
+  source.insert("loada sp stack");
+  source.insert("b main");
 
-  source.insert(line++, ".include \"stdlib/math/pow.swl\"");
+  source.insert(".include \"stdlib/math/pow.swl\"");
 
   // Test with a base zero
-  source.insert(line++, ".label main");
-  source.insert(line++, "loadi g0 0x0");
-  source.insert(line++, "loadi g1 0x3");
-  source.insert(line++, "call std_pow");
-  source.insert(line++, "push g0");
+  source.insert(".label main");
+  source.insert("loadi g0 0x0");
+  source.insert("loadi g1 0x3");
+  source.insert("call std_pow");
+  source.insert("push g0");
 
   // Test with a base of 1
-  source.insert(line++, "loadi g0 0x1");
-  source.insert(line++, "loadi g1 0x4");
-  source.insert(line++, "call std_pow");
-  source.insert(line++, "push g0");
+  source.insert("loadi g0 0x1");
+  source.insert("loadi g1 0x4");
+  source.insert("call std_pow");
+  source.insert("push g0");
 
   // Test with a exponent zero
-  source.insert(line++, "loadi g0 0x3");
-  source.insert(line++, "loadi g1 0x0");
-  source.insert(line++, "call std_pow");
-  source.insert(line++, "push g0");
+  source.insert("loadi g0 0x3");
+  source.insert("loadi g1 0x0");
+  source.insert("call std_pow");
+  source.insert("push g0");
 
   // Test with a exponent 1
-  source.insert(line++, "loadi g0 0x5");
-  source.insert(line++, "loadi g1 0x1");
-  source.insert(line++, "call std_pow");
-  source.insert(line++, "push g0");
+  source.insert("loadi g0 0x5");
+  source.insert("loadi g1 0x1");
+  source.insert("call std_pow");
+  source.insert("push g0");
 
   // Test with other base and exponent
-  source.insert(line++, "loadi g0 0x5");
-  source.insert(line++, "loadi g1 0x7");
-  source.insert(line++, "call std_pow");
-  source.insert(line++, "move r0 g0");
+  source.insert("loadi g0 0x5");
+  source.insert("loadi g1 0x7");
+  source.insert("call std_pow");
+  source.insert("move r0 g0");
 
   // Put the results in registers
-  source.insert(line++, "pop g3");
-  source.insert(line++, "pop g2");
-  source.insert(line++, "pop g1");
-  source.insert(line++, "pop g0");
+  source.insert("pop g3");
+  source.insert("pop g2");
+  source.insert("pop g1");
+  source.insert("pop g0");
 
-  source.insert(line++, "stop");
+  source.insert("stop");
 
   // Space for 16 words in the stack
-  source.insert(line++, ".label stack");
-  source.insert(line++, ".block 0x40");
+  source.insert(".label stack");
+  source.insert(".block 0x40");
 
   compile(source);
 
@@ -303,46 +299,45 @@ BOOST_AUTO_TEST_CASE(std_pow)
 BOOST_AUTO_TEST_CASE(STD_MIN)
 {
   cpu::File source;
-  cpu::Source::size_type line = 0;
 
   // Initialize the stack pointer
-  source.insert(line++, ".label init");
-  source.insert(line++, "loada sp stack");
-  source.insert(line++, "b main");
+  source.insert(".label init");
+  source.insert("loada sp stack");
+  source.insert("b main");
 
-  source.insert(line++, ".include \"stdlib/math/def.swl\"");
+  source.insert(".include \"stdlib/math/def.swl\"");
 
   // Test with 2 positive values
-  source.insert(line++, ".label main");
-  source.insert(line++, "loadi g0 0x0");
-  source.insert(line++, "loadi g1 0x3");
-  source.insert(line++, "STD_MIN g0 g0 g1");
-  source.insert(line++, "push g0");
+  source.insert(".label main");
+  source.insert("loadi g0 0x0");
+  source.insert("loadi g1 0x3");
+  source.insert("STD_MIN g0 g0 g1");
+  source.insert("push g0");
 
   // Test with 2 negative values
-  source.insert(line++, "loadi g0 0x1");
-  source.insert(line++, "loadhi g0 0xFFFF");
-  source.insert(line++, "loadi g1 0x4");
-  source.insert(line++, "loadhi g1 0xFFFF");
-  source.insert(line++, "STD_MIN_SHORT g0 g1");
-  source.insert(line++, "push g0");
+  source.insert("loadi g0 0x1");
+  source.insert("loadhi g0 0xFFFF");
+  source.insert("loadi g1 0x4");
+  source.insert("loadhi g1 0xFFFF");
+  source.insert("STD_MIN_SHORT g0 g1");
+  source.insert("push g0");
 
   // Test with a positive and a negative value
-  source.insert(line++, "loadi g0 0x3");
-  source.insert(line++, "loadi g1 0x0");
-  source.insert(line++, "loadhi g1 0xFFFF");
-  source.insert(line++, "STD_MIN_SHORT g0 g1");
-  source.insert(line++, "move g2 g0");
+  source.insert("loadi g0 0x3");
+  source.insert("loadi g1 0x0");
+  source.insert("loadhi g1 0xFFFF");
+  source.insert("STD_MIN_SHORT g0 g1");
+  source.insert("move g2 g0");
 
   // Put the results in registers
-  source.insert(line++, "pop g1");
-  source.insert(line++, "pop g0");
+  source.insert("pop g1");
+  source.insert("pop g0");
 
-  source.insert(line++, "stop");
+  source.insert("stop");
 
   // Space for 16 words in the stack
-  source.insert(line++, ".label stack");
-  source.insert(line++, ".block 0x40");
+  source.insert(".label stack");
+  source.insert(".block 0x40");
 
   compile(source);
 
@@ -363,35 +358,34 @@ BOOST_AUTO_TEST_CASE(STD_MIN)
 BOOST_AUTO_TEST_CASE(std_min)
 {
   cpu::File source;
-  cpu::Source::size_type line = 0;
 
   // Initialize the stack pointer
-  source.insert(line++, ".label init");
-  source.insert(line++, "loada sp stack");
-  source.insert(line++, "b main");
+  source.insert(".label init");
+  source.insert("loada sp stack");
+  source.insert("b main");
 
-  source.insert(line++, ".include \"stdlib/math/min.swl\"");
+  source.insert(".include \"stdlib/math/min.swl\"");
 
   // Test
-  source.insert(line++, ".label main");
-  source.insert(line++, "loada g0 data");
-  source.insert(line++, "loada g1 data_end");
-  source.insert(line++, "sub g1 g1 g0");
-  source.insert(line++, "call std_min");
+  source.insert(".label main");
+  source.insert("loada g0 data");
+  source.insert("loada g1 data_end");
+  source.insert("sub g1 g1 g0");
+  source.insert("call std_min");
 
-  source.insert(line++, "stop");
+  source.insert("stop");
 
   // Data
-  source.insert(line++, ".label data");
-  source.insert(line++, "0x01800500");
-  source.insert(line++, "0x0029D06A");
-  source.insert(line++, "0x00E300B7");
-  source.insert(line++, "0x8F0040C0");
-  source.insert(line++, ".label data_end");
+  source.insert(".label data");
+  source.insert("0x01800500");
+  source.insert("0x0029D06A");
+  source.insert("0x00E300B7");
+  source.insert("0x8F0040C0");
+  source.insert(".label data_end");
 
   // Space for 16 words in the stack
-  source.insert(line++, ".label stack");
-  source.insert(line++, ".block 0x40");
+  source.insert(".label stack");
+  source.insert(".block 0x40");
 
   compile(source);
 
@@ -410,35 +404,34 @@ BOOST_AUTO_TEST_CASE(std_min)
 BOOST_AUTO_TEST_CASE(std_minh)
 {
   cpu::File source;
-  cpu::Source::size_type line = 0;
 
   // Initialize the stack pointer
-  source.insert(line++, ".label init");
-  source.insert(line++, "loada sp stack");
-  source.insert(line++, "b main");
+  source.insert(".label init");
+  source.insert("loada sp stack");
+  source.insert("b main");
 
-  source.insert(line++, ".include \"stdlib/math/minh.swl\"");
+  source.insert(".include \"stdlib/math/minh.swl\"");
 
   // Test
-  source.insert(line++, ".label main");
-  source.insert(line++, "loada g0 data");
-  source.insert(line++, "loada g1 data_end");
-  source.insert(line++, "sub g1 g1 g0");
-  source.insert(line++, "call std_minh");
+  source.insert(".label main");
+  source.insert("loada g0 data");
+  source.insert("loada g1 data_end");
+  source.insert("sub g1 g1 g0");
+  source.insert("call std_minh");
 
-  source.insert(line++, "stop");
+  source.insert("stop");
 
   // Data
-  source.insert(line++, ".label data");
-  source.insert(line++, "0x01800500");
-  source.insert(line++, "0x0029D06A");
-  source.insert(line++, "0x00E300B7");
-  source.insert(line++, "0x8F0040C0");
-  source.insert(line++, ".label data_end");
+  source.insert(".label data");
+  source.insert("0x01800500");
+  source.insert("0x0029D06A");
+  source.insert("0x00E300B7");
+  source.insert("0x8F0040C0");
+  source.insert(".label data_end");
 
   // Space for 16 words in the stack
-  source.insert(line++, ".label stack");
-  source.insert(line++, ".block 0x40");
+  source.insert(".label stack");
+  source.insert(".block 0x40");
 
   compile(source);
 
@@ -457,35 +450,34 @@ BOOST_AUTO_TEST_CASE(std_minh)
 BOOST_AUTO_TEST_CASE(std_minq)
 {
   cpu::File source;
-  cpu::Source::size_type line = 0;
 
   // Initialize the stack pointer
-  source.insert(line++, ".label init");
-  source.insert(line++, "loada sp stack");
-  source.insert(line++, "b main");
+  source.insert(".label init");
+  source.insert("loada sp stack");
+  source.insert("b main");
 
-  source.insert(line++, ".include \"stdlib/math/minq.swl\"");
+  source.insert(".include \"stdlib/math/minq.swl\"");
 
   // Test
-  source.insert(line++, ".label main");
-  source.insert(line++, "loada g0 data");
-  source.insert(line++, "loada g1 data_end");
-  source.insert(line++, "sub g1 g1 g0");
-  source.insert(line++, "call std_minq");
+  source.insert(".label main");
+  source.insert("loada g0 data");
+  source.insert("loada g1 data_end");
+  source.insert("sub g1 g1 g0");
+  source.insert("call std_minq");
 
-  source.insert(line++, "stop");
+  source.insert("stop");
 
   // Data
-  source.insert(line++, ".label data");
-  source.insert(line++, "0x01800500");
-  source.insert(line++, "0x0029D06A");
-  source.insert(line++, "0x00E300B7");
-  source.insert(line++, "0x8F0040C0");
-  source.insert(line++, ".label data_end");
+  source.insert(".label data");
+  source.insert("0x01800500");
+  source.insert("0x0029D06A");
+  source.insert("0x00E300B7");
+  source.insert("0x8F0040C0");
+  source.insert(".label data_end");
 
   // Space for 16 words in the stack
-  source.insert(line++, ".label stack");
-  source.insert(line++, ".block 0x40");
+  source.insert(".label stack");
+  source.insert(".block 0x40");
 
   compile(source);
 
@@ -504,46 +496,45 @@ BOOST_AUTO_TEST_CASE(std_minq)
 BOOST_AUTO_TEST_CASE(STD_MINU)
 {
   cpu::File source;
-  cpu::Source::size_type line = 0;
 
   // Initialize the stack pointer
-  source.insert(line++, ".label init");
-  source.insert(line++, "loada sp stack");
-  source.insert(line++, "b main");
+  source.insert(".label init");
+  source.insert("loada sp stack");
+  source.insert("b main");
 
-  source.insert(line++, ".include \"stdlib/math/def.swl\"");
+  source.insert(".include \"stdlib/math/def.swl\"");
 
   // Test with 2 positive values
-  source.insert(line++, ".label main");
-  source.insert(line++, "loadi g0 0x0");
-  source.insert(line++, "loadi g1 0x3");
-  source.insert(line++, "STD_MINU g0 g0 g1");
-  source.insert(line++, "push g0");
+  source.insert(".label main");
+  source.insert("loadi g0 0x0");
+  source.insert("loadi g1 0x3");
+  source.insert("STD_MINU g0 g0 g1");
+  source.insert("push g0");
 
   // Test with 2 negative values
-  source.insert(line++, "loadi g0 0x1");
-  source.insert(line++, "loadhi g0 0xFFFF");
-  source.insert(line++, "loadi g1 0x4");
-  source.insert(line++, "loadhi g1 0xFFFF");
-  source.insert(line++, "STD_MINU_SHORT g0 g1");
-  source.insert(line++, "push g0");
+  source.insert("loadi g0 0x1");
+  source.insert("loadhi g0 0xFFFF");
+  source.insert("loadi g1 0x4");
+  source.insert("loadhi g1 0xFFFF");
+  source.insert("STD_MINU_SHORT g0 g1");
+  source.insert("push g0");
 
   // Test with a positive and a negative value
-  source.insert(line++, "loadi g0 0x3");
-  source.insert(line++, "loadi g1 0x0");
-  source.insert(line++, "loadhi g1 0xFFFF");
-  source.insert(line++, "STD_MINU_SHORT g0 g1");
-  source.insert(line++, "move g2 g0");
+  source.insert("loadi g0 0x3");
+  source.insert("loadi g1 0x0");
+  source.insert("loadhi g1 0xFFFF");
+  source.insert("STD_MINU_SHORT g0 g1");
+  source.insert("move g2 g0");
 
   // Put the results in registers
-  source.insert(line++, "pop g1");
-  source.insert(line++, "pop g0");
+  source.insert("pop g1");
+  source.insert("pop g0");
 
-  source.insert(line++, "stop");
+  source.insert("stop");
 
   // Space for 16 words in the stack
-  source.insert(line++, ".label stack");
-  source.insert(line++, ".block 0x40");
+  source.insert(".label stack");
+  source.insert(".block 0x40");
 
   compile(source);
 
@@ -564,35 +555,34 @@ BOOST_AUTO_TEST_CASE(STD_MINU)
 BOOST_AUTO_TEST_CASE(std_minu)
 {
   cpu::File source;
-  cpu::Source::size_type line = 0;
 
   // Initialize the stack pointer
-  source.insert(line++, ".label init");
-  source.insert(line++, "loada sp stack");
-  source.insert(line++, "b main");
+  source.insert(".label init");
+  source.insert("loada sp stack");
+  source.insert("b main");
 
-  source.insert(line++, ".include \"stdlib/math/minu.swl\"");
+  source.insert(".include \"stdlib/math/minu.swl\"");
 
   // Test
-  source.insert(line++, ".label main");
-  source.insert(line++, "loada g0 data");
-  source.insert(line++, "loada g1 data_end");
-  source.insert(line++, "sub g1 g1 g0");
-  source.insert(line++, "call std_minu");
+  source.insert(".label main");
+  source.insert("loada g0 data");
+  source.insert("loada g1 data_end");
+  source.insert("sub g1 g1 g0");
+  source.insert("call std_minu");
 
-  source.insert(line++, "stop");
+  source.insert("stop");
 
   // Data
-  source.insert(line++, ".label data");
-  source.insert(line++, "0x01800500");
-  source.insert(line++, "0x0029D06A");
-  source.insert(line++, "0x00E300B7");
-  source.insert(line++, "0x8F0040C0");
-  source.insert(line++, ".label data_end");
+  source.insert(".label data");
+  source.insert("0x01800500");
+  source.insert("0x0029D06A");
+  source.insert("0x00E300B7");
+  source.insert("0x8F0040C0");
+  source.insert(".label data_end");
 
   // Space for 16 words in the stack
-  source.insert(line++, ".label stack");
-  source.insert(line++, ".block 0x40");
+  source.insert(".label stack");
+  source.insert(".block 0x40");
 
   compile(source);
 
@@ -611,35 +601,34 @@ BOOST_AUTO_TEST_CASE(std_minu)
 BOOST_AUTO_TEST_CASE(std_minuh)
 {
   cpu::File source;
-  cpu::Source::size_type line = 0;
 
   // Initialize the stack pointer
-  source.insert(line++, ".label init");
-  source.insert(line++, "loada sp stack");
-  source.insert(line++, "b main");
+  source.insert(".label init");
+  source.insert("loada sp stack");
+  source.insert("b main");
 
-  source.insert(line++, ".include \"stdlib/math/minuh.swl\"");
+  source.insert(".include \"stdlib/math/minuh.swl\"");
 
   // Test
-  source.insert(line++, ".label main");
-  source.insert(line++, "loada g0 data");
-  source.insert(line++, "loada g1 data_end");
-  source.insert(line++, "sub g1 g1 g0");
-  source.insert(line++, "call std_minuh");
+  source.insert(".label main");
+  source.insert("loada g0 data");
+  source.insert("loada g1 data_end");
+  source.insert("sub g1 g1 g0");
+  source.insert("call std_minuh");
 
-  source.insert(line++, "stop");
+  source.insert("stop");
 
   // Data
-  source.insert(line++, ".label data");
-  source.insert(line++, "0x01800500");
-  source.insert(line++, "0x0029D06A");
-  source.insert(line++, "0x00E300B7");
-  source.insert(line++, "0x8F0040C0");
-  source.insert(line++, ".label data_end");
+  source.insert(".label data");
+  source.insert("0x01800500");
+  source.insert("0x0029D06A");
+  source.insert("0x00E300B7");
+  source.insert("0x8F0040C0");
+  source.insert(".label data_end");
 
   // Space for 16 words in the stack
-  source.insert(line++, ".label stack");
-  source.insert(line++, ".block 0x40");
+  source.insert(".label stack");
+  source.insert(".block 0x40");
 
   compile(source);
 
@@ -658,35 +647,34 @@ BOOST_AUTO_TEST_CASE(std_minuh)
 BOOST_AUTO_TEST_CASE(std_minuq)
 {
   cpu::File source;
-  cpu::Source::size_type line = 0;
 
   // Initialize the stack pointer
-  source.insert(line++, ".label init");
-  source.insert(line++, "loada sp stack");
-  source.insert(line++, "b main");
+  source.insert(".label init");
+  source.insert("loada sp stack");
+  source.insert("b main");
 
-  source.insert(line++, ".include \"stdlib/math/minuq.swl\"");
+  source.insert(".include \"stdlib/math/minuq.swl\"");
 
   // Test
-  source.insert(line++, ".label main");
-  source.insert(line++, "loada g0 data");
-  source.insert(line++, "loada g1 data_end");
-  source.insert(line++, "sub g1 g1 g0");
-  source.insert(line++, "call std_minuq");
+  source.insert(".label main");
+  source.insert("loada g0 data");
+  source.insert("loada g1 data_end");
+  source.insert("sub g1 g1 g0");
+  source.insert("call std_minuq");
 
-  source.insert(line++, "stop");
+  source.insert("stop");
 
   // Data
-  source.insert(line++, ".label data");
-  source.insert(line++, "0x01800500");
-  source.insert(line++, "0x0029D06A");
-  source.insert(line++, "0x00E300B7");
-  source.insert(line++, "0x8F0040C0");
-  source.insert(line++, ".label data_end");
+  source.insert(".label data");
+  source.insert("0x01800500");
+  source.insert("0x0029D06A");
+  source.insert("0x00E300B7");
+  source.insert("0x8F0040C0");
+  source.insert(".label data_end");
 
   // Space for 16 words in the stack
-  source.insert(line++, ".label stack");
-  source.insert(line++, ".block 0x40");
+  source.insert(".label stack");
+  source.insert(".block 0x40");
 
   compile(source);
 
@@ -705,46 +693,45 @@ BOOST_AUTO_TEST_CASE(std_minuq)
 BOOST_AUTO_TEST_CASE(STD_MAX)
 {
   cpu::File source;
-  cpu::Source::size_type line = 0;
 
   // Initialize the stack pointer
-  source.insert(line++, ".label init");
-  source.insert(line++, "loada sp stack");
-  source.insert(line++, "b main");
+  source.insert(".label init");
+  source.insert("loada sp stack");
+  source.insert("b main");
 
-  source.insert(line++, ".include \"stdlib/math/def.swl\"");
+  source.insert(".include \"stdlib/math/def.swl\"");
 
   // Test with 2 positive values
-  source.insert(line++, ".label main");
-  source.insert(line++, "loadi g0 0x0");
-  source.insert(line++, "loadi g1 0x3");
-  source.insert(line++, "STD_MAX g0 g0 g1");
-  source.insert(line++, "push g0");
+  source.insert(".label main");
+  source.insert("loadi g0 0x0");
+  source.insert("loadi g1 0x3");
+  source.insert("STD_MAX g0 g0 g1");
+  source.insert("push g0");
 
   // Test with 2 negative values
-  source.insert(line++, "loadi g0 0x1");
-  source.insert(line++, "loadhi g0 0xFFFF");
-  source.insert(line++, "loadi g1 0x4");
-  source.insert(line++, "loadhi g1 0xFFFF");
-  source.insert(line++, "STD_MAX_SHORT g0 g1");
-  source.insert(line++, "push g0");
+  source.insert("loadi g0 0x1");
+  source.insert("loadhi g0 0xFFFF");
+  source.insert("loadi g1 0x4");
+  source.insert("loadhi g1 0xFFFF");
+  source.insert("STD_MAX_SHORT g0 g1");
+  source.insert("push g0");
 
   // Test with a positive and a negative value
-  source.insert(line++, "loadi g0 0x3");
-  source.insert(line++, "loadi g1 0x0");
-  source.insert(line++, "loadhi g1 0xFFFF");
-  source.insert(line++, "STD_MAX_SHORT g0 g1");
-  source.insert(line++, "move g2 g0");
+  source.insert("loadi g0 0x3");
+  source.insert("loadi g1 0x0");
+  source.insert("loadhi g1 0xFFFF");
+  source.insert("STD_MAX_SHORT g0 g1");
+  source.insert("move g2 g0");
 
   // Put the results in registers
-  source.insert(line++, "pop g1");
-  source.insert(line++, "pop g0");
+  source.insert("pop g1");
+  source.insert("pop g0");
 
-  source.insert(line++, "stop");
+  source.insert("stop");
 
   // Space for 16 words in the stack
-  source.insert(line++, ".label stack");
-  source.insert(line++, ".block 0x40");
+  source.insert(".label stack");
+  source.insert(".block 0x40");
 
   compile(source);
 
@@ -765,35 +752,34 @@ BOOST_AUTO_TEST_CASE(STD_MAX)
 BOOST_AUTO_TEST_CASE(std_max)
 {
   cpu::File source;
-  cpu::Source::size_type line = 0;
 
   // Initialize the stack pointer
-  source.insert(line++, ".label init");
-  source.insert(line++, "loada sp stack");
-  source.insert(line++, "b main");
+  source.insert(".label init");
+  source.insert("loada sp stack");
+  source.insert("b main");
 
-  source.insert(line++, ".include \"stdlib/math/max.swl\"");
+  source.insert(".include \"stdlib/math/max.swl\"");
 
   // Test
-  source.insert(line++, ".label main");
-  source.insert(line++, "loada g0 data");
-  source.insert(line++, "loada g1 data_end");
-  source.insert(line++, "sub g1 g1 g0");
-  source.insert(line++, "call std_max");
+  source.insert(".label main");
+  source.insert("loada g0 data");
+  source.insert("loada g1 data_end");
+  source.insert("sub g1 g1 g0");
+  source.insert("call std_max");
 
-  source.insert(line++, "stop");
+  source.insert("stop");
 
   // Data
-  source.insert(line++, ".label data");
-  source.insert(line++, "0x01800500");
-  source.insert(line++, "0x0029D06A");
-  source.insert(line++, "0x00E300B7");
-  source.insert(line++, "0x8F0040C0");
-  source.insert(line++, ".label data_end");
+  source.insert(".label data");
+  source.insert("0x01800500");
+  source.insert("0x0029D06A");
+  source.insert("0x00E300B7");
+  source.insert("0x8F0040C0");
+  source.insert(".label data_end");
 
   // Space for 16 words in the stack
-  source.insert(line++, ".label stack");
-  source.insert(line++, ".block 0x40");
+  source.insert(".label stack");
+  source.insert(".block 0x40");
 
   compile(source);
 
@@ -812,35 +798,34 @@ BOOST_AUTO_TEST_CASE(std_max)
 BOOST_AUTO_TEST_CASE(std_maxh)
 {
   cpu::File source;
-  cpu::Source::size_type line = 0;
 
   // Initialize the stack pointer
-  source.insert(line++, ".label init");
-  source.insert(line++, "loada sp stack");
-  source.insert(line++, "b main");
+  source.insert(".label init");
+  source.insert("loada sp stack");
+  source.insert("b main");
 
-  source.insert(line++, ".include \"stdlib/math/maxh.swl\"");
+  source.insert(".include \"stdlib/math/maxh.swl\"");
 
   // Test
-  source.insert(line++, ".label main");
-  source.insert(line++, "loada g0 data");
-  source.insert(line++, "loada g1 data_end");
-  source.insert(line++, "sub g1 g1 g0");
-  source.insert(line++, "call std_maxh");
+  source.insert(".label main");
+  source.insert("loada g0 data");
+  source.insert("loada g1 data_end");
+  source.insert("sub g1 g1 g0");
+  source.insert("call std_maxh");
 
-  source.insert(line++, "stop");
+  source.insert("stop");
 
   // Data
-  source.insert(line++, ".label data");
-  source.insert(line++, "0x01800500");
-  source.insert(line++, "0x0029D06A");
-  source.insert(line++, "0x00E300B7");
-  source.insert(line++, "0x8F0040C0");
-  source.insert(line++, ".label data_end");
+  source.insert(".label data");
+  source.insert("0x01800500");
+  source.insert("0x0029D06A");
+  source.insert("0x00E300B7");
+  source.insert("0x8F0040C0");
+  source.insert(".label data_end");
 
   // Space for 16 words in the stack
-  source.insert(line++, ".label stack");
-  source.insert(line++, ".block 0x40");
+  source.insert(".label stack");
+  source.insert(".block 0x40");
 
   compile(source);
 
@@ -859,35 +844,34 @@ BOOST_AUTO_TEST_CASE(std_maxh)
 BOOST_AUTO_TEST_CASE(std_maxq)
 {
   cpu::File source;
-  cpu::Source::size_type line = 0;
 
   // Initialize the stack pointer
-  source.insert(line++, ".label init");
-  source.insert(line++, "loada sp stack");
-  source.insert(line++, "b main");
+  source.insert(".label init");
+  source.insert("loada sp stack");
+  source.insert("b main");
 
-  source.insert(line++, ".include \"stdlib/math/maxq.swl\"");
+  source.insert(".include \"stdlib/math/maxq.swl\"");
 
   // Test
-  source.insert(line++, ".label main");
-  source.insert(line++, "loada g0 data");
-  source.insert(line++, "loada g1 data_end");
-  source.insert(line++, "sub g1 g1 g0");
-  source.insert(line++, "call std_maxq");
+  source.insert(".label main");
+  source.insert("loada g0 data");
+  source.insert("loada g1 data_end");
+  source.insert("sub g1 g1 g0");
+  source.insert("call std_maxq");
 
-  source.insert(line++, "stop");
+  source.insert("stop");
 
   // Data
-  source.insert(line++, ".label data");
-  source.insert(line++, "0x01800500");
-  source.insert(line++, "0x0029D06A");
-  source.insert(line++, "0x00E300B7");
-  source.insert(line++, "0x8F0040C0");
-  source.insert(line++, ".label data_end");
+  source.insert(".label data");
+  source.insert("0x01800500");
+  source.insert("0x0029D06A");
+  source.insert("0x00E300B7");
+  source.insert("0x8F0040C0");
+  source.insert(".label data_end");
 
   // Space for 16 words in the stack
-  source.insert(line++, ".label stack");
-  source.insert(line++, ".block 0x40");
+  source.insert(".label stack");
+  source.insert(".block 0x40");
 
   compile(source);
 
@@ -906,46 +890,45 @@ BOOST_AUTO_TEST_CASE(std_maxq)
 BOOST_AUTO_TEST_CASE(STD_MAXU)
 {
   cpu::File source;
-  cpu::Source::size_type line = 0;
 
   // Initialize the stack pointer
-  source.insert(line++, ".label init");
-  source.insert(line++, "loada sp stack");
-  source.insert(line++, "b main");
+  source.insert(".label init");
+  source.insert("loada sp stack");
+  source.insert("b main");
 
-  source.insert(line++, ".include \"stdlib/math/def.swl\"");
+  source.insert(".include \"stdlib/math/def.swl\"");
 
   // Test with 2 positive values
-  source.insert(line++, ".label main");
-  source.insert(line++, "loadi g0 0x0");
-  source.insert(line++, "loadi g1 0x3");
-  source.insert(line++, "STD_MAXU g0 g0 g1");
-  source.insert(line++, "push g0");
+  source.insert(".label main");
+  source.insert("loadi g0 0x0");
+  source.insert("loadi g1 0x3");
+  source.insert("STD_MAXU g0 g0 g1");
+  source.insert("push g0");
 
   // Test with 2 negative values
-  source.insert(line++, "loadi g0 0x1");
-  source.insert(line++, "loadhi g0 0xFFFF");
-  source.insert(line++, "loadi g1 0x4");
-  source.insert(line++, "loadhi g1 0xFFFF");
-  source.insert(line++, "STD_MAXU_SHORT g0 g1");
-  source.insert(line++, "push g0");
+  source.insert("loadi g0 0x1");
+  source.insert("loadhi g0 0xFFFF");
+  source.insert("loadi g1 0x4");
+  source.insert("loadhi g1 0xFFFF");
+  source.insert("STD_MAXU_SHORT g0 g1");
+  source.insert("push g0");
 
   // Test with a positive and a negative value
-  source.insert(line++, "loadi g0 0x3");
-  source.insert(line++, "loadi g1 0x0");
-  source.insert(line++, "loadhi g1 0xFFFF");
-  source.insert(line++, "STD_MAXU_SHORT g0 g1");
-  source.insert(line++, "move g2 g0");
+  source.insert("loadi g0 0x3");
+  source.insert("loadi g1 0x0");
+  source.insert("loadhi g1 0xFFFF");
+  source.insert("STD_MAXU_SHORT g0 g1");
+  source.insert("move g2 g0");
 
   // Put the results in registers
-  source.insert(line++, "pop g1");
-  source.insert(line++, "pop g0");
+  source.insert("pop g1");
+  source.insert("pop g0");
 
-  source.insert(line++, "stop");
+  source.insert("stop");
 
   // Space for 16 words in the stack
-  source.insert(line++, ".label stack");
-  source.insert(line++, ".block 0x40");
+  source.insert(".label stack");
+  source.insert(".block 0x40");
 
   compile(source);
 
@@ -966,35 +949,34 @@ BOOST_AUTO_TEST_CASE(STD_MAXU)
 BOOST_AUTO_TEST_CASE(std_maxu)
 {
   cpu::File source;
-  cpu::Source::size_type line = 0;
 
   // Initialize the stack pointer
-  source.insert(line++, ".label init");
-  source.insert(line++, "loada sp stack");
-  source.insert(line++, "b main");
+  source.insert(".label init");
+  source.insert("loada sp stack");
+  source.insert("b main");
 
-  source.insert(line++, ".include \"stdlib/math/maxu.swl\"");
+  source.insert(".include \"stdlib/math/maxu.swl\"");
 
   // Test
-  source.insert(line++, ".label main");
-  source.insert(line++, "loada g0 data");
-  source.insert(line++, "loada g1 data_end");
-  source.insert(line++, "sub g1 g1 g0");
-  source.insert(line++, "call std_maxu");
+  source.insert(".label main");
+  source.insert("loada g0 data");
+  source.insert("loada g1 data_end");
+  source.insert("sub g1 g1 g0");
+  source.insert("call std_maxu");
 
-  source.insert(line++, "stop");
+  source.insert("stop");
 
   // Data
-  source.insert(line++, ".label data");
-  source.insert(line++, "0x01800500");
-  source.insert(line++, "0x0029D06A");
-  source.insert(line++, "0x00E300B7");
-  source.insert(line++, "0x8F0040C0");
-  source.insert(line++, ".label data_end");
+  source.insert(".label data");
+  source.insert("0x01800500");
+  source.insert("0x0029D06A");
+  source.insert("0x00E300B7");
+  source.insert("0x8F0040C0");
+  source.insert(".label data_end");
 
   // Space for 16 words in the stack
-  source.insert(line++, ".label stack");
-  source.insert(line++, ".block 0x40");
+  source.insert(".label stack");
+  source.insert(".block 0x40");
 
   compile(source);
 
@@ -1013,35 +995,34 @@ BOOST_AUTO_TEST_CASE(std_maxu)
 BOOST_AUTO_TEST_CASE(std_maxuh)
 {
   cpu::File source;
-  cpu::Source::size_type line = 0;
 
   // Initialize the stack pointer
-  source.insert(line++, ".label init");
-  source.insert(line++, "loada sp stack");
-  source.insert(line++, "b main");
+  source.insert(".label init");
+  source.insert("loada sp stack");
+  source.insert("b main");
 
-  source.insert(line++, ".include \"stdlib/math/maxuh.swl\"");
+  source.insert(".include \"stdlib/math/maxuh.swl\"");
 
   // Test
-  source.insert(line++, ".label main");
-  source.insert(line++, "loada g0 data");
-  source.insert(line++, "loada g1 data_end");
-  source.insert(line++, "sub g1 g1 g0");
-  source.insert(line++, "call std_maxuh");
+  source.insert(".label main");
+  source.insert("loada g0 data");
+  source.insert("loada g1 data_end");
+  source.insert("sub g1 g1 g0");
+  source.insert("call std_maxuh");
 
-  source.insert(line++, "stop");
+  source.insert("stop");
 
   // Data
-  source.insert(line++, ".label data");
-  source.insert(line++, "0x01800500");
-  source.insert(line++, "0x0029D06A");
-  source.insert(line++, "0x00E300B7");
-  source.insert(line++, "0x8F0040C0");
-  source.insert(line++, ".label data_end");
+  source.insert(".label data");
+  source.insert("0x01800500");
+  source.insert("0x0029D06A");
+  source.insert("0x00E300B7");
+  source.insert("0x8F0040C0");
+  source.insert(".label data_end");
 
   // Space for 16 words in the stack
-  source.insert(line++, ".label stack");
-  source.insert(line++, ".block 0x40");
+  source.insert(".label stack");
+  source.insert(".block 0x40");
 
   compile(source);
 
@@ -1060,35 +1041,34 @@ BOOST_AUTO_TEST_CASE(std_maxuh)
 BOOST_AUTO_TEST_CASE(std_maxuq)
 {
   cpu::File source;
-  cpu::Source::size_type line = 0;
 
   // Initialize the stack pointer
-  source.insert(line++, ".label init");
-  source.insert(line++, "loada sp stack");
-  source.insert(line++, "b main");
+  source.insert(".label init");
+  source.insert("loada sp stack");
+  source.insert("b main");
 
-  source.insert(line++, ".include \"stdlib/math/maxuq.swl\"");
+  source.insert(".include \"stdlib/math/maxuq.swl\"");
 
   // Test
-  source.insert(line++, ".label main");
-  source.insert(line++, "loada g0 data");
-  source.insert(line++, "loada g1 data_end");
-  source.insert(line++, "sub g1 g1 g0");
-  source.insert(line++, "call std_maxuq");
+  source.insert(".label main");
+  source.insert("loada g0 data");
+  source.insert("loada g1 data_end");
+  source.insert("sub g1 g1 g0");
+  source.insert("call std_maxuq");
 
-  source.insert(line++, "stop");
+  source.insert("stop");
 
   // Data
-  source.insert(line++, ".label data");
-  source.insert(line++, "0x01800500");
-  source.insert(line++, "0x0029D06A");
-  source.insert(line++, "0x00E300B7");
-  source.insert(line++, "0x8F0040C0");
-  source.insert(line++, ".label data_end");
+  source.insert(".label data");
+  source.insert("0x01800500");
+  source.insert("0x0029D06A");
+  source.insert("0x00E300B7");
+  source.insert("0x8F0040C0");
+  source.insert(".label data_end");
 
   // Space for 16 words in the stack
-  source.insert(line++, ".label stack");
-  source.insert(line++, ".block 0x40");
+  source.insert(".label stack");
+  source.insert(".block 0x40");
 
   compile(source);
 
@@ -1107,35 +1087,34 @@ BOOST_AUTO_TEST_CASE(std_maxuq)
 BOOST_AUTO_TEST_CASE(std_sum)
 {
   cpu::File source;
-  cpu::Source::size_type line = 0;
 
   // Initialize the stack pointer
-  source.insert(line++, ".label init");
-  source.insert(line++, "loada sp stack");
-  source.insert(line++, "b main");
+  source.insert(".label init");
+  source.insert("loada sp stack");
+  source.insert("b main");
 
-  source.insert(line++, ".include \"stdlib/math/sum.swl\"");
+  source.insert(".include \"stdlib/math/sum.swl\"");
 
   // Test
-  source.insert(line++, ".label main");
-  source.insert(line++, "loada g0 data");
-  source.insert(line++, "loada g1 data_end");
-  source.insert(line++, "sub g1 g1 g0");
-  source.insert(line++, "call std_sum");
+  source.insert(".label main");
+  source.insert("loada g0 data");
+  source.insert("loada g1 data_end");
+  source.insert("sub g1 g1 g0");
+  source.insert("call std_sum");
 
-  source.insert(line++, "stop");
+  source.insert("stop");
 
   // Data
-  source.insert(line++, ".label data");
-  source.insert(line++, "0x01800500");
-  source.insert(line++, "0x0029D06A");
-  source.insert(line++, "0x00E300B7");
-  source.insert(line++, "0x8F0040C0");
-  source.insert(line++, ".label data_end");
+  source.insert(".label data");
+  source.insert("0x01800500");
+  source.insert("0x0029D06A");
+  source.insert("0x00E300B7");
+  source.insert("0x8F0040C0");
+  source.insert(".label data_end");
 
   // Space for 16 words in the stack
-  source.insert(line++, ".label stack");
-  source.insert(line++, ".block 0x40");
+  source.insert(".label stack");
+  source.insert(".block 0x40");
 
   compile(source);
 
@@ -1154,35 +1133,34 @@ BOOST_AUTO_TEST_CASE(std_sum)
 BOOST_AUTO_TEST_CASE(std_sumh)
 {
   cpu::File source;
-  cpu::Source::size_type line = 0;
 
   // Initialize the stack pointer
-  source.insert(line++, ".label init");
-  source.insert(line++, "loada sp stack");
-  source.insert(line++, "b main");
+  source.insert(".label init");
+  source.insert("loada sp stack");
+  source.insert("b main");
 
-  source.insert(line++, ".include \"stdlib/math/sumh.swl\"");
+  source.insert(".include \"stdlib/math/sumh.swl\"");
 
   // Test
-  source.insert(line++, ".label main");
-  source.insert(line++, "loada g0 data");
-  source.insert(line++, "loada g1 data_end");
-  source.insert(line++, "sub g1 g1 g0");
-  source.insert(line++, "call std_sumh");
+  source.insert(".label main");
+  source.insert("loada g0 data");
+  source.insert("loada g1 data_end");
+  source.insert("sub g1 g1 g0");
+  source.insert("call std_sumh");
 
-  source.insert(line++, "stop");
+  source.insert("stop");
 
   // Data
-  source.insert(line++, ".label data");
-  source.insert(line++, "0x01800500");
-  source.insert(line++, "0x0029D06A");
-  source.insert(line++, "0x00E300B7");
-  source.insert(line++, "0x8F0040C0");
-  source.insert(line++, ".label data_end");
+  source.insert(".label data");
+  source.insert("0x01800500");
+  source.insert("0x0029D06A");
+  source.insert("0x00E300B7");
+  source.insert("0x8F0040C0");
+  source.insert(".label data_end");
 
   // Space for 16 words in the stack
-  source.insert(line++, ".label stack");
-  source.insert(line++, ".block 0x40");
+  source.insert(".label stack");
+  source.insert(".block 0x40");
 
   compile(source);
 
@@ -1201,35 +1179,34 @@ BOOST_AUTO_TEST_CASE(std_sumh)
 BOOST_AUTO_TEST_CASE(std_sumq)
 {
   cpu::File source;
-  cpu::Source::size_type line = 0;
 
   // Initialize the stack pointer
-  source.insert(line++, ".label init");
-  source.insert(line++, "loada sp stack");
-  source.insert(line++, "b main");
+  source.insert(".label init");
+  source.insert("loada sp stack");
+  source.insert("b main");
 
-  source.insert(line++, ".include \"stdlib/math/sumq.swl\"");
+  source.insert(".include \"stdlib/math/sumq.swl\"");
 
   // Test
-  source.insert(line++, ".label main");
-  source.insert(line++, "loada g0 data");
-  source.insert(line++, "loada g1 data_end");
-  source.insert(line++, "sub g1 g1 g0");
-  source.insert(line++, "call std_sumq");
+  source.insert(".label main");
+  source.insert("loada g0 data");
+  source.insert("loada g1 data_end");
+  source.insert("sub g1 g1 g0");
+  source.insert("call std_sumq");
 
-  source.insert(line++, "stop");
+  source.insert("stop");
 
   // Data
-  source.insert(line++, ".label data");
-  source.insert(line++, "0x01800500");
-  source.insert(line++, "0x0029D06A");
-  source.insert(line++, "0x00E300B7");
-  source.insert(line++, "0x8F0040C0");
-  source.insert(line++, ".label data_end");
+  source.insert(".label data");
+  source.insert("0x01800500");
+  source.insert("0x0029D06A");
+  source.insert("0x00E300B7");
+  source.insert("0x8F0040C0");
+  source.insert(".label data_end");
 
   // Space for 16 words in the stack
-  source.insert(line++, ".label stack");
-  source.insert(line++, ".block 0x40");
+  source.insert(".label stack");
+  source.insert(".block 0x40");
 
   compile(source);
 
@@ -1248,35 +1225,34 @@ BOOST_AUTO_TEST_CASE(std_sumq)
 BOOST_AUTO_TEST_CASE(std_avg)
 {
   cpu::File source;
-  cpu::Source::size_type line = 0;
 
   // Initialize the stack pointer
-  source.insert(line++, ".label init");
-  source.insert(line++, "loada sp stack");
-  source.insert(line++, "b main");
+  source.insert(".label init");
+  source.insert("loada sp stack");
+  source.insert("b main");
 
-  source.insert(line++, ".include \"stdlib/math/avg.swl\"");
+  source.insert(".include \"stdlib/math/avg.swl\"");
 
   // Test
-  source.insert(line++, ".label main");
-  source.insert(line++, "loada g0 data");
-  source.insert(line++, "loada g1 data_end");
-  source.insert(line++, "sub g1 g1 g0");
-  source.insert(line++, "call std_avg");
+  source.insert(".label main");
+  source.insert("loada g0 data");
+  source.insert("loada g1 data_end");
+  source.insert("sub g1 g1 g0");
+  source.insert("call std_avg");
 
-  source.insert(line++, "stop");
+  source.insert("stop");
 
   // Data
-  source.insert(line++, ".label data");
-  source.insert(line++, "0x01800500");
-  source.insert(line++, "0x0029D06A");
-  source.insert(line++, "0x00E300B7");
-  source.insert(line++, "0x8F0040C0");
-  source.insert(line++, ".label data_end");
+  source.insert(".label data");
+  source.insert("0x01800500");
+  source.insert("0x0029D06A");
+  source.insert("0x00E300B7");
+  source.insert("0x8F0040C0");
+  source.insert(".label data_end");
 
   // Space for 16 words in the stack
-  source.insert(line++, ".label stack");
-  source.insert(line++, ".block 0x40");
+  source.insert(".label stack");
+  source.insert(".block 0x40");
 
   compile(source);
 
@@ -1295,35 +1271,34 @@ BOOST_AUTO_TEST_CASE(std_avg)
 BOOST_AUTO_TEST_CASE(std_avgh)
 {
   cpu::File source;
-  cpu::Source::size_type line = 0;
 
   // Initialize the stack pointer
-  source.insert(line++, ".label init");
-  source.insert(line++, "loada sp stack");
-  source.insert(line++, "b main");
+  source.insert(".label init");
+  source.insert("loada sp stack");
+  source.insert("b main");
 
-  source.insert(line++, ".include \"stdlib/math/avgh.swl\"");
+  source.insert(".include \"stdlib/math/avgh.swl\"");
 
   // Test
-  source.insert(line++, ".label main");
-  source.insert(line++, "loada g0 data");
-  source.insert(line++, "loada g1 data_end");
-  source.insert(line++, "sub g1 g1 g0");
-  source.insert(line++, "call std_avgh");
+  source.insert(".label main");
+  source.insert("loada g0 data");
+  source.insert("loada g1 data_end");
+  source.insert("sub g1 g1 g0");
+  source.insert("call std_avgh");
 
-  source.insert(line++, "stop");
+  source.insert("stop");
 
   // Data
-  source.insert(line++, ".label data");
-  source.insert(line++, "0x01800500");
-  source.insert(line++, "0x0029D06A");
-  source.insert(line++, "0x00E300B7");
-  source.insert(line++, "0x8F0040C0");
-  source.insert(line++, ".label data_end");
+  source.insert(".label data");
+  source.insert("0x01800500");
+  source.insert("0x0029D06A");
+  source.insert("0x00E300B7");
+  source.insert("0x8F0040C0");
+  source.insert(".label data_end");
 
   // Space for 16 words in the stack
-  source.insert(line++, ".label stack");
-  source.insert(line++, ".block 0x40");
+  source.insert(".label stack");
+  source.insert(".block 0x40");
 
   compile(source);
 
@@ -1342,35 +1317,34 @@ BOOST_AUTO_TEST_CASE(std_avgh)
 BOOST_AUTO_TEST_CASE(std_avgq)
 {
   cpu::File source;
-  cpu::Source::size_type line = 0;
 
   // Initialize the stack pointer
-  source.insert(line++, ".label init");
-  source.insert(line++, "loada sp stack");
-  source.insert(line++, "b main");
+  source.insert(".label init");
+  source.insert("loada sp stack");
+  source.insert("b main");
 
-  source.insert(line++, ".include \"stdlib/math/avgq.swl\"");
+  source.insert(".include \"stdlib/math/avgq.swl\"");
 
   // Test
-  source.insert(line++, ".label main");
-  source.insert(line++, "loada g0 data");
-  source.insert(line++, "loada g1 data_end");
-  source.insert(line++, "sub g1 g1 g0");
-  source.insert(line++, "call std_avgq");
+  source.insert(".label main");
+  source.insert("loada g0 data");
+  source.insert("loada g1 data_end");
+  source.insert("sub g1 g1 g0");
+  source.insert("call std_avgq");
 
-  source.insert(line++, "stop");
+  source.insert("stop");
 
   // Data
-  source.insert(line++, ".label data");
-  source.insert(line++, "0x01800500");
-  source.insert(line++, "0x0029D06A");
-  source.insert(line++, "0x00E300B7");
-  source.insert(line++, "0x8F0040C0");
-  source.insert(line++, ".label data_end");
+  source.insert(".label data");
+  source.insert("0x01800500");
+  source.insert("0x0029D06A");
+  source.insert("0x00E300B7");
+  source.insert("0x8F0040C0");
+  source.insert(".label data_end");
 
   // Space for 16 words in the stack
-  source.insert(line++, ".label stack");
-  source.insert(line++, ".block 0x40");
+  source.insert(".label stack");
+  source.insert(".block 0x40");
 
   compile(source);
 

@@ -2,7 +2,7 @@
  * @file tests/stdlib/jmp_test.cpp
  * Unit test for stdlib/jmp.swl
  *
- *  Copyright (C) 2009-2011  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2009-2012  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -61,13 +61,12 @@ void compile(const cpu::File& file)
 BOOST_AUTO_TEST_CASE(swl_compile)
 {
   cpu::File source;
-  cpu::Source::size_type line = 0;
 
-  source.insert(line++, ".include \"stdlib/jmp.swl\"");
+  source.insert(".include \"stdlib/jmp.swl\"");
 
-  source.insert(line++, "STD_JMP_STRUCT");
-  source.insert(line++, "std_jmpset");
-  source.insert(line++, "std_jmp");
+  source.insert("STD_JMP_STRUCT");
+  source.insert("std_jmpset");
+  source.insert("std_jmp");
 
   BOOST_CHECK_NO_THROW(compile(source));
 }
@@ -78,45 +77,44 @@ BOOST_AUTO_TEST_CASE(swl_compile)
 BOOST_AUTO_TEST_CASE(std_jmp)
 {
   cpu::File source;
-  cpu::Source::size_type line = 0;
 
   // Initialize the stack pointer
-  source.insert(line++, ".label init");
-  source.insert(line++, "loada sp stack");
-  source.insert(line++, "b main");
+  source.insert(".label init");
+  source.insert("loada sp stack");
+  source.insert("b main");
 
-  source.insert(line++, ".include \"stdlib/jmp/set.swl\"");
-  source.insert(line++, ".include \"stdlib/jmp/jmp.swl\"");
+  source.insert(".include \"stdlib/jmp/set.swl\"");
+  source.insert(".include \"stdlib/jmp/jmp.swl\"");
 
   // Test
-  source.insert(line++, ".label main");
-  source.insert(line++, "loada g0 jmp");
-  source.insert(line++, "call std_jmpset");
+  source.insert(".label main");
+  source.insert("loada g0 jmp");
+  source.insert("call std_jmpset");
 
-  source.insert(line++, "bnz g0 _main_jmp");
-  source.insert(line++, "loada g0 jmp");
-  source.insert(line++, "loadi g1 0x0123");
-  source.insert(line++, "call std_jmp");
-  source.insert(line++, "b _main_exit");
+  source.insert("bnz g0 _main_jmp");
+  source.insert("loada g0 jmp");
+  source.insert("loadi g1 0x0123");
+  source.insert("call std_jmp");
+  source.insert("b _main_exit");
 
-  source.insert(line++, ".label _main_jmp");
-  source.insert(line++, "store g0 data");
+  source.insert(".label _main_jmp");
+  source.insert("store g0 data");
 
-  source.insert(line++, ".label _main_exit");
-  source.insert(line++, "load g0 data");
-  source.insert(line++, "stop");
+  source.insert(".label _main_exit");
+  source.insert("load g0 data");
+  source.insert("stop");
 
   // Space for jmp struct
-  source.insert(line++, ".label jmp");
-  source.insert(line++, ".block STD_JMP_STRUCT");
+  source.insert(".label jmp");
+  source.insert(".block STD_JMP_STRUCT");
 
   // Data
-  source.insert(line++, ".label data");
-  source.insert(line++, ".block 0x4");
+  source.insert(".label data");
+  source.insert(".block 0x4");
 
   // Space for 16 words in the stack
-  source.insert(line++, ".label stack");
-  source.insert(line++, ".block 0x40");
+  source.insert(".label stack");
+  source.insert(".block 0x40");
 
   compile(source);
 

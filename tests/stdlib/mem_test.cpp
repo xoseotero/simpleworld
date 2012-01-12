@@ -2,7 +2,7 @@
  * @file tests/stdlib/mem_test.cpp
  * Unit test for stdlib/mem.swl
  *
- *  Copyright (C) 2009-2011  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2009-2012  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -61,21 +61,20 @@ void compile(const cpu::File& file)
 BOOST_AUTO_TEST_CASE(swl_compile)
 {
   cpu::File source;
-  cpu::Source::size_type line = 0;
 
-  source.insert(line++, ".include \"stdlib/mem.swl\"");
+  source.insert(".include \"stdlib/mem.swl\"");
 
-  source.insert(line++, "std_fill");
-  source.insert(line++, "std_fillh");
-  source.insert(line++, "std_fillq");
-  source.insert(line++, "std_copy");
-  source.insert(line++, "std_cmp");
-  source.insert(line++, "std_find");
-  source.insert(line++, "std_findh");
-  source.insert(line++, "std_findq");
-  source.insert(line++, "std_count");
-  source.insert(line++, "std_counth");
-  source.insert(line++, "std_countq");
+  source.insert("std_fill");
+  source.insert("std_fillh");
+  source.insert("std_fillq");
+  source.insert("std_copy");
+  source.insert("std_cmp");
+  source.insert("std_find");
+  source.insert("std_findh");
+  source.insert("std_findq");
+  source.insert("std_count");
+  source.insert("std_counth");
+  source.insert("std_countq");
 
   BOOST_CHECK_NO_THROW(compile(source));
 }
@@ -86,38 +85,37 @@ BOOST_AUTO_TEST_CASE(swl_compile)
 BOOST_AUTO_TEST_CASE(std_fill)
 {
   cpu::File source;
-  cpu::Source::size_type line = 0;
 
   // Initialize the stack pointer
-  source.insert(line++, ".label init");
-  source.insert(line++, "loada sp stack");
-  source.insert(line++, "b main");
+  source.insert(".label init");
+  source.insert("loada sp stack");
+  source.insert("b main");
 
-  source.insert(line++, ".include \"stdlib/mem/fill.swl\"");
+  source.insert(".include \"stdlib/mem/fill.swl\"");
 
   // Test
-  source.insert(line++, ".label main");
-  source.insert(line++, "loada g0 data");
-  source.insert(line++, "loada g1 data_end");
-  source.insert(line++, "sub g1 g1 g0");
-  source.insert(line++, "loadi g2 0x4567");
-  source.insert(line++, "loadhi g2 0x0123");
-  source.insert(line++, "call std_fill");
+  source.insert(".label main");
+  source.insert("loada g0 data");
+  source.insert("loada g1 data_end");
+  source.insert("sub g1 g1 g0");
+  source.insert("loadi g2 0x4567");
+  source.insert("loadhi g2 0x0123");
+  source.insert("call std_fill");
 
-  source.insert(line++, "loada g0 data");
-  source.insert(line++, "loadri g1 g0 0x0");
-  source.insert(line++, "loadri g2 g0 0x4");
+  source.insert("loada g0 data");
+  source.insert("loadri g1 g0 0x0");
+  source.insert("loadri g2 g0 0x4");
 
-  source.insert(line++, "stop");
+  source.insert("stop");
 
   // Data
-  source.insert(line++, ".label data");
-  source.insert(line++, ".block 0x10");
-  source.insert(line++, ".label data_end");
+  source.insert(".label data");
+  source.insert(".block 0x10");
+  source.insert(".label data_end");
 
   // Space for 16 words in the stack
-  source.insert(line++, ".label stack");
-  source.insert(line++, ".block 0x40");
+  source.insert(".label stack");
+  source.insert(".block 0x40");
 
   compile(source);
 
@@ -137,37 +135,36 @@ BOOST_AUTO_TEST_CASE(std_fill)
 BOOST_AUTO_TEST_CASE(std_fillh)
 {
   cpu::File source;
-  cpu::Source::size_type line = 0;
 
   // Initialize the stack pointer
-  source.insert(line++, ".label init");
-  source.insert(line++, "loada sp stack");
-  source.insert(line++, "b main");
+  source.insert(".label init");
+  source.insert("loada sp stack");
+  source.insert("b main");
 
-  source.insert(line++, ".include \"stdlib/mem/fillh.swl\"");
+  source.insert(".include \"stdlib/mem/fillh.swl\"");
 
   // Test
-  source.insert(line++, ".label main");
-  source.insert(line++, "loada g0 data");
-  source.insert(line++, "loada g1 data_end");
-  source.insert(line++, "sub g1 g1 g0");
-  source.insert(line++, "loadi g2 0x0123");
-  source.insert(line++, "call std_fillh");
+  source.insert(".label main");
+  source.insert("loada g0 data");
+  source.insert("loada g1 data_end");
+  source.insert("sub g1 g1 g0");
+  source.insert("loadi g2 0x0123");
+  source.insert("call std_fillh");
 
-  source.insert(line++, "loada g0 data");
-  source.insert(line++, "loadri g1 g0 0x0");
-  source.insert(line++, "loadri g2 g0 0x4");
+  source.insert("loada g0 data");
+  source.insert("loadri g1 g0 0x0");
+  source.insert("loadri g2 g0 0x4");
 
-  source.insert(line++, "stop");
+  source.insert("stop");
 
   // Data
-  source.insert(line++, ".label data");
-  source.insert(line++, ".block 0x10");
-  source.insert(line++, ".label data_end");
+  source.insert(".label data");
+  source.insert(".block 0x10");
+  source.insert(".label data_end");
 
   // Space for 16 words in the stack
-  source.insert(line++, ".label stack");
-  source.insert(line++, ".block 0x40");
+  source.insert(".label stack");
+  source.insert(".block 0x40");
 
   compile(source);
 
@@ -187,37 +184,36 @@ BOOST_AUTO_TEST_CASE(std_fillh)
 BOOST_AUTO_TEST_CASE(std_fillq)
 {
   cpu::File source;
-  cpu::Source::size_type line = 0;
 
   // Initialize the stack pointer
-  source.insert(line++, ".label init");
-  source.insert(line++, "loada sp stack");
-  source.insert(line++, "b main");
+  source.insert(".label init");
+  source.insert("loada sp stack");
+  source.insert("b main");
 
-  source.insert(line++, ".include \"stdlib/mem/fillq.swl\"");
+  source.insert(".include \"stdlib/mem/fillq.swl\"");
 
   // Test
-  source.insert(line++, ".label main");
-  source.insert(line++, "loada g0 data");
-  source.insert(line++, "loada g1 data_end");
-  source.insert(line++, "sub g1 g1 g0");
-  source.insert(line++, "loadi g2 0x01");
-  source.insert(line++, "call std_fillq");
+  source.insert(".label main");
+  source.insert("loada g0 data");
+  source.insert("loada g1 data_end");
+  source.insert("sub g1 g1 g0");
+  source.insert("loadi g2 0x01");
+  source.insert("call std_fillq");
 
-  source.insert(line++, "loada g0 data");
-  source.insert(line++, "loadri g1 g0 0x0");
-  source.insert(line++, "loadri g2 g0 0x4");
+  source.insert("loada g0 data");
+  source.insert("loadri g1 g0 0x0");
+  source.insert("loadri g2 g0 0x4");
 
-  source.insert(line++, "stop");
+  source.insert("stop");
 
   // Data
-  source.insert(line++, ".label data");
-  source.insert(line++, ".block 0x10");
-  source.insert(line++, ".label data_end");
+  source.insert(".label data");
+  source.insert(".block 0x10");
+  source.insert(".label data_end");
 
   // Space for 16 words in the stack
-  source.insert(line++, ".label stack");
-  source.insert(line++, ".block 0x40");
+  source.insert(".label stack");
+  source.insert(".block 0x40");
 
   compile(source);
 
@@ -237,39 +233,38 @@ BOOST_AUTO_TEST_CASE(std_fillq)
 BOOST_AUTO_TEST_CASE(std_copy)
 {
   cpu::File source;
-  cpu::Source::size_type line = 0;
 
   // Initialize the stack pointer
-  source.insert(line++, ".label init");
-  source.insert(line++, "loada sp stack");
-  source.insert(line++, "b main");
+  source.insert(".label init");
+  source.insert("loada sp stack");
+  source.insert("b main");
 
-  source.insert(line++, ".include \"stdlib/mem/copy.swl\"");
+  source.insert(".include \"stdlib/mem/copy.swl\"");
 
   // Test
-  source.insert(line++, ".label main");
-  source.insert(line++, "loada g0 dst");
-  source.insert(line++, "loada g1 src");
-  source.insert(line++, "loadi g2 0x8");
-  source.insert(line++, "call std_copy");
+  source.insert(".label main");
+  source.insert("loada g0 dst");
+  source.insert("loada g1 src");
+  source.insert("loadi g2 0x8");
+  source.insert("call std_copy");
 
-  source.insert(line++, "loada g0 dst");
-  source.insert(line++, "loadri g1 g0 0x0");
-  source.insert(line++, "loadri g2 g0 0x4");
+  source.insert("loada g0 dst");
+  source.insert("loadri g1 g0 0x0");
+  source.insert("loadri g2 g0 0x4");
 
-  source.insert(line++, "stop");
+  source.insert("stop");
 
   // Data
-  source.insert(line++, ".label src");
-  source.insert(line++, "0x01234567");
-  source.insert(line++, "0x89ABCDEF");
+  source.insert(".label src");
+  source.insert("0x01234567");
+  source.insert("0x89ABCDEF");
 
-  source.insert(line++, ".label dst");
-  source.insert(line++, ".block 0x8");
+  source.insert(".label dst");
+  source.insert(".block 0x8");
 
   // Space for 16 words in the stack
-  source.insert(line++, ".label stack");
-  source.insert(line++, ".block 0x40");
+  source.insert(".label stack");
+  source.insert(".block 0x40");
 
   compile(source);
 
@@ -289,50 +284,49 @@ BOOST_AUTO_TEST_CASE(std_copy)
 BOOST_AUTO_TEST_CASE(std_cmp)
 {
   cpu::File source;
-  cpu::Source::size_type line = 0;
 
   // Initialize the stack pointer
-  source.insert(line++, ".label init");
-  source.insert(line++, "loada sp stack");
-  source.insert(line++, "b main");
+  source.insert(".label init");
+  source.insert("loada sp stack");
+  source.insert("b main");
 
-  source.insert(line++, ".include \"stdlib/mem/cmp.swl\"");
+  source.insert(".include \"stdlib/mem/cmp.swl\"");
 
   // Test with the same data
-  source.insert(line++, ".label main");
-  source.insert(line++, "loada g0 data");
-  source.insert(line++, "loada g1 data");
-  source.insert(line++, "loadi g2 0x4");
-  source.insert(line++, "call std_cmp");
-  source.insert(line++, "push g0");
+  source.insert(".label main");
+  source.insert("loada g0 data");
+  source.insert("loada g1 data");
+  source.insert("loadi g2 0x4");
+  source.insert("call std_cmp");
+  source.insert("push g0");
 
   // Test with first > second
-  source.insert(line++, "loada g1 data");
-  source.insert(line++, "addi g0 g1 0x4");
-  source.insert(line++, "loadi g2 0x4");
-  source.insert(line++, "call std_cmp");
-  source.insert(line++, "push g0");
+  source.insert("loada g1 data");
+  source.insert("addi g0 g1 0x4");
+  source.insert("loadi g2 0x4");
+  source.insert("call std_cmp");
+  source.insert("push g0");
 
   // Test with first < second
-  source.insert(line++, "loada g0 data");
-  source.insert(line++, "addi g1 g0 0x4");
-  source.insert(line++, "loadi g2 0x4");
-  source.insert(line++, "call std_cmp");
+  source.insert("loada g0 data");
+  source.insert("addi g1 g0 0x4");
+  source.insert("loadi g2 0x4");
+  source.insert("call std_cmp");
 
-  source.insert(line++, "move g2 g0");
-  source.insert(line++, "pop g1");
-  source.insert(line++, "pop g0");
+  source.insert("move g2 g0");
+  source.insert("pop g1");
+  source.insert("pop g0");
 
-  source.insert(line++, "stop");
+  source.insert("stop");
 
   // Data
-  source.insert(line++, ".label data");
-  source.insert(line++, "0x01234567");
-  source.insert(line++, "0x01234789");
+  source.insert(".label data");
+  source.insert("0x01234567");
+  source.insert("0x01234789");
 
   // Space for 32 words in the stack
-  source.insert(line++, ".label stack");
-  source.insert(line++, ".block 0x80");
+  source.insert(".label stack");
+  source.insert(".block 0x80");
 
   compile(source);
 
@@ -353,50 +347,49 @@ BOOST_AUTO_TEST_CASE(std_cmp)
 BOOST_AUTO_TEST_CASE(std_find)
 {
   cpu::File source;
-  cpu::Source::size_type line = 0;
 
   // Initialize the stack pointer
-  source.insert(line++, ".label init");
-  source.insert(line++, "loada sp stack");
-  source.insert(line++, "b main");
+  source.insert(".label init");
+  source.insert("loada sp stack");
+  source.insert("b main");
 
-  source.insert(line++, ".include \"stdlib/mem/find.swl\"");
+  source.insert(".include \"stdlib/mem/find.swl\"");
 
   // Test with a element that is not in the block
-  source.insert(line++, ".label main");
-  source.insert(line++, "loada g0 data");
-  source.insert(line++, "loada g1 data_end");
-  source.insert(line++, "sub g1 g1 g0");
-  source.insert(line++, "loadi g2 0x0F0F");
-  source.insert(line++, "call std_find");
-  source.insert(line++, "push g1");
+  source.insert(".label main");
+  source.insert("loada g0 data");
+  source.insert("loada g1 data_end");
+  source.insert("sub g1 g1 g0");
+  source.insert("loadi g2 0x0F0F");
+  source.insert("call std_find");
+  source.insert("push g1");
 
   // Test with a element that is in the block
-  source.insert(line++, "loada g0 data");
-  source.insert(line++, "loada g1 data_end");
-  source.insert(line++, "sub g1 g1 g0");
-  source.insert(line++, "loadi g2 0x5050");
-  source.insert(line++, "call std_find");
+  source.insert("loada g0 data");
+  source.insert("loada g1 data_end");
+  source.insert("sub g1 g1 g0");
+  source.insert("loadi g2 0x5050");
+  source.insert("call std_find");
 
-  source.insert(line++, "move g3 g1");
-  source.insert(line++, "move g2 g0");
-  source.insert(line++, "loadi r0 STD_NOERROR");
-  source.insert(line++, "pop g0");
-  source.insert(line++, "loadi g1 STD_EINVAL");
+  source.insert("move g3 g1");
+  source.insert("move g2 g0");
+  source.insert("loadi r0 STD_NOERROR");
+  source.insert("pop g0");
+  source.insert("loadi g1 STD_EINVAL");
 
-  source.insert(line++, "stop");
+  source.insert("stop");
 
   // Data
-  source.insert(line++, ".label data");
-  source.insert(line++, "0x01234567");
-  source.insert(line++, "0x89ABCDEF");
-  source.insert(line++, "0x0F05050F");
-  source.insert(line++, "0x00005050");
-  source.insert(line++, ".label data_end");
+  source.insert(".label data");
+  source.insert("0x01234567");
+  source.insert("0x89ABCDEF");
+  source.insert("0x0F05050F");
+  source.insert("0x00005050");
+  source.insert(".label data_end");
 
   // Space for 16 words in the stack
-  source.insert(line++, ".label stack");
-  source.insert(line++, ".block 0x40");
+  source.insert(".label stack");
+  source.insert(".block 0x40");
 
   compile(source);
 
@@ -419,50 +412,49 @@ BOOST_AUTO_TEST_CASE(std_find)
 BOOST_AUTO_TEST_CASE(std_findh)
 {
   cpu::File source;
-  cpu::Source::size_type line = 0;
 
   // Initialize the stack pointer
-  source.insert(line++, ".label init");
-  source.insert(line++, "loada sp stack");
-  source.insert(line++, "b main");
+  source.insert(".label init");
+  source.insert("loada sp stack");
+  source.insert("b main");
 
-  source.insert(line++, ".include \"stdlib/mem/findh.swl\"");
+  source.insert(".include \"stdlib/mem/findh.swl\"");
 
   // Test with a element that is not in the block
-  source.insert(line++, ".label main");
-  source.insert(line++, "loada g0 data");
-  source.insert(line++, "loada g1 data_end");
-  source.insert(line++, "sub g1 g1 g0");
-  source.insert(line++, "loadi g2 0x0F0F");
-  source.insert(line++, "call std_findh");
-  source.insert(line++, "push g1");
+  source.insert(".label main");
+  source.insert("loada g0 data");
+  source.insert("loada g1 data_end");
+  source.insert("sub g1 g1 g0");
+  source.insert("loadi g2 0x0F0F");
+  source.insert("call std_findh");
+  source.insert("push g1");
 
   // Test with a element that is in the block
-  source.insert(line++, "loada g0 data");
-  source.insert(line++, "loada g1 data_end");
-  source.insert(line++, "sub g1 g1 g0");
-  source.insert(line++, "loadi g2 0x5050");
-  source.insert(line++, "call std_findh");
+  source.insert("loada g0 data");
+  source.insert("loada g1 data_end");
+  source.insert("sub g1 g1 g0");
+  source.insert("loadi g2 0x5050");
+  source.insert("call std_findh");
 
-  source.insert(line++, "move g3 g1");
-  source.insert(line++, "move g2 g0");
-  source.insert(line++, "loadi r0 STD_NOERROR");
-  source.insert(line++, "pop g0");
-  source.insert(line++, "loadi g1 STD_EINVAL");
+  source.insert("move g3 g1");
+  source.insert("move g2 g0");
+  source.insert("loadi r0 STD_NOERROR");
+  source.insert("pop g0");
+  source.insert("loadi g1 STD_EINVAL");
 
-  source.insert(line++, "stop");
+  source.insert("stop");
 
   // Data
-  source.insert(line++, ".label data");
-  source.insert(line++, "0x01234567");
-  source.insert(line++, "0x89ABCDEF");
-  source.insert(line++, "0x0F05050F");
-  source.insert(line++, "0x00005050");
-  source.insert(line++, ".label data_end");
+  source.insert(".label data");
+  source.insert("0x01234567");
+  source.insert("0x89ABCDEF");
+  source.insert("0x0F05050F");
+  source.insert("0x00005050");
+  source.insert(".label data_end");
 
   // Space for 16 words in the stack
-  source.insert(line++, ".label stack");
-  source.insert(line++, ".block 0x40");
+  source.insert(".label stack");
+  source.insert(".block 0x40");
 
   compile(source);
 
@@ -485,50 +477,49 @@ BOOST_AUTO_TEST_CASE(std_findh)
 BOOST_AUTO_TEST_CASE(std_findq)
 {
   cpu::File source;
-  cpu::Source::size_type line = 0;
 
   // Initialize the stack pointer
-  source.insert(line++, ".label init");
-  source.insert(line++, "loada sp stack");
-  source.insert(line++, "b main");
+  source.insert(".label init");
+  source.insert("loada sp stack");
+  source.insert("b main");
 
-  source.insert(line++, ".include \"stdlib/mem/findq.swl\"");
+  source.insert(".include \"stdlib/mem/findq.swl\"");
 
   // Test with a element that is not in the block
-  source.insert(line++, ".label main");
-  source.insert(line++, "loada g0 data");
-  source.insert(line++, "loada g1 data_end");
-  source.insert(line++, "sub g1 g1 g0");
-  source.insert(line++, "loadi g2 0xFF");
-  source.insert(line++, "call std_findq");
-  source.insert(line++, "push g1");
+  source.insert(".label main");
+  source.insert("loada g0 data");
+  source.insert("loada g1 data_end");
+  source.insert("sub g1 g1 g0");
+  source.insert("loadi g2 0xFF");
+  source.insert("call std_findq");
+  source.insert("push g1");
 
   // Test with a element that is in the block
-  source.insert(line++, "loada g0 data");
-  source.insert(line++, "loada g1 data_end");
-  source.insert(line++, "sub g1 g1 g0");
-  source.insert(line++, "loadi g2 0x50");
-  source.insert(line++, "call std_findq");
+  source.insert("loada g0 data");
+  source.insert("loada g1 data_end");
+  source.insert("sub g1 g1 g0");
+  source.insert("loadi g2 0x50");
+  source.insert("call std_findq");
 
-  source.insert(line++, "move g3 g1");
-  source.insert(line++, "move g2 g0");
-  source.insert(line++, "loadi r0 STD_NOERROR");
-  source.insert(line++, "pop g0");
-  source.insert(line++, "loadi g1 STD_EINVAL");
+  source.insert("move g3 g1");
+  source.insert("move g2 g0");
+  source.insert("loadi r0 STD_NOERROR");
+  source.insert("pop g0");
+  source.insert("loadi g1 STD_EINVAL");
 
-  source.insert(line++, "stop");
+  source.insert("stop");
 
   // Data
-  source.insert(line++, ".label data");
-  source.insert(line++, "0x01234567");
-  source.insert(line++, "0x89ABCDEF");
-  source.insert(line++, "0x0F05050F");
-  source.insert(line++, "0x00005050");
-  source.insert(line++, ".label data_end");
+  source.insert(".label data");
+  source.insert("0x01234567");
+  source.insert("0x89ABCDEF");
+  source.insert("0x0F05050F");
+  source.insert("0x00005050");
+  source.insert(".label data_end");
 
   // Space for 16 words in the stack
-  source.insert(line++, ".label stack");
-  source.insert(line++, ".block 0x40");
+  source.insert(".label stack");
+  source.insert(".block 0x40");
 
   compile(source);
 
@@ -551,48 +542,47 @@ BOOST_AUTO_TEST_CASE(std_findq)
 BOOST_AUTO_TEST_CASE(std_count)
 {
   cpu::File source;
-  cpu::Source::size_type line = 0;
 
   // Initialize the stack pointer
-  source.insert(line++, ".label init");
-  source.insert(line++, "loada sp stack");
-  source.insert(line++, "b main");
+  source.insert(".label init");
+  source.insert("loada sp stack");
+  source.insert("b main");
 
-  source.insert(line++, ".include \"stdlib/mem/count.swl\"");
+  source.insert(".include \"stdlib/mem/count.swl\"");
 
   // Test with a element that is not in the block
-  source.insert(line++, ".label main");
-  source.insert(line++, "loada g0 data");
-  source.insert(line++, "loada g1 data_end");
-  source.insert(line++, "sub g1 g1 g0");
-  source.insert(line++, "loadi g2 0x0F0F");
-  source.insert(line++, "call std_count");
-  source.insert(line++, "push g0");
+  source.insert(".label main");
+  source.insert("loada g0 data");
+  source.insert("loada g1 data_end");
+  source.insert("sub g1 g1 g0");
+  source.insert("loadi g2 0x0F0F");
+  source.insert("call std_count");
+  source.insert("push g0");
 
   // Test with a element that is in the block
-  source.insert(line++, "loada g0 data");
-  source.insert(line++, "loada g1 data_end");
-  source.insert(line++, "sub g1 g1 g0");
-  source.insert(line++, "loadi g2 0x5050");
-  source.insert(line++, "call std_count");
+  source.insert("loada g0 data");
+  source.insert("loada g1 data_end");
+  source.insert("sub g1 g1 g0");
+  source.insert("loadi g2 0x5050");
+  source.insert("call std_count");
 
-  source.insert(line++, "move g1 g0");
-  source.insert(line++, "pop g0");
+  source.insert("move g1 g0");
+  source.insert("pop g0");
 
-  source.insert(line++, "stop");
+  source.insert("stop");
 
   // Data
-  source.insert(line++, ".label data");
-  source.insert(line++, "0x00005050");
-  source.insert(line++, "0x01234567");
-  source.insert(line++, "0x89ABCDEF");
-  source.insert(line++, "0x0F05050F");
-  source.insert(line++, "0x00005050");
-  source.insert(line++, ".label data_end");
+  source.insert(".label data");
+  source.insert("0x00005050");
+  source.insert("0x01234567");
+  source.insert("0x89ABCDEF");
+  source.insert("0x0F05050F");
+  source.insert("0x00005050");
+  source.insert(".label data_end");
 
   // Space for 16 words in the stack
-  source.insert(line++, ".label stack");
-  source.insert(line++, ".block 0x40");
+  source.insert(".label stack");
+  source.insert(".block 0x40");
 
   compile(source);
 
@@ -612,48 +602,47 @@ BOOST_AUTO_TEST_CASE(std_count)
 BOOST_AUTO_TEST_CASE(std_counth)
 {
   cpu::File source;
-  cpu::Source::size_type line = 0;
 
   // Initialize the stack pointer
-  source.insert(line++, ".label init");
-  source.insert(line++, "loada sp stack");
-  source.insert(line++, "b main");
+  source.insert(".label init");
+  source.insert("loada sp stack");
+  source.insert("b main");
 
-  source.insert(line++, ".include \"stdlib/mem/counth.swl\"");
+  source.insert(".include \"stdlib/mem/counth.swl\"");
 
   // Test with a element that is not in the block
-  source.insert(line++, ".label main");
-  source.insert(line++, "loada g0 data");
-  source.insert(line++, "loada g1 data_end");
-  source.insert(line++, "sub g1 g1 g0");
-  source.insert(line++, "loadi g2 0x0F0F");
-  source.insert(line++, "call std_counth");
-  source.insert(line++, "push g0");
+  source.insert(".label main");
+  source.insert("loada g0 data");
+  source.insert("loada g1 data_end");
+  source.insert("sub g1 g1 g0");
+  source.insert("loadi g2 0x0F0F");
+  source.insert("call std_counth");
+  source.insert("push g0");
 
   // Test with a element that is in the block
-  source.insert(line++, "loada g0 data");
-  source.insert(line++, "loada g1 data_end");
-  source.insert(line++, "sub g1 g1 g0");
-  source.insert(line++, "loadi g2 0x5050");
-  source.insert(line++, "call std_counth");
+  source.insert("loada g0 data");
+  source.insert("loada g1 data_end");
+  source.insert("sub g1 g1 g0");
+  source.insert("loadi g2 0x5050");
+  source.insert("call std_counth");
 
-  source.insert(line++, "move g1 g0");
-  source.insert(line++, "pop g0");
+  source.insert("move g1 g0");
+  source.insert("pop g0");
 
-  source.insert(line++, "stop");
+  source.insert("stop");
 
   // Data
-  source.insert(line++, ".label data");
-  source.insert(line++, "0x00005050");
-  source.insert(line++, "0x01234567");
-  source.insert(line++, "0x89ABCDEF");
-  source.insert(line++, "0x0F05050F");
-  source.insert(line++, "0x50505050");
-  source.insert(line++, ".label data_end");
+  source.insert(".label data");
+  source.insert("0x00005050");
+  source.insert("0x01234567");
+  source.insert("0x89ABCDEF");
+  source.insert("0x0F05050F");
+  source.insert("0x50505050");
+  source.insert(".label data_end");
 
   // Space for 16 words in the stack
-  source.insert(line++, ".label stack");
-  source.insert(line++, ".block 0x40");
+  source.insert(".label stack");
+  source.insert(".block 0x40");
 
   compile(source);
 
@@ -673,48 +662,47 @@ BOOST_AUTO_TEST_CASE(std_counth)
 BOOST_AUTO_TEST_CASE(std_countq)
 {
   cpu::File source;
-  cpu::Source::size_type line = 0;
 
   // Initialize the stack pointer
-  source.insert(line++, ".label init");
-  source.insert(line++, "loada sp stack");
-  source.insert(line++, "b main");
+  source.insert(".label init");
+  source.insert("loada sp stack");
+  source.insert("b main");
 
-  source.insert(line++, ".include \"stdlib/mem/countq.swl\"");
+  source.insert(".include \"stdlib/mem/countq.swl\"");
 
   // Test with a element that is not in the block
-  source.insert(line++, ".label main");
-  source.insert(line++, "loada g0 data");
-  source.insert(line++, "loada g1 data_end");
-  source.insert(line++, "sub g1 g1 g0");
-  source.insert(line++, "loadi g2 0xFF");
-  source.insert(line++, "call std_countq");
-  source.insert(line++, "push g0");
+  source.insert(".label main");
+  source.insert("loada g0 data");
+  source.insert("loada g1 data_end");
+  source.insert("sub g1 g1 g0");
+  source.insert("loadi g2 0xFF");
+  source.insert("call std_countq");
+  source.insert("push g0");
 
   // Test with a element that is in the block
-  source.insert(line++, "loada g0 data");
-  source.insert(line++, "loada g1 data_end");
-  source.insert(line++, "sub g1 g1 g0");
-  source.insert(line++, "loadi g2 0x50");
-  source.insert(line++, "call std_countq");
+  source.insert("loada g0 data");
+  source.insert("loada g1 data_end");
+  source.insert("sub g1 g1 g0");
+  source.insert("loadi g2 0x50");
+  source.insert("call std_countq");
 
-  source.insert(line++, "move g1 g0");
-  source.insert(line++, "pop g0");
+  source.insert("move g1 g0");
+  source.insert("pop g0");
 
-  source.insert(line++, "stop");
+  source.insert("stop");
 
   // Data
-  source.insert(line++, ".label data");
-  source.insert(line++, "0x00005050");
-  source.insert(line++, "0x01234567");
-  source.insert(line++, "0x89ABCDEF");
-  source.insert(line++, "0x0F05050F");
-  source.insert(line++, "0x50505050");
-  source.insert(line++, ".label data_end");
+  source.insert(".label data");
+  source.insert("0x00005050");
+  source.insert("0x01234567");
+  source.insert("0x89ABCDEF");
+  source.insert("0x0F05050F");
+  source.insert("0x50505050");
+  source.insert(".label data_end");
 
   // Space for 16 words in the stack
-  source.insert(line++, ".label stack");
-  source.insert(line++, ".block 0x40");
+  source.insert(".label stack");
+  source.insert(".block 0x40");
 
   compile(source);
 

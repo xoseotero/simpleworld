@@ -2,7 +2,7 @@
  * @file tests/stdlib/alloc_test.cpp
  * Unit test for stdlib/alloc.swl
  *
- *  Copyright (C) 2009-2011  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2009-2012  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -61,18 +61,17 @@ void compile(const cpu::File& file)
 BOOST_AUTO_TEST_CASE(swl_compile)
 {
   cpu::File source;
-  cpu::Source::size_type line = 0;
 
-  source.insert(line++, ".include \"stdlib/alloc.swl\"");
+  source.insert(".include \"stdlib/alloc.swl\"");
 
-  source.insert(line++, "STD_MINFO_STRUCT");
-  source.insert(line++, "STD_MINFO_MEM");
-  source.insert(line++, "STD_MINFO_TOTAL");
-  source.insert(line++, "STD_MINFO_FREE");
-  source.insert(line++, "std_minfo");
-  source.insert(line++, "std_alloc");
-  source.insert(line++, "std_free");
-  source.insert(line++, "std_realloc");
+  source.insert("STD_MINFO_STRUCT");
+  source.insert("STD_MINFO_MEM");
+  source.insert("STD_MINFO_TOTAL");
+  source.insert("STD_MINFO_FREE");
+  source.insert("std_minfo");
+  source.insert("std_alloc");
+  source.insert("std_free");
+  source.insert("std_realloc");
 
   BOOST_CHECK_NO_THROW(compile(source));
 }
@@ -83,45 +82,44 @@ BOOST_AUTO_TEST_CASE(swl_compile)
 BOOST_AUTO_TEST_CASE(std_minfo)
 {
   cpu::File source;
-  cpu::Source::size_type line = 0;
 
   // Initialize the stack pointer
-  source.insert(line++, ".label init");
-  source.insert(line++, "loada sp stack");
-  source.insert(line++, "b main");
+  source.insert(".label init");
+  source.insert("loada sp stack");
+  source.insert("b main");
 
-  source.insert(line++, ".include \"stdlib/alloc/def.swl\"");
-  source.insert(line++, ".include \"stdlib/alloc/_init.swl\"");
-  source.insert(line++, ".include \"stdlib/alloc/info.swl\"");
+  source.insert(".include \"stdlib/alloc/def.swl\"");
+  source.insert(".include \"stdlib/alloc/_init.swl\"");
+  source.insert(".include \"stdlib/alloc/info.swl\"");
 
   // Test
-  source.insert(line++, ".label main");
-  source.insert(line++, "loada g0 heap");
-  source.insert(line++, "loadi g1 0x400");
-  source.insert(line++, "call _std_minit");
+  source.insert(".label main");
+  source.insert("loada g0 heap");
+  source.insert("loadi g1 0x400");
+  source.insert("call _std_minit");
 
-  source.insert(line++, "loada g0 minfo");
-  source.insert(line++, "call std_minfo");
+  source.insert("loada g0 minfo");
+  source.insert("call std_minfo");
 
-  source.insert(line++, "loada g0 minfo");
-  source.insert(line++, "loadri g1 g0 STD_MINFO_MEM");
-  source.insert(line++, "loadri g2 g0 STD_MINFO_TOTAL");
-  source.insert(line++, "loadri g3 g0 STD_MINFO_FREE");
-  source.insert(line++, "loada g0 heap");
+  source.insert("loada g0 minfo");
+  source.insert("loadri g1 g0 STD_MINFO_MEM");
+  source.insert("loadri g2 g0 STD_MINFO_TOTAL");
+  source.insert("loadri g3 g0 STD_MINFO_FREE");
+  source.insert("loada g0 heap");
 
-  source.insert(line++, "stop");
+  source.insert("stop");
 
   // Space for the minfo struct
-  source.insert(line++, ".label minfo");
-  source.insert(line++, ".block STD_MINFO_STRUCT");
+  source.insert(".label minfo");
+  source.insert(".block STD_MINFO_STRUCT");
 
   // Space for 256 words in the heap
-  source.insert(line++, ".label heap");
-  source.insert(line++, ".block 0x400");
+  source.insert(".label heap");
+  source.insert(".block 0x400");
 
   // Space for 16 words in the stack
-  source.insert(line++, ".label stack");
-  source.insert(line++, ".block 0x40");
+  source.insert(".label stack");
+  source.insert(".block 0x40");
 
   compile(source);
 
@@ -144,58 +142,57 @@ BOOST_AUTO_TEST_CASE(std_minfo)
 BOOST_AUTO_TEST_CASE(std_alloc)
 {
   cpu::File source;
-  cpu::Source::size_type line = 0;
 
   // Initialize the stack pointer
-  source.insert(line++, ".label init");
-  source.insert(line++, "loada sp stack");
-  source.insert(line++, "b main");
+  source.insert(".label init");
+  source.insert("loada sp stack");
+  source.insert("b main");
 
-  source.insert(line++, ".include \"stdlib/alloc/def.swl\"");
-  source.insert(line++, ".include \"stdlib/alloc/_init.swl\"");
-  source.insert(line++, ".include \"stdlib/alloc/info.swl\"");
-  source.insert(line++, ".include \"stdlib/alloc/alloc.swl\"");
+  source.insert(".include \"stdlib/alloc/def.swl\"");
+  source.insert(".include \"stdlib/alloc/_init.swl\"");
+  source.insert(".include \"stdlib/alloc/info.swl\"");
+  source.insert(".include \"stdlib/alloc/alloc.swl\"");
 
   // Test
-  source.insert(line++, ".label main");
-  source.insert(line++, "loada g0 heap");
-  source.insert(line++, "loadi g1 0x400");
-  source.insert(line++, "call _std_minit");
+  source.insert(".label main");
+  source.insert("loada g0 heap");
+  source.insert("loadi g1 0x400");
+  source.insert("call _std_minit");
 
-  source.insert(line++, "loada g0 minfo");
-  source.insert(line++, "call std_minfo");
-  source.insert(line++, "loada g0 minfo");
-  source.insert(line++, "loadri g0 g0 STD_MINFO_FREE");
-  source.insert(line++, "push g0");
+  source.insert("loada g0 minfo");
+  source.insert("call std_minfo");
+  source.insert("loada g0 minfo");
+  source.insert("loadri g0 g0 STD_MINFO_FREE");
+  source.insert("push g0");
 
-  source.insert(line++, "loadi g0 0x20");
-  source.insert(line++, "call std_alloc");
-  source.insert(line++, "push g0");
+  source.insert("loadi g0 0x20");
+  source.insert("call std_alloc");
+  source.insert("push g0");
 
-  source.insert(line++, "loada g0 minfo");
-  source.insert(line++, "call std_minfo");
-  source.insert(line++, "loada g0 minfo");
-  source.insert(line++, "loadri g0 g0 STD_MINFO_FREE");
+  source.insert("loada g0 minfo");
+  source.insert("call std_minfo");
+  source.insert("loada g0 minfo");
+  source.insert("loadri g0 g0 STD_MINFO_FREE");
 
-  source.insert(line++, "move g1 g0");
-  source.insert(line++, "pop g2");
-  source.insert(line++, "pop g0");
-  source.insert(line++, "loada g3 heap");
-  source.insert(line++, "loada r0 stack");
+  source.insert("move g1 g0");
+  source.insert("pop g2");
+  source.insert("pop g0");
+  source.insert("loada g3 heap");
+  source.insert("loada r0 stack");
 
-  source.insert(line++, "stop");
+  source.insert("stop");
 
   // Space for the minfo struct
-  source.insert(line++, ".label minfo");
-  source.insert(line++, ".block STD_MINFO_STRUCT");
+  source.insert(".label minfo");
+  source.insert(".block STD_MINFO_STRUCT");
 
   // Space for 256 words in the heap
-  source.insert(line++, ".label heap");
-  source.insert(line++, ".block 0x400");
+  source.insert(".label heap");
+  source.insert(".block 0x400");
 
   // Space for 32 words in the stack
-  source.insert(line++, ".label stack");
-  source.insert(line++, ".block 0x80");
+  source.insert(".label stack");
+  source.insert(".block 0x80");
 
   compile(source);
 
@@ -219,55 +216,54 @@ BOOST_AUTO_TEST_CASE(std_alloc)
 BOOST_AUTO_TEST_CASE(std_free)
 {
   cpu::File source;
-  cpu::Source::size_type line = 0;
 
   // Initialize the stack pointer
-  source.insert(line++, ".label init");
-  source.insert(line++, "loada sp stack");
-  source.insert(line++, "b main");
+  source.insert(".label init");
+  source.insert("loada sp stack");
+  source.insert("b main");
 
-  source.insert(line++, ".include \"stdlib/alloc/def.swl\"");
-  source.insert(line++, ".include \"stdlib/alloc/_init.swl\"");
-  source.insert(line++, ".include \"stdlib/alloc/info.swl\"");
-  source.insert(line++, ".include \"stdlib/alloc/alloc.swl\"");
-  source.insert(line++, ".include \"stdlib/alloc/free.swl\"");
+  source.insert(".include \"stdlib/alloc/def.swl\"");
+  source.insert(".include \"stdlib/alloc/_init.swl\"");
+  source.insert(".include \"stdlib/alloc/info.swl\"");
+  source.insert(".include \"stdlib/alloc/alloc.swl\"");
+  source.insert(".include \"stdlib/alloc/free.swl\"");
 
   // Test
-  source.insert(line++, ".label main");
-  source.insert(line++, "loada g0 heap");
-  source.insert(line++, "loadi g1 0x400");
-  source.insert(line++, "call _std_minit");
+  source.insert(".label main");
+  source.insert("loada g0 heap");
+  source.insert("loadi g1 0x400");
+  source.insert("call _std_minit");
 
-  source.insert(line++, "loada g0 minfo");
-  source.insert(line++, "call std_minfo");
-  source.insert(line++, "loadri g0 g0 STD_MINFO_FREE");
-  source.insert(line++, "push g0");
+  source.insert("loada g0 minfo");
+  source.insert("call std_minfo");
+  source.insert("loadri g0 g0 STD_MINFO_FREE");
+  source.insert("push g0");
 
-  source.insert(line++, "loadi g0 0x20");
-  source.insert(line++, "call std_alloc");
+  source.insert("loadi g0 0x20");
+  source.insert("call std_alloc");
 
-  source.insert(line++, "call std_free");
+  source.insert("call std_free");
 
-  source.insert(line++, "loada g0 minfo");
-  source.insert(line++, "call std_minfo");
-  source.insert(line++, "loadri g0 g0 STD_MINFO_FREE");
+  source.insert("loada g0 minfo");
+  source.insert("call std_minfo");
+  source.insert("loadri g0 g0 STD_MINFO_FREE");
 
-  source.insert(line++, "move g1 g0");
-  source.insert(line++, "pop g0");
+  source.insert("move g1 g0");
+  source.insert("pop g0");
 
-  source.insert(line++, "stop");
+  source.insert("stop");
 
   // Space for the minfo struct
-  source.insert(line++, ".label minfo");
-  source.insert(line++, ".block STD_MINFO_STRUCT");
+  source.insert(".label minfo");
+  source.insert(".block STD_MINFO_STRUCT");
 
   // Space for 256 words in the heap
-  source.insert(line++, ".label heap");
-  source.insert(line++, ".block 0x400");
+  source.insert(".label heap");
+  source.insert(".block 0x400");
 
   // Space for 32 words in the stack
-  source.insert(line++, ".label stack");
-  source.insert(line++, ".block 0x80");
+  source.insert(".label stack");
+  source.insert(".block 0x80");
 
   compile(source);
 
@@ -287,69 +283,68 @@ BOOST_AUTO_TEST_CASE(std_free)
 BOOST_AUTO_TEST_CASE(std_realloc)
 {
   cpu::File source;
-  cpu::Source::size_type line = 0;
 
   // Initialize the stack pointer
-  source.insert(line++, ".label init");
-  source.insert(line++, "loada sp stack");
-  source.insert(line++, "move fp sp");
-  source.insert(line++, "b main");
+  source.insert(".label init");
+  source.insert("loada sp stack");
+  source.insert("move fp sp");
+  source.insert("b main");
 
-  source.insert(line++, ".include \"stdlib/alloc/def.swl\"");
-  source.insert(line++, ".include \"stdlib/alloc/_init.swl\"");
-  source.insert(line++, ".include \"stdlib/alloc/info.swl\"");
-  source.insert(line++, ".include \"stdlib/alloc/alloc.swl\"");
-  source.insert(line++, ".include \"stdlib/alloc/realloc.swl\"");
+  source.insert(".include \"stdlib/alloc/def.swl\"");
+  source.insert(".include \"stdlib/alloc/_init.swl\"");
+  source.insert(".include \"stdlib/alloc/info.swl\"");
+  source.insert(".include \"stdlib/alloc/alloc.swl\"");
+  source.insert(".include \"stdlib/alloc/realloc.swl\"");
 
   // Test
-  source.insert(line++, ".label main");
-  source.insert(line++, "loada g0 heap");
-  source.insert(line++, "loadi g1 0x400");
-  source.insert(line++, "call _std_minit");
+  source.insert(".label main");
+  source.insert("loada g0 heap");
+  source.insert("loadi g1 0x400");
+  source.insert("call _std_minit");
 
-  source.insert(line++, "loadi g0 0x8");
-  source.insert(line++, "call std_alloc");
-  source.insert(line++, "push g0");
+  source.insert("loadi g0 0x8");
+  source.insert("call std_alloc");
+  source.insert("push g0");
 
-  source.insert(line++, "loada g0 minfo");
-  source.insert(line++, "call std_minfo");
-  source.insert(line++, "loadri g0 g0 STD_MINFO_FREE");
-  source.insert(line++, "push g0");
+  source.insert("loada g0 minfo");
+  source.insert("call std_minfo");
+  source.insert("loadri g0 g0 STD_MINFO_FREE");
+  source.insert("push g0");
 
-  source.insert(line++, "loadri g0 fp 0x0");
-  source.insert(line++, "loadi g1 0x1");
-  source.insert(line++, "storeri g0 g1 0x0");
-  source.insert(line++, "loadi g1 0x2");
-  source.insert(line++, "storeri g0 g1 0x4");
+  source.insert("loadri g0 fp 0x0");
+  source.insert("loadi g1 0x1");
+  source.insert("storeri g0 g1 0x0");
+  source.insert("loadi g1 0x2");
+  source.insert("storeri g0 g1 0x4");
 
-  source.insert(line++, "loadi g1 0xC");
-  source.insert(line++, "call std_realloc");
-  source.insert(line++, "push g0");
+  source.insert("loadi g1 0xC");
+  source.insert("call std_realloc");
+  source.insert("push g0");
 
-  source.insert(line++, "loada g0 minfo");
-  source.insert(line++, "call std_minfo");
-  source.insert(line++, "loadri g0 g0 STD_MINFO_FREE");
-  source.insert(line++, "move g3 g0");
+  source.insert("loada g0 minfo");
+  source.insert("call std_minfo");
+  source.insert("loadri g0 g0 STD_MINFO_FREE");
+  source.insert("move g3 g0");
 
-  source.insert(line++, "loadri r0 fp 0x8");
-  source.insert(line++, "loadri g0 r0 0x0");
-  source.insert(line++, "loadri g1 r0 0x4");
+  source.insert("loadri r0 fp 0x8");
+  source.insert("loadri g0 r0 0x0");
+  source.insert("loadri g1 r0 0x4");
 
-  source.insert(line++, "loadri g2 fp 0x4");
+  source.insert("loadri g2 fp 0x4");
 
-  source.insert(line++, "stop");
+  source.insert("stop");
 
   // Space for the minfo struct
-  source.insert(line++, ".label minfo");
-  source.insert(line++, ".block STD_MINFO_STRUCT");
+  source.insert(".label minfo");
+  source.insert(".block STD_MINFO_STRUCT");
 
   // Space for 256 words in the heap
-  source.insert(line++, ".label heap");
-  source.insert(line++, ".block 0x400");
+  source.insert(".label heap");
+  source.insert(".block 0x400");
 
   // Space for 32 words in the stack
-  source.insert(line++, ".label stack");
-  source.insert(line++, ".block 0x80");
+  source.insert(".label stack");
+  source.insert(".block 0x80");
 
   compile(source);
 

@@ -2,7 +2,7 @@
  * @file tests/stdlib/random_test.cpp
  * Unit test for stdlib/random.swl
  *
- *  Copyright (C) 2009-2011  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2009-2012  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -61,12 +61,11 @@ void compile(const cpu::File& file)
 BOOST_AUTO_TEST_CASE(swl_compile)
 {
   cpu::File source;
-  cpu::Source::size_type line = 0;
 
-  source.insert(line++, ".include \"stdlib/random.swl\"");
+  source.insert(".include \"stdlib/random.swl\"");
 
-  source.insert(line++, "std_seed");
-  source.insert(line++, "std_random");
+  source.insert("std_seed");
+  source.insert("std_random");
 
   BOOST_CHECK_NO_THROW(compile(source));
 }
@@ -79,26 +78,25 @@ BOOST_AUTO_TEST_CASE(swl_compile)
 BOOST_AUTO_TEST_CASE(std_random)
 {
   cpu::File source;
-  cpu::Source::size_type line = 0;
 
   // Initialize the stack pointer
-  source.insert(line++, ".label init");
-  source.insert(line++, "loada sp stack");
-  source.insert(line++, "b main");
+  source.insert(".label init");
+  source.insert("loada sp stack");
+  source.insert("b main");
 
-  source.insert(line++, ".include \"stdlib/random/random.swl\"");
+  source.insert(".include \"stdlib/random/random.swl\"");
 
   // Test
-  source.insert(line++, ".label main");
-  source.insert(line++, "call std_random");
-  source.insert(line++, "push g0");
-  source.insert(line++, "call std_random");
-  source.insert(line++, "pop g1");
-  source.insert(line++, "stop");
+  source.insert(".label main");
+  source.insert("call std_random");
+  source.insert("push g0");
+  source.insert("call std_random");
+  source.insert("pop g1");
+  source.insert("stop");
 
   // Space for 16 words in the stack
-  source.insert(line++, ".label stack");
-  source.insert(line++, ".block 0x40");
+  source.insert(".label stack");
+  source.insert(".block 0x40");
 
   compile(source);
 
@@ -120,33 +118,32 @@ BOOST_AUTO_TEST_CASE(std_random)
 BOOST_AUTO_TEST_CASE(std_seed)
 {
   cpu::File source;
-  cpu::Source::size_type line = 0;
 
   // Initialize the stack pointer
-  source.insert(line++, ".label init");
-  source.insert(line++, "loada sp stack");
-  source.insert(line++, "b main");
+  source.insert(".label init");
+  source.insert("loada sp stack");
+  source.insert("b main");
 
-  source.insert(line++, ".include \"stdlib/random/seed.swl\"");
-  source.insert(line++, ".include \"stdlib/random/random.swl\"");
+  source.insert(".include \"stdlib/random/seed.swl\"");
+  source.insert(".include \"stdlib/random/random.swl\"");
 
   // Test
-  source.insert(line++, ".label main");
-  source.insert(line++, "loadi g0 0x0");
-  source.insert(line++, "call std_seed");
-  source.insert(line++, "call std_random");
-  source.insert(line++, "push g0");
+  source.insert(".label main");
+  source.insert("loadi g0 0x0");
+  source.insert("call std_seed");
+  source.insert("call std_random");
+  source.insert("push g0");
 
-  source.insert(line++, "loadi g0 0x0");
-  source.insert(line++, "call std_seed");
-  source.insert(line++, "call std_random");
-  source.insert(line++, "pop g1");
+  source.insert("loadi g0 0x0");
+  source.insert("call std_seed");
+  source.insert("call std_random");
+  source.insert("pop g1");
 
-  source.insert(line++, "stop");
+  source.insert("stop");
 
   // Space for 16 words in the stack
-  source.insert(line++, ".label stack");
-  source.insert(line++, ".block 0x40");
+  source.insert(".label stack");
+  source.insert(".block 0x40");
 
   compile(source);
 
