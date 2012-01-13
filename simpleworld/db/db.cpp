@@ -752,6 +752,7 @@ Database version %1% not supported")
                                              % static_cast<int>(this->version_)));
 
   sqlite3_exec(this->db_, "PRAGMA journal_mode = WAL;", NULL, NULL, NULL);
+  sqlite3_exec(this->db_, "PRAGMA synchronous = NORMAL;", NULL, NULL, NULL);
   sqlite3_exec(this->db_, "PRAGMA foreign_keys = ON;", NULL, NULL, NULL);
 }
 
