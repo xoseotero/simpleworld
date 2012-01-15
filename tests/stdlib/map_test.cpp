@@ -390,7 +390,7 @@ BOOST_AUTO_TEST_CASE(std_mapiterator)
 }
 
 /**
- * Check std_macheck.
+ * Check std_mapcheck.
  */
 BOOST_AUTO_TEST_CASE(std_mapcheck)
 {
