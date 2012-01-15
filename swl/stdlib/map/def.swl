@@ -1,0 +1,27 @@
+# @file stdlib/map/def.swl
+# Map struct.
+#
+#  Copyright (C) 2012  Xosé Otero <xoseotero@gmail.com>
+#
+#  This program is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+
+# Map struct
+.define STD_MAP_STRUCT        0x4  # Size of the struct
+.define _STD_MAP_TOP          0x0  # Offset to the top field
+
+# MapNode struct
+.define _STD_MAPNODE_STRUCT   0x8  # Size of the struct
+.define _STD_MAPNODE_KEY      0x0  # Offset to the key field
+.define _STD_MAPNODE_VALUE    0x4  # Offset to the value field

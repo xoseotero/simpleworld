@@ -1,0 +1,98 @@
+# @file stdlib/map/set.swl
+# Set a value in the map.
+#
+#  Copyright (C) 2012  Xosé Otero <xoseotero@gmail.com>
+#
+#  This program is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+
+.include "stdlib/error.swl"
+.include "stdlib/address/address.swl"
+.include "stdlib/node/def.swl"
+.include "stdlib/node/vnode.swl"
+.include "stdlib/node/vbefore.swl"
+.include "stdlib/map/def.swl"
+.include "stdlib/map/_find.swl"
+
+
+# Set a value in the map.
+# For speed purposes the new value is inserted at the begining of the hierarchy.
+# IN:  g0 pointer to the map
+# IN:  g1 key
+# IN:  g2 value
+# OUT: g1 error status
+#      STD_NOERROR: no errors
+#      STD_EFAULT: the pointer is not valid
+#      STD_ENOMEM: there is not memory enough
+.label std_mapset
+        move r0 g0                      # pointer
+        move r1 g1                      # key
+        move r2 g2                      # value
+
+        # check if the pointer is valid
+        loadi g1 STD_MAP_STRUCT
+        call std_address
+        bz g0 _std_mapset_efault
+
+        # check if the map is empty
+        loadri r3 r0 _STD_MAP_TOP       # top
+        bz r3 _std_mapfind_empty
+
+        # check if the key is already in the map
+        move g0 r0
+        move g1 r1
+        call _std_mapfind
+        bz g0 _std_mapfind_new
+
+        # update the key
+        loadi g1 STD_NODE_DATA
+        addi g1 g1 _STD_MAPNODE_VALUE
+        storerr g0 r2 g1
+        b _std_mapset_ret
+
+        # insert a key at the begining
+        .label _std_mapfind_empty
+        # use the stack to create a block os memory with the key and the value
+        move r4 sp                      # sp
+        push r1
+        push r2
+        move g0 r4
+        loadi g1 _STD_MAPNODE_STRUCT
+        call std_vnode
+        bz g1 _std_mapset_updatetop
+        ret                             # return the error from std_vnode
+
+        # insert a new key
+        .label _std_mapfind_new
+        # use the stack to create a block os memory with the key and the value
+        move r4 sp                      # sp
+        push r1
+        push r2
+        move g0 r3
+        move g1 r4
+        loadi g2 _STD_MAPNODE_STRUCT
+        call std_vnodebefore
+        bz g1 _std_mapset_updatetop
+        ret                             # return the error from std_vnodebefore
+
+        .label _std_mapset_updatetop
+        storeri r0 g0 _STD_MAP_TOP
+
+        .label _std_mapset_ret
+        loadi g1 STD_NOERROR
+        ret
+
+        .label _std_mapset_efault
+        loadi g1 STD_EFAULT
+        ret

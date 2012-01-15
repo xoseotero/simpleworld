@@ -1,0 +1,60 @@
+# @file stdlib/map/_find.swl
+# Find a node by key in the map.
+#
+#  Copyright (C) 2012  Xosé Otero <xoseotero@gmail.com>
+#
+#  This program is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+
+.include "stdlib/def.swl"
+.include "stdlib/node/def.swl"
+.include "stdlib/node/next.swl"
+.include "stdlib/map/def.swl"
+
+
+# Find a node by key in the map.
+# If the key can't be found in the map STD_NULL is returned.
+# The pointer must be valid, no check is done.
+# IN:  g0 pointer to the map
+# IN:  g1 key
+# OUT: g0 node
+.label _std_mapfind
+        move r0 g1                      # key
+
+        # search the key
+        loadri g0 g0 _STD_MAP_TOP
+        bz g0 __std_mapfind_notfound
+
+        loadi g1 STD_NODE_DATA
+        addi r1 g1 _STD_MAPNODE_KEY     # offset
+
+        # use g0 as the node in all the loop
+        .label __std_mapfind_loop
+        # compare the key
+        loadrr g1 g0 r1
+        beq g1 r0 __std_mapfind_ret
+
+        # go to the next node
+        loadi g1 0x1
+        call std_next
+        bnz g1 __std_mapfind_notfound
+
+        b __std_mapfind_loop
+
+        .label __std_mapfind_ret
+        ret
+
+        .label __std_mapfind_notfound
+        loadi g0 STD_NULL
+        ret
