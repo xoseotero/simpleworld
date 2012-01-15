@@ -43,6 +43,7 @@
         bz r1 _std_listfree_free
 
         .label _std_listfree_loop
+        move g0 r1
         loadi g1 0x1
         call std_next
         bnz g1 _std_listfree_free
