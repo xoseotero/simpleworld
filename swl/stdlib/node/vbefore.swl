@@ -45,7 +45,7 @@
 
         loadi g1 STD_VNODE_STRUCT
         call std_address
-        bz g0 __std_vnodebefore_efault
+        bz g0 _std_vnodebefore_efault
 
         loadri r3 r0 _STD_NODE_PREV     # prev
 

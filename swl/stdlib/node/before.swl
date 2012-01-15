@@ -37,7 +37,7 @@
 
         loadi g1 STD_NODE_STRUCT
         call std_address
-        bz g0 __std_nodebefore_efault
+        bz g0 _std_nodebefore_efault
 
         loadri r2 r0 _STD_NODE_PREV     # prev
 
