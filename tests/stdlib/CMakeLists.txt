@@ -123,6 +123,12 @@ if(UNIT_TESTS)
     ${Boost_FILESYSTEM_LIBRARY} ${Boost_REGEX_LIBRARY}
     ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
 
+  add_executable(multimap_swl_test multimap_test.cpp)
+  target_link_libraries(multimap_swl_test
+    simpleworld_cpu common
+    ${Boost_FILESYSTEM_LIBRARY} ${Boost_REGEX_LIBRARY}
+    ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
+
   add_test("stdlib/def.swl" def_swl_test)
   add_test("stdlib/error.swl" error_swl_test)
   add_test("stdlib/world.swl" world_swl_test)
@@ -143,4 +149,5 @@ if(UNIT_TESTS)
   add_test("stdlib/list.swl" list_swl_test)
   add_test("stdlib/set.swl" set_swl_test)
   add_test("stdlib/map.swl" map_swl_test)
+  add_test("stdlib/multimap.swl" multimap_swl_test)
 endif(UNIT_TESTS)

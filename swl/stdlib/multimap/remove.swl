@@ -1,0 +1,90 @@
+# @file stdlib/multimap/remove.swl
+# Remove a value from the multimap.
+#
+#  Copyright (C) 2012  Xosé Otero <xoseotero@gmail.com>
+#
+#  This program is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+
+.include "stdlib/error.swl"
+.include "stdlib/address/address.swl"
+.include "stdlib/list/free.swl"
+.include "stdlib/list/size.swl"
+.include "stdlib/list/remove.swl"
+.include "stdlib/list/find.swl"
+.include "stdlib/map/get.swl"
+.include "stdlib/map/remove.swl"
+.include "stdlib/multimap/def.swl"
+
+
+# Remove a value from the multimap.
+# IN:  g0 pointer to the multimap
+# IN:  g1 key
+# IN:  g2 value
+# OUT: g1 error status
+#      STD_NOERROR: no errors
+#      STD_EINVAL: the key-value is not in the multimap
+#      STD_EFAULT: the pointer is not valid
+.label std_multimapremove
+        move r0 g0                      # pointer
+        move r1 g1                      # key
+        move r2 g2                      # value
+
+        # check if the pointer is valid
+        loadi g1 STD_MULTIMAP_STRUCT
+        call std_address
+        bz g0 _std_multimapremove_efault
+
+        move g0 r0
+        move g1 r1
+        call std_mapget
+        bz g1 _std_multimapremove_pos
+        ret
+
+        .label _std_multimapremove_pos
+        move r3 g0                      # list
+
+        loadi g1 0x0
+        move g2 r2
+        call std_listfind
+        bz g1 _std_multimapremove_rm
+        ret
+
+        .label _std_multimapremove_rm
+        move g1 g0
+        move g0 r3
+        call std_listremove
+        bz g1 _std_multimapremove_size
+        ret
+
+        .label _std_multimapremove_size
+        move g0 r3
+        call std_listsize
+        bnz g0 _std_multimapremove_ret
+
+        .label _std_multimapremove_free
+        move g0 r3
+        call std_listfree
+
+        move g0 r0
+        move g1 r1
+        call std_mapremove
+
+        .label _std_multimapremove_ret
+        loadi g1 STD_NOERROR
+        ret
+
+        .label _std_multimapremove_efault
+        loadi g1 STD_EFAULT
+        ret

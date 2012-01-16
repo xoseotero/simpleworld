@@ -1,0 +1,94 @@
+# @file stdlib/multimap/insert.swl
+# Insert a value in the multimap.
+#
+#  Copyright (C) 2012  Xosé Otero <xoseotero@gmail.com>
+#
+#  This program is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+
+.include "stdlib/error.swl"
+.include "stdlib/address/address.swl"
+.include "stdlib/list/list.swl"
+.include "stdlib/list/free.swl"
+.include "stdlib/list/insert.swl"
+.include "stdlib/map/set.swl"
+.include "stdlib/map/get.swl"
+.include "stdlib/multimap/def.swl"
+
+
+# Insert a value in the multimap.
+# For speed purposes the new value is inserted at the begining of the hierarchy.
+# IN:  g0 pointer to the multimap
+# IN:  g1 key
+# IN:  g2 value
+# OUT: g1 error status
+#      STD_NOERROR: no errors
+#      STD_EFAULT: the pointer is not valid
+#      STD_ENOMEM: there is not memory enough
+.label std_multimapinsert
+        move r0 g0                      # pointer
+        move r1 g1                      # key
+        move r2 g2                      # value
+
+        # check if the pointer is valid
+        loadi g1 STD_MULTIMAP_STRUCT
+        call std_address
+        bz g0 _std_multimap_efault
+
+        move g0 r0
+        move g1 r1
+        call std_mapget
+        bnz g1 _std_multimapinsert_new
+
+        .label _std_multimapinsert_add
+        loadi g1 0x0
+        move g2 r2
+        call std_listinsert
+        bz g1 _std_multimapinsert_ret
+        ret
+
+        .label _std_multimapinsert_new
+        call std_list
+        bz g1 _std_multimapinsert_add_insert
+        ret
+
+        .label _std_multimapinsert_add_insert
+        move r3 g0                      # list
+
+        loadi g1 0x0
+        move g2 r2
+        call std_listinsert
+        bnz g1 _std_multimapinsert_listfree
+
+        .label _std_multimapinsert_add_set
+        move g0 r0
+        move g1 r1
+        move g2 r3
+        call std_mapset
+        bnz g1 _std_multimapinsert_listfree
+
+        .label _std_multimapinsert_ret
+        loadi g1 STD_NOERROR
+        ret
+
+        .label _std_multimapinsert_listfree
+        move r4 g1                      # return value
+        move g0 r3
+        call std_listfree
+        move g1 r4
+        ret
+
+        .label _std_multimap_efault
+        loadi g1 STD_EFAULT
+        ret
