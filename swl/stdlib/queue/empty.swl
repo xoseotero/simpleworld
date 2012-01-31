@@ -27,7 +27,7 @@
 # IN:  g0 pointer to the queue
 # OUT: g0 if the queue is empty
 #      STD_TRUE: the queue is empty
-#      STD_FALSE_ the queue is not empty
+#      STD_FALSE: the queue is not empty
 # OUT: g1 error status
 #      STD_NOERROR: no errors
 #      STD_EFAULT: the pointer is not valid
