@@ -1,0 +1,117 @@
+# @file worldlib/events/loop.swl
+# Loop over the events.
+# std_init and world_init must be executed before using any of this functions.
+#
+#  Copyright (C) 2012  Xosé Otero <xoseotero@gmail.com>
+#
+#  This program is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+
+.include "stdlib/def.swl"
+.include "stdlib/time/sleep.swl"
+.include "stdlib/node/def.swl"
+.include "stdlib/node/next.swl"
+.include "stdlib/list/iterator.swl"
+.include "stdlib/queue/empty.swl"
+.include "stdlib/queue/pop.swl"
+.include "stdlib/multimap/get.swl"
+.include "stdlib/multimap/check.swl"
+.include "worldlib/def.swl"
+.include "worldlib/events/_events.swl"
+.include "worldlib/events/_handlers.swl"
+
+
+# Execute the handlers of a event.
+# IN:  g0 event
+.label _world_loopexec
+        move r0 g0                      # event
+
+        # get the list of handlers
+        move g1 g0
+        load g0 _world_events_handlers
+        call std_multimapget
+        bnz g1 __world_loopexec_ret
+
+        # iterate over the handlers
+        call std_listiterator
+        bnz g1 __world_loopexec_ret
+
+        .label _world_loopexec_loop
+        move r1 g0                      # node
+
+        # execute the handler (g0 passed with the event)
+        move g0 r0
+        loadri g1 r1 STD_NODE_DATA
+        callr g1
+
+        # go to the next node
+        move g0 r1
+        loadi g1 0x1
+        call std_next
+        bz g1 _world_loopexec_loop
+
+        .label __world_loopexec_ret
+        ret
+
+
+# Loop over the events.
+# This functions never returns.
+.label world_loop
+        load r0 _world_events           # events
+        load r1 _world_events_handlers  # handlers
+
+        # infinite loop
+        .label _world_loop_loop
+        move g0 r0
+        call std_queueempty
+        bnz g0 _world_loop_empty
+
+        # the queue is not empty
+        .label _world_loop_notempty
+        # get the event
+        move g0 r0
+        call std_queuepop
+        bnz g1 _world_loop_loop
+
+        # update the counter
+        load g1 _world_maxevents
+        addi g1 g1 0x1
+        store g1 _world_maxevents
+
+        # execute the handlers
+        call _world_loopexec
+
+        b _world_loop_loop
+
+        # the queue is empty
+        .label _world_loop_empty
+        # check if there is any handler for WORLD_IDLE
+        move g0 r1
+        loadi g1 WORLD_IDLE
+        call std_multimapcheck
+        bz g0 _world_loop_sleep
+
+        # execute the handlers of STD_EVENT_IDLE
+        .label _world_loop_idle
+        loadi g0 WORLD_IDLE
+        call _world_loopexec
+
+        b _world_loop_loop
+
+        # wait for events
+        .label _world_loop_sleep
+        loadi g0 0x1
+        call std_sleep
+
+        b _world_loop_loop

@@ -1,0 +1,78 @@
+# @file worldlib/events/_init.swl
+# Initialize the events management.
+# std_init must be executed before using any of this functions.
+#
+#  Copyright (C) 2012  Xosé Otero <xoseotero@gmail.com>
+#
+#  This program is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+
+.include "stdlib/error.swl"
+.include "stdlib/queue/queue.swl"
+.include "stdlib/queue/free.swl"
+.include "stdlib/queue/push.swl"
+.include "stdlib/multimap/multimap.swl"
+.include "worldlib/def.swl"
+.include "worldlib/events/_events.swl"
+.include "worldlib/events/_handlers.swl"
+
+
+# Initialize the events management.
+# It should not be called directly but by std_init.
+# IN:  g0 maximimum number of events in the queue.
+# OUT: g1 error status
+#      STD_NOERROR: no errors
+#      STD_EINVAL: the maximimum number of events is 0
+#      STD_ENOMEM: there is not enough memory
+.label _world_eventsinit
+        # check if maximum is 0
+        bz g0 __world_eventsinit_einval
+
+        move r0 g0                      # max
+
+        call std_queue
+        bz g1 __world_eventsinit_mmap
+        ret
+
+        .label __world_eventsinit_mmap
+        move r1 g0                      # queue
+
+        call std_multimap
+        bnz g1 __world_eventsinit_free
+
+        .label __world_eventsinit_continue
+        store r1 _world_events
+        store r0 _world_maxevents
+        store g0 _world_events_handlers
+
+        # throw WORLD_INIT
+        move g0 r1
+        loadi g1 WORLD_INIT
+        call std_queuepush
+        bnz g1 __world_eventsinit_free
+
+        .label __world_eventsinit_ret
+        loadi g1 STD_NOERROR
+        ret
+
+        .label __world_eventsinit_free
+        move r2 g1                      # retvalue
+        move g0 r1
+        call std_queuefree
+        move g1 r2
+        ret
+
+        .label __world_eventsinit_einval
+        loadi g1 STD_EINVAL
+        ret

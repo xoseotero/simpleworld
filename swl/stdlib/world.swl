@@ -1,7 +1,7 @@
 # @file stdlib/world.swl
 # Definitions to interact with the World.
 #
-#  Copyright (C) 2007-2010  Xosé Otero <xoseotero@gmail.com>
+#  Copyright (C) 2007-2012  Xosé Otero <xoseotero@gmail.com>
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -19,6 +19,7 @@
 # Status of the actions
 .define STD_SUCCESS           0x0000    # The action was done
 .define STD_FAILURE           0x0001    # The action couldn't be done
+.define STD_INTERRUPTED       0x0002    # The action was interrupted
 
 # Actions
 .define STD_NOTHING           0x0000    # Do nothing

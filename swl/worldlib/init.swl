@@ -1,0 +1,61 @@
+# @file worldlib/init.swl
+# Initialize the world library.
+# std_init must be executed before using any of this functions.
+#
+#  Copyright (C) 2012  Xosé Otero <xoseotero@gmail.com>
+#
+#  This program is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+
+.include "stdlib/def.swl"
+.include "stdlib/error.swl"
+.include "worldlib/events/_init.swl"
+
+
+# Flag to check if the world library is initialized
+.label _world_initialized
+STD_FALSE
+
+
+# Initialize the world library.
+# It's not a error to call this function several times, but only the first
+# successfull call will initialize the world library.
+# IN:  g0 heap start
+# IN:  g1 heap size
+# IN:  g2 maximimum number of events
+# OUT: g1 error status 
+#      STD_ENOMEM: the memory if not enough
+#      STD_EFAULT: the pointer is not valid
+.label world_init
+        # check if the world library is initialized
+        load g1 _world_initialized
+        bnz g1 _world_init_ok
+
+        # initialize the events management
+        call _world_eventsinit
+        bnz g1 _world_init_error
+
+        # set the state of the world library to initialized
+        loadi g0 STD_TRUE
+        store g0 _world_initialized
+
+        # exit without errors
+        .label _world_init_ok
+        loadi g1 STD_NOERROR
+        ret
+
+        # the call to world_minit failled
+        .label _world_init_error
+        # pass as the error the internal error
+        ret
