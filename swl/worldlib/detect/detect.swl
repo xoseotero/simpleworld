@@ -1,0 +1,66 @@
+# @file worldlib/detect/detect.swl
+# Detect what is in front of the bug.
+# std_init and world_init must be executed before using any of this functions.
+#
+#  Copyright (C) 2012  Xosé Otero <xoseotero@gmail.com>
+#
+#  This program is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+
+.include "stdlib/world.swl"
+.include "worldlib/def.swl"
+.include "worldlib/events/throw.swl"
+
+
+# Detect what is in front of the bug.
+# EVENTS: WORLD_DETECTINTED: action detect interrupted
+#         WORLD_NOTHING: nothing in front of the bug
+#         WORLD_EGG: a egg in front of the bug
+#         WORLD_BUG: a bug in front of the bug
+#         WORLD_FOOD: food in front of the bug
+.label world_detect
+        world STD_DETECT
+        # detect can't fail
+        bnz g0 _world_detect_interrupted
+
+        loadi g2 STD_LEGG
+        beq g1 g2 _world_detect_egg
+        loadi g2 STD_LBUG
+        beq g1 g2 _world_detect_bug
+        loadi g2 STD_LFOOD
+        beq g1 g2 _world_detect_food
+
+        .label _world_detect_nothing
+        loadi g0 WORLD_NOTHING
+        b _world_detect_ret
+
+        .label _world_detect_egg
+        loadi g0 WORLD_EGG
+        b _world_detect_ret
+
+        .label _world_detect_bug
+        loadi g0 WORLD_BUG
+        b _world_detect_ret
+
+        .label _world_detect_food
+        loadi g0 WORLD_FOOD
+        #b _world_detect_ret
+
+        .label _world_detect_ret
+        call world_throw
+        ret
+
+        .label _world_detect_interrupted
+        loadi g0 WORLD_DETECTINTED
+        b _world_detect_ret
