@@ -2,7 +2,7 @@
  * @file simpleworld/types.hpp
  * Types definition for Simple World.
  *
- *  Copyright (C) 2007  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2007-2012  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -90,7 +90,8 @@ enum ElementType {
  */
 enum ActionStatus {
   ActionSuccess = 0,
-  ActionFailure = 1
+  ActionFailure = 1,
+  ActionInterrupted = 2
 };
 
 

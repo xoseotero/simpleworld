@@ -3,7 +3,7 @@
  * Central Processing Unit big endian with 16 registers of 32bits and 16bits of
  * address space.
  *
- *  Copyright (C) 2006-2011  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2006-2012  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -205,7 +205,7 @@ public:
    * @param g2 the word stored in g2.
    * @exception MemoryError if the ip is not valid.
    */
-  void interrupt(Uint8 code, Word g1 = 0, Word g2 = 0);
+  virtual void interrupt(Uint8 code, Word g1 = 0, Word g2 = 0);
 
   /**
    * Throw the Timer Interrupt.

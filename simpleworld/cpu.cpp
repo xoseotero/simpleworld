@@ -2,7 +2,7 @@
  * @file simpleworld/cpu.cpp
  * A CPU in Simple World.
  *
- *  Copyright (C) 2007-2010  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2007-2012  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -20,7 +20,9 @@
 
 #include <simpleworld/cpu/instruction.hpp>
 
+#include "types.hpp"
 #include "cpu.hpp"
+#include "bug.hpp"
 #include "actionerror.hpp"
 #include "operations.hpp"
 
@@ -57,6 +59,26 @@ void CPU::next()
     this->interrupt(INTERRUPT_WORLDACTION, addr,
                     cpu::Instruction(this->get_mem(addr, false)).data);
   }
+}
+
+/**
+ * Throw a interrupt.
+ * @param code the code of the interrupt.
+ * @param g1 the word stored in g1.
+ * @param g2 the word stored in g2.
+ * @exception MemoryError if the ip is not valid.
+ */
+void CPU::interrupt(Uint8 code, cpu::Word g1, cpu::Word g2)
+{
+  // interrupt the current action
+  if (this->interrupt_enabled(code) and not this->bug->is_null("action_time")) {
+    this->bug->set_null("action_time");
+    this->set_reg(REGISTER_G0, static_cast<cpu::Word>(ActionInterrupted));
+
+    return;
+  }
+
+  cpu::CPU::interrupt(code, g1, g2);
 }
 
 }

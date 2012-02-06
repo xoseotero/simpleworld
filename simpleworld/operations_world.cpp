@@ -2,7 +2,7 @@
  * @file simpleworld/operations_world.cpp
  * World operation of the Simple CPU.
  *
- *  Copyright (C) 2007-2008  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2007-2012  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -70,13 +70,8 @@ cpu::Update world(cpu::CPU& cpu, cpu::Instruction inst)
   // if action_time is NULL, then there is not a action in proccess
   // if action_time > time, then the action will be finished in the next cycles
   // if action_time == time, then the action will be finished in this cycle
-  // if action_time < time, then a action was cancelled
   // a action can be cancelled if the code was mutated during the wait or if a
   // interrupt was thrown
-
-  // return action-time to the normally
-  if (bug->action_time() < time)
-    bug->set_null("action_time");
 
   // check the state of the action
   if (bug->is_null("action_time")) {
