@@ -33,3 +33,7 @@
 .define WORLD_EGG             0x0022    # egg in front of the bug
 .define WORLD_BUG             0x0023    # bug in front of the bug
 .define WORLD_FOOD            0x0024    # food in front of the bug
+
+# info
+.define WORLD_INFOINTED       0x0030    # action info interrupted
+.define WORLD_TARGETNOTFOUND  0x0031    # the bug was not found
