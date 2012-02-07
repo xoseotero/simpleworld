@@ -1,0 +1,82 @@
+# @file worldlib/info/energy.swl
+# Get the energy of the target.
+# std_init and world_init must be executed before using any of this functions.
+#
+#  Copyforward (C) 2012  Xosé Otero <xoseotero@gmail.com>
+#
+#  This program is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+
+.include "stdlib/def.swl"
+.include "stdlib/world.swl"
+.include "worldlib/def.swl"
+.include "worldlib/events/throw.swl"
+
+
+# The energy of the target
+.label world_target_energy
+0x0
+
+# The low energy limit
+.label world_target_low
+0x0
+
+# The high energy limit
+.label world_target_high
+STD_WORDMAXU
+
+
+# Get the energy of the target.
+# EVENTS: WORLD_MYSELFINTED: action myself interrupted
+#         WORLD_TARGETNOTFOUND: the bug was not found
+#         WORLD_TARGETLOW: the bug is low of energy
+#         WORLD_TARGETMEDIUM: the bug has medium energy
+#         WORLD_TARGETHIGH: the bug has high energy
+.label world_infoenergy
+        world STD_INFOENERGY
+        loadi g2 STD_FAILURE
+        beq g0 g2 _world_infoenergy_failure
+        bnz g0 _world_infoenergy_interrupt
+
+        store g1 world_target_energy
+
+        load g2 world_target_low
+        bleu g1 g2 _world_infoenergy_low
+
+        load g2 world_target_high
+        bgeu g1 g2 _world_infoenergy_high
+
+        .label _world_infoenergy_medium
+        loadi g0 WORLD_TARGETMEDIUM
+
+        .label _world_infoenergy_ret
+        call world_throw
+        ret
+
+        .label _world_infoenergy_low
+        loadi g0 WORLD_TARGETLOW
+        b _world_infoenergy_ret
+
+        .label _world_infoenergy_high
+        loadi g0 WORLD_TARGETHIGH
+        b _world_infoenergy_ret
+
+
+        .label _world_infoenergy_failure
+        loadi g0 WORLD_TARGETNOTFOUND
+        b _world_infoenergy_ret
+
+        .label _world_infoenergy_interrupt
+        loadi g0 WORLD_INFOINTED
+        b _world_infoenergy_ret

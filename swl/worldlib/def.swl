@@ -40,3 +40,6 @@
 .define WORLD_TARGETSMALL     0x0032    # the bug is small
 .define WORLD_TARGETNORMAL    0x0034    # the bug has normal size
 .define WORLD_TARGETBIG       0x0035    # the bug is big
+.define WORLD_TARGETLOW       0x0036    # the bug is low of energy
+.define WORLD_TARGETMEDIUM    0x0037    # the bug has medium energy
+.define WORLD_TARGETHIGH      0x0038    # the bug has high energy
