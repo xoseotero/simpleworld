@@ -1,0 +1,63 @@
+# @file worldlib/egg/egg.swl
+# Laid a egg.
+# std_init and world_init must be executed before using any of this functions.
+#
+#  Copyright (C) 2012  Xosé Otero <xoseotero@gmail.com>
+#
+#  This program is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+
+.include "stdlib/world.swl"
+.include "stdlib/int/enable.swl"
+.include "stdlib/int/disable.swl"
+.include "worldlib/def.swl"
+.include "worldlib/events/throw.swl"
+
+
+# Energy of the egg
+.label world_egg_energy
+0x0
+
+
+# Laid a egg.
+# Interrupts are disabled.
+# EVENTS: WORLD_EGGINTED: action egg interrupted
+#         WORLD_EGGFAILED: action egg failed
+#         WORLD_EGGLAID: the egg was laid
+.label world_egg
+        call std_disable
+
+        load g0 world_egg_energy
+        world STD_EGG
+        loadi g1 STD_FAILURE
+        beq g0 g1 _world_egg_failure
+        bnz g0 _world_egg_interrupt
+
+        loadi g0 WORLD_EGGLAID
+
+        .label _world_egg_ret
+        call world_throw
+
+        call std_enable
+
+        ret
+
+
+        .label _world_egg_failure
+        loadi g0 WORLD_EGGFAILED
+        b _world_egg_ret
+
+        .label _world_egg_interrupt
+        loadi g0 WORLD_EGGINTED
+        b _world_egg_ret
