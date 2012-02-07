@@ -51,3 +51,7 @@
 
 # turn
 .define WORLD_TURNINTED       0x0050    # action turn interrupted
+
+# attack
+.define WORLD_ATTACKINTED     0x0060    # action attack interrupted
+.define WORLD_NOTHINGTOATTACK 0x0061    # nothing to attack

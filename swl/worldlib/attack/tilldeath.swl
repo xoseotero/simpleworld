@@ -1,0 +1,55 @@
+# @file worldlib/attack/tilldeath.swl
+# Attack till death.
+# std_init and world_init must be executed before using any of this functions.
+#
+#  Copyright (C) 2012  Xosé Otero <xoseotero@gmail.com>
+#
+#  This program is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+
+.include "stdlib/world.swl"
+.include "stdlib/int/enable.swl"
+.include "stdlib/int/disable.swl"
+.include "worldlib/def.swl"
+.include "worldlib/events/throw.swl"
+
+
+# Energy of the attack
+.label world_attacktilldeath_energy
+0x0
+
+
+# Attack till death.
+# Interrupts are disabled.
+# EVENTS: WORLD_NOTHINGTOATTACK: nothing to attack
+.label world_attacktilldeath
+        call std_disable
+
+        .label _world_attacktilldeath_loop
+        load g0 world_attacktilldeath_energy
+        world STD_ATTACK
+        bnz g0 _world_attacktilldeath_nothingtoattack
+
+        b _world_attacktilldeath_loop
+
+        .label _world_attacktilldeath_ret
+        call std_enable
+
+        ret
+
+
+        .label _world_attacktilldeath_nothingtoattack
+        loadi g0 WORLD_NOTHINGTOATTACK
+        call world_throw
+        b _world_attacktilldeath_ret
