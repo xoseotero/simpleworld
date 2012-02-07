@@ -64,3 +64,7 @@
 # Interrupts of the World
 .define STD_IACTION           0x0005    # Invalid action
 .define STD_IEVENT            0x0006    # World event
+
+# World events
+.define STD_ATTACKED          0x0000    # Bug attacked
+.define STD_MUTATED           0x0001    # Bug mutated
