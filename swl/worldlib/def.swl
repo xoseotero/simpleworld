@@ -55,3 +55,8 @@
 # attack
 .define WORLD_ATTACKINTED     0x0060    # action attack interrupted
 .define WORLD_NOTHINGTOATTACK 0x0061    # nothing to attack
+
+# eat
+.define WORLD_EATINTED        0x0070    # action eat interrupted
+.define WORLD_NOTHINGTOEAT    0x0071    # nothing to eat
+.define WORLD_FOODEATEN       0x0072    # food/egg eaten

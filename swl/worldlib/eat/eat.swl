@@ -1,0 +1,56 @@
+# @file worldlib/eat/eat.swl
+# Eat.
+# std_init and world_init must be executed before using any of this functions.
+#
+#  Copyright (C) 2012  Xosé Otero <xoseotero@gmail.com>
+#
+#  This program is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+
+.include "stdlib/world.swl"
+.include "stdlib/int/enable.swl"
+.include "stdlib/int/disable.swl"
+.include "worldlib/def.swl"
+.include "worldlib/events/throw.swl"
+
+
+# Eat.
+# Interrupts are disabled.
+# EVENTS: WORLD_EATINTED: action eat interrupted
+#         WORLD_NOTHINGTOEAT: nothing to eat
+#         WORLD_FOODEATEN: food/egg eaten
+.label world_eat
+        call std_disable
+
+        world STD_EAT
+        loadi g1 STD_INTERRUPTED
+        beq g0 r0 _world_eat_eatinterrupt
+        bnz g0 _world_eat_nothingtoeat
+
+        loadi g0 WORLD_FOODEATEN
+
+        .label _world_eat_ret
+        call world_throw
+
+        call std_enable
+        ret
+
+
+        .label _world_eat_eatinterrupt
+        loadi g0 WORLD_EATINTED
+        b _world_eat_ret
+
+        .label _world_eat_nothingtoeat
+        loadi g0 WORLD_NOTHINGTOEAT
+        b _world_eat_ret
