@@ -1,0 +1,55 @@
+# @file worldlib/info/orientation.swl
+# Get the orientation of the target.
+# std_init and world_init must be executed before using any of this functions.
+#
+#  Copyforward (C) 2012  Xosé Otero <xoseotero@gmail.com>
+#
+#  This program is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+
+.include "stdlib/world.swl"
+.include "worldlib/def.swl"
+.include "worldlib/events/throw.swl"
+
+
+# The orientation of the target
+.label world_target_orientation
+0x0
+
+
+# Get the orientation of the target.
+# EVENTS: WORLD_INFOINTED: action info interrupted
+#         WORLD_TARGETNOTFOUND: the bug was not found
+.label world_infoorientation
+        world STD_MYORIENTATION
+        loadi g2 STD_FAILURE
+        beq g0 g2 _world_infoorientation_failure
+        bnz g0 _world_infoorientation_interrupt
+
+        store g1 world_target_orientation
+
+        .label _world_infoorientation_ret
+        ret
+
+
+        .label _world_infoorientation_failure
+        loadi g0 WORLD_INFOINTED
+        b _world_infoorientation_throw
+
+        .label _world_infoorientation_interrupt
+        loadi g0 WORLD_TARGETNOTFOUND
+
+        .label _world_infoorientation_throw
+        call world_throw
+        ret
