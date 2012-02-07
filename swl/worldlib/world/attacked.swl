@@ -1,0 +1,45 @@
+# @file worldlib/world/attacked.swl
+# Initialize the WORLD_ATTACKED event.
+# std_init and world_init must be executed before using any of this functions.
+#
+#  Copyright (C) 2012  Xosé Otero <xoseotero@gmail.com>
+#
+#  This program is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+
+.include "stdlib/world.swl"
+.include "stdlib/int/handler.swl"
+.include "worldlib/def.swl"
+.include "worldlib/events/throw.swl"
+
+
+# Handler for the world event
+# EVENTS: WORLD_ATTACKED: the bug has been attacked
+.label _world_attackedhandler
+        loadi g2 STD_ATTACKED
+        bne g1 g2 __world_attackedhandler_ret
+
+        loadi g0 WORLD_ATTACKED
+        call world_throw
+
+        .label __world_attackedhandler_ret
+        ret
+
+# Initialize the WORLD_ATTACKED event
+.label world_attackedinit
+        loadi g0 STD_IEVENT
+        loada g1 _world_attackedhandler
+        call std_handler
+
+        ret

@@ -65,3 +65,6 @@
 .define WORLD_EGGINTED        0x0080    # action egg interrupted
 .define WORLD_EGGFAILED       0x0081    # action egg failed
 .define WORLD_EGGLAID         0x0082    # the egg was laid
+
+# world events
+.define WORLD_ATTACKED        0x0090    # the bug has been attacked
