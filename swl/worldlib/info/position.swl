@@ -1,0 +1,57 @@
+# @file worldlib/info/position.swl
+# Get the position of the target.
+# std_init and world_init must be executed before using any of this functions.
+#
+#  Copyforward (C) 2012  Xosé Otero <xoseotero@gmail.com>
+#
+#  This program is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+
+.include "stdlib/world.swl"
+.include "worldlib/def.swl"
+.include "worldlib/events/throw.swl"
+
+
+# The position of the target
+.label world_target_positionx
+0x0
+.label world_target_positiony
+0x0
+
+
+# Get the position of the target.
+# EVENTS: WORLD_INFOINTED: action info interrupted
+#         WORLD_TARGETNOTFOUND: the bug was not found
+.label world_infoposition
+        world STD_INFOPOSITION
+        loadi g3 STD_FAILURE
+        beq g0 g3 _world_infoposition_failure
+        bnz g0 _world_infoposition_interrupt
+
+        store g1 world_target_positionx
+        store g2 world_target_positiony
+
+        .label _world_infoposition_ret
+        ret
+
+
+        .label _world_infoposition_failure
+        loadi g0 WORLD_TARGETNOTFOUND
+        call world_throw
+        ret
+
+        .label _world_infoposition_interrupt
+        loadi g0 WORLD_INFOINTED
+        call world_throw
+        ret
