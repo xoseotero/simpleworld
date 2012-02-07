@@ -1,0 +1,67 @@
+# @file worldlib/move/forwardrandom.swl
+# Move forwards randomly.
+# std_init and world_init must be executed before using any of this functions.
+#
+#  Copyright (C) 2012  Xosé Otero <xoseotero@gmail.com>
+#
+#  This program is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+
+.include "stdlib/world.swl"
+.include "stdlib/random/random.swl"
+.include "worldlib/def.swl"
+.include "worldlib/events/events.swl"
+.include "worldlib/events/throw.swl"
+.include "worldlib/move/_randomturn.swl"
+
+
+# Move forwards randomly.
+# EVENTS: WORLD_MOVEINTED: action detect interrupted
+#         WORLD_TURNINTED: action turn interrupted
+#         WORLD_BLOCKED: the bug is blocked (forwards)
+.label world_moveforwardrandom
+        .label _world_moveforwardrandom_loop
+        call std_random
+        modi g0 g0 0x2
+        bz g0 _world_moveforwardrandom_turn
+
+        .label _world_moveforward_move
+        world STD_MOVEFORWARD
+        loadi g1 STD_INTERRUPTED
+        beq g0 g1 _world_moveforwardrandom_interrupt
+        bnz g0 _world_moveforwardrandom_blocked
+        b _world_moveforwardrandom_check
+
+        .label _world_moveforwardrandom_turn
+        call _world_moverandomturn
+
+        # exit if there is any event in the queue
+        .label _world_moveforwardrandom_check
+        call world_events
+        bz g0 _world_moveforwardrandom_loop
+
+        .label _world_moveforwardrandom_ret
+        ret
+
+
+        .label _world_moveforwardrandom_interrupt
+        loadi g0 WORLD_TURNINTED
+        b _world_moveforwardrandom_throw
+
+        .label _world_moveforwardrandom_blocked
+        loadi g0 WORLD_BLOCKED
+
+        .label _world_moveforwardrandom_throw
+        call world_throw
+        ret
