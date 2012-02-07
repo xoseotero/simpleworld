@@ -48,6 +48,7 @@
 .define WORLD_MOVEINTED       0x0040    # action move interrupted
 .define WORLD_BLOCKED         0x0041    # the bug is blocked (forwards)
 .define WORLD_BLOCKEDBACK     0x0042    # the bug is blocked (backwards)
+.define WORLD_CANTESCAPE      0x0043    # the bug can't escape
 
 # turn
 .define WORLD_TURNINTED       0x0050    # action turn interrupted

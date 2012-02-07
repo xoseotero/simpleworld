@@ -1,0 +1,52 @@
+# @file worldlib/move/escape.swl
+# Escape from the current position.
+# std_init and world_init must be executed before using any of this functions.
+#
+#  Copyright (C) 2012  Xosé Otero <xoseotero@gmail.com>
+#
+#  This program is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+
+.include "stdlib/world.swl"
+.include "stdlib/int/enable.swl"
+.include "stdlib/int/disable.swl"
+.include "worldlib/def.swl"
+.include "worldlib/events/throw.swl"
+
+
+# Escape from the current position.
+# Interrupts are disabled.
+# EVENTS: WORLD_CANTESCAPE: the bug can't escape
+.label world_moveescape
+        call std_disable
+
+        loadi r0 0x4
+
+        .label _world_moveescape_loop
+        world STD_TURNLEFT
+        world STD_MOVEFORWARD
+        bz g0 _world_moveescape_ret
+
+        subi r0 r0 0x1
+        bnz r0 _world_moveescape_loop
+
+
+        .label _world_moveescape_cantescape
+        loadi g0 WORLD_CANTESCAPE
+        call world_throw
+
+
+        .label _world_moveescape_ret
+        call std_enable
+        ret
