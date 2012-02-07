@@ -1,0 +1,82 @@
+# @file worldlib/info/size.swl
+# Get the size of the target.
+# std_init and world_init must be executed before using any of this functions.
+#
+#  Copyforward (C) 2012  Xosé Otero <xoseotero@gmail.com>
+#
+#  This program is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+
+.include "stdlib/def.swl"
+.include "stdlib/world.swl"
+.include "worldlib/def.swl"
+.include "worldlib/events/throw.swl"
+
+
+# The size of the target
+.label world_target_size
+0x0
+
+# The small size limit
+.label world_target_small
+0x0
+
+# The big size limit
+.label world_target_big
+STD_WORDMAXU
+
+
+# Get the size of the target.
+# EVENTS: WORLD_MYSELFINTED: action myself interrupted
+#         WORLD_TARGETNOTFOUND: the bug was not found
+#         WORLD_TARGETSMALL: the bug is small
+#         WORLD_TARGETNORMAL: the bug has normal size
+#         WORLD_TARGETBIG: the bug is big
+.label world_infosize
+        world STD_INFOSIZE
+        loadi g2 STD_FAILURE
+        beq g0 g2 _world_infosize_failure
+        bnz g0 _world_infosize_interrupt
+
+        store g1 world_target_size
+
+        load g2 world_target_small
+        bleu g1 g2 _world_infosize_small
+
+        load g2 world_target_big
+        bgeu g1 g2 _world_infosize_big
+
+        .label _world_infosize_normal
+        loadi g0 WORLD_TARGETNORMAL
+
+        .label _world_infosize_ret
+        call world_throw
+        ret
+
+        .label _world_infosize_small
+        loadi g0 WORLD_TARGETSMALL
+        b _world_infosize_ret
+
+        .label _world_infosize_big
+        loadi g0 WORLD_TARGETBIG
+        b _world_infosize_ret
+
+
+        .label _world_infosize_failure
+        loadi g0 WORLD_TARGETNOTFOUND
+        b _world_infosize_ret
+
+        .label _world_infosize_interrupt
+        loadi g0 WORLD_INFOINTED
+        b _world_infosize_ret

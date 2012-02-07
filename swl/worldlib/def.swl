@@ -37,3 +37,6 @@
 # info
 .define WORLD_INFOINTED       0x0030    # action info interrupted
 .define WORLD_TARGETNOTFOUND  0x0031    # the bug was not found
+.define WORLD_TARGETSMALL     0x0032    # the bug is small
+.define WORLD_TARGETNORMAL    0x0034    # the bug has normal size
+.define WORLD_TARGETBIG       0x0035    # the bug is big
