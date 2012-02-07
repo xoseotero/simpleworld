@@ -20,3 +20,6 @@
 .define WORLD_IDLE            0x0000    # no events
 
 .define WORLD_INIT            0x0001    # world_init is executed
+
+# myself
+.define WORLD_MYSELFINTED     0x0010    # action myself interrupted
