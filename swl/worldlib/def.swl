@@ -23,3 +23,5 @@
 
 # myself
 .define WORLD_MYSELFINTED     0x0010    # action myself interrupted
+.define WORLD_LOWENERGY       0x0011    # the bug is low of energy
+.define WORLD_HIGHENERGY      0x0012    # the bug has high energy

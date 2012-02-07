@@ -1,0 +1,74 @@
+# @file worldlib/myself/energy.swl
+# Get the energy of the bug.
+# std_init and world_init must be executed before using any of this functions.
+#
+#  Copyforward (C) 2012  Xosé Otero <xoseotero@gmail.com>
+#
+#  This program is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+
+.include "stdlib/def.swl"
+.include "stdlib/world.swl"
+.include "worldlib/def.swl"
+.include "worldlib/events/throw.swl"
+
+
+# The energy of the bug
+.label world_myself_energy
+0x0
+
+# The low energy limit
+.label world_myenergy_lowenergy
+0x0
+
+# The high energy limit
+.label world_myenergy_highenergy
+STD_WORDMAXU
+
+
+# Get the energy of the bug.
+# EVENTS: WORLD_MYSELFINTED: action myself interrupted
+#         WORLD_LOWENERGY: the bug is low of energy
+#         WORLD_HIGHENERGY: the bug
+.label world_myenergy
+        # myself can't fail
+        world STD_MYENERGY
+        bnz g0 _world_myenergy_interrupt
+
+        store g1 world_myself_energy
+
+        load g2 world_myenergy_lowenergy
+        bleu g1 g2 _world_myenergy_low
+
+        load g3 world_myenergy_highenergy
+        bgeu g1 g3 _world_myenergy_high
+
+        .label _world_myenergy_ret
+        ret
+
+
+        .label _world_myenergy_interrupt
+        loadi g0 WORLD_MYSELFINTED
+        b _world_myenergy_throw
+
+        .label _world_myenergy_low
+        loadi g0 WORLD_LOWENERGY
+        b _world_myenergy_throw
+
+        .label _world_myenergy_high
+        loadi g0 WORLD_HIGHENERGY
+
+        .label _world_myenergy_throw
+        call world_throw
+        ret
