@@ -74,3 +74,6 @@
 # time
 .define WORLD_TIME            0x00A0    # timer
 .define WORLD_ALARM           0x00A1    # alarm acivated
+
+# memory
+.define WORLD_LOWMEMORY       0x00B0    # the bug is low of memory
