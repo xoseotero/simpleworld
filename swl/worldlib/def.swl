@@ -70,3 +70,6 @@
 # world events
 .define WORLD_ATTACKED        0x0090    # the bug has been attacked
 .define WORLD_MUTATED         0x0091    # the bug has been mutated
+
+# time
+.define WORLD_TIME            0x00A0    # timer

@@ -1,0 +1,54 @@
+# @file worldlib/time/time.swl
+# Initialize the WORLD_TIME event.
+# std_init and world_init must be executed before using any of this functions.
+#
+#  Copyright (C) 2012  Xosé Otero <xoseotero@gmail.com>
+#
+#  This program is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+
+.include "stdlib/world.swl"
+.include "stdlib/int/def.swl"
+.include "stdlib/int/handler.swl"
+.include "stdlib/time/time.swl"
+.include "worldlib/def.swl"
+.include "worldlib/events/throw.swl"
+
+
+# Interval of time between the events
+.label world_time_interval
+0x10
+
+
+# Handler for the timer interrupt
+# EVENTS: WORLD_TIME: timer
+.label _world_timehandler
+        call std_time
+        load g1 world_time_interval
+        mod g2 g0 g1
+        bnz g2 __world_timehandler_ret
+
+        loadi g0 WORLD_TIME
+        call world_throw
+
+        .label __world_timehandler_ret
+        ret
+
+# Initialize the WORLD_TIME event
+.label world_timeinit
+        loadi g0 STD_ITIMER
+        loada g1 _world_timehandler
+        call std_handler
+
+        ret
