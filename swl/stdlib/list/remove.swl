@@ -20,6 +20,7 @@
 .include "stdlib/error.swl"
 .include "stdlib/def.swl"
 .include "stdlib/address/address.swl"
+.include "stdlib/node/before.swl"
 .include "stdlib/node/remove.swl"
 .include "stdlib/node/next.swl"
 .include "stdlib/list/def.swl"
