@@ -1,7 +1,7 @@
 # @file stdlib/math/minq.swl
 # Minimum signed value of a block of memory (quarter words).
 #
-#  Copyright (C) 2006-2011  Xosé Otero <xoseotero@gmail.com>
+#  Copyright (C) 2006-2012  Xosé Otero <xoseotero@gmail.com>
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -31,7 +31,7 @@
 #      STD_EFAULT: the pointer is not valid
 .label std_minq
         # check if the size is valid
-        bz g1 _std_bminh_einval
+        bz g1 _std_minq_einval
 
         move r0 g0                      # pointer
         move r1 g1                      # size
