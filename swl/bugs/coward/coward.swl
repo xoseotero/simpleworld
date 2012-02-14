@@ -1,0 +1,145 @@
+# @file swl/bugs/coward/coward.swl
+# Coward bug.
+#
+# This bug avoids confrontation with other bugs:
+# 1. Moves randomly
+# 2. Never attacks.
+# 3. Detects when it is attacked and runs away from the attacker.
+#
+#  Copyright (C) 2012  Xosé Otero <xoseotero@gmail.com>
+#
+#  This program is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+
+.define HEAPSIZE 0x400
+.define STACKSIZE 0x80
+
+
+.label init
+        loada sp stack
+        move fp sp
+
+        loada g0 heap
+        loadi g1 HEAPSIZE
+        call std_init
+
+        loadi g0 0x10
+        call world_init
+
+        b main
+
+
+.include "stdlib/init.swl"
+.ifdef DEBUG
+.include "stdlib/alloc/def.swl"
+.include "stdlib/alloc/info.swl"
+.endif
+.include "worldlib/def.swl"
+.include "worldlib/init.swl"
+.include "worldlib/events/connect.swl"
+.include "worldlib/events/loop.swl"
+.include "worldlib/myself/size.swl"
+.include "worldlib/myself/energy.swl"
+.include "worldlib/detect/detect.swl"
+.include "worldlib/move/forwardrandom.swl"
+.include "worldlib/move/escape.swl"
+.include "worldlib/eat/eat.swl"
+.include "worldlib/egg/egg.swl"
+.include "worldlib/world/attacked.swl"
+
+
+.ifdef DEBUG
+.label minfo
+.block STD_MINFO_STRUCT
+.endif
+
+
+.label main
+        # create eggs with the same energy of this bug
+        call world_myenergy
+        load r0 world_myself_energy
+        store r0 world_egg_energy
+
+        # the bug has high memory when it thas 2 * (energy + size)
+        call world_mysize
+        load g0 world_myself_size
+        add g0 g0 r0
+        multi g0 g0 0x2
+        store g1 world_myenergy_highenergy
+
+        # initialize the WORLD_ATTACKED event
+        call world_attackedinit
+
+
+        # WORLD_IDLE -> world_moveforwardrandom
+        loadi g0 WORLD_IDLE
+        loada g1 world_moveforwardrandom
+        call world_connect
+
+        # WORLD_HIGHENERGY -> world_egg
+        loadi g0 WORLD_HIGHENERGY
+        loada g1 world_egg
+        call world_connect
+
+        # WORLD_BLOCKED -> world_detect
+        loadi g0 WORLD_BLOCKED
+        loada g1 world_detect
+        call world_connect
+
+        # WORLD_EGG -> world_eat
+        loadi g0 WORLD_EGG
+        loada g1 world_eat
+        call world_connect
+
+        # WORLD_BUG -> world_moveescape
+        loadi g0 WORLD_BUG
+        loada g1 world_moveescape
+        call world_connect
+
+        # WORLD_FOOD -> world_eat
+        loadi g0 WORLD_FOOD
+        loada g1 world_eat
+        call world_connect
+
+        # WORLD_FOODEATEN -> world_myenergy
+        loadi g0 WORLD_FOODEATEN
+        loada g1 world_myenergy
+        call world_connect
+
+        # WORLD_ATTACKED -> world_moveescape
+        loadi g0 WORLD_ATTACKED
+        loada g1 world_moveescape
+        call world_connect
+
+
+        # Get the memory used/free after the initialization
+.ifdef DEBUG
+        loada g0 minfo
+        call std_minfo
+        loadri r0 g0 STD_MINFO_TOTAL
+        loadri r1 g0 STD_MINFO_FREE
+
+        stop
+.endif
+
+        call world_loop
+
+        stop
+
+
+.label heap
+.block HEAPSIZE
+
+.label stack
+.block STACKSIZE

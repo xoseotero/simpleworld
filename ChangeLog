@@ -1,6 +1,7 @@
 Simple World 1.0b6:
 	* Execute 64 instructions per unit of time
 	* Fix: Cancel a action when a interrupt is thrown if the interrupts are enabled
+	* bugs: Add Coward bug
 	* stdlib: Split stdlib files in one file for every function
 	* stdlib: Add iterators to list, stack, queue and set
 	* stdlib: Add a map (associative array) data structure
