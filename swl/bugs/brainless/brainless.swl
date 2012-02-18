@@ -2,11 +2,11 @@
 # Brainless bug.
 #
 # This bug does movements randomly until it detects a element that blocks it.
-# If that element is food, the bug eats it. If the element is an egg or a bug,
+# If that element is food or an egg, the bug eats it. If the element is a bug,
 # the bug attacks it. After eating, if it has enough energy, the bug creates
 # an egg.
 #
-#  Copyright (C) 2007-2011  Xosé Otero <xoseotero@gmail.com>
+#  Copyright (C) 2007-2012  Xosé Otero <xoseotero@gmail.com>
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -159,16 +159,16 @@
 .label detect
         world STD_DETECT                # g1 = ELEMENT
 
-        loadi g0 STD_LFOOD              # if (ELEMENT == FOOD)
-        beq g1 g0 _detect_eat
+        loadi g0 STD_LBUG               # if (ELEMENT == BUG)
+        beq g1 g0 _detect_attack
         loadi g0 STD_LNOTHING           # else (ELEMENT == NOTHING)
         beq g1 g0 _detect_ret
 
-        call attack                     # else
+        call eat                        # else
         ret
 
-        .label _detect_eat
-        call eat
+        .label _detect_attack
+        call attack
 
         .label _detect_ret
         ret
