@@ -7,7 +7,7 @@
  * world. The objective of the project is to observe the evolution of this
  * world and of these bugs.
  *
- *  Copyright (C) 2007-2011  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2007-2012  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -552,21 +552,26 @@ There is nothing in (%1%, %2%)")
   // them that there is nothing in the World
   assert(target->type != ElementNothing);
 
-  if (target->type != ElementFood)
+  Energy energy;
+  if (target->type == ElementFood) {
+    Food* food_target = dynamic_cast<Food*>(target);
+    energy = food_target->size();
+    bug->energy(bug->energy() + energy);
+
+    db::World::remove(this, food_target->world_id());
+    db::Food::remove(this, food_target->id());
+    this->world_->remove(front);
+    this->foods_.remove(food_target);
+    delete food_target;
+  } else if (target->type == ElementEgg) {
+    Egg* egg_target = dynamic_cast<Egg*>(target);
+    energy = egg_target->code().size();
+    this->kill(egg_target, bug->id());
+  } else
     throw EXCEPTION(ActionError, boost::str(boost::format("\
 There is nothing to eat in (%1%, %2%")
                                             % front.x
                                             % front.y));
-
-  Food* food_target = dynamic_cast<Food*>(target);
-  Energy energy = food_target->size();
-  bug->energy(bug->energy() + energy);
-
-  db::World::remove(this, food_target->world_id());
-  db::Food::remove(this, food_target->id());
-  this->world_->remove(front);
-  this->foods_.remove(food_target);
-  delete food_target;
 
   return energy;
 }

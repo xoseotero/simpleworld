@@ -1,4 +1,5 @@
 Simple World 1.0b6:
+	* Eggs can be eaten
 	* Execute 64 instructions per unit of time
 	* Fix: Cancel a action when a interrupt is thrown if the interrupts are enabled
 	* bugs: Add Coward bug
