@@ -98,7 +98,6 @@ if(DEBUG_MODE)
   set(CMAKE_BUILD_TYPE Debug)
   add_definitions("-DDEBUG")
 else(DEBUG_MODE)
-  set(CMAKE_BUILD_TYPE Release)
   # disable BOOST_ASSERT without affecting the definition of the
   # standard assert
   add_definitions("-DBOOST_DISABLE_ASSERTS")
