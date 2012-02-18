@@ -1016,8 +1016,8 @@ void SimpleWorld::bugs_run()
       continue;
 
     try {
-      // execute 64 instructions
-      (*bug)->cpu.execute(64);
+      // execute 1024 instructions
+      (*bug)->cpu.execute(1024);
     } catch (const cpu::CPUException& e) {
       // some uncaught error in the CPU (CPU stopped)
       this->kill(*bug);
