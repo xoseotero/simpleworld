@@ -51,6 +51,7 @@
 #include "simpleworld.hpp"
 #include "worlderror.hpp"
 #include "actionerror.hpp"
+#include "actionblocked.hpp"
 #include "bugdeath.hpp"
 #include "movement.hpp"
 #include "mutation.hpp"
@@ -1018,6 +1019,9 @@ void SimpleWorld::bugs_run()
     try {
       // execute 1024 instructions
       (*bug)->cpu.execute(1024);
+    } catch (const ActionBlocked& e) {
+      // this is not a error, just a way to skip the rest of the cycles until
+      // the action can be executed
     } catch (const cpu::CPUException& e) {
       // some uncaught error in the CPU (CPU stopped)
       this->kill(*bug);

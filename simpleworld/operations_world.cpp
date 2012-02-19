@@ -26,6 +26,7 @@
 
 #include "types.hpp"
 #include "actionerror.hpp"
+#include "actionblocked.hpp"
 #include "simpleworld.hpp"
 #include "cpu.hpp"
 #include "bug.hpp"
@@ -66,7 +67,7 @@ cpu::Update world(cpu::CPU& cpu, cpu::Instruction inst)
   Bug* bug = dynamic_cast<CPU*>(&cpu)->bug;;
   Time time = bug->world->env().time();
 
-  // a action is not done in 1 cycle, it takes several cycles to be finished
+  // a action can take several cycles to be finished
   // if action_time is NULL, then there is not a action in proccess
   // if action_time > time, then the action will be finished in the next cycles
   // if action_time == time, then the action will be finished in this cycle
@@ -130,146 +131,143 @@ cpu::Update world(cpu::CPU& cpu, cpu::Instruction inst)
 "Unknown action (0x%04x)")
                                                 % inst.data));
     }
-
-    // the PC can't be updated until the action is finished
-    return cpu::UpdateNone;
-  } else if (bug->action_time() > time) {
-    // the action can't be finished in this cycle
-
-    // the PC can't be updated until the action is finished
-    return cpu::UpdateNone;
-  } else {
-    // the action is finished in this cycle
-
-    cpu::Word ypos;
-
-    try {
-      switch (inst.data) {
-      case ACTION_NOTHING:
-        bug->world->nothing(bug);
-        cpu.set_reg(REGISTER_G0, static_cast<cpu::Word>(ActionSuccess));
-        break;
-
-      case ACTION_MYSELFID:
-        cpu.set_reg(REGISTER_G1,
-                    static_cast<cpu::Word>(bug->world->myself(bug, InfoID,
-                                                              NULL)));
-        cpu.set_reg(REGISTER_G0, static_cast<cpu::Word>(ActionSuccess));
-        break;
-      case ACTION_MYSELFSIZE:
-        cpu.set_reg(REGISTER_G1,
-                    static_cast<cpu::Word>(bug->world->myself(bug, InfoSize,
-                                                              NULL)));
-        cpu.set_reg(REGISTER_G0, static_cast<cpu::Word>(ActionSuccess));
-        break;
-      case ACTION_MYSELFENERGY:
-        cpu.set_reg(REGISTER_G1,
-                    static_cast<cpu::Word>(bug->world->myself(bug, InfoEnergy,
-                                                              NULL)));
-        cpu.set_reg(REGISTER_G0, static_cast<cpu::Word>(ActionSuccess));
-        break;
-      case ACTION_MYSELFPOSITION:
-        cpu.set_reg(REGISTER_G1, bug->world->myself(bug, InfoPosition, &ypos));
-        cpu.set_reg(REGISTER_G2, ypos);
-        cpu.set_reg(REGISTER_G0, static_cast<cpu::Word>(ActionSuccess));
-        break;
-      case ACTION_MYSELFORIENTATION:
-        cpu.set_reg(REGISTER_G1,
-                    static_cast<cpu::Word>(bug->world->myself(bug,
-                                                              InfoOrientation,
-                                                              NULL)));
-        cpu.set_reg(REGISTER_G0, static_cast<cpu::Word>(ActionSuccess));
-        break;
-
-      case ACTION_DETECT:
-        cpu.set_reg(REGISTER_G1,
-                    static_cast<cpu::Word>(bug->world->detect(bug)));
-        cpu.set_reg(REGISTER_G0, static_cast<cpu::Word>(ActionSuccess));
-        break;
-
-      case ACTION_INFOID:
-        cpu.set_reg(REGISTER_G1,
-                    static_cast<cpu::Word>(bug->world->information(bug, InfoID,
-                                                                   NULL)));
-        cpu.set_reg(REGISTER_G0, static_cast<cpu::Word>(ActionSuccess));
-        break;
-      case ACTION_INFOSIZE:
-        cpu.set_reg(REGISTER_G1,
-                    static_cast<cpu::Word>(bug->world->information(bug,
-                                                                   InfoSize,
-                                                                   NULL)));
-        cpu.set_reg(REGISTER_G0, static_cast<cpu::Word>(ActionSuccess));
-        break;
-      case ACTION_INFOENERGY:
-        cpu.set_reg(REGISTER_G1,
-                    static_cast<cpu::Word>(bug->world->information(bug,
-                                                                   InfoEnergy,
-                                                                   NULL)));
-        cpu.set_reg(REGISTER_G0, static_cast<cpu::Word>(ActionSuccess));
-        break;
-      case ACTION_INFOPOSITION:
-        cpu.set_reg(REGISTER_G1, bug->world->information(bug, InfoPosition,
-                                                         &ypos));
-        cpu.set_reg(REGISTER_G2, ypos);
-        cpu.set_reg(REGISTER_G0, static_cast<cpu::Word>(ActionSuccess));
-        break;
-      case ACTION_INFOORIENTATION:
-        cpu.set_reg(REGISTER_G1,
-                    static_cast<cpu::Word>(bug->world->information(bug,
-                                                                   InfoOrientation,
-                                                                   NULL)));
-        cpu.set_reg(REGISTER_G0, static_cast<cpu::Word>(ActionSuccess));
-        break;
-
-      case ACTION_MOVEFORWARD:
-        bug->world->move(bug, MoveForward);
-        cpu.set_reg(REGISTER_G0, static_cast<cpu::Word>(ActionSuccess));
-        break;
-      case ACTION_MOVEBACKWARD:
-        bug->world->move(bug, MoveBackward);
-        cpu.set_reg(REGISTER_G0, static_cast<cpu::Word>(ActionSuccess));
-        break;
-
-      case ACTION_TURNLEFT:
-        bug->world->turn(bug, TurnLeft);
-        cpu.set_reg(REGISTER_G0, static_cast<cpu::Word>(ActionSuccess));
-        break;
-      case ACTION_TURNRIGHT:
-        bug->world->turn(bug, TurnRight);
-        cpu.set_reg(REGISTER_G0, static_cast<cpu::Word>(ActionSuccess));
-        break;
-
-      case ACTION_ATTACK:
-        bug->world->attack(bug, static_cast<Energy>(cpu.get_reg(REGISTER_G0)));
-        cpu.set_reg(REGISTER_G0, static_cast<cpu::Word>(ActionSuccess));
-        break;
-
-      case ACTION_EAT:
-        cpu.set_reg(REGISTER_G1, static_cast<cpu::Word>(bug->world->eat(bug)));
-        cpu.set_reg(REGISTER_G0, static_cast<cpu::Word>(ActionSuccess));
-        break;
-
-      case ACTION_EGG:
-        bug->world->egg(bug, static_cast<Energy>(cpu.get_reg(REGISTER_G0)));
-        cpu.set_reg(REGISTER_G0, static_cast<cpu::Word>(ActionSuccess));
-        break;
-
-      default:
-        throw EXCEPTION(ActionError, boost::str(boost::format(\
-"Unknown action (0x%04x)")
-                                                % inst.data));
-      }
-    } catch (const ActionError& e) {
-      cpu.set_reg(REGISTER_G0, static_cast<cpu::Word>(ActionFailure));
-    }
-
-
-    // the action is finished
-    bug->time_last_action(time);
-    bug->set_null("action_time");
-
-    return cpu::UpdatePC;
   }
+
+
+  // if the action can't be completed in this cycle throw ActionBlocked
+  if (bug->action_time() > time)
+    throw EXCEPTION(ActionBlocked, "Action can't be executed now");
+
+
+  // the action is finished in this cycle
+  cpu::Word ypos;
+
+  try {
+    switch (inst.data) {
+    case ACTION_NOTHING:
+      bug->world->nothing(bug);
+      cpu.set_reg(REGISTER_G0, static_cast<cpu::Word>(ActionSuccess));
+      break;
+
+    case ACTION_MYSELFID:
+      cpu.set_reg(REGISTER_G1,
+                  static_cast<cpu::Word>(bug->world->myself(bug, InfoID,
+                                                            NULL)));
+      cpu.set_reg(REGISTER_G0, static_cast<cpu::Word>(ActionSuccess));
+      break;
+    case ACTION_MYSELFSIZE:
+      cpu.set_reg(REGISTER_G1,
+                  static_cast<cpu::Word>(bug->world->myself(bug, InfoSize,
+                                                            NULL)));
+      cpu.set_reg(REGISTER_G0, static_cast<cpu::Word>(ActionSuccess));
+      break;
+    case ACTION_MYSELFENERGY:
+      cpu.set_reg(REGISTER_G1,
+                  static_cast<cpu::Word>(bug->world->myself(bug, InfoEnergy,
+                                                            NULL)));
+      cpu.set_reg(REGISTER_G0, static_cast<cpu::Word>(ActionSuccess));
+      break;
+    case ACTION_MYSELFPOSITION:
+      cpu.set_reg(REGISTER_G1, bug->world->myself(bug, InfoPosition, &ypos));
+      cpu.set_reg(REGISTER_G2, ypos);
+      cpu.set_reg(REGISTER_G0, static_cast<cpu::Word>(ActionSuccess));
+      break;
+    case ACTION_MYSELFORIENTATION:
+      cpu.set_reg(REGISTER_G1,
+                  static_cast<cpu::Word>(bug->world->myself(bug,
+                                                            InfoOrientation,
+                                                            NULL)));
+      cpu.set_reg(REGISTER_G0, static_cast<cpu::Word>(ActionSuccess));
+      break;
+
+    case ACTION_DETECT:
+      cpu.set_reg(REGISTER_G1,
+                  static_cast<cpu::Word>(bug->world->detect(bug)));
+      cpu.set_reg(REGISTER_G0, static_cast<cpu::Word>(ActionSuccess));
+      break;
+
+    case ACTION_INFOID:
+      cpu.set_reg(REGISTER_G1,
+                  static_cast<cpu::Word>(bug->world->information(bug, InfoID,
+                                                                 NULL)));
+      cpu.set_reg(REGISTER_G0, static_cast<cpu::Word>(ActionSuccess));
+      break;
+    case ACTION_INFOSIZE:
+      cpu.set_reg(REGISTER_G1,
+                  static_cast<cpu::Word>(bug->world->information(bug,
+                                                                 InfoSize,
+                                                                 NULL)));
+      cpu.set_reg(REGISTER_G0, static_cast<cpu::Word>(ActionSuccess));
+      break;
+    case ACTION_INFOENERGY:
+      cpu.set_reg(REGISTER_G1,
+                  static_cast<cpu::Word>(bug->world->information(bug,
+                                                                 InfoEnergy,
+                                                                 NULL)));
+      cpu.set_reg(REGISTER_G0, static_cast<cpu::Word>(ActionSuccess));
+      break;
+    case ACTION_INFOPOSITION:
+      cpu.set_reg(REGISTER_G1, bug->world->information(bug, InfoPosition,
+                                                       &ypos));
+      cpu.set_reg(REGISTER_G2, ypos);
+      cpu.set_reg(REGISTER_G0, static_cast<cpu::Word>(ActionSuccess));
+      break;
+    case ACTION_INFOORIENTATION:
+      cpu.set_reg(REGISTER_G1,
+                  static_cast<cpu::Word>(bug->world->information(bug,
+                                                                 InfoOrientation,
+                                                                 NULL)));
+      cpu.set_reg(REGISTER_G0, static_cast<cpu::Word>(ActionSuccess));
+      break;
+
+    case ACTION_MOVEFORWARD:
+      bug->world->move(bug, MoveForward);
+      cpu.set_reg(REGISTER_G0, static_cast<cpu::Word>(ActionSuccess));
+      break;
+    case ACTION_MOVEBACKWARD:
+      bug->world->move(bug, MoveBackward);
+      cpu.set_reg(REGISTER_G0, static_cast<cpu::Word>(ActionSuccess));
+      break;
+
+    case ACTION_TURNLEFT:
+      bug->world->turn(bug, TurnLeft);
+      cpu.set_reg(REGISTER_G0, static_cast<cpu::Word>(ActionSuccess));
+      break;
+    case ACTION_TURNRIGHT:
+      bug->world->turn(bug, TurnRight);
+      cpu.set_reg(REGISTER_G0, static_cast<cpu::Word>(ActionSuccess));
+      break;
+
+    case ACTION_ATTACK:
+      bug->world->attack(bug, static_cast<Energy>(cpu.get_reg(REGISTER_G0)));
+      cpu.set_reg(REGISTER_G0, static_cast<cpu::Word>(ActionSuccess));
+      break;
+
+    case ACTION_EAT:
+      cpu.set_reg(REGISTER_G1, static_cast<cpu::Word>(bug->world->eat(bug)));
+      cpu.set_reg(REGISTER_G0, static_cast<cpu::Word>(ActionSuccess));
+      break;
+
+    case ACTION_EGG:
+      bug->world->egg(bug, static_cast<Energy>(cpu.get_reg(REGISTER_G0)));
+      cpu.set_reg(REGISTER_G0, static_cast<cpu::Word>(ActionSuccess));
+      break;
+
+    default:
+      throw EXCEPTION(ActionError, boost::str(boost::format(\
+"Unknown action (0x%04x)")
+                                              % inst.data));
+    }
+  } catch (const ActionError& e) {
+    cpu.set_reg(REGISTER_G0, static_cast<cpu::Word>(ActionFailure));
+  }
+
+
+  // the action is finished
+  bug->time_last_action(time);
+  bug->set_null("action_time");
+
+  return cpu::UpdatePC;
 }
 
 }
