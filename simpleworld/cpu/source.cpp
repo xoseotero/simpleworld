@@ -2,7 +2,7 @@
  * @file simpleworld/cpu/source.cpp
  * Simple World Language source file.
  *
- *  Copyright (C) 2006-2011  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2006-2012  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -718,6 +718,11 @@ Wrong number of parameters (%2%)")
       const char* str = keywords[info.nregs + 1].c_str();
       char* ptr;
       inst.data = std::strtoul(str, &ptr, 16);
+      // check if the string is not a number
+      if (ptr == str)
+        throw EXCEPTION(ParserError, boost::str(boost::format("\
+%1% is not a valid number")
+                                                % str));
     }
   } catch (const CPUException& e) {
     throw EXCEPTION(ParserError, boost::str(boost::format("\
