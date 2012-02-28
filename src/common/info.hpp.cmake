@@ -2,7 +2,7 @@
  * @file src/common/info.hpp
  * Information.
  *
- *  Copyright (C) 2010  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2010-2012  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -22,7 +22,7 @@
 #define CONFIG_HPP
 
 #define VERSION @SIMPLEWORLD_VERSION@
-#define YEARS "2006-2010"
+#define YEARS "2006-2012"
 #define AUTHOR "Xosé Otero"
 #define EMAIL "xoseotero@gmail.com"
 #define MAILBUGS "simpleworld-list@lists.sourceforge.net"
