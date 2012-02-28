@@ -2,7 +2,7 @@
  * @file simpleworld/cpu/source.hpp
  * Simple World Language source file.
  *
- *  Copyright (C) 2006-2010  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2006-2012  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -56,19 +56,23 @@ public:
    * Constructor for a empty file.
    * @param isa Instruction set architecture of the CPU
    * @param include_path Paths where to search the files to include.
+   * @param definitions Definitions.
    */
   Source(const ISA& isa,
-         const std::vector<std::string>& include_path);
+         const std::vector<std::string>& include_path,
+         const std::map<std::string, std::string>& definitions);
 
   /**
    * Constructor.
    * @param isa Instruction set architecture of the CPU
    * @param include_path Paths where to search the files to include.
+   * @param definitions Definitions.
    * @param filename File to open.
    * @exception IOError if file can't be opened
    */
   Source(const ISA& isa,
          const std::vector<std::string>& include_path,
+         const std::map<std::string, std::string>& definitions,
          const std::string& filename);
 
 

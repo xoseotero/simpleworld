@@ -2,7 +2,7 @@
  * @file src/swlc/swlc.cpp
  * Simple World Language compiler
  *
- *  Copyright (C) 2006-2010  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2006-2012  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -25,6 +25,7 @@
 #include <getopt.h>
 
 #include <boost/format.hpp>
+#include <boost/regex.hpp>
 
 #include <simpleworld/config.hpp>
 #include <simpleworld/exception.hpp>
@@ -78,6 +79,8 @@ Mandatory arguments to long options are mandatory for short options too.\n\
   -E, --preprocess           preprocess only; do not compile\n\
   -I, --include=PATH         add a directory where to search the\n\
                                included files\n\
+  -D, --define=ID            add the definition ID with the value 1\n\
+  -D, --define=ID=VALUE      add the definition ID with teh value VALUE\n\
   -o, --output=FILE          place the output into FILE\n\
                                the default value is %2%\n\
 \n\
@@ -122,9 +125,11 @@ There is NO WARRANTY, to the extent permitted by law.")
 static std::string input;
 static std::string output(DEFAULT_OUTPUT);
 static std::vector<std::string> include_path;
+static std::map<std::string, std::string> definitions;
 
 // if --preprocess was used
 static bool preprocess_set = false;
+
 
 /**
  * Parse the command line.
@@ -136,6 +141,7 @@ void parse_cmd(int argc, char* argv[])
   struct option long_options[] = {
     {"preprocess", no_argument, NULL, 'E'},
     {"include", required_argument, NULL, 'I'},
+    {"define", required_argument, NULL, 'D'},
     {"output", required_argument, NULL, 'o'},
 
     {"version", no_argument, NULL, 'v'},
@@ -151,12 +157,18 @@ void parse_cmd(int argc, char* argv[])
     /* getopt_long stores the option index here. */
     int option_index = 0;
 
-    int c = getopt_long(argc, argv, "EI:o:vh", long_options,
+    int c = getopt_long(argc, argv, "EI:D:o:vh", long_options,
                         &option_index);
 
     /* Detect the end of the options. */
     if (c == -1)
       break;
+
+    static const boost::regex define_only("^([[:word:]]+)$");
+    static const boost::regex define_with_value("^([[:word:]]+)=(.*)$");
+    boost::smatch what;
+    std::string define_id;
+    std::string define_value;
 
     switch (c)
     {
@@ -167,6 +179,27 @@ void parse_cmd(int argc, char* argv[])
 
     case 'I':
       include_path.push_back(optarg);
+
+      break;
+
+    case 'D':
+      if (boost::regex_match(std::string(optarg), what, define_only)) {
+        define_id = std::string(what[1].first, what[1].second);
+        define_value = "1";
+      } else if (boost::regex_match(std::string(optarg), what,
+                                    define_with_value)) {
+        define_id = std::string(what[1].first, what[1].second);
+        define_value = std::string(what[2].first, what[2].second);
+      } else
+        usage(boost::str(boost::format("wrong format of the definition: `%1%'")
+                         % optarg));
+
+      if (definitions.find(define_id) != definitions.end())
+        usage(boost::str(boost::format("definition `%1%' already defined")
+                         % define_id));
+
+      definitions.insert(std::pair<std::string, std::string>(define_id,
+                                                             define_value));
 
       break;
 
@@ -214,7 +247,7 @@ try {
   // This CPU doesn't need memory because only the instruction set is needed
   cpu::Memory registers;
   FakeCPU cpu(&registers, NULL);
-  cpu::Source source(cpu.isa(), include_path, input);
+  cpu::Source source(cpu.isa(), include_path, definitions, input);
   if (preprocess_set) {
     source.preprocess();
     source.save(output);
