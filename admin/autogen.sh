@@ -82,8 +82,6 @@ if [ "${debug}" == 1 ]; then
       -D DEBUG_MODE=ON \
       -D UNIT_TESTS=ON \
       -D SQLite3_USE_INTERNAL=ON \
-      -D SQLite3x_USE_INTERNAL=ON \
-      -D XySSL_USE_INTERNAL=ON \
       -D getopt_USE_INTERNAL=ON"
 fi
 if [ "${release}" == 1 ]; then
