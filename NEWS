@@ -1,3 +1,28 @@
+-- Simple World 1.0b6 (2012/04/15) --
+
+The main change in this version is the addition of the worldlib
+(World Library), a new SWL library. The worldlib is based in the
+concept of events management. Events are things that happen (the
+bug is attacked, blocked, etc) that can provoke the execution of
+code. For example, when a bug is blocked (event) the bug can try
+other path (handler).
+
+There are a lot of changes in the stdlib. To be able to add the
+worldlib new map and multimap data structures were added. In
+addition the files of the stdlib were splitted in several files:
+one function, variable or definition in each file. This way, if
+you don't need all the code of the old header, you can include
+just what you need.
+
+A new bug, named Coward, was added. The main peculiarities of this
+bug is that it avoids confrontation and that it's the first bug to
+use the worldlib.
+
+Finally, to help complex bugs that need a lot of initialization
+code, for example the bugs that use the worldlib, in every unit of
+time up to 1024 instructions can be executed.
+
+
 -- Simple World 1.0b5 (2011/11/11) --
 
 In this version there are several changes to the CPU. In first
