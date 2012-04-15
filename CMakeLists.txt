@@ -1,5 +1,5 @@
 project(SimpleWorld)
-set(SIMPLEWORLD_VERSION "\"1.0b6\"")
+set(SIMPLEWORLD_VERSION "\"1.0b7-git\"")
 
 cmake_minimum_required(VERSION 2.6)
 
