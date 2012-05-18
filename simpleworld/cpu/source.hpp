@@ -123,6 +123,7 @@ public:
    * @return the warning messages generated during the compilation.
    * @exception IOERROR if a problem with file happen.
    * @exception ParserError error found in the code.
+   * @exception ErrorDirective error directive found in the code.
    */
   std::vector<std::string> compile(std::string filename);
 

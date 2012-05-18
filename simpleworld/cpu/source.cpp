@@ -35,6 +35,7 @@ namespace fs = boost::filesystem;
 #include "source.hpp"
 #include "exception.hpp"
 #include "parsererror.hpp"
+#include "errordirective.hpp"
 
 namespace simpleworld
 {
@@ -524,6 +525,47 @@ static std::string get_warning(const std::string& line)
 }
 
 
+// A error
+static const boost::regex re_error(BEGIN_LINE
+                                   OPTIONAL_SPACE
+                                   "\\.error"
+                                   SPACE
+                                   "\""
+                                   "(" ANYTHING ")"
+                                   "\""
+                                   OPTIONAL_SPACE
+                                   OPTIONAL_COMMENT
+                                   END_LINE);
+
+/**
+ * Check if a line is a error.
+ * @param line Text to check.
+ * @return the check result.
+ */
+static bool is_error(const std::string& line)
+{
+  return boost::regex_match(line, re_error);
+}
+
+/**
+ * Return the error text.
+ *
+ * If the line is not a error a empty string is returned.
+ * @param line Text to check.
+ * @return the text.
+ */
+static std::string get_error(const std::string& line)
+{
+  std::string result;
+
+  boost::smatch what;
+  if (boost::regex_match(line, what, re_error))
+    result = what[1];
+
+  return result;
+}
+
+
 // Data
 static const boost::regex re_data(BEGIN_LINE
                                   OPTIONAL_SPACE
@@ -823,6 +865,7 @@ void Source::preprocess(bool strip)
  * @return the warning messages generated during the compilation.
  * @exception IOERROR if a problem with file happen.
  * @exception ParserError error found in the code.
+ * @exception ErrorDirective error directive found in the code.
  */
 std::vector<std::string> Source::compile(std::string filename)
 {
@@ -843,6 +886,9 @@ File %1% is not writable")
       warnings.push_back(get_warning(this->get_line(i)));
       continue;
     }
+
+    if (is_error(this->get_line(i)))
+      throw EXCEPTION(ErrorDirective, get_error(this->get_line(i)));
 
     Word code = this->compile(i);
     file.write(reinterpret_cast<char*>(&code), sizeof(Word));
