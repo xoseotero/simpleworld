@@ -19,6 +19,7 @@
  */
 
 #include <iostream>
+#include <vector>
 #include <string>
 #include <cstdlib>
 
@@ -251,8 +252,15 @@ try {
   if (preprocess_set) {
     source.preprocess();
     source.save(output);
-  } else
-    source.compile(output);
+  } else {
+    std::vector<std::string> warnings = source.compile(output);
+    std::vector<std::string>::const_iterator iter;
+    for (iter = warnings.begin();
+         iter != warnings.end();
+         ++iter) {
+      std::cout << (*iter) << std::endl;
+    }
+  }
 
   std::exit(EXIT_SUCCESS);
 }

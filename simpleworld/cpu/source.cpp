@@ -483,6 +483,47 @@ static bool is_label_as_data(const std::map<std::string, Address>& labels,
 }
 
 
+// A warning
+static const boost::regex re_warning(BEGIN_LINE
+                                     OPTIONAL_SPACE
+                                     "\\.warning"
+                                     SPACE
+                                     "\""
+                                     "(" ANYTHING ")"
+                                     "\""
+                                     OPTIONAL_SPACE
+                                     OPTIONAL_COMMENT
+                                     END_LINE);
+
+/**
+ * Check if a line is a warning.
+ * @param line Text to check.
+ * @return the check result.
+ */
+static bool is_warning(const std::string& line)
+{
+  return boost::regex_match(line, re_warning);
+}
+
+/**
+ * Return the warning text.
+ *
+ * If the line is not a warning a empty string is returned.
+ * @param line Text to check.
+ * @return the text.
+ */
+static std::string get_warning(const std::string& line)
+{
+  std::string result;
+
+  boost::smatch what;
+  if (boost::regex_match(line, what, re_warning))
+    result = what[1];
+
+  return result;
+}
+
+
 // Data
 static const boost::regex re_data(BEGIN_LINE
                                   OPTIONAL_SPACE
@@ -779,10 +820,11 @@ void Source::preprocess(bool strip)
 /**
  * Compile the source code to object code.
  * @param filename File where to save.
+ * @return the warning messages generated during the compilation.
  * @exception IOERROR if a problem with file happen.
  * @exception ParserError error found in the code.
  */
-void Source::compile(std::string filename)
+std::vector<std::string> Source::compile(std::string filename)
 {
   this->preprocess(true);
 
@@ -792,9 +834,15 @@ void Source::compile(std::string filename)
 File %1% is not writable")
                                         % filename));
 
+  std::vector<std::string> warnings;
   for (File::size_type i = 0; i < this->lines(); i++) {
     if (is_blank(this->get_line(i)) or is_comment(this->get_line(i)))
       continue;
+
+    if (is_warning(this->get_line(i))) {
+      warnings.push_back(get_warning(this->get_line(i)));
+      continue;
+    }
 
     Word code = this->compile(i);
     file.write(reinterpret_cast<char*>(&code), sizeof(Word));
@@ -805,6 +853,8 @@ Can't write in file %1%")
   }
 
   file.close();
+
+  return warnings;
 }
 
 

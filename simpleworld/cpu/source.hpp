@@ -120,10 +120,11 @@ public:
   /**
    * Compile the source code to object code.
    * @param filename File where to save.
+   * @return the warning messages generated during the compilation.
    * @exception IOERROR if a problem with file happen.
    * @exception ParserError error found in the code.
    */
-  void compile(std::string filename);
+  std::vector<std::string> compile(std::string filename);
 
 
 protected:
