@@ -1,11 +1,11 @@
 # @file swl/bugs/herbivorous/herbivorous.swl
-# Herbivorous bug.
+# Herbivore bug.
 #
 # This bug does movements randomly until it detects a element that blocks it.
 # If that element is food, the bug eats it. After eating, if it has enough
 # energy, the bug creates an egg.
 #
-#  Copyright (C) 2010-2011  Xosé Otero <xoseotero@gmail.com>
+#  Copyright (C) 2010-2012  Xosé Otero <xoseotero@gmail.com>
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -62,36 +62,27 @@
         .label _main_loop
         call std_random
         modi g0 g0 0x2                  # g0 = std_random % 2
-
         bz g0 _main_move
+
         .label _main_turn               # if std_random != 0
         call random_turn
         b _main_loop
-        .label _main_move               # else (std_random == 0)
-        call random_move
 
+        .label _main_move               # else (std_random == 0)
+        call move_forward
         bnz g0 _main_detect
         b _main_loop
 
         .label _main_detect             # the bug couldn't move
         call detect
+
         b _main_loop
 
 
-# Move forward or backwoard randomly
+# Move forward
 # OUT: g0 0x0 if there is nothing in front of the bug
 #         0x1 if there is something in front of the bug
-.label random_move
-        # g0 = std_random % 2
-        call std_random
-        modi g0 g0 0x2
-
-        bz g0 _random_move_forward
-        .label _random_move_backward    # if std_random != 0
-        world STD_MOVEBACKWARD
-        loadi g0 0x0
-        ret
-        .label _random_move_forward     # else (std_random == 0)
+.label move_forward
         world STD_MOVEFORWARD
         move g0 g1
         ret
@@ -102,11 +93,12 @@
         # g0 = std_random % 2
         call std_random
         modi g0 g0 0x2
-
         bz g0 _random_turn_left
+
         .label _random_turn_right       # if std_random != 0
         world STD_TURNRIGHT
         ret
+
         .label _random_turn_left        # else (std_random == 0)
         world STD_TURNLEFT
         ret
@@ -119,7 +111,7 @@
 
         # let the egg alone
         call random_turn
-        call random_move
+        call move_forward
 
         ret
 
@@ -142,9 +134,9 @@
 # Detect what is in front of the bug and eats it if the element is food
 .label detect
         world STD_DETECT                # g1 = ELEMENT
-
         loadi g0 STD_LFOOD
         bne g1 g0 _detect_ret
+
         .label _detect_food             # if ELEMENT == FOOD
         call eat
 
