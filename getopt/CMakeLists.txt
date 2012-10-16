@@ -4,4 +4,4 @@ if(getopt_USE_INTERNAL)
     getopt.c
     getopt1.c)
   add_library(getopt STATIC ${getopt_SRCS})
-endif(getopt_USE_INTERNAL)
+endif()

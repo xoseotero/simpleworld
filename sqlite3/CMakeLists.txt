@@ -9,4 +9,4 @@ if(SQLite3_USE_INTERNAL)
   # Simple World doesn't use threads
   # If threads are needed, there should be added pthread support for UNIXes.
   add_definitions(-DSQLITE_THREADSAFE=0)
-endif(SQLite3_USE_INTERNAL)
+endif()

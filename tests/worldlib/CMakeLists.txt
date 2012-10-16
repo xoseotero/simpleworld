@@ -10,4 +10,4 @@ if(UNIT_TESTS)
     ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
 
   add_test("worldlib/events.swl" events_swl_test)
-endif(UNIT_TESTS)
+endif()
