@@ -2,7 +2,7 @@
  * @file simpleworld/cpu/source.cpp
  * Simple World Language source file.
  *
- *  Copyright (C) 2006-2012  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2006-2013  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -18,6 +18,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <algorithm>
 #include <cstdlib>
 
 #include <boost/format.hpp>
@@ -839,6 +840,55 @@ void Source::load(std::string filename)
   // The main file can't be included
   std::string abs_path(fs::absolute(fs::path(filename)).string());
   this->includes_.insert(abs_path); // Using the absolute path
+}
+
+
+/**
+ * Add a include path.
+ * @param path Path to add.
+ * @exception CPUException Path already added.
+ */
+void Source::add_include_path(std::string path)
+{
+  if (std::find(this->include_path_.begin(), this->include_path_.end(),
+		path) != this->include_path_.end())
+    throw EXCEPTION(CPUException, boost::str(boost::format("\
+Path %1% already added")
+                                                % path));
+
+  this->include_path_.push_back(path);
+}
+
+/**
+ * Add a define.
+ * @param name Name of the define.
+ * @param value Value of the define.
+ * @exception CPUException name duplicated.
+ */
+void Source::add_define(std::string name, std::string value)
+{
+  if (this->defines_.find(name) != this->defines_.end())
+    throw EXCEPTION(CPUException, boost::str(boost::format("\
+Constant %1% already defined")
+                                                % name));
+
+  this->defines_.insert(std::pair<std::string, std::string>(name, value));
+}
+
+/**
+ * Add a macro.
+ * @param name Name of the macro.
+ * @param value Value of the macro.
+ * @exception CPUException name duplicated.
+ */
+void Source::add_macro(std::string name, Macro value)
+{
+  if (this->macros_.find(name) != this->macros_.end())
+    throw EXCEPTION(CPUException, boost::str(boost::format("\
+Constant %1% already defined")
+                                                % name));
+
+  this->macros_.insert(std::pair<std::string, Macro>(name, value));
 }
 
 

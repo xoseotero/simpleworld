@@ -2,7 +2,7 @@
  * @file simpleworld/cpu/source.hpp
  * Simple World Language source file.
  *
- *  Copyright (C) 2006-2012  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2006-2013  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -107,6 +107,30 @@ public:
    * @exception IOError File can't be opened
    */
   void load(std::string filename);
+
+
+  /**
+   * Add a include path.
+   * @param path Path to add.
+   * @exception CPUException Path already added.
+   */
+  void add_include_path(std::string path);
+
+  /**
+   * Add a define.
+   * @param name Name of the define.
+   * @param value Value of the define.
+   * @exception CPUException name duplicated.
+   */
+  void add_define(std::string name, std::string value);
+
+  /**
+   * Add a macro.
+   * @param name Name of the macro.
+   * @param value Value of the macro.
+   * @exception CPUException name duplicated.
+   */
+  void add_macro(std::string name, Macro value);
 
 
   /**
