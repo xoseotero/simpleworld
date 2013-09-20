@@ -474,7 +474,7 @@ SELECT killer_id, count(killer_id) AS kills\n\
 FROM DeadBug\n\
 WHERE killer_id IS NOT NULL\n\
 GROUP BY killer_id\n\
-ORDER BY kills DESC, id;", -1, &stmt, NULL))
+ORDER BY kills DESC, killer_id;", -1, &stmt, NULL))
     throw EXCEPTION(db::DBException, sqlite3_errmsg(sw.db()));
   show_query_column(true, 10, "NULL", stmt);
   sqlite3_finalize(stmt);
