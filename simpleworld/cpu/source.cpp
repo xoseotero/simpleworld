@@ -823,10 +823,8 @@ void Source::clear()
 void Source::load(const File& file)
 {
   File::remove(0, this->lines());
+  this->clear();
   File::insert(file);
-
-  // Clear the includes in a reload
-  this->includes_.clear();
 }
 
 /**
@@ -837,10 +835,8 @@ void Source::load(const File& file)
  */
 void Source::load(std::string filename)
 {
+  this->clear();
   File::load(filename);
-
-  // Clear the includes in a reload
-  this->includes_.clear();
 
   // The main file can't be included
   std::string abs_path(fs::absolute(fs::path(filename)).string());
