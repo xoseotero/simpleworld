@@ -21,20 +21,14 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+
+.define EGG_ENERGY      0x200
+.define ATTACK_ENERGY   0x8
+
+
 # Initialization
 .label init
         loada sp stack                  # Initialize the Stack Pointer
-
-        # Get the initial energy of the bug
-        world STD_MYENERGY
-        store g1 initial_energy
-
-        # Calculate the energy needed to create a egg: 2 * (energy + size)
-        world STD_MYSIZE
-        load g0 initial_energy
-        add g0 g0 g1
-        multi g0 g0 0x2
-        store g0 energy_egg
 
         # Use the actual position of the bug as the seed of the random number
         # generator
@@ -49,15 +43,6 @@
 .include "stdlib/random.swl"
 
 
-# Energy of the bug when it was born
-.label initial_energy
-.block 0x4
-
-# Energy needed to create a egg
-.label energy_egg
-.block 0x4
-
-
 # Main function of the bug
 .label main
         .label _main_loop
@@ -70,7 +55,7 @@
         b _main_loop
 
         .label _main_move               # else (std_random == 0)
-        call move_forward
+        call random_move
         bnz g0 _main_detect
         b _main_loop
 
@@ -80,10 +65,21 @@
         b _main_loop
 
 
-# Move forward
+# Move forward or backwoard randomly
 # OUT: g0 0x0 if there is nothing in front of the bug
 #         0x1 if there is something in front of the bug
-.label move_forward
+.label random_move
+        # g0 = std_random % 2
+        call std_random
+        modi g0 g0 0x2
+        bz g0 _random_move_forward
+
+        .label _random_move_backward    # if std_random != 0
+        world STD_MOVEBACKWARD
+        loadi g0 0x0
+        ret
+
+        .label _random_move_forward     # else (std_random == 0)
         world STD_MOVEFORWARD
         move g0 g1
         ret
@@ -108,8 +104,7 @@
 # Attack until error
 .label attack
         .label _attack_loop             # do
-        load g0 initial_energy
-        divi g0 g0 0x10
+        loadi g0 ATTACK_ENERGY
         world STD_ATTACK
         bz g0 _attack_loop              # while STD_ATTACK == STD_SUCCESS
 
@@ -120,12 +115,12 @@
 
 # Create a egg in front of the bug
 .label egg
-        load g0 initial_energy
+        loadi g0 EGG_ENERGY
         world STD_EGG
 
         # let the egg alone
         call random_turn
-        call move_forward
+        call random_move
 
         ret
 
@@ -133,15 +128,8 @@
 # Eat the element that is in front of the bug
 .label eat
         world STD_EAT
-
-        world STD_MYENERGY
-        load g0 energy_egg
-        bgtu g0 g1 _eat_ret
-
-        .label _eat_egg                 # if (MYSELF_ENERGY > ENERGY_TO_CREATE_EGG)
         call egg
 
-        .label _eat_ret                 # else
         ret
 
 
