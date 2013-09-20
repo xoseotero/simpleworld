@@ -2,7 +2,7 @@
  * @file tests/stdlib/init_test.cpp
  * Unit test for stdlib/init.swl
  *
- *  Copyright (C) 2009-2012  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2009-2013  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -64,4 +64,66 @@ BOOST_AUTO_TEST_CASE(swl_compile)
 
   source.insert(".include \"stdlib/init.swl\"");
   BOOST_CHECK_NO_THROW(compile(source));
+}
+
+/**
+ * Call two times std_init.
+ */
+BOOST_AUTO_TEST_CASE(std_init)
+{
+  cpu::File source;
+
+  // Initialize the stack pointer
+  source.insert(".label init");
+  source.insert("loada sp stack");
+  source.insert("move fp sp");
+  source.insert("loada g0 heap");
+  source.insert("loadi g1 0x400");
+  source.insert("call std_init");
+  source.insert("b main");
+
+  source.insert(".include \"stdlib/init.swl\"");
+  source.insert(".include \"stdlib/alloc/alloc.swl\"");
+
+  // Test
+  source.insert(".label main");
+  // Allocate memory
+  source.insert("loadi g0 0x4");
+  source.insert("call std_alloc");
+  source.insert("move r0 g0");
+
+  // Second call to std_init
+  source.insert("loada g0 heap");
+  source.insert("loadi g1 0x400");
+  source.insert("call std_init");
+
+  // Allocate memory
+  source.insert("loadi g0 0x4");
+  source.insert("call std_alloc");
+  source.insert("move r0 g0");
+
+  source.insert("move g1 r0");
+
+  source.insert("stop");
+
+  // Space for 256 words in the heap
+  source.insert(".label heap");
+  source.insert(".block 0x400");
+
+  // Space for 32 words in the stack
+  source.insert(".label stack");
+  source.insert(".block 0x80");
+
+  compile(source);
+
+  cpu::Memory registers;
+  cpu::MemoryFile memory(CPU_SAVE);
+  FakeCPU cpu(&registers, &memory);
+  cpu.execute(MAX_CYCLES);
+
+  BOOST_CHECK(not cpu.running());
+  BOOST_CHECK_NE(registers[REGISTER(cpu, "g0")], 0x0);
+  BOOST_CHECK_NE(registers[REGISTER(cpu, "g1")], 0x0);
+  BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "g0")],
+                    registers[REGISTER(cpu, "g1")]);
 }

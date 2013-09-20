@@ -1,7 +1,7 @@
 # @file stdlib/init.swl
 # Initialize the standard library.
 #
-#  Copyright (C) 2008-2011  Xosé Otero <xoseotero@gmail.com>
+#  Copyright (C) 2008-2013  Xosé Otero <xoseotero@gmail.com>
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -29,24 +29,13 @@
 .include "stdlib/random/seed.swl"
 
 
-# Flag to check if the standard library is initialized
-.label _std_initialized
-STD_FALSE
-
-
 # Initialize the standard library.
-# It's not a error to call this function several times, but only the first
-# successfull call will initialize the standard library.
 # IN:  g0 heap start
 # IN:  g1 heap size
 # OUT: g1 error status 
 #      STD_ENOMEM: the memory if not enough
 #      STD_EFAULT: the pointer is not valid
 .label std_init
-        # check if the standard library is initialized
-        load g3 _std_initialized
-        bnz g3 _std_init_ok
-
         # initialize the memory allocator
         call _std_minit
         bnz g1 _std_init_error
@@ -71,10 +60,6 @@ STD_FALSE
         add g0 g0 g1
         call std_seed                   # this call can't fail
 
-
-        # set the state of the standard library to initialized
-        loadi g0 STD_TRUE
-        store g0 _std_initialized
 
         # exit without errors
         .label _std_init_ok
