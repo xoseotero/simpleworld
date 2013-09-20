@@ -78,14 +78,13 @@ The size of %1% (%2%) is not a multiple of 32bits")
 File Object::decompile() const
 {
   File file;
-  File::size_type line = 0;
   Word instruction;
 
   // Decompile all the code
   for (Address i = 0; i < this->code_.size(); i += sizeof(Word)) {
     instruction = this->code_.get_word(i, false);
     try {
-      file.insert(line, this->decompile(instruction));
+      file.insert(this->decompile(instruction));
     } catch (const CodeError& e) {
       // If a unknown instruction or register is found suppose that the value
       // is data.
@@ -97,10 +96,8 @@ File Object::decompile() const
 #else
 #error endianness not specified
 #endif
-      file.insert(line, data);
+      file.insert(data);
     }
-
-    line++;
   }
 
   return file;
