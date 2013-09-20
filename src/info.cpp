@@ -2,7 +2,7 @@
  * @file src/info.cpp
  * Command info of Simple World.
  *
- *  Copyright (C) 2008-2011  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2008-2013  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -436,9 +436,9 @@ static void show_sortage(sw::SimpleWorld& sw)
 SELECT bug_id, (SELECT max(time) FROM Environment) - birth AS age\n\
 FROM AliveBug\n\
 UNION\n\
-SELECT bug_id, dead - birth AS age\n\
+SELECT bug_id, death - birth AS age\n\
 FROM DeadBug\n\
-ORDER BY age DESC, id;", -1, &stmt, NULL))
+ORDER BY age DESC, bug_id;", -1, &stmt, NULL))
     throw EXCEPTION(db::DBException, sqlite3_errmsg(sw.db()));
   show_query_column(true, 10, "NULL", stmt);
   sqlite3_finalize(stmt);
