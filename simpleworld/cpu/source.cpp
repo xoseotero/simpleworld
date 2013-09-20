@@ -825,6 +825,20 @@ Source::Source(const ISA& isa,
 
 
 /**
+ * Clear the content of the source code and reset the internal state.
+ */
+void Source::clear()
+{
+  this->remove(0, this->lines());
+  this->include_path_.clear();
+  this->includes_.clear();
+  this->macros_.clear();
+  this->defines_.clear();
+  this->labels_.clear();
+}
+
+
+/**
  * Load from a file.
  * Before the load, all the lines of the File are removed.
  * @param filename File to open.

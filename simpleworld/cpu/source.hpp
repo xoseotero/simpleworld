@@ -101,6 +101,12 @@ public:
 
 
   /**
+   * Clear the content of the source code and reset the internal state.
+   */
+  void clear();
+
+
+  /**
    * Load from a file.
    * Before the load, all the lines of the File are removed.
    * @param filename File to open.
