@@ -59,45 +59,16 @@ public:
   /**
    * Constructor for a empty file.
    * @param isa Instruction set architecture of the CPU
-   * @param include_path Paths where to search the files to include.
    */
-  Source(const ISA& isa,
-         const std::vector<std::string>& include_path);
-
-
-  /**
-   * Constructor for a empty file.
-   * @param isa Instruction set architecture of the CPU
-   * @param include_path Paths where to search the files to include.
-   * @param definitions Definitions.
-   */
-  Source(const ISA& isa,
-         const std::vector<std::string>& include_path,
-         const std::map<std::string, std::string>& definitions);
+  Source(const ISA& isa);
 
   /**
    * Constructor.
    * @param isa Instruction set architecture of the CPU
-   * @param include_path Paths where to search the files to include.
    * @param filename File to open.
    * @exception IOError if file can't be opened
    */
-  Source(const ISA& isa,
-         const std::vector<std::string>& include_path,
-         const std::string& filename);
-
-  /**
-   * Constructor.
-   * @param isa Instruction set architecture of the CPU
-   * @param include_path Paths where to search the files to include.
-   * @param definitions Definitions.
-   * @param filename File to open.
-   * @exception IOError if file can't be opened
-   */
-  Source(const ISA& isa,
-         const std::vector<std::string>& include_path,
-         const std::map<std::string, std::string>& definitions,
-         const std::string& filename);
+  Source(const ISA& isa, const std::string& filename);
 
 
   /**

@@ -2,7 +2,7 @@
  * @file tests/cpu/cpu_test.cpp
  * Unit test for CPU::CPU.
  *
- *  Copyright (C) 2007-2011  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2007-2013  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -51,8 +51,7 @@ void compile(const cpu::File& file)
   cpu::Memory registers;
   cpu::CPU cpu(&registers, NULL);
 
-  std::vector<std::string> include_path;
-  cpu::Source source(cpu.isa(), include_path);
+  cpu::Source source(cpu.isa());
 
   source.insert(0, file);
   source.compile(CPU_SAVE);

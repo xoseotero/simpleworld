@@ -2,7 +2,7 @@
  * @file src/swlc/swlc.cpp
  * Simple World Language compiler
  *
- *  Copyright (C) 2006-2012  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2006-2013  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -249,7 +249,16 @@ try {
   // This CPU doesn't need memory because only the instruction set is needed
   cpu::Memory registers;
   FakeCPU cpu(&registers, NULL);
-  cpu::Source source(cpu.isa(), include_path, definitions, input);
+  cpu::Source source(cpu.isa(), input);
+  for (std::vector<std::string>::const_iterator iter = include_path.begin();
+       iter != include_path.end();
+       ++iter)
+    source.add_include_path(*iter);
+  for (std::map<std::string, std::string>::const_iterator iter = definitions.begin();
+       iter != definitions.end();
+       ++iter)
+    source.add_define(iter->first, iter->second);
+
   if (preprocess_set) {
     source.preprocess();
     source.save(output);

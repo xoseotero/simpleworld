@@ -46,9 +46,8 @@ void compile(const cpu::File& file)
   cpu::Memory registers;
   FakeCPU cpu(&registers, NULL);
 
-  std::vector<std::string> include_path;
-  include_path.push_back(INCLUDE_DIR);
-  cpu::Source source(cpu.isa(), include_path);
+  cpu::Source source(cpu.isa());
+  source.add_include_path(INCLUDE_DIR);
 
   source.insert(0, file);
   source.compile(CPU_SAVE);

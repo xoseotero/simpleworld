@@ -2,7 +2,7 @@
  * @file tests/cpu/source_test.cpp
  * Unit test for CPU::Source.
  *
- *  Copyright (C) 2007  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2007-2013  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -108,12 +108,10 @@ bool compare_swo(const std::string& file1, const std::string& file2)
  */
 BOOST_AUTO_TEST_CASE(source_preprocess)
 {
-  std::vector<std::string> include_path;
-  include_path.push_back(INCLUDE_DIR);
-
   cpu::Memory registers;
   cpu::CPU cpu(&registers, NULL);
-  cpu::Source compiler(cpu.isa(), include_path, SOURCE);
+  cpu::Source compiler(cpu.isa(), SOURCE);
+  compiler.add_include_path(INCLUDE_DIR);
 
   compiler.preprocess();
 
@@ -125,12 +123,10 @@ BOOST_AUTO_TEST_CASE(source_preprocess)
  */
 BOOST_AUTO_TEST_CASE(source_swo)
 {
-  std::vector<std::string> include_path;
-  include_path.push_back(INCLUDE_DIR);
-
   cpu::Memory registers;
   cpu::CPU cpu(&registers, NULL);
-  cpu::Source compiler(cpu.isa(), include_path, SOURCE);
+  cpu::Source compiler(cpu.isa(), SOURCE);
+  compiler.add_include_path(INCLUDE_DIR);
 
   compiler.compile(SOURCE_SAVE);
 

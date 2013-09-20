@@ -2,7 +2,7 @@
  * @file tests/stdlib/map_test.cpp
  * Unit test for stdlib/map.swl
  *
- *  Copyright (C) 2012  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2013  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -46,9 +46,8 @@ void compile(const cpu::File& file)
   cpu::Memory registers;
   FakeCPU cpu(&registers, NULL);
 
-  std::vector<std::string> include_path;
-  include_path.push_back(INCLUDE_DIR);
-  cpu::Source source(cpu.isa(), include_path);
+  cpu::Source source(cpu.isa());
+  source.add_include_path(INCLUDE_DIR);
 
   source.insert(0, file);
   source.compile(CPU_SAVE);

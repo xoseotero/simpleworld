@@ -769,56 +769,20 @@ static fs::path find_file(const std::vector<std::string>& path,
 /**
  * Constructor for a empty file.
  * @param isa Instruction set architecture of the CPU
- * @param include_path Paths where to search the files to include.
  */
-Source::Source(const ISA& isa,
-               const std::vector<std::string>& include_path)
-  : File(), isa_(isa), include_path_(include_path)
-{
-}
-
-/**
- * Constructor for a empty file.
- * @param isa Instruction set architecture of the CPU
- * @param include_path Paths where to search the files to include.
- * @param definitions Definitions.
- */
-Source::Source(const ISA& isa,
-               const std::vector<std::string>& include_path,
-               const std::map<std::string, std::string>& definitions)
-  : File(), isa_(isa), include_path_(include_path), defines_(definitions)
+Source::Source(const ISA& isa)
+  : File(), isa_(isa)
 {
 }
 
 /**
  * Constructor.
  * @param isa Instruction set architecture of the CPU
- * @param include_path Paths where to search the files to include.
  * @param filename File to open.
  * @exception IOError if file can't be opened
  */
-Source::Source(const ISA& isa,
-               const std::vector<std::string>& include_path,
-               const std::string& filename)
-  : File(filename), isa_(isa), include_path_(include_path)
-{
-  this->load(filename);
-}
-
-/**
- * Constructor.
- * @param isa Instruction set architecture of the CPU
- * @param include_path Paths where to search the files to include.
- * @param definitions Definitions.
- * @param filename File to open.
- * @exception IOError if file can't be opened
- */
-Source::Source(const ISA& isa,
-               const std::vector<std::string>& include_path,
-               const std::map<std::string, std::string>& definitions,
-               const std::string& filename)
-  : File(filename), isa_(isa), include_path_(include_path),
-    defines_(definitions)
+Source::Source(const ISA& isa, const std::string& filename)
+  : File(filename), isa_(isa)
 {
   this->load(filename);
 }
