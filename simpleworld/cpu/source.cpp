@@ -795,7 +795,9 @@ Source::Source(const ISA& isa, const File& file)
 Source::Source(const ISA& isa, const std::string& filename)
   : File(filename), isa_(isa)
 {
-  this->load(filename);
+  // The main file can't be included
+  std::string abs_path(fs::absolute(fs::path(filename)).string());
+  this->includes_.insert(abs_path); // Using the absolute path
 }
 
 
