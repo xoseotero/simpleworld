@@ -2,7 +2,7 @@
  * @file simpleworld/cpu/object.cpp
  * Simple World Language object file.
  *
- *  Copyright (C) 2006-2007  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2006-2013  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -28,6 +28,8 @@
 #include "codeerror.hpp"
 #include "word.hpp"
 #include "instruction.hpp"
+#include "memory.hpp"
+#include "memory_file.hpp"
 #include "file.hpp"
 #include "object.hpp"
 
@@ -39,11 +41,32 @@ namespace cpu
 /**
  * Constructor.
  * @param isa Instruction set architecture of the CPU
+ * @param code Object code.
+ */
+Object::Object(const ISA& isa, const Memory& code)
+  : isa_(isa), code_(code)
+{
+  // All instructions are 32bits, if the file is not X*32bits long is not valid
+  if ((this->code_.size() % sizeof(Word)) != 0)
+    throw EXCEPTION(IOError, boost::str(boost::format("\
+The size of the object code (%1%) is not a multiple of 32bits")
+                                        % this->code_.size()));
+}
+
+/**
+ * Constructor.
+ * @param isa Instruction set architecture of the CPU
  * @param filename File to open.
  */
 Object::Object(const ISA& isa, const std::string& filename)
-  : isa_(isa), filename_(filename)
+  : isa_(isa), code_(MemoryFile(filename))
 {
+  // All instructions are 32bits, if the file is not X*32bits long is not valid
+  if ((this->code_.size() % sizeof(Word)) != 0)
+    throw EXCEPTION(IOError, boost::str(boost::format("\
+The size of %1% (%2%) is not a multiple of 32bits")
+                                        % filename
+                                        % this->code_.size()));
 }
 
 
@@ -57,28 +80,14 @@ Object::Object(const ISA& isa, const std::string& filename)
 void Object::decompile(const std::string filename) const
 {
   File file;
-  File::size_type i = 0;
+  File::size_type line = 0;
   Word instruction;
 
-  std::ifstream is(this->filename_.c_str(), std::ios::binary);
-  if (is.rdstate() & std::ifstream::failbit)
-    throw EXCEPTION(IOError, boost::str(boost::format("\
-File %1% is not readable")
-                                        % filename));
-
-  // All instructions are 32bits, if the file is not X*32bits long is not valid
-  is.seekg(0, std::ios_base::end);
-  if ((is.tellg() % sizeof(Word)) != 0)
-    throw EXCEPTION(IOError, boost::str(boost::format("\
-The size of %1% (%2%) is not a multiple of 32bits")
-                                        % filename
-                                        % is.tellg()));
-
   // Decompile all the code
-  is.seekg(0);
-  while (is.read(reinterpret_cast<char*>(&instruction), sizeof(Word))) {
+  for (Address i = 0; i < this->code_.size(); i += sizeof(Word)) {
+    instruction = this->code_.get_word(i, false);
     try {
-      file.insert(i, this->decompile(instruction));
+      file.insert(line, this->decompile(instruction));
     } catch (const CodeError& e) {
       // If a unknown instruction or register is found suppose that the value
       // is data.
@@ -90,10 +99,10 @@ The size of %1% (%2%) is not a multiple of 32bits")
 #else
 #error endianness not specified
 #endif
-      file.insert(i, data);
+      file.insert(line, data);
     }
 
-    i++;
+    line++;
   }
 
   file.save(filename);

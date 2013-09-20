@@ -2,7 +2,7 @@
  * @file simpleworld/cpu/object.hpp
  * Simple World Language object file.
  *
- *  Copyright (C) 2006-2007  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2006-2013  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -26,6 +26,10 @@
 #include <simpleworld/cpu/types.hpp>
 #include <simpleworld/cpu/isa.hpp>
 
+
+class Memory;
+
+
 namespace simpleworld
 {
 namespace cpu
@@ -39,6 +43,13 @@ namespace cpu
 class Object
 {
 public:
+  /**
+   * Constructor.
+   * @param isa Instruction set architecture of the CPU
+   * @param code Object code.
+   */
+  Object(const ISA& isa, const Memory& code);
+
   /**
    * Constructor.
    * @param isa Instruction set architecture of the CPU
@@ -68,7 +79,7 @@ protected:
 
 private:
   const ISA& isa_;
-  std::string filename_;
+  const Memory code_;
 };
 
 }
