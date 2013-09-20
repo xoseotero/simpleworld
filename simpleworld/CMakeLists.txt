@@ -16,7 +16,7 @@ add_library(simpleworld STATIC ${SIMPLEWORLD_SRCS})
 install(TARGETS simpleworld
   RUNTIME DESTINATION bin
   LIBRARY DESTINATION lib
-  ARCHIVE DESTINATION lib/static)
+  ARCHIVE DESTINATION lib)
 
 
 add_subdirectory(cpu)

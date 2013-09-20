@@ -20,4 +20,4 @@ add_library(simpleworld_db SHARED ${DB_SRCS})
 install(TARGETS simpleworld_db
   RUNTIME DESTINATION bin
   LIBRARY DESTINATION lib
-  ARCHIVE DESTINATION lib/static)
+  ARCHIVE DESTINATION lib)

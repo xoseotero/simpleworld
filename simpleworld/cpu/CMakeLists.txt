@@ -13,4 +13,4 @@ add_library(simpleworld_cpu SHARED ${CPU_SRCS})
 install(TARGETS simpleworld_cpu
   RUNTIME DESTINATION bin
   LIBRARY DESTINATION lib
-  ARCHIVE DESTINATION lib/static)
+  ARCHIVE DESTINATION lib)
