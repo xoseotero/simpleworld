@@ -51,9 +51,7 @@ void compile(const cpu::File& file)
   cpu::Memory registers;
   cpu::CPU cpu(&registers, NULL);
 
-  cpu::Source source(cpu.isa());
-
-  source.insert(0, file);
+  cpu::Source source(cpu.isa(), file);
   source.compile(CPU_SAVE);
 }
 

@@ -778,6 +778,17 @@ Source::Source(const ISA& isa)
 /**
  * Constructor.
  * @param isa Instruction set architecture of the CPU
+ * @param file File to copy.
+ * @exception IOError if file can't be opened
+ */
+Source::Source(const ISA& isa, const File& file)
+  : File(file), isa_(isa)
+{
+}
+
+/**
+ * Constructor.
+ * @param isa Instruction set architecture of the CPU
  * @param filename File to open.
  * @exception IOError if file can't be opened
  */
@@ -801,6 +812,20 @@ void Source::clear()
   this->labels_.clear();
 }
 
+
+/**
+ * Load from a file.
+ * Before the load, all the lines of the File are removed.
+ * @param filename File to open.
+ */
+void Source::load(const File& file)
+{
+  File::remove(0, this->lines());
+  File::insert(file);
+
+  // Clear the includes in a reload
+  this->includes_.clear();
+}
 
 /**
  * Load from a file.

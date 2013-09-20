@@ -48,10 +48,8 @@ void compile(const cpu::File& file)
   cpu::Memory registers;
   FakeCPU cpu(&registers, NULL);
 
-  cpu::Source source(cpu.isa());
+  cpu::Source source(cpu.isa(), file);
   source.add_include_path(INCLUDE_DIR);
-
-  source.insert(0, file);
   source.compile(CPU_SAVE);
 }
 

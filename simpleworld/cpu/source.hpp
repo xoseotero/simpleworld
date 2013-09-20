@@ -65,6 +65,13 @@ public:
   /**
    * Constructor.
    * @param isa Instruction set architecture of the CPU
+   * @param file File to copy.
+   */
+  Source(const ISA& isa, const File& file);
+
+  /**
+   * Constructor.
+   * @param isa Instruction set architecture of the CPU
    * @param filename File to open.
    * @exception IOError if file can't be opened
    */
@@ -76,6 +83,13 @@ public:
    */
   void clear();
 
+
+  /**
+   * Load from a file.
+   * Before the load, all the lines of the File are removed.
+   * @param filename File to open.
+   */
+  void load(const File& file);
 
   /**
    * Load from a file.
