@@ -28,6 +28,7 @@
 
 
 class Memory;
+class File;
 
 
 namespace simpleworld
@@ -57,6 +58,13 @@ public:
    */
   Object(const ISA& isa, const std::string& filename);
 
+
+  /**
+   * Decompile the object code to source code.
+   * If a unknown instruction or register is found suppose that the value
+   * is data.
+   */
+  File decompile() const;
 
   /**
    * Decompile the object code to source code.

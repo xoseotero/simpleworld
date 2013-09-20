@@ -74,10 +74,8 @@ The size of %1% (%2%) is not a multiple of 32bits")
  * Decompile the object code to source code.
  * If a unknown instruction or register is found suppose that the value
  * is data.
- * @param filename File where to save.
- * @exception IOError problem with file.
  */
-void Object::decompile(const std::string filename) const
+File Object::decompile() const
 {
   File file;
   File::size_type line = 0;
@@ -105,7 +103,19 @@ void Object::decompile(const std::string filename) const
     line++;
   }
 
-  file.save(filename);
+  return file;
+}
+
+/**
+ * Decompile the object code to source code.
+ * If a unknown instruction or register is found suppose that the value
+ * is data.
+ * @param filename File where to save.
+ * @exception IOError problem with file.
+ */
+void Object::decompile(const std::string filename) const
+{
+  this->decompile().save(filename);
 }
 
 
