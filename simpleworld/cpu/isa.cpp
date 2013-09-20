@@ -2,7 +2,7 @@
  * @file simpleworld/cpu/instruction.cpp
  * Instruction set architecture.
  *
- *  Copyright (C) 2006-2007  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2006-2013  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -35,6 +35,18 @@ namespace cpu
  */
 ISA::ISA()
 {
+  for (Uint16 i = 0; i < 256; i++)
+    this->instructions_[i] = NULL;
+}
+
+/**
+ * Destructor.
+ */
+ISA::~ISA()
+{
+  for (Uint16 i = 0; i < 256; i++)
+    if (this->instructions_[i] != NULL)
+      delete this->instructions_[i];
 }
 
 
@@ -46,12 +58,9 @@ std::vector<Uint8> ISA::instruction_codes() const
 {
   std::vector<Uint8> instructions;
 
-  std::map<Uint8, InstructionInfo>::const_iterator iter =
-    this->instructions_.begin();
-  while (iter != this->instructions_.end()) {
-    instructions.push_back((*iter).first);
-    ++iter;
-  }
+  for (Uint16 i = 0; i < 256; i++)
+    if (this->instructions_[i] != NULL)
+      instructions.push_back(i);
 
   return instructions;
 }
@@ -100,14 +109,12 @@ std::vector<Uint8> ISA::interrupt_codes() const
  */
 InstructionInfo ISA::instruction_info(Uint8 code) const
 {
-  std::map<Uint8, InstructionInfo>::const_iterator iter =
-    this->instructions_.find(code);
-  if (iter == this->instructions_.end())
+  if (this->instructions_[code] == NULL)
     throw EXCEPTION(CodeError, boost::str(boost::format("\
 Instruction 0x%02X not found")
                                           % code));
 
-  return (*iter).second;
+  return *this->instructions_[code];
 }
 
 /**
@@ -208,14 +215,12 @@ Interrupt %1% not found")
  */
 void ISA::add_instruction(InstructionInfo instruction)
 {
-  if (this->instructions_.find(instruction.code) != this->instructions_.end())
+  if (this->instructions_[instruction.code] != NULL)
     throw EXCEPTION(CodeError, boost::str(boost::format("\
 Instruction 0x%02X already exists")
                                           % instruction.code));
 
-  this->instructions_.insert(std::pair<Uint8,
-                             InstructionInfo>(instruction.code,
-                                              instruction));
+  this->instructions_[instruction.code] = new InstructionInfo(instruction);
   this->instruction_codes_.insert(std::pair<std::string,
                                   Uint8>(instruction.name,
                                          instruction.code));
@@ -244,15 +249,14 @@ void ISA::add_instruction(Uint8 code, std::string name, Uint8 nregs,
  */
 void ISA::remove_instruction(Uint8 code)
 {
-  std::map<Uint8, InstructionInfo>::iterator iter =
-    this->instructions_.find(code);
-  if (iter == this->instructions_.end())
+  if (this->instructions_[code] == NULL)
     throw EXCEPTION(CodeError, boost::str(boost::format("\
 Instruction 0x%02X not found")
                                           % code));
 
-  this->instruction_codes_.erase((*iter).second.name);
-  this->instructions_.erase(iter);
+  this->instruction_codes_.erase(this->instructions_[code]->name);
+  delete this->instructions_[code];
+  this->instructions_[code] = NULL;
 }
 
 /**

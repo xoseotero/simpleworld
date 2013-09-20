@@ -2,7 +2,7 @@
  * @file simpleworld/cpu/isa.hpp
  * Instruction set architecture.
  *
- *  Copyright (C) 2006-2007  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2006-2013  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -90,6 +90,11 @@ public:
    * Constructor for a empty instruction set.
    */
   ISA();
+
+  /**
+   * Destructor;
+   */
+  ~ISA();
 
 
   /**
@@ -225,7 +230,7 @@ public:
   void remove_interrupt(Uint8 code);
 
 private:
-  std::map<Uint8, InstructionInfo> instructions_;
+  InstructionInfo* instructions_[256];
   std::map<std::string, Uint8> instruction_codes_;
 
   std::map<Uint8, std::string> registers_;
