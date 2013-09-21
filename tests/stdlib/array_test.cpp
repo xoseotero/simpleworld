@@ -23,7 +23,6 @@
 #include <boost/test/unit_test.hpp>
 
 #include <simpleworld/cpu/memory.hpp>
-#include <simpleworld/cpu/memory_file.hpp>
 #include <simpleworld/cpu/file.hpp>
 #include <simpleworld/cpu/source.hpp>
 namespace sw = simpleworld;
@@ -33,22 +32,25 @@ namespace cpu = simpleworld::cpu;
 
 
 #define REGISTER(cpu, name) ADDRESS((cpu).isa().register_code(name))
-#define CPU_SAVE (TESTOUTPUT "array.swo")
 #define MAX_CYCLES 4096
 
 
 /**
- * Compile a file to CPU_SAVE.
+ * Compile a file.
  * @param file file to compile
+ * @return object code
  */
-void compile(const cpu::File& file)
+cpu::Memory compile(const cpu::File& file)
 {
   cpu::Memory registers;
   FakeCPU cpu(&registers, NULL);
 
   cpu::Source source(cpu.isa(), file);
   source.add_include_path(INCLUDE_DIR);
-  source.compile(CPU_SAVE);
+  cpu::Memory mem;
+  source.compile(&mem);
+
+  return mem;
 }
 
 
@@ -136,10 +138,8 @@ BOOST_AUTO_TEST_CASE(std_array)
   source.insert(".label stack");
   source.insert(".block 0x80");
 
-  compile(source);
-
   cpu::Memory registers;
-  cpu::MemoryFile memory(CPU_SAVE);
+  cpu::Memory memory(compile(source));
   FakeCPU cpu(&registers, &memory);
   cpu.execute(MAX_CYCLES);
 
@@ -202,10 +202,8 @@ BOOST_AUTO_TEST_CASE(std_arraysize)
   source.insert(".label stack");
   source.insert(".block 0x80");
 
-  compile(source);
-
   cpu::Memory registers;
-  cpu::MemoryFile memory(CPU_SAVE);
+  cpu::Memory memory(compile(source));
   FakeCPU cpu(&registers, &memory);
   cpu.execute(MAX_CYCLES);
 
@@ -272,10 +270,8 @@ BOOST_AUTO_TEST_CASE(std_arrayget)
   source.insert(".label stack");
   source.insert(".block 0x80");
 
-  compile(source);
-
   cpu::Memory registers;
-  cpu::MemoryFile memory(CPU_SAVE);
+  cpu::Memory memory(compile(source));
   FakeCPU cpu(&registers, &memory);
   cpu.execute(MAX_CYCLES);
 
@@ -336,10 +332,8 @@ BOOST_AUTO_TEST_CASE(std_arrayfill)
   source.insert(".label stack");
   source.insert(".block 0x80");
 
-  compile(source);
-
   cpu::Memory registers;
-  cpu::MemoryFile memory(CPU_SAVE);
+  cpu::Memory memory(compile(source));
   FakeCPU cpu(&registers, &memory);
   cpu.execute(MAX_CYCLES);
 
@@ -408,10 +402,8 @@ BOOST_AUTO_TEST_CASE(std_arrayfind)
   source.insert(".label stack");
   source.insert(".block 0x80");
 
-  compile(source);
-
   cpu::Memory registers;
-  cpu::MemoryFile memory(CPU_SAVE);
+  cpu::Memory memory(compile(source));
   FakeCPU cpu(&registers, &memory);
   cpu.execute(MAX_CYCLES);
 
@@ -478,10 +470,8 @@ BOOST_AUTO_TEST_CASE(std_arraycount)
   source.insert(".label stack");
   source.insert(".block 0x80");
 
-  compile(source);
-
   cpu::Memory registers;
-  cpu::MemoryFile memory(CPU_SAVE);
+  cpu::Memory memory(compile(source));
   FakeCPU cpu(&registers, &memory);
   cpu.execute(MAX_CYCLES);
 

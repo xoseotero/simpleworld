@@ -23,7 +23,6 @@
 #include <boost/test/unit_test.hpp>
 
 #include <simpleworld/cpu/memory.hpp>
-#include <simpleworld/cpu/memory_file.hpp>
 #include <simpleworld/cpu/file.hpp>
 #include <simpleworld/cpu/source.hpp>
 namespace sw = simpleworld;
@@ -34,21 +33,23 @@ namespace cpu = simpleworld::cpu;
 
 #define REGISTER(cpu, name) ADDRESS((cpu).isa().register_code(name))
 
-#define CPU_SAVE (TESTOUTPUT "error.swo")
-
 
 /**
- * Compile a file to CPU_SAVE.
+ * Compile a file.
  * @param file file to compile
+ * @return object code
  */
-void compile(const cpu::File& file)
+cpu::Memory compile(const cpu::File& file)
 {
   cpu::Memory registers;
   FakeCPU cpu(&registers, NULL);
 
   cpu::Source source(cpu.isa(), file);
   source.add_include_path(INCLUDE_DIR);
-  source.compile(CPU_SAVE);
+  cpu::Memory mem;
+  source.compile(&mem);
+
+  return mem;
 }
 
 
@@ -76,10 +77,9 @@ BOOST_AUTO_TEST_CASE(swl_definitions)
   source.insert("STD_EFAULT");
   source.insert("STD_EOVERFLOW");
   source.insert("STD_ENOMEM");
-  compile(source);
 
   cpu::Memory registers;
-  cpu::MemoryFile memory(CPU_SAVE);
+  cpu::Memory memory(compile(source));
   FakeCPU cpu(&registers, &memory);
 
   BOOST_CHECK_EQUAL(memory[ADDRESS(0)], 0x0000);

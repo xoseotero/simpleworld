@@ -30,6 +30,7 @@
 #include <simpleworld/cpu/types.hpp>
 #include <simpleworld/cpu/isa.hpp>
 #include <simpleworld/cpu/file.hpp>
+#include <simpleworld/cpu/memory.hpp>
 
 namespace simpleworld
 {
@@ -131,6 +132,15 @@ public:
    */
   void preprocess(bool strip = false);
 
+
+  /**
+   * Compile the source code to object code.
+   * @param mem Memory where to save.
+   * @return the warning messages generated during the compilation.
+   * @exception ParserError error found in the code.
+   * @exception ErrorDirective error directive found in the code.
+   */
+  std::vector<std::string> compile(Memory* mem);
 
   /**
    * Compile the source code to object code.

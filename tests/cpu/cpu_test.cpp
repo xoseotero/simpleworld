@@ -29,7 +29,6 @@
 #include <simpleworld/ints.hpp>
 #include <simpleworld/cpu/types.hpp>
 #include <simpleworld/cpu/memory.hpp>
-#include <simpleworld/cpu/memory_file.hpp>
 #include <simpleworld/cpu/cpu.hpp>
 #include <simpleworld/cpu/file.hpp>
 #include <simpleworld/cpu/source.hpp>
@@ -39,20 +38,22 @@ namespace cpu = simpleworld::cpu;
 
 #define REGISTER(cpu, name) ADDRESS((cpu).isa().register_code(name))
 
-#define CPU_SAVE (TESTOUTPUT "cpu_save.swo")
-
 
 /**
- * Compile a file to CPU_SAVE.
+ * Compile a file.
  * @param file file to compile
+ * @return object code
  */
-void compile(const cpu::File& file)
+cpu::Memory compile(const cpu::File& file)
 {
   cpu::Memory registers;
   cpu::CPU cpu(&registers, NULL);
 
   cpu::Source source(cpu.isa(), file);
-  source.compile(CPU_SAVE);
+  cpu::Memory mem;
+  source.compile(&mem);
+
+  return mem;
 }
 
 
@@ -189,11 +190,9 @@ BOOST_AUTO_TEST_CASE(cpu_management_stop)
   cpu::Source::size_type line = 0;
 
   source.insert(line++, "stop");
-  compile(source);
-
 
   cpu::Memory registers;
-  cpu::MemoryFile memory(CPU_SAVE);
+  cpu::Memory memory(compile(source));
   cpu::CPU cpu(&registers, &memory);
   cpu.execute(line);
 
@@ -209,11 +208,9 @@ BOOST_AUTO_TEST_CASE(cpu_management_restart)
   cpu::Source::size_type line = 0;
 
   source.insert(line++, "restart");
-  compile(source);
-
 
   cpu::Memory registers;
-  cpu::MemoryFile memory(CPU_SAVE);
+  cpu::Memory memory(compile(source));
   cpu::CPU cpu(&registers, &memory);
   cpu.execute(line);
 
@@ -265,11 +262,8 @@ BOOST_AUTO_TEST_CASE(cpu_load_special)
   source.insert(line++, ".label data");
   source.insert(line++, "0x1234abcd");
 
-  compile(source);
-
-
   cpu::Memory registers;
-  cpu::MemoryFile memory(CPU_SAVE);
+  cpu::Memory memory(compile(source));
   cpu::CPU cpu(&registers, &memory);
   cpu.execute(data);
 
@@ -324,11 +318,8 @@ BOOST_AUTO_TEST_CASE(cpu_load_word)
   source.insert(line++, "0x77777757");
   source.insert(line++, "0x01010101");
 
-  compile(source);
-
-
   cpu::Memory registers;
-  cpu::MemoryFile memory(CPU_SAVE);
+  cpu::Memory memory(compile(source));
   cpu::CPU cpu(&registers, &memory);
   cpu.execute(data);
 
@@ -389,11 +380,8 @@ BOOST_AUTO_TEST_CASE(cpu_load_haldword)
   source.insert(line++, "0x77777757");
   source.insert(line++, "0x01010101");
 
-  compile(source);
-
-
   cpu::Memory registers;
-  cpu::MemoryFile memory(CPU_SAVE);
+  cpu::Memory memory(compile(source));
   cpu::CPU cpu(&registers, &memory);
   cpu.execute(data);
 
@@ -447,11 +435,8 @@ BOOST_AUTO_TEST_CASE(cpu_load_quarterword)
   source.insert(line++, "0x77777757");
   source.insert(line++, "0x01010101");
 
-  compile(source);
-
-
   cpu::Memory registers;
-  cpu::MemoryFile memory(CPU_SAVE);
+  cpu::Memory memory(compile(source));
   cpu::CPU cpu(&registers, &memory);
   cpu.execute(data);
 
@@ -511,11 +496,8 @@ BOOST_AUTO_TEST_CASE(cpu_store_word)
   source.insert(line++, "0x08080808");
   source.insert(line++, "0x08080808");
 
-  compile(source);
-
-
   cpu::Memory registers;
-  cpu::MemoryFile memory(CPU_SAVE);
+  cpu::Memory memory(compile(source));
   cpu::CPU cpu(&registers, &memory);
   cpu.execute(data);
 
@@ -563,11 +545,8 @@ BOOST_AUTO_TEST_CASE(cpu_store_halfword)
   source.insert(line++, "0x08080808");
   source.insert(line++, "0x08080808");
 
-  compile(source);
-
-
   cpu::Memory registers;
-  cpu::MemoryFile memory(CPU_SAVE);
+  cpu::Memory memory(compile(source));
   cpu::CPU cpu(&registers, &memory);
   cpu.execute(data);
 
@@ -612,11 +591,8 @@ BOOST_AUTO_TEST_CASE(cpu_store_quarterword)
   source.insert(line++, ".label data");
   source.insert(line++, "0x08080808");
 
-  compile(source);
-
-
   cpu::Memory registers;
-  cpu::MemoryFile memory(CPU_SAVE);
+  cpu::Memory memory(compile(source));
   cpu::CPU cpu(&registers, &memory);
   cpu.execute(data);
 
@@ -648,11 +624,8 @@ BOOST_AUTO_TEST_CASE(cpu_move)
   source.insert(line++, "swap sp g2");
   source.insert(line++, "swap fp g3");
 
-  compile(source);
-
-
   cpu::Memory registers;
-  cpu::MemoryFile memory(CPU_SAVE);
+  cpu::Memory memory(compile(source));
   cpu::CPU cpu(&registers, &memory);
   cpu.execute(line);
 
@@ -691,11 +664,8 @@ BOOST_AUTO_TEST_CASE(cpu_stack)
   source.insert(line++, ".label stack");
   source.insert(line++, ".block 0x4");
 
-  compile(source);
-
-
   cpu::Memory registers;
-  cpu::MemoryFile memory(CPU_SAVE);
+  cpu::Memory memory(compile(source));
   cpu::CPU cpu(&registers, &memory);
 
   cpu.execute(stack);
@@ -810,11 +780,8 @@ BOOST_AUTO_TEST_CASE(cpu_branch)
   source.insert(line++, ".label data");
   source.insert(line++, ".block 0x34");
 
-  compile(source);
-
-
   cpu::Memory registers;
-  cpu::MemoryFile memory(CPU_SAVE);
+  cpu::Memory memory(compile(source));
   cpu::CPU cpu(&registers, &memory);
 
   cpu.execute();
@@ -878,11 +845,8 @@ BOOST_AUTO_TEST_CASE(cpu_function)
   source.insert(line++, ".label stack");
   source.insert(line++, ".block 0x8");
 
-  compile(source);
-
-
   cpu::Memory registers;
-  cpu::MemoryFile memory(CPU_SAVE);
+  cpu::Memory memory(compile(source));
   cpu::CPU cpu(&registers, &memory);
 
   cpu.execute();
@@ -955,11 +919,8 @@ BOOST_AUTO_TEST_CASE(cpu_interrupt)
   source.insert(line++, "handler_int");   // Invalid memory location
   source.insert(line++, "handler_int");   // Division by zero
 
-  compile(source);
-
-
   cpu::Memory registers;
-  cpu::MemoryFile memory(CPU_SAVE);
+  cpu::Memory memory(compile(source));
   cpu::CPU cpu(&registers, &memory);
 
   cpu.execute();
@@ -1027,11 +988,8 @@ BOOST_AUTO_TEST_CASE(cpu_frame_pointer)
   source.insert(line++, "0x0");         // Invalid memory location
   source.insert(line++, "0x0");         // Division by zero
 
-  compile(source);
-
-
   cpu::Memory registers;
-  cpu::MemoryFile memory(CPU_SAVE);
+  cpu::Memory memory(compile(source));
   cpu::CPU cpu(&registers, &memory);
 
   cpu.execute();
@@ -1077,11 +1035,8 @@ BOOST_AUTO_TEST_CASE(cpu_stack_increases)
   source.insert(line++, "0x0");         // Invalid memory location
   source.insert(line++, "0x0");         // Division by zero
 
-  compile(source);
-
-
   cpu::Memory registers;
-  cpu::MemoryFile memory(CPU_SAVE);
+  cpu::Memory memory(compile(source));
   cpu::CPU cpu(&registers, &memory);
 
   sw::Uint32 sp = 0;
@@ -1136,11 +1091,8 @@ BOOST_AUTO_TEST_CASE(cpu_stack_decreases)
   source.insert(line++, "0x0");         // Invalid memory location
   source.insert(line++, "0x0");         // Division by zero
 
-  compile(source);
-
-
   cpu::Memory registers;
-  cpu::MemoryFile memory(CPU_SAVE);
+  cpu::Memory memory(compile(source));
   cpu::CPU cpu(&registers, &memory);
 
   cpu.execute(1);
@@ -1172,11 +1124,9 @@ BOOST_AUTO_TEST_CASE(cpu_arithmetic_add)
   source.insert(line++, "sub r5 g0 g1");
   source.insert(line++, "subi lr g2 0xf0f0");
   source.insert(line++, "subi fp g0 0x1");
-  compile(source);
-
 
   cpu::Memory registers;
-  cpu::MemoryFile memory(CPU_SAVE);
+  cpu::Memory memory(compile(source));
   cpu::CPU cpu(&registers, &memory);
 
   cpu.execute(line);
@@ -1215,11 +1165,9 @@ BOOST_AUTO_TEST_CASE(cpu_arithmetic_mult)
   source.insert(line++, "multhi r5 g3 0x1");
   source.insert(line++, "multhu lr g3 g3");
   source.insert(line++, "multhui fp g3 0xf");
-  compile(source);
-
 
   cpu::Memory registers;
-  cpu::MemoryFile memory(CPU_SAVE);
+  cpu::Memory memory(compile(source));
   cpu::CPU cpu(&registers, &memory);
 
   cpu.execute(line);
@@ -1257,11 +1205,9 @@ BOOST_AUTO_TEST_CASE(cpu_arithmetic_div)
   source.insert(line++, "mod r5 g2 g1");
   source.insert(line++, "modi lr g1 0x9");
   source.insert(line++, "modi fp g3 0xffff");
-  compile(source);
-
 
   cpu::Memory registers;
-  cpu::MemoryFile memory(CPU_SAVE);
+  cpu::Memory memory(compile(source));
   cpu::CPU cpu(&registers, &memory);
 
   cpu.execute(line);
@@ -1302,11 +1248,8 @@ BOOST_AUTO_TEST_CASE(cpu_sign_halfword)
   source.insert(line++, "signq lr g2");
   source.insert(line++, "signq fp g3");
 
-  compile(source);
-
-
   cpu::Memory registers;
-  cpu::MemoryFile memory(CPU_SAVE);
+  cpu::Memory memory(compile(source));
   cpu::CPU cpu(&registers, &memory);
   cpu.execute(line);
 
@@ -1343,11 +1286,8 @@ BOOST_AUTO_TEST_CASE(cpu_logic)
   source.insert(line++, "xor r5 g1 g3");
   source.insert(line++, "xori fp g2 0x1010");
 
-  compile(source);
-
-
   cpu::Memory registers;
-  cpu::MemoryFile memory(CPU_SAVE);
+  cpu::Memory memory(compile(source));
   cpu::CPU cpu(&registers, &memory);
   cpu.execute(line);
 
@@ -1401,11 +1341,8 @@ BOOST_AUTO_TEST_CASE(cpu_shift)
   source.insert(line++, "rli fp g2 0x4");
   source.insert(line++, "rri fp fp 0x4"); // fp = 0x0707
 
-  compile(source);
-
-
   cpu::Memory registers;
-  cpu::MemoryFile memory(CPU_SAVE);
+  cpu::Memory memory(compile(source));
   cpu::CPU cpu(&registers, &memory);
   cpu.execute(line);
 
@@ -1443,11 +1380,8 @@ BOOST_AUTO_TEST_CASE(cpu_windows)
   source.insert(line++, ".label stack");
   source.insert(line++, ".block 0x8");
 
-  compile(source);
-
-
   cpu::Memory registers;
-  cpu::MemoryFile memory(CPU_SAVE);
+  cpu::Memory memory(compile(source));
   cpu::CPU cpu(&registers, &memory);
   cpu.execute();
 
