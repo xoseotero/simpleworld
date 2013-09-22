@@ -34,12 +34,13 @@
 #include <simpleworld/cpu/errordirective.hpp>
 #include <simpleworld/cpu/memory.hpp>
 #include <simpleworld/cpu/source.hpp>
+#include <simpleworld/cpu/cpu.hpp>
 namespace sw = simpleworld;
 namespace cpu = simpleworld::cpu;
 
 #include "../common/info.hpp"
 #include "../common/printexc.hpp"
-#include "../common/fakecpu.hpp"
+#include "../common/fakeisa.hpp"
 
 #define DEFAULT_OUTPUT "out.swo"
 
@@ -248,7 +249,7 @@ try {
 
   // This CPU doesn't need memory because only the instruction set is needed
   cpu::Memory registers;
-  FakeCPU cpu(&registers, NULL);
+  cpu::CPU cpu(fakeisa, &registers, NULL);
   cpu::Source source(cpu.isa(), input);
   for (std::vector<std::string>::const_iterator iter = include_path.begin();
        iter != include_path.end();

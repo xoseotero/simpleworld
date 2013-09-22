@@ -23,12 +23,12 @@
 #include <boost/test/unit_test.hpp>
 
 #include <simpleworld/cpu/memory.hpp>
-#include <simpleworld/cpu/file.hpp>
 #include <simpleworld/cpu/source.hpp>
+#include <simpleworld/cpu/cpu.hpp>
 namespace sw = simpleworld;
 namespace cpu = simpleworld::cpu;
 
-#include "src/common/fakecpu.hpp"
+#include "src/common/fakeisa.hpp"
 
 
 #define REGISTER(cpu, name) ADDRESS((cpu).isa().register_code(name))
@@ -36,30 +36,12 @@ namespace cpu = simpleworld::cpu;
 
 
 /**
- * Compile a file.
- * @param file file to compile
- * @return object code
- */
-cpu::Memory compile(const cpu::File& file)
-{
-  cpu::Memory registers;
-  FakeCPU cpu(&registers, NULL);
-
-  cpu::Source source(cpu.isa(), file);
-  source.add_include_path(INCLUDE_DIR);
-  cpu::Memory mem;
-  source.compile(&mem);
-
-  return mem;
-}
-
-
-/**
  * Compile the file.
  */
 BOOST_AUTO_TEST_CASE(swl_compile)
 {
-  cpu::File source;
+  cpu::Source source(fakeisa);
+  source.add_include_path(INCLUDE_DIR);
 
   source.insert(".include \"stdlib/multimap.swl\"");
 
@@ -72,7 +54,8 @@ BOOST_AUTO_TEST_CASE(swl_compile)
   source.insert("std_multimapiterator");
   source.insert("std_multimapcheck");
 
-  BOOST_CHECK_NO_THROW(compile(source));
+  cpu::Memory memory;
+  BOOST_CHECK_NO_THROW(source.compile(&memory));
 }
 
 /**
@@ -81,7 +64,8 @@ BOOST_AUTO_TEST_CASE(swl_compile)
  */
 BOOST_AUTO_TEST_CASE(std_multimap)
 {
-  cpu::File source;
+  cpu::Source source(fakeisa);
+  source.add_include_path(INCLUDE_DIR);
 
   // Initialize the stack pointer
   source.insert(".label init");
@@ -137,8 +121,9 @@ BOOST_AUTO_TEST_CASE(std_multimap)
   source.insert(".block 0x80");
 
   cpu::Memory registers;
-  cpu::Memory memory(compile(source));
-  FakeCPU cpu(&registers, &memory);
+  cpu::Memory memory;
+  source.compile(&memory);
+  cpu::CPU cpu(fakeisa, &registers, &memory);
   cpu.execute(MAX_CYCLES);
 
   BOOST_CHECK(not cpu.running());
@@ -155,7 +140,8 @@ BOOST_AUTO_TEST_CASE(std_multimap)
  */
 BOOST_AUTO_TEST_CASE(std_multimapinsert)
 {
-  cpu::File source;
+  cpu::Source source(fakeisa);
+  source.add_include_path(INCLUDE_DIR);
 
   // Initialize the stack pointer
   source.insert(".label init");
@@ -217,8 +203,9 @@ BOOST_AUTO_TEST_CASE(std_multimapinsert)
   source.insert(".block 0x80");
 
   cpu::Memory registers;
-  cpu::Memory memory(compile(source));
-  FakeCPU cpu(&registers, &memory);
+  cpu::Memory memory;
+  source.compile(&memory);
+  cpu::CPU cpu(fakeisa, &registers, &memory);
   cpu.execute(MAX_CYCLES);
 
   BOOST_CHECK(not cpu.running());
@@ -231,7 +218,8 @@ BOOST_AUTO_TEST_CASE(std_multimapinsert)
  */
 BOOST_AUTO_TEST_CASE(std_multimapremove)
 {
-  cpu::File source;
+  cpu::Source source(fakeisa);
+  source.add_include_path(INCLUDE_DIR);
 
   // Initialize the stack pointer
   source.insert(".label init");
@@ -299,8 +287,9 @@ BOOST_AUTO_TEST_CASE(std_multimapremove)
   source.insert(".block 0x80");
 
   cpu::Memory registers;
-  cpu::Memory memory(compile(source));
-  FakeCPU cpu(&registers, &memory);
+  cpu::Memory memory;
+  source.compile(&memory);
+  cpu::CPU cpu(fakeisa, &registers, &memory);
   cpu.execute(MAX_CYCLES);
 
   BOOST_CHECK(not cpu.running());
@@ -313,7 +302,8 @@ BOOST_AUTO_TEST_CASE(std_multimapremove)
  */
 BOOST_AUTO_TEST_CASE(std_multimapcheck)
 {
-  cpu::File source;
+  cpu::Source source(fakeisa);
+  source.add_include_path(INCLUDE_DIR);
 
   // Initialize the stack pointer
   source.insert(".label init");
@@ -367,8 +357,9 @@ BOOST_AUTO_TEST_CASE(std_multimapcheck)
   source.insert(".block 0x80");
 
   cpu::Memory registers;
-  cpu::Memory memory(compile(source));
-  FakeCPU cpu(&registers, &memory);
+  cpu::Memory memory;
+  source.compile(&memory);
+  cpu::CPU cpu(fakeisa, &registers, &memory);
   cpu.execute(MAX_CYCLES);
 
   BOOST_CHECK(not cpu.running());

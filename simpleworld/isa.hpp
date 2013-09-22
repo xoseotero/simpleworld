@@ -1,8 +1,8 @@
 /**
- * @file simpleworld/operations.hpp
- * World operation of the Simple CPU.
+ * @file simpleworld/isa.hpp
+ * Instruction set architecture.
  *
- *  Copyright (C) 2007  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2013  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -18,24 +18,37 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef SIMPLEWORLD_OPERATIONS_HPP
-#define SIMPLEWORLD_OPERATIONS_HPP
+#ifndef SIMPLEWORLD_ISA_HPP
+#define SIMPLEWORLD_ISA_HPP
 
-#include <simpleworld/cpu/types.hpp>
-#include <simpleworld/cpu/instruction.hpp>
 #include <simpleworld/cpu/isa.hpp>
+
+
+#define INTERRUPT_WORLDACTION (0x5)
+#define INTERRUPT_WORLDEVENT (0x6)
+
 
 namespace simpleworld
 {
 
 /**
- * Make a action in the world.
- * @param cpu the CPU.
- * @param inst the instruction.
- * @return if the PC must be updated.
+ * Instruction set architecture.
  */
-cpu::Update world(cpu::CPU& cpu, cpu::Instruction inst);
+class ISA: public cpu::ISA
+{
+public:
+  /**
+   * Constructor.
+   */
+  ISA();
+};
+
+
+/**
+ * Global variable with the ISA.
+ */
+extern const ISA isa;
 
 }
 
-#endif // SIMPLEWORLD_OPERATIONS_HPP
+#endif // SIMPLEWORLD_ISA_HPP

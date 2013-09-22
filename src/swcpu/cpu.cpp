@@ -2,7 +2,7 @@
  * @file src/swcpu/cpu.cpp
  * FakeCPU subclass that shows information about the execution.
  *
- *  Copyright (C) 2010  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2010-2013  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -26,6 +26,8 @@
 #include <simpleworld/cpu/instruction.hpp>
 #include <simpleworld/cpu/codeerror.hpp>
 
+#include "../common/fakeisa.hpp"
+
 #include "cpu.hpp"
 namespace cpu = simpleworld::cpu;
 
@@ -36,7 +38,7 @@ namespace cpu = simpleworld::cpu;
  * @exception FileAccessError problem with the file.
  */
 CPU::CPU(const std::string& filename) throw ()
-  : FakeCPU(&this->registers_, &this->memory_),
+  : cpu::CPU(fakeisa, &this->registers_, &this->memory_),
     cpu::Object(cpu::CPU::isa_, filename),
     memory_(filename, &last_access)
 {
@@ -62,7 +64,7 @@ void CPU::next()
   }
 
 
-  FakeCPU::next();
+  cpu::CPU::next();
 
   sw::Uint8 i = 1;
   std::vector<sw::Uint8> regs_codes = cpu::CPU::isa_.register_codes();

@@ -1,8 +1,8 @@
 /**
- * @file src/common/fakecpu.hpp
- * Fake CPU that add a "world" operation that does nothing.
+ * @file src/common/fakeisa.hpp
+ * Fake ISA that adds a "world" operation that does nothing.
  *
- *  Copyright (C) 2007  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2013  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -18,26 +18,29 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef FAKECPU_HPP
-#define FAKECPU_HPP
+#ifndef FAKEISA_HPP
+#define FAKEISA_HPP
 
-#include <simpleworld/cpu/cpu.hpp>
+#include <simpleworld/cpu/isa.hpp>
 namespace sw = simpleworld;
 namespace cpu = simpleworld::cpu;
 
 /**
- * Fake CPU that add a "world" operation that does nothing.
+ * Fake ISA that adds a "world" operation that does nothing.
  */
-class FakeCPU: public cpu::CPU
+class FakeISA: public cpu::ISA
 {
 public:
   /**
    * Constructor.
-   * The registers size can change to allow at least 16 registers.
-   * @param registers registers of the CPU.
-   * @param memory memory of the CPU.
    */
-  FakeCPU(cpu::Memory* registers, cpu::Memory* memory);
+  FakeISA();
 };
 
-#endif // FAKECPU_HPP
+
+/**
+ * Global variable with the fake ISA.
+ */
+extern const FakeISA fakeisa;
+
+#endif // FAKEISA_HPP

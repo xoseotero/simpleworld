@@ -30,6 +30,37 @@
 #include <simpleworld/cpu/instruction.hpp>
 #include <simpleworld/cpu/memory.hpp>
 
+
+#define GLOBAL_REGISTERS        8      // Shared registers
+#define REGISTERS_PER_WINDOW    8      // Registers per window
+#define REGISTER_WINDOWS        16     // Number of register windows
+#define TOTAL_REGISTERS (GLOBAL_REGISTERS + \
+                         REGISTERS_PER_WINDOW * REGISTER_WINDOWS)
+
+#define REGISTER_WC 0x0
+#define REGISTER_PC 0x1
+#define REGISTER_SP 0x2
+#define REGISTER_IP 0x3
+#define REGISTER_G0 0x4
+#define REGISTER_G1 0x5
+#define REGISTER_G2 0x6
+#define REGISTER_G3 0x7
+#define REGISTER_LR 0x8
+#define REGISTER_FP 0x9
+#define REGISTER_R0 0xA
+#define REGISTER_R1 0xB
+#define REGISTER_R2 0xC
+#define REGISTER_R3 0xD
+#define REGISTER_R4 0xE
+#define REGISTER_R5 0xF
+
+#define INTERRUPT_TIMER (0x0)
+#define INTERRUPT_SOFTWARE (0x1)
+#define INTERRUPT_INSTRUCTION (0x2)
+#define INTERRUPT_MEMORY (0x3)
+#define INTERRUPT_DIVISION (0x4)
+
+
 namespace simpleworld
 {
 namespace cpu
@@ -87,7 +118,7 @@ class ISA
 {
 public:
   /**
-   * Constructor for a empty instruction set.
+   * Constructor.
    */
   ISA();
 
@@ -239,6 +270,12 @@ private:
   std::map<Uint8, InterruptInfo> interrupts_;
   std::map<std::string, Uint8> interrupt_codes_;
 };
+
+
+/**
+ * Global variable with the ISA.
+ */
+extern const ISA isa;
 
 }
 }

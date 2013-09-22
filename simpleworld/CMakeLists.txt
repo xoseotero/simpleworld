@@ -4,6 +4,7 @@ set(SIMPLEWORLD_SRCS
   world.cpp
   operations_world.cpp
   dbmemory.cpp
+  isa.cpp
   cpu.cpp
   bug.cpp
   egg.cpp

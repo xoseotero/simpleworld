@@ -71,7 +71,7 @@ bool compare_swl(const cpu::File& file1, const cpu::File& file2)
 bool compare_swo(const std::string& file1, const std::string& file2)
 {
   cpu::Memory registers;
-  cpu::CPU cpu(&registers, NULL);
+  cpu::CPU cpu(cpu::isa, &registers, NULL);
   cpu::ISA isa = cpu.isa();
 
   cpu::MemoryFile memory1(file1);
@@ -109,7 +109,7 @@ bool compare_swo(const std::string& file1, const std::string& file2)
 BOOST_AUTO_TEST_CASE(source_preprocess)
 {
   cpu::Memory registers;
-  cpu::CPU cpu(&registers, NULL);
+  cpu::CPU cpu(cpu::isa, &registers, NULL);
   cpu::Source compiler(cpu.isa(), SOURCE);
   compiler.add_include_path(INCLUDE_DIR);
 
@@ -124,7 +124,7 @@ BOOST_AUTO_TEST_CASE(source_preprocess)
 BOOST_AUTO_TEST_CASE(source_swo)
 {
   cpu::Memory registers;
-  cpu::CPU cpu(&registers, NULL);
+  cpu::CPU cpu(cpu::isa, &registers, NULL);
   cpu::Source compiler(cpu.isa(), SOURCE);
   compiler.add_include_path(INCLUDE_DIR);
 

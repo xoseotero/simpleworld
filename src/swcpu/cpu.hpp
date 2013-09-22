@@ -2,7 +2,7 @@
  * @file src/swcpu/cpu.hpp
  * FakeCPU subclass that shows information about the execution.
  *
- *  Copyright (C) 2010  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2010-2013  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -26,16 +26,16 @@
 #include <simpleworld/cpu/types.hpp>
 #include <simpleworld/cpu/memory.hpp>
 #include <simpleworld/cpu/object.hpp>
+#include <simpleworld/cpu/cpu.hpp>
 namespace cpu = simpleworld::cpu;
 
-#include "../common/fakecpu.hpp"
 #include "memoryfile.hpp"
 
 
 /**
  * FakeCPU subclass that shows information about the execution.
  */
-class CPU: public FakeCPU, cpu::Object
+class CPU: public cpu::CPU, cpu::Object
 {
 public:
   /**

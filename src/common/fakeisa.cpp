@@ -1,8 +1,8 @@
 /**
- * @file src/common/fakecpu.cpp
- * Fake CPU that add a "world" operation that does nothing.
+ * @file src/common/fakeisa.cpp
+ * Fake ISA that adds a "world" operation that does nothing.
  *
- *  Copyright (C) 2007-2008  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2013  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -18,11 +18,11 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "fakecpu.hpp"
+#include "fakeisa.hpp"
 
 #include <simpleworld/types.hpp>
-#include <simpleworld/cpu/memory.hpp>
 #include <simpleworld/cpu/instruction.hpp>
+#include <simpleworld/cpu/cpu.hpp>
 
 /**
  * Fake World operation that does nothing.
@@ -41,11 +41,20 @@ cpu::Update fakeworld(cpu::CPU& cpu, cpu::Instruction inst)
 }
 
 
-FakeCPU::FakeCPU(cpu::Memory* registers, cpu::Memory* memory)
-  : cpu::CPU(registers, memory)
+/**
+ * Constructor.
+ */
+FakeISA::FakeISA()
+  : cpu::ISA()
 {
-  this->isa_.add_interrupt(5, "InvalidWorldCommand", true);
-  this->isa_.add_interrupt(6, "WorldEvent", false);
+  this->add_interrupt(5, "InvalidWorldCommand", true);
+  this->add_interrupt(6, "WorldEvent", false);
 
-  this->isa_.add_instruction(0x58, "world", 0, true, fakeworld);
+  this->add_instruction(0x58, "world", 0, true, fakeworld);
 }
+
+
+/**
+ * Global variable with the fake ISA.
+ */
+const FakeISA fakeisa;

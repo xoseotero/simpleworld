@@ -3,7 +3,7 @@
  * Central Processing Unit big endian with 16 registers of 32bits and 16bits of
  * address space.
  *
- *  Copyright (C) 2006-2012  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2006-2013  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -26,38 +26,10 @@
 
 #include <simpleworld/ints.hpp>
 #include <simpleworld/cpu/types.hpp>
-#include <simpleworld/cpu/memory.hpp>
 #include <simpleworld/cpu/instruction.hpp>
 #include <simpleworld/cpu/isa.hpp>
+#include <simpleworld/cpu/memory.hpp>
 
-#define GLOBAL_REGISTERS        8      // Shared registers
-#define REGISTERS_PER_WINDOW    8      // Registers per window
-#define REGISTER_WINDOWS        16     // Number of register windows
-#define TOTAL_REGISTERS (GLOBAL_REGISTERS + \
-                         REGISTERS_PER_WINDOW * REGISTER_WINDOWS)
-
-#define REGISTER_WC 0x0
-#define REGISTER_PC 0x1
-#define REGISTER_SP 0x2
-#define REGISTER_IP 0x3
-#define REGISTER_G0 0x4
-#define REGISTER_G1 0x5
-#define REGISTER_G2 0x6
-#define REGISTER_G3 0x7
-#define REGISTER_LR 0x8
-#define REGISTER_FP 0x9
-#define REGISTER_R0 0xA
-#define REGISTER_R1 0xB
-#define REGISTER_R2 0xC
-#define REGISTER_R3 0xD
-#define REGISTER_R4 0xE
-#define REGISTER_R5 0xF
-
-#define INTERRUPT_TIMER (0x0)
-#define INTERRUPT_SOFTWARE (0x1)
-#define INTERRUPT_INSTRUCTION (0x2)
-#define INTERRUPT_MEMORY (0x3)
-#define INTERRUPT_DIVISION (0x4)
 
 // Address of nth element in the memory
 #define ADDRESS(n) ((n) * sizeof(::simpleworld::cpu::Word))
@@ -78,10 +50,11 @@ class CPU
 public:
   /**
    * Constructor.
+   * @param isa instruction set architecture of the CPU.
    * @param registers registers of the CPU.
    * @param memory memory of the CPU.
    */
-  CPU(Memory* registers, Memory* memory);
+  CPU(const ISA& isa, Memory* registers, Memory* memory);
 
   /**
    * Destructor.
@@ -214,8 +187,7 @@ public:
   void timer_interrupt();
 
 protected:
-  ISA isa_;                     /**< Instruction set */
-
+  const ISA& isa_;		/**< Instruction set */
   Memory* registers_;
   Memory* memory_;
 

@@ -2,7 +2,7 @@
  * @file simpleworld/cpu.cpp
  * A CPU in Simple World.
  *
- *  Copyright (C) 2007-2012  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2007-2013  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -21,27 +21,25 @@
 #include <simpleworld/cpu/instruction.hpp>
 
 #include "types.hpp"
+#include "isa.hpp"
 #include "cpu.hpp"
 #include "bug.hpp"
 #include "actionerror.hpp"
-#include "operations.hpp"
 
 namespace simpleworld
 {
 
 /**
  * Constructor.
+ * @param isa instruction set architecture of the CPU.
  * @param registers registers of the CPU.
  * @param memory memory of the CPU.
  * @param bug bug owner of the CPU.
  */
-CPU::CPU(cpu::Memory* registers, cpu::Memory* memory, Bug* bug)
-  : cpu::CPU(registers, memory), bug(bug)
+CPU::CPU(const cpu::ISA& isa, cpu::Memory* registers, cpu::Memory* memory,
+	 Bug* bug)
+  : cpu::CPU(isa, registers, memory), bug(bug)
 {
-  this->isa_.add_interrupt(INTERRUPT_WORLDACTION, "InvalidWorldCommand", true);
-  this->isa_.add_interrupt(INTERRUPT_WORLDEVENT, "WorldEvent", false);
-
-  this->isa_.add_instruction(0x58, "world", 0, true, ::simpleworld::world);
 }
 
 

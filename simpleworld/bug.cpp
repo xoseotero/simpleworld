@@ -30,6 +30,7 @@
 
 #include "simpleworld.hpp"
 #include "types.hpp"
+#include "isa.hpp"
 #include "bug.hpp"
 #include "cpu/types.hpp"
 #include "db/bug.hpp"
@@ -47,7 +48,7 @@ Bug::Bug(SimpleWorld* sw, db::ID id)
   : Element(ElementBug), db::Bug(sw, id), db::AliveBug(sw, id),
     db::World(sw, this->world_id()), world(sw),
     regs(db::AliveBug::registers()), mem(db::Bug::code()),
-    cpu(&this->regs, &this->mem, this)
+    cpu(isa, &this->regs, &this->mem, this)
 {
 }
 

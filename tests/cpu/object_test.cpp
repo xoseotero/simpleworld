@@ -25,6 +25,7 @@
 #include <boost/test/unit_test.hpp>
 
 #include <simpleworld/cpu/memory.hpp>
+#include <simpleworld/cpu/isa.hpp>
 #include <simpleworld/cpu/cpu.hpp>
 #include <simpleworld/cpu/file.hpp>
 #include <simpleworld/cpu/source.hpp>
@@ -63,7 +64,7 @@ bool compare_swl(const cpu::File& file1, const cpu::File& file2)
 BOOST_AUTO_TEST_CASE(object_decompile)
 {
   cpu::Memory registers;
-  cpu::CPU cpu(&registers, NULL);
+  cpu::CPU cpu(cpu::isa, &registers, NULL);
   cpu::Object decompiler(cpu.isa(), OBJECT);
 
   decompiler.decompile(OBJECT_SAVE);

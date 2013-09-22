@@ -29,8 +29,8 @@
 #include <simpleworld/ints.hpp>
 #include <simpleworld/cpu/types.hpp>
 #include <simpleworld/cpu/memory.hpp>
+#include <simpleworld/cpu/isa.hpp>
 #include <simpleworld/cpu/cpu.hpp>
-#include <simpleworld/cpu/file.hpp>
 #include <simpleworld/cpu/source.hpp>
 namespace sw = simpleworld;
 namespace cpu = simpleworld::cpu;
@@ -40,30 +40,12 @@ namespace cpu = simpleworld::cpu;
 
 
 /**
- * Compile a file.
- * @param file file to compile
- * @return object code
- */
-cpu::Memory compile(const cpu::File& file)
-{
-  cpu::Memory registers;
-  cpu::CPU cpu(&registers, NULL);
-
-  cpu::Source source(cpu.isa(), file);
-  cpu::Memory mem;
-  source.compile(&mem);
-
-  return mem;
-}
-
-
-/**
  * Check if the registers are initialized to 0.
  */
 BOOST_AUTO_TEST_CASE(cpu_initialization)
 {
   cpu::Memory registers;
-  cpu::CPU cpu(&registers, NULL);
+  cpu::CPU cpu(cpu::isa, &registers, NULL);
 
   BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "wc")], 0x0);
   BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "pc")], 0x0);
@@ -89,7 +71,7 @@ BOOST_AUTO_TEST_CASE(cpu_initialization)
 BOOST_AUTO_TEST_CASE(cpu_reg)
 {
   cpu::Memory registers;
-  cpu::CPU cpu(&registers, NULL);
+  cpu::CPU cpu(cpu::isa, &registers, NULL);
 
   cpu.set_reg(0, 0x0123ABCD);
   cpu.set_reg(15, 0x01100110);
@@ -114,7 +96,7 @@ BOOST_AUTO_TEST_CASE(cpu_mem_word)
 {
   cpu::Memory registers;
   cpu::Memory memory(16 * sizeof(cpu::Word));
-  cpu::CPU cpu(&registers, &memory);
+  cpu::CPU cpu(cpu::isa, &registers, &memory);
 
   cpu.set_mem(0, 0x0123ABCD);
   cpu.set_mem(15, 0x01100110);
@@ -139,7 +121,7 @@ BOOST_AUTO_TEST_CASE(cpu_mem_halfword)
 {
   cpu::Memory registers;
   cpu::Memory memory(16 * sizeof(cpu::Word));
-  cpu::CPU cpu(&registers, &memory);
+  cpu::CPU cpu(cpu::isa, &registers, &memory);
 
   cpu.set_halfmem(4, 0x0123);
   cpu.set_halfmem(6, 0xABCD);
@@ -166,7 +148,7 @@ BOOST_AUTO_TEST_CASE(cpu_mem_quarterword)
 {
   cpu::Memory registers;
   cpu::Memory memory(16 * sizeof(cpu::Word));
-  cpu::CPU cpu(&registers, &memory);
+  cpu::CPU cpu(cpu::isa, &registers, &memory);
 
   cpu.set_quartermem(8, 0x01);
   cpu.set_quartermem(9, 0x23);
@@ -186,15 +168,14 @@ BOOST_AUTO_TEST_CASE(cpu_mem_quarterword)
  */
 BOOST_AUTO_TEST_CASE(cpu_management_stop)
 {
-  cpu::File source;
-  cpu::Source::size_type line = 0;
-
-  source.insert(line++, "stop");
+  cpu::Source source(cpu::isa);
+  source.insert("stop");
 
   cpu::Memory registers;
-  cpu::Memory memory(compile(source));
-  cpu::CPU cpu(&registers, &memory);
-  cpu.execute(line);
+  cpu::Memory memory;
+  source.compile(&memory);
+  cpu::CPU cpu(cpu::isa, &registers, &memory);
+  cpu.execute(source.lines());
 
   BOOST_CHECK_EQUAL(cpu.running(), false);
 }
@@ -204,15 +185,14 @@ BOOST_AUTO_TEST_CASE(cpu_management_stop)
  */
 BOOST_AUTO_TEST_CASE(cpu_management_restart)
 {
-  cpu::File source;
-  cpu::Source::size_type line = 0;
-
-  source.insert(line++, "restart");
+  cpu::Source source(cpu::isa);
+  source.insert("restart");
 
   cpu::Memory registers;
-  cpu::Memory memory(compile(source));
-  cpu::CPU cpu(&registers, &memory);
-  cpu.execute(line);
+  cpu::Memory memory;
+  source.compile(&memory);
+  cpu::CPU cpu(cpu::isa, &registers, &memory);
+  cpu.execute(source.lines());
 
   // All the registers must be set to 0
   BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "wc")], 0x0);
@@ -239,7 +219,7 @@ BOOST_AUTO_TEST_CASE(cpu_management_restart)
  */
 BOOST_AUTO_TEST_CASE(cpu_load_special)
 {
-  cpu::File source;
+  cpu::Source source(cpu::isa);
   cpu::Source::size_type line = 0;
 
   // Load the address
@@ -263,8 +243,9 @@ BOOST_AUTO_TEST_CASE(cpu_load_special)
   source.insert(line++, "0x1234abcd");
 
   cpu::Memory registers;
-  cpu::Memory memory(compile(source));
-  cpu::CPU cpu(&registers, &memory);
+  cpu::Memory memory;
+  source.compile(&memory);
+  cpu::CPU cpu(cpu::isa, &registers, &memory);
   cpu.execute(data);
 
   BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "g0")],
@@ -281,7 +262,7 @@ BOOST_AUTO_TEST_CASE(cpu_load_special)
  */
 BOOST_AUTO_TEST_CASE(cpu_load_word)
 {
-  cpu::File source;
+  cpu::Source source(cpu::isa);
   cpu::Source::size_type line = 0;
 
   // Load a inmediate value
@@ -319,8 +300,9 @@ BOOST_AUTO_TEST_CASE(cpu_load_word)
   source.insert(line++, "0x01010101");
 
   cpu::Memory registers;
-  cpu::Memory memory(compile(source));
-  cpu::CPU cpu(&registers, &memory);
+  cpu::Memory memory;
+  source.compile(&memory);
+  cpu::CPU cpu(cpu::isa, &registers, &memory);
   cpu.execute(data);
 
   BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "g0")], 0x0000);
@@ -348,7 +330,7 @@ BOOST_AUTO_TEST_CASE(cpu_load_word)
  */
 BOOST_AUTO_TEST_CASE(cpu_load_haldword)
 {
-  cpu::File source;
+  cpu::Source source(cpu::isa);
   cpu::Source::size_type line = 0;
 
   // Load a inmediate value
@@ -381,8 +363,9 @@ BOOST_AUTO_TEST_CASE(cpu_load_haldword)
   source.insert(line++, "0x01010101");
 
   cpu::Memory registers;
-  cpu::Memory memory(compile(source));
-  cpu::CPU cpu(&registers, &memory);
+  cpu::Memory memory;
+  source.compile(&memory);
+  cpu::CPU cpu(cpu::isa, &registers, &memory);
   cpu.execute(data);
 
   BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r1")], 0x1234);
@@ -403,7 +386,7 @@ BOOST_AUTO_TEST_CASE(cpu_load_haldword)
  */
 BOOST_AUTO_TEST_CASE(cpu_load_quarterword)
 {
-  cpu::File source;
+  cpu::Source source(cpu::isa);
   cpu::Source::size_type line = 0;
 
   // Load a inmediate value
@@ -436,8 +419,9 @@ BOOST_AUTO_TEST_CASE(cpu_load_quarterword)
   source.insert(line++, "0x01010101");
 
   cpu::Memory registers;
-  cpu::Memory memory(compile(source));
-  cpu::CPU cpu(&registers, &memory);
+  cpu::Memory memory;
+  source.compile(&memory);
+  cpu::CPU cpu(cpu::isa, &registers, &memory);
   cpu.execute(data);
 
   BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r1")], 0x12);
@@ -458,7 +442,7 @@ BOOST_AUTO_TEST_CASE(cpu_load_quarterword)
  */
 BOOST_AUTO_TEST_CASE(cpu_store_word)
 {
-  cpu::File source;
+  cpu::Source source(cpu::isa);
   cpu::Source::size_type line = 0;
 
   // Load into the registers the data to be stored in the memory
@@ -497,8 +481,9 @@ BOOST_AUTO_TEST_CASE(cpu_store_word)
   source.insert(line++, "0x08080808");
 
   cpu::Memory registers;
-  cpu::Memory memory(compile(source));
-  cpu::CPU cpu(&registers, &memory);
+  cpu::Memory memory;
+  source.compile(&memory);
+  cpu::CPU cpu(cpu::isa, &registers, &memory);
   cpu.execute(data);
 
   BOOST_CHECK_EQUAL(memory[ADDRESS(data)], 0x10101010);
@@ -513,7 +498,7 @@ BOOST_AUTO_TEST_CASE(cpu_store_word)
  */
 BOOST_AUTO_TEST_CASE(cpu_store_halfword)
 {
-  cpu::File source;
+  cpu::Source source(cpu::isa);
   cpu::Source::size_type line = 0;
 
   // Load into the registers the data to be stored in the memory
@@ -546,8 +531,9 @@ BOOST_AUTO_TEST_CASE(cpu_store_halfword)
   source.insert(line++, "0x08080808");
 
   cpu::Memory registers;
-  cpu::Memory memory(compile(source));
-  cpu::CPU cpu(&registers, &memory);
+  cpu::Memory memory;
+  source.compile(&memory);
+  cpu::CPU cpu(cpu::isa, &registers, &memory);
   cpu.execute(data);
 
   BOOST_CHECK_EQUAL(memory[ADDRESS(data)], 0x10100f0f);
@@ -560,7 +546,7 @@ BOOST_AUTO_TEST_CASE(cpu_store_halfword)
  */
 BOOST_AUTO_TEST_CASE(cpu_store_quarterword)
 {
-  cpu::File source;
+  cpu::Source source(cpu::isa);
   cpu::Source::size_type line = 0;
 
   // Load into the registers the data to be stored in the memory
@@ -592,8 +578,9 @@ BOOST_AUTO_TEST_CASE(cpu_store_quarterword)
   source.insert(line++, "0x08080808");
 
   cpu::Memory registers;
-  cpu::Memory memory(compile(source));
-  cpu::CPU cpu(&registers, &memory);
+  cpu::Memory memory;
+  source.compile(&memory);
+  cpu::CPU cpu(cpu::isa, &registers, &memory);
   cpu.execute(data);
 
   BOOST_CHECK_EQUAL(memory[ADDRESS(data)], 0x100f77ff);
@@ -605,29 +592,29 @@ BOOST_AUTO_TEST_CASE(cpu_store_quarterword)
  */
 BOOST_AUTO_TEST_CASE(cpu_move)
 {
-  cpu::File source;
-  cpu::Source::size_type line = 0;
+  cpu::Source source(cpu::isa);
 
   // Load into the registers the data to be moved
-  source.insert(line++, "loadi g0 0x0000");
-  source.insert(line++, "loadi g1 0x0001");
-  source.insert(line++, "loadi g2 0xffff");
-  source.insert(line++, "loadi g3 0x7705");
+  source.insert("loadi g0 0x0000");
+  source.insert("loadi g1 0x0001");
+  source.insert("loadi g2 0xffff");
+  source.insert("loadi g3 0x7705");
 
-  source.insert(line++, "move r0 g0");
-  source.insert(line++, "move r1 g1");
-  source.insert(line++, "move r2 g2");
-  source.insert(line++, "move r3 g3");
+  source.insert("move r0 g0");
+  source.insert("move r1 g1");
+  source.insert("move r2 g2");
+  source.insert("move r3 g3");
 
-  source.insert(line++, "swap r4 g0");
-  source.insert(line++, "swap r5 g1");
-  source.insert(line++, "swap sp g2");
-  source.insert(line++, "swap fp g3");
+  source.insert("swap r4 g0");
+  source.insert("swap r5 g1");
+  source.insert("swap sp g2");
+  source.insert("swap fp g3");
 
   cpu::Memory registers;
-  cpu::Memory memory(compile(source));
-  cpu::CPU cpu(&registers, &memory);
-  cpu.execute(line);
+  cpu::Memory memory;
+  source.compile(&memory);
+  cpu::CPU cpu(cpu::isa, &registers, &memory);
+  cpu.execute(source.lines());
 
   BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r0")], 0x0000);
   BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r1")], 0x0001);
@@ -646,7 +633,7 @@ BOOST_AUTO_TEST_CASE(cpu_move)
  */
 BOOST_AUTO_TEST_CASE(cpu_stack)
 {
-  cpu::File source;
+  cpu::Source source(cpu::isa);
   cpu::Source::size_type line = 0;
 
   // Initialize the stack pointer
@@ -665,8 +652,9 @@ BOOST_AUTO_TEST_CASE(cpu_stack)
   source.insert(line++, ".block 0x4");
 
   cpu::Memory registers;
-  cpu::Memory memory(compile(source));
-  cpu::CPU cpu(&registers, &memory);
+  cpu::Memory memory;
+  source.compile(&memory);
+  cpu::CPU cpu(cpu::isa, &registers, &memory);
 
   cpu.execute(stack);
 
@@ -679,7 +667,7 @@ BOOST_AUTO_TEST_CASE(cpu_stack)
  */
 BOOST_AUTO_TEST_CASE(cpu_branch)
 {
-  cpu::File source;
+  cpu::Source source(cpu::isa);
   cpu::Source::size_type line = 0;
 
   // Load into the registers the data to be stored in the memory
@@ -781,8 +769,9 @@ BOOST_AUTO_TEST_CASE(cpu_branch)
   source.insert(line++, ".block 0x34");
 
   cpu::Memory registers;
-  cpu::Memory memory(compile(source));
-  cpu::CPU cpu(&registers, &memory);
+  cpu::Memory memory;
+  source.compile(&memory);
+  cpu::CPU cpu(cpu::isa, &registers, &memory);
 
   cpu.execute();
 
@@ -806,7 +795,7 @@ BOOST_AUTO_TEST_CASE(cpu_branch)
  */
 BOOST_AUTO_TEST_CASE(cpu_function)
 {
-  cpu::File source;
+  cpu::Source source(cpu::isa);
   cpu::Source::size_type line = 0;
 
   // Initialize the stack pointer
@@ -846,8 +835,9 @@ BOOST_AUTO_TEST_CASE(cpu_function)
   source.insert(line++, ".block 0x8");
 
   cpu::Memory registers;
-  cpu::Memory memory(compile(source));
-  cpu::CPU cpu(&registers, &memory);
+  cpu::Memory memory;
+  source.compile(&memory);
+  cpu::CPU cpu(cpu::isa, &registers, &memory);
 
   cpu.execute();
 
@@ -862,7 +852,7 @@ BOOST_AUTO_TEST_CASE(cpu_function)
  */
 BOOST_AUTO_TEST_CASE(cpu_interrupt)
 {
-  cpu::File source;
+  cpu::Source source(cpu::isa);
   cpu::Source::size_type line = 0;
 
   // Initialize the stack pointer
@@ -920,8 +910,9 @@ BOOST_AUTO_TEST_CASE(cpu_interrupt)
   source.insert(line++, "handler_int");   // Division by zero
 
   cpu::Memory registers;
-  cpu::Memory memory(compile(source));
-  cpu::CPU cpu(&registers, &memory);
+  cpu::Memory memory;
+  source.compile(&memory);
+  cpu::CPU cpu(cpu::isa, &registers, &memory);
 
   cpu.execute();
 
@@ -937,7 +928,7 @@ BOOST_AUTO_TEST_CASE(cpu_interrupt)
  */
 BOOST_AUTO_TEST_CASE(cpu_frame_pointer)
 {
-  cpu::File source;
+  cpu::Source source(cpu::isa);
   cpu::Source::size_type line = 0;
 
   // Initialize the stack pointer
@@ -989,8 +980,9 @@ BOOST_AUTO_TEST_CASE(cpu_frame_pointer)
   source.insert(line++, "0x0");         // Division by zero
 
   cpu::Memory registers;
-  cpu::Memory memory(compile(source));
-  cpu::CPU cpu(&registers, &memory);
+  cpu::Memory memory;
+  source.compile(&memory);
+  cpu::CPU cpu(cpu::isa, &registers, &memory);
 
   cpu.execute();
 
@@ -1004,7 +996,7 @@ BOOST_AUTO_TEST_CASE(cpu_frame_pointer)
  */
 BOOST_AUTO_TEST_CASE(cpu_stack_increases)
 {
-  cpu::File source;
+  cpu::Source source(cpu::isa);
   cpu::Source::size_type line = 0;
 
   // Initialize the stack pointer
@@ -1036,8 +1028,9 @@ BOOST_AUTO_TEST_CASE(cpu_stack_increases)
   source.insert(line++, "0x0");         // Division by zero
 
   cpu::Memory registers;
-  cpu::Memory memory(compile(source));
-  cpu::CPU cpu(&registers, &memory);
+  cpu::Memory memory;
+  source.compile(&memory);
+  cpu::CPU cpu(cpu::isa, &registers, &memory);
 
   sw::Uint32 sp = 0;
   while (cpu.running()) {
@@ -1055,7 +1048,7 @@ BOOST_AUTO_TEST_CASE(cpu_stack_increases)
  */
 BOOST_AUTO_TEST_CASE(cpu_stack_decreases)
 {
-  cpu::File source;
+  cpu::Source source(cpu::isa);
   cpu::Source::size_type line = 0;
 
   // Initialize the stack pointer
@@ -1092,8 +1085,9 @@ BOOST_AUTO_TEST_CASE(cpu_stack_decreases)
   source.insert(line++, "0x0");         // Division by zero
 
   cpu::Memory registers;
-  cpu::Memory memory(compile(source));
-  cpu::CPU cpu(&registers, &memory);
+  cpu::Memory memory;
+  source.compile(&memory);
+  cpu::CPU cpu(cpu::isa, &registers, &memory);
 
   cpu.execute(1);
   sw::Uint32 sp = registers[REGISTER(cpu, "sp")];
@@ -1106,30 +1100,29 @@ BOOST_AUTO_TEST_CASE(cpu_stack_decreases)
  */
 BOOST_AUTO_TEST_CASE(cpu_arithmetic_add)
 {
-  cpu::File source;
-  cpu::Source::size_type line = 0;
+  cpu::Source source(cpu::isa);
+  source.insert("loadi g0 0x0");
+  source.insert("loadi g1 0x1");
+  source.insert("loadi g2 0xffff");
+  source.insert("loadi g3 0xffff");
+  source.insert("slli g3 g3 0x10");
+  source.insert("or g3 g3 g2");
 
-  source.insert(line++, "loadi g0 0x0");
-  source.insert(line++, "loadi g1 0x1");
-  source.insert(line++, "loadi g2 0xffff");
-  source.insert(line++, "loadi g3 0xffff");
-  source.insert(line++, "slli g3 g3 0x10");
-  source.insert(line++, "or g3 g3 g2");
-
-  source.insert(line++, "add r0 g3 g1");
-  source.insert(line++, "add r1 g2 g1");
-  source.insert(line++, "addi r2 g2 0xffff");
-  source.insert(line++, "addi r3 g0 0x0");
-  source.insert(line++, "sub r4 g2 g2");
-  source.insert(line++, "sub r5 g0 g1");
-  source.insert(line++, "subi lr g2 0xf0f0");
-  source.insert(line++, "subi fp g0 0x1");
+  source.insert("add r0 g3 g1");
+  source.insert("add r1 g2 g1");
+  source.insert("addi r2 g2 0xffff");
+  source.insert("addi r3 g0 0x0");
+  source.insert("sub r4 g2 g2");
+  source.insert("sub r5 g0 g1");
+  source.insert("subi lr g2 0xf0f0");
+  source.insert("subi fp g0 0x1");
 
   cpu::Memory registers;
-  cpu::Memory memory(compile(source));
-  cpu::CPU cpu(&registers, &memory);
+  cpu::Memory memory;
+  source.compile(&memory);
+  cpu::CPU cpu(cpu::isa, &registers, &memory);
 
-  cpu.execute(line);
+  cpu.execute(source.lines());
 
   BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r0")], 0x0);
   BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r1")], 0x10000);
@@ -1147,30 +1140,29 @@ BOOST_AUTO_TEST_CASE(cpu_arithmetic_add)
  */
 BOOST_AUTO_TEST_CASE(cpu_arithmetic_mult)
 {
-  cpu::File source;
-  cpu::Source::size_type line = 0;
+  cpu::Source source(cpu::isa);
+  source.insert("loadi g0 0x0");
+  source.insert("loadi g1 0x10");
+  source.insert("loadi g2 0xffff");
+  source.insert("loadi g3 0xffff");
+  source.insert("slli g3 g3 0x10");
+  source.insert("or g3 g3 g2");
 
-  source.insert(line++, "loadi g0 0x0");
-  source.insert(line++, "loadi g1 0x10");
-  source.insert(line++, "loadi g2 0xffff");
-  source.insert(line++, "loadi g3 0xffff");
-  source.insert(line++, "slli g3 g3 0x10");
-  source.insert(line++, "or g3 g3 g2");
-
-  source.insert(line++, "mult r0 g2 g3");
-  source.insert(line++, "multi r1 g3 0x10");
-  source.insert(line++, "mult r2 g3 g0");
-  source.insert(line++, "multi r3 g2 0xfff");
-  source.insert(line++, "multh r4 g3 g3");
-  source.insert(line++, "multhi r5 g3 0x1");
-  source.insert(line++, "multhu lr g3 g3");
-  source.insert(line++, "multhui fp g3 0xf");
+  source.insert("mult r0 g2 g3");
+  source.insert("multi r1 g3 0x10");
+  source.insert("mult r2 g3 g0");
+  source.insert("multi r3 g2 0xfff");
+  source.insert("multh r4 g3 g3");
+  source.insert("multhi r5 g3 0x1");
+  source.insert("multhu lr g3 g3");
+  source.insert("multhui fp g3 0xf");
 
   cpu::Memory registers;
-  cpu::Memory memory(compile(source));
-  cpu::CPU cpu(&registers, &memory);
+  cpu::Memory memory;
+  source.compile(&memory);
+  cpu::CPU cpu(cpu::isa, &registers, &memory);
 
-  cpu.execute(line);
+  cpu.execute(source.lines());
 
   BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r0")], 0xffff0001);
   BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r1")], 0xfffffff0);
@@ -1187,30 +1179,29 @@ BOOST_AUTO_TEST_CASE(cpu_arithmetic_mult)
  */
 BOOST_AUTO_TEST_CASE(cpu_arithmetic_div)
 {
-  cpu::File source;
-  cpu::Source::size_type line = 0;
+  cpu::Source source(cpu::isa);
+  source.insert("loadi g0 0x1");
+  source.insert("loadi g1 0x10");
+  source.insert("loadi g2 0xffff");
+  source.insert("loadi g3 0xffff");
+  source.insert("slli g3 g3 0x10");
+  source.insert("or g3 g3 g2");
 
-  source.insert(line++, "loadi g0 0x1");
-  source.insert(line++, "loadi g1 0x10");
-  source.insert(line++, "loadi g2 0xffff");
-  source.insert(line++, "loadi g3 0xffff");
-  source.insert(line++, "slli g3 g3 0x10");
-  source.insert(line++, "or g3 g3 g2");
-
-  source.insert(line++, "div r0 g3 g2");
-  source.insert(line++, "div r1 g1 g0");
-  source.insert(line++, "divi r2 g3 0x1");
-  source.insert(line++, "divi r3 g2 0xffff");
-  source.insert(line++, "mod r4 g2 g3");
-  source.insert(line++, "mod r5 g2 g1");
-  source.insert(line++, "modi lr g1 0x9");
-  source.insert(line++, "modi fp g3 0xffff");
+  source.insert("div r0 g3 g2");
+  source.insert("div r1 g1 g0");
+  source.insert("divi r2 g3 0x1");
+  source.insert("divi r3 g2 0xffff");
+  source.insert("mod r4 g2 g3");
+  source.insert("mod r5 g2 g1");
+  source.insert("modi lr g1 0x9");
+  source.insert("modi fp g3 0xffff");
 
   cpu::Memory registers;
-  cpu::Memory memory(compile(source));
-  cpu::CPU cpu(&registers, &memory);
+  cpu::Memory memory;
+  source.compile(&memory);
+  cpu::CPU cpu(cpu::isa, &registers, &memory);
 
-  cpu.execute(line);
+  cpu.execute(source.lines());
 
   BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r0")], 0x10001);
   BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r1")], 0x10);
@@ -1228,30 +1219,29 @@ BOOST_AUTO_TEST_CASE(cpu_arithmetic_div)
  */
 BOOST_AUTO_TEST_CASE(cpu_sign_halfword)
 {
-  cpu::File source;
-  cpu::Source::size_type line = 0;
+  cpu::Source source(cpu::isa);
+  source.insert("loadi g0 0x0080");
+  source.insert("loadi g1 0x007f");
+  source.insert("loadi g2 0x8000");
+  source.insert("loadhi g2 0xffff");
+  source.insert("loadi g3 0x7f00");
+  source.insert("loadhi g3 0xffff");
 
-  source.insert(line++, "loadi g0 0x0080");
-  source.insert(line++, "loadi g1 0x007f");
-  source.insert(line++, "loadi g2 0x8000");
-  source.insert(line++, "loadhi g2 0xffff");
-  source.insert(line++, "loadi g3 0x7f00");
-  source.insert(line++, "loadhi g3 0xffff");
+  source.insert("signh r0 g0");
+  source.insert("signh r1 g1");
+  source.insert("signh r2 g2");
+  source.insert("signh r3 g3");
 
-  source.insert(line++, "signh r0 g0");
-  source.insert(line++, "signh r1 g1");
-  source.insert(line++, "signh r2 g2");
-  source.insert(line++, "signh r3 g3");
-
-  source.insert(line++, "signq r4 g0");
-  source.insert(line++, "signq r5 g1");
-  source.insert(line++, "signq lr g2");
-  source.insert(line++, "signq fp g3");
+  source.insert("signq r4 g0");
+  source.insert("signq r5 g1");
+  source.insert("signq lr g2");
+  source.insert("signq fp g3");
 
   cpu::Memory registers;
-  cpu::Memory memory(compile(source));
-  cpu::CPU cpu(&registers, &memory);
-  cpu.execute(line);
+  cpu::Memory memory;
+  source.compile(&memory);
+  cpu::CPU cpu(cpu::isa, &registers, &memory);
+  cpu.execute(source.lines());
 
   BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r0")], 0x80);
   BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r1")], 0x7f);
@@ -1270,26 +1260,25 @@ BOOST_AUTO_TEST_CASE(cpu_sign_halfword)
  */
 BOOST_AUTO_TEST_CASE(cpu_logic)
 {
-  cpu::File source;
-  cpu::Source::size_type line = 0;
+  cpu::Source source(cpu::isa);
+  source.insert("loadi g0 0x0000");
+  source.insert("loadi g1 0x0001");
+  source.insert("loadi g2 0xffff");
+  source.insert("loadi g3 0x7705");
 
-  source.insert(line++, "loadi g0 0x0000");
-  source.insert(line++, "loadi g1 0x0001");
-  source.insert(line++, "loadi g2 0xffff");
-  source.insert(line++, "loadi g3 0x7705");
-
-  source.insert(line++, "not r0 g0");
-  source.insert(line++, "or r1 g1 g3");
-  source.insert(line++, "ori r2 g2 0x1010");
-  source.insert(line++, "and r3 g1 g3");
-  source.insert(line++, "andi r4 g2 0x1010");
-  source.insert(line++, "xor r5 g1 g3");
-  source.insert(line++, "xori fp g2 0x1010");
+  source.insert("not r0 g0");
+  source.insert("or r1 g1 g3");
+  source.insert("ori r2 g2 0x1010");
+  source.insert("and r3 g1 g3");
+  source.insert("andi r4 g2 0x1010");
+  source.insert("xor r5 g1 g3");
+  source.insert("xori fp g2 0x1010");
 
   cpu::Memory registers;
-  cpu::Memory memory(compile(source));
-  cpu::CPU cpu(&registers, &memory);
-  cpu.execute(line);
+  cpu::Memory memory;
+  source.compile(&memory);
+  cpu::CPU cpu(cpu::isa, &registers, &memory);
+  cpu.execute(source.lines());
 
   BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r0")], 0xffffffff);
   BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r1")], 0x7705);
@@ -1306,45 +1295,43 @@ BOOST_AUTO_TEST_CASE(cpu_logic)
  */
 BOOST_AUTO_TEST_CASE(cpu_shift)
 {
-  cpu::File source;
-  cpu::Source::size_type line = 0;
+  cpu::Source source(cpu::isa);
+  source.insert("loadi g0 0x0000");
+  source.insert("loadi g1 0x1010");
+  source.insert("loadi g2 0x0707");
+  source.insert("loadi g3 0xffff");
+  source.insert("loadi r0 0x4");
+  source.insert("loadi r1 0x8");
+  source.insert("loadi r2 0x10");
 
-  source.insert(line++, "loadi g0 0x0000");
-  source.insert(line++, "loadi g1 0x1010");
-  source.insert(line++, "loadi g2 0x0707");
-  source.insert(line++, "loadi g3 0xffff");
+  source.insert("sll r3 g3 r1");
+  source.insert("slli r3 r3 0x8"); // r3 = 0xffff0000
+  source.insert("srl r4 g3 g0");
+  source.insert("srli r4 r4 0x2"); // r4 = 0x00003fff
+  source.insert("or r3 r3 r4");    // r3 = 0xffff3fff
 
-  source.insert(line++, "loadi r0 0x4");
-  source.insert(line++, "loadi r1 0x8");
-  source.insert(line++, "loadi r2 0x10");
+  source.insert("sll r4 g3 r1");
+  source.insert("slli r4 r4 0x8"); // r4 = 0xffff0000
+  source.insert("sra r4 r4 r1");   // r4 = 0x80ffff00
+  source.insert("srai r4 r4 0x8"); // r4 = 0x8080ffff
 
-  source.insert(line++, "sll r3 g3 r1");
-  source.insert(line++, "slli r3 r3 0x8"); // r3 = 0xffff0000
-  source.insert(line++, "srl r4 g3 g0");
-  source.insert(line++, "srli r4 r4 0x2"); // r4 = 0x00003fff
-  source.insert(line++, "or r3 r3 r4");    // r3 = 0xffff3fff
+  source.insert("rl r5 g3 r1");
+  source.insert("rli r5 r5 0x8");  // r5 =  0xffff0000
+  source.insert("rr lr g3 r2");
+  source.insert("rri lr lr 0x10"); // lr = 0x0000ffff
+  source.insert("or r5 r5 lr");    // r5 =  0xffffffff
 
-  source.insert(line++, "sll r4 g3 r1");
-  source.insert(line++, "slli r4 r4 0x8"); // r4 = 0xffff0000
-  source.insert(line++, "sra r4 r4 r1");   // r4 = 0x80ffff00
-  source.insert(line++, "srai r4 r4 0x8"); // r4 = 0x8080ffff
+  source.insert("slli lr g2 0x4");
+  source.insert("srli lr lr 0x4"); // lr = 0x0707
 
-  source.insert(line++, "rl r5 g3 r1");
-  source.insert(line++, "rli r5 r5 0x8");    // r5 =  0xffff0000
-  source.insert(line++, "rr lr g3 r2");
-  source.insert(line++, "rri lr lr 0x10"); // lr = 0x0000ffff
-  source.insert(line++, "or r5 r5 lr");     // r5 =  0xffffffff
-
-  source.insert(line++, "slli lr g2 0x4");
-  source.insert(line++, "srli lr lr 0x4"); // lr = 0x0707
-
-  source.insert(line++, "rli fp g2 0x4");
-  source.insert(line++, "rri fp fp 0x4"); // fp = 0x0707
+  source.insert("rli fp g2 0x4");
+  source.insert("rri fp fp 0x4");  // fp = 0x0707
 
   cpu::Memory registers;
-  cpu::Memory memory(compile(source));
-  cpu::CPU cpu(&registers, &memory);
-  cpu.execute(line);
+  cpu::Memory memory;
+  source.compile(&memory);
+  cpu::CPU cpu(cpu::isa, &registers, &memory);
+  cpu.execute(source.lines());
 
   BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "g0")], 0x0);
   BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "r3")], 0xffff3fff);
@@ -1359,7 +1346,7 @@ BOOST_AUTO_TEST_CASE(cpu_shift)
  */
 BOOST_AUTO_TEST_CASE(cpu_windows)
 {
-  cpu::File source;
+  cpu::Source source(cpu::isa);
   cpu::Source::size_type line = 0;
 
   // Initialize the stack pointer
@@ -1381,8 +1368,9 @@ BOOST_AUTO_TEST_CASE(cpu_windows)
   source.insert(line++, ".block 0x8");
 
   cpu::Memory registers;
-  cpu::Memory memory(compile(source));
-  cpu::CPU cpu(&registers, &memory);
+  cpu::Memory memory;
+  source.compile(&memory);
+  cpu::CPU cpu(cpu::isa, &registers, &memory);
   cpu.execute();
 
   BOOST_CHECK_EQUAL(registers[REGISTER(cpu, "g0")], 0x10AB);

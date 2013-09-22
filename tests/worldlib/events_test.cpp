@@ -23,12 +23,12 @@
 #include <boost/test/unit_test.hpp>
 
 #include <simpleworld/cpu/memory.hpp>
-#include <simpleworld/cpu/file.hpp>
 #include <simpleworld/cpu/source.hpp>
+#include <simpleworld/cpu/cpu.hpp>
 namespace sw = simpleworld;
 namespace cpu = simpleworld::cpu;
 
-#include "src/common/fakecpu.hpp"
+#include "src/common/fakeisa.hpp"
 
 
 #define REGISTER(cpu, name) ADDRESS((cpu).isa().register_code(name))
@@ -36,31 +36,12 @@ namespace cpu = simpleworld::cpu;
 
 
 /**
- * Compile a file.
- * @param file file to compile
- * @return object code
- */
-cpu::Memory compile(const cpu::File& file)
-{
-  cpu::Memory registers;
-  FakeCPU cpu(&registers, NULL);
-
-  cpu::Source source(cpu.isa(), file);
-  source.add_include_path(INCLUDE_DIR);
-  cpu::Memory mem;
-  source.compile(&mem);
-
-  return mem;
-}
-
-
-/**
  * Compile the file.
  */
 BOOST_AUTO_TEST_CASE(swl_compile)
 {
-  cpu::File source;
-
+  cpu::Source source(fakeisa);
+  source.add_include_path(INCLUDE_DIR);
   source.insert(".include \"worldlib/events.swl\"");
 
   source.insert("world_connect");
@@ -68,7 +49,8 @@ BOOST_AUTO_TEST_CASE(swl_compile)
   source.insert("world_events");
   source.insert("world_throw");
 
-  BOOST_CHECK_NO_THROW(compile(source));
+  cpu::Memory memory;
+  BOOST_CHECK_NO_THROW(source.compile(&memory));
 }
 
 /**
@@ -76,7 +58,8 @@ BOOST_AUTO_TEST_CASE(swl_compile)
  */
 BOOST_AUTO_TEST_CASE(world_init)
 {
-  cpu::File source;
+  cpu::Source source(fakeisa);
+  source.add_include_path(INCLUDE_DIR);
 
   // Initialize
   source.insert(".label init");
@@ -117,8 +100,9 @@ BOOST_AUTO_TEST_CASE(world_init)
   source.insert(".block 0x80");
 
   cpu::Memory registers;
-  cpu::Memory memory(compile(source));
-  FakeCPU cpu(&registers, &memory);
+  cpu::Memory memory;
+  source.compile(&memory);
+  cpu::CPU cpu(fakeisa, &registers, &memory);
   cpu.execute(MAX_CYCLES);
 
   BOOST_CHECK(not cpu.running());
@@ -130,7 +114,8 @@ BOOST_AUTO_TEST_CASE(world_init)
  */
 BOOST_AUTO_TEST_CASE(world_idle)
 {
-  cpu::File source;
+  cpu::Source source(fakeisa);
+  source.add_include_path(INCLUDE_DIR);
 
   // Initialize
   source.insert(".label init");
@@ -171,8 +156,9 @@ BOOST_AUTO_TEST_CASE(world_idle)
   source.insert(".block 0x80");
 
   cpu::Memory registers;
-  cpu::Memory memory(compile(source));
-  FakeCPU cpu(&registers, &memory);
+  cpu::Memory memory;
+  source.compile(&memory);
+  cpu::CPU cpu(fakeisa, &registers, &memory);
   cpu.execute(MAX_CYCLES);
 
   BOOST_CHECK(not cpu.running());
@@ -184,7 +170,8 @@ BOOST_AUTO_TEST_CASE(world_idle)
  */
 BOOST_AUTO_TEST_CASE(world_throw)
 {
-  cpu::File source;
+  cpu::Source source(fakeisa);
+  source.add_include_path(INCLUDE_DIR);
 
   // Initialize
   source.insert(".label init");
@@ -255,8 +242,9 @@ BOOST_AUTO_TEST_CASE(world_throw)
   source.insert(".block 0x80");
 
   cpu::Memory registers;
-  cpu::Memory memory(compile(source));
-  FakeCPU cpu(&registers, &memory);
+  cpu::Memory memory;
+  source.compile(&memory);
+  cpu::CPU cpu(fakeisa, &registers, &memory);
   cpu.execute(MAX_CYCLES);
 
   BOOST_CHECK(not cpu.running());
@@ -269,7 +257,8 @@ BOOST_AUTO_TEST_CASE(world_throw)
  */
 BOOST_AUTO_TEST_CASE(world_disconnect)
 {
-  cpu::File source;
+  cpu::Source source(fakeisa);
+  source.add_include_path(INCLUDE_DIR);
   
   // Initialize
   source.insert(".label init");
@@ -332,8 +321,9 @@ BOOST_AUTO_TEST_CASE(world_disconnect)
   source.insert(".block 0x80");
   
   cpu::Memory registers;
-  cpu::Memory memory(compile(source));
-  FakeCPU cpu(&registers, &memory);
+  cpu::Memory memory;
+  source.compile(&memory);
+  cpu::CPU cpu(fakeisa, &registers, &memory);
   cpu.execute(MAX_CYCLES);
   
   BOOST_CHECK(not cpu.running());

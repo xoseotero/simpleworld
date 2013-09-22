@@ -21,11 +21,9 @@
 #ifndef SIMPLEWORLD_CPU_HPP
 #define SIMPLEWORLD_CPU_HPP
 
+#include <simpleworld/cpu/isa.hpp>
 #include <simpleworld/cpu/memory.hpp>
 #include <simpleworld/cpu/cpu.hpp>
-
-#define INTERRUPT_WORLDACTION (0x5)
-#define INTERRUPT_WORLDEVENT (0x6)
 
 namespace simpleworld
 {
@@ -37,11 +35,13 @@ class CPU: public cpu::CPU
 public:
   /**
    * Constructor.
+   * @param isa instruction set architecture of the CPU.
    * @param registers registers of the CPU.
    * @param memory memory of the CPU.
    * @param bug bug owner of the CPU.
    */
-  CPU(cpu::Memory* registers, cpu::Memory* memory, Bug* bug);
+  CPU(const cpu::ISA& isa, cpu::Memory* registers, cpu::Memory* memory,
+      Bug* bug);
 
 
   /**

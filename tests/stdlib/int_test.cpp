@@ -22,15 +22,14 @@
 #define BOOST_TEST_DYN_LINK
 #include <boost/test/unit_test.hpp>
 
-#include <simpleworld/bug.hpp>
+#include <simpleworld/isa.hpp>
 #include <simpleworld/cpu/memory.hpp>
-#include <simpleworld/cpu/file.hpp>
 #include <simpleworld/cpu/source.hpp>
 #include <simpleworld/cpu/cpu.hpp>
 namespace sw = simpleworld;
 namespace cpu = simpleworld::cpu;
 
-#include "src/common/fakecpu.hpp"
+#include "src/common/fakeisa.hpp"
 
 
 #define REGISTER(cpu, name) ADDRESS((cpu).isa().register_code(name))
@@ -38,30 +37,12 @@ namespace cpu = simpleworld::cpu;
 
 
 /**
- * Compile a file.
- * @param file file to compile
- * @return object code
- */
-cpu::Memory compile(const cpu::File& file)
-{
-  cpu::Memory registers;
-  FakeCPU cpu(&registers, NULL);
-
-  cpu::Source source(cpu.isa(), file);
-  source.add_include_path(INCLUDE_DIR);
-  cpu::Memory mem;
-  source.compile(&mem);
-
-  return mem;
-}
-
-
-/**
  * Compile the file.
  */
 BOOST_AUTO_TEST_CASE(swl_compile)
 {
-  cpu::File source;
+  cpu::Source source(fakeisa);
+  source.add_include_path(INCLUDE_DIR);
 
   source.insert(".include \"stdlib/int.swl\"");
 
@@ -75,7 +56,8 @@ BOOST_AUTO_TEST_CASE(swl_compile)
   source.insert("std_handler");
   source.insert("std_rmhandler");
 
-  BOOST_CHECK_NO_THROW(compile(source));
+  cpu::Memory memory;
+  BOOST_CHECK_NO_THROW(source.compile(&memory));
 }
 
 /**
@@ -83,7 +65,8 @@ BOOST_AUTO_TEST_CASE(swl_compile)
  */
 BOOST_AUTO_TEST_CASE(swl_definitions)
 {
-  cpu::File source;
+  cpu::Source source(fakeisa);
+  source.add_include_path(INCLUDE_DIR);
 
   source.insert(".include \"stdlib/int/def.swl\"");
   source.insert("STD_ITIMER");
@@ -93,8 +76,9 @@ BOOST_AUTO_TEST_CASE(swl_definitions)
   source.insert("STD_IDIV");
 
   cpu::Memory registers;
-  cpu::Memory memory(compile(source));
-  FakeCPU cpu(&registers, &memory);
+  cpu::Memory memory;
+  source.compile(&memory);
+  cpu::CPU cpu(fakeisa, &registers, &memory);
 
   BOOST_CHECK_EQUAL(memory[memory.size() - ADDRESS(5)], 0x0000);
   BOOST_CHECK_EQUAL(memory[memory.size() - ADDRESS(4)], 0x0001);
@@ -108,7 +92,8 @@ BOOST_AUTO_TEST_CASE(swl_definitions)
  */
 BOOST_AUTO_TEST_CASE(std_handler_timer)
 {
-  cpu::File source;
+  cpu::Source source(fakeisa);
+  source.add_include_path(INCLUDE_DIR);
 
   // Initialize the stack pointer
   source.insert(".label init");
@@ -155,8 +140,9 @@ BOOST_AUTO_TEST_CASE(std_handler_timer)
   source.insert(".block 0x80");
 
   cpu::Memory registers;
-  cpu::Memory memory(compile(source));
-  FakeCPU cpu(&registers, &memory);
+  cpu::Memory memory;
+  source.compile(&memory);
+  cpu::CPU cpu(fakeisa, &registers, &memory);
   int i = 0;
   while (registers[REGISTER(cpu, "r5")] != 0xF1F1) {
     cpu.execute(1);
@@ -176,7 +162,8 @@ BOOST_AUTO_TEST_CASE(std_handler_timer)
  */
 BOOST_AUTO_TEST_CASE(std_handler_software)
 {
-  cpu::File source;
+  cpu::Source source(fakeisa);
+  source.add_include_path(INCLUDE_DIR);
 
   // Initialize the stack pointer
   source.insert(".label init");
@@ -222,8 +209,9 @@ BOOST_AUTO_TEST_CASE(std_handler_software)
   source.insert(".block 0x80");
 
   cpu::Memory registers;
-  cpu::Memory memory(compile(source));
-  FakeCPU cpu(&registers, &memory);
+  cpu::Memory memory;
+  source.compile(&memory);
+  cpu::CPU cpu(fakeisa, &registers, &memory);
   cpu.execute(MAX_CYCLES);
 
   BOOST_CHECK(not cpu.running());
@@ -235,7 +223,8 @@ BOOST_AUTO_TEST_CASE(std_handler_software)
  */
 BOOST_AUTO_TEST_CASE(std_handler_instruction)
 {
-  cpu::File source;
+  cpu::Source source(fakeisa);
+  source.add_include_path(INCLUDE_DIR);
 
   // Initialize the stack pointer
   source.insert(".label init");
@@ -281,8 +270,9 @@ BOOST_AUTO_TEST_CASE(std_handler_instruction)
   source.insert(".block 0x80");
 
   cpu::Memory registers;
-  cpu::Memory memory(compile(source));
-  FakeCPU cpu(&registers, &memory);
+  cpu::Memory memory;
+  source.compile(&memory);
+  cpu::CPU cpu(fakeisa, &registers, &memory);
   cpu.execute(MAX_CYCLES);
 
   BOOST_CHECK(not cpu.running());
@@ -294,7 +284,8 @@ BOOST_AUTO_TEST_CASE(std_handler_instruction)
  */
 BOOST_AUTO_TEST_CASE(std_handler_memory)
 {
-  cpu::File source;
+  cpu::Source source(fakeisa);
+  source.add_include_path(INCLUDE_DIR);
 
   // Initialize the stack pointer
   source.insert(".label init");
@@ -340,8 +331,9 @@ BOOST_AUTO_TEST_CASE(std_handler_memory)
   source.insert(".block 0x80");
 
   cpu::Memory registers;
-  cpu::Memory memory(compile(source));
-  FakeCPU cpu(&registers, &memory);
+  cpu::Memory memory;
+  source.compile(&memory);
+  cpu::CPU cpu(fakeisa, &registers, &memory);
   cpu.execute(MAX_CYCLES);
 
   BOOST_CHECK(not cpu.running());
@@ -353,7 +345,8 @@ BOOST_AUTO_TEST_CASE(std_handler_memory)
  */
 BOOST_AUTO_TEST_CASE(std_handler_division)
 {
-  cpu::File source;
+  cpu::Source source(fakeisa);
+  source.add_include_path(INCLUDE_DIR);
 
   // Initialize the stack pointer
   source.insert(".label init");
@@ -399,8 +392,9 @@ BOOST_AUTO_TEST_CASE(std_handler_division)
   source.insert(".block 0x80");
 
   cpu::Memory registers;
-  cpu::Memory memory(compile(source));
-  FakeCPU cpu(&registers, &memory);
+  cpu::Memory memory;
+  source.compile(&memory);
+  cpu::CPU cpu(fakeisa, &registers, &memory);
   cpu.execute(MAX_CYCLES);
 
   BOOST_CHECK(not cpu.running());
@@ -412,7 +406,8 @@ BOOST_AUTO_TEST_CASE(std_handler_division)
  */
 BOOST_AUTO_TEST_CASE(std_handler_worldaction)
 {
-  cpu::File source;
+  cpu::Source source(fakeisa);
+  source.add_include_path(INCLUDE_DIR);
 
   // Initialize the stack pointer
   source.insert(".label init");
@@ -463,8 +458,9 @@ BOOST_AUTO_TEST_CASE(std_handler_worldaction)
   source.insert(".block 0x80");
 
   cpu::Memory registers;
-  cpu::Memory memory(compile(source));
-  FakeCPU cpu(&registers, &memory);
+  cpu::Memory memory;
+  source.compile(&memory);
+  cpu::CPU cpu(fakeisa, &registers, &memory);
   int i = 0;
   while (registers[REGISTER(cpu, "r5")] != 0xF1F1) {
     cpu.execute(1);
@@ -484,7 +480,8 @@ BOOST_AUTO_TEST_CASE(std_handler_worldaction)
  */
 BOOST_AUTO_TEST_CASE(std_handler_worldevent)
 {
-  cpu::File source;
+  cpu::Source source(fakeisa);
+  source.add_include_path(INCLUDE_DIR);
 
   // Initialize the stack pointer
   source.insert(".label init");
@@ -531,8 +528,9 @@ BOOST_AUTO_TEST_CASE(std_handler_worldevent)
   source.insert(".block 0x80");
 
   cpu::Memory registers;
-  cpu::Memory memory(compile(source));
-  FakeCPU cpu(&registers, &memory);
+  cpu::Memory memory;
+  source.compile(&memory);
+  cpu::CPU cpu(fakeisa, &registers, &memory);
   int i = 0;
   while (registers[REGISTER(cpu, "r5")] != 0xF1F1) {
     cpu.execute(1);

@@ -30,12 +30,13 @@
 #include <simpleworld/exception.hpp>
 #include <simpleworld/cpu/memory.hpp>
 #include <simpleworld/cpu/object.hpp>
+#include <simpleworld/cpu/cpu.hpp>
 namespace sw = simpleworld;
 namespace cpu = simpleworld::cpu;
 
 #include "../common/info.hpp"
 #include "../common/printexc.hpp"
-#include "../common/fakecpu.hpp"
+#include "../common/fakeisa.hpp"
 
 #define DEFAULT_OUTPUT "out.swl"
 
@@ -194,7 +195,7 @@ try {
 
   // This CPU doesn't need memory because only the instruction set is needed
   cpu::Memory registers;
-  FakeCPU cpu(&registers, NULL);
+  cpu::CPU cpu(fakeisa, &registers, NULL);
   cpu::Object(cpu.isa(), input).decompile(output);
 
   std::exit(EXIT_SUCCESS);
