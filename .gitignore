@@ -1,5 +1,7 @@
-Doxyfile
 /build
+CMakeCache.txt
+CMakeFiles
+Doxyfile
 *~
 *#
 semantic.cache
