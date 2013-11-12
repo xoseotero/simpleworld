@@ -2,7 +2,7 @@
  * @file simpleworld/db/egg.cpp
  * Information about an egg.
  *
- *  Copyright (C) 2007-2011  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2007-2013  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -51,19 +51,21 @@ Egg::Egg(DB* db, ID bug_id)
  * @param bug_id id of the bug.
  * @param world_id id of the world.
  * @param energy energy.
+ * @param memory_id id of the memory of the bug.
  * @return the id of the new row (the same as bug_id).
  * @exception DBException if there is an error with the insertion.
  */
-ID Egg::insert(DB* db, ID bug_id, ID world_id, Energy energy)
+ID Egg::insert(DB* db, ID bug_id, ID world_id, Energy energy, ID memory_id)
 {
   sqlite3_stmt* stmt;
   if (sqlite3_prepare_v2(db->db(), "\
-INSERT INTO Egg(bug_id, world_id, energy)\n\
-VALUES(?, ?, ?);", -1, &stmt, NULL))
+INSERT INTO Egg(bug_id, world_id, energy, memory_id)\n\
+VALUES(?, ?, ?, ?);", -1, &stmt, NULL))
     throw EXCEPTION(DBException, sqlite3_errmsg(db->db()));
   sqlite3_bind_int64(stmt, 1, bug_id);
   sqlite3_bind_int64(stmt, 2, world_id);
   sqlite3_bind_int(stmt, 3, energy);
+  sqlite3_bind_int64(stmt, 4, memory_id);
   if (sqlite3_step(stmt) != SQLITE_DONE)
     throw EXCEPTION(DBException, sqlite3_errmsg(db->db()));
   sqlite3_finalize(stmt);
@@ -207,6 +209,51 @@ SET energy = ?\n\
 WHERE bug_id = ?;", -1, &stmt, NULL))
     throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
   sqlite3_bind_int(stmt, 1, energy);
+  sqlite3_bind_int64(stmt, 2, this->id_);
+  if (sqlite3_step(stmt) != SQLITE_DONE)
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_finalize(stmt);
+}
+
+
+/**
+ * Get the id of the memory.
+ * @return the id.
+ * @exception DBException if there is an error with the query.
+ */
+ID Egg::memory_id() const
+{
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(this->db_->db(), "\
+SELECT memory_id\n\
+FROM Egg\n\
+WHERE bug_id = ?;", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_bind_int64(stmt, 1, this->id_);
+  if (sqlite3_step(stmt) != SQLITE_ROW)
+    throw EXCEPTION(DBException, boost::str(boost::format("\
+id %1% not found in table AliveBug")
+    % this->id_));
+  ID memory_id = sqlite3_column_int64(stmt, 0);
+  sqlite3_finalize(stmt);
+
+  return memory_id;
+}
+
+/**
+ * Set the id of the memory.
+ * @param memory_id the new id.
+ * @exception DBException if there is an error with the update.
+ */
+void Egg::memory_id(ID memory_id)
+{
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(this->db_->db(), "\
+UPDATE Egg\n\
+SET memory_id = ?\n\
+WHERE bug_id = ?;", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_bind_int64(stmt, 1, memory_id);
   sqlite3_bind_int64(stmt, 2, this->id_);
   if (sqlite3_step(stmt) != SQLITE_DONE)
     throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));

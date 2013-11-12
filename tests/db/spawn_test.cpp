@@ -2,7 +2,7 @@
  * @file tests/db/spawn_test.cpp
  * Unit test for db::Spawn.
  *
- *  Copyright (C) 2010  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2010-2013  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -26,6 +26,7 @@
 #include <simpleworld/db/types.hpp>
 #include <simpleworld/db/exception.hpp>
 #include <simpleworld/db/db.hpp>
+#include <simpleworld/db/code.hpp>
 #include <simpleworld/db/spawn.hpp>
 namespace sw = simpleworld;
 namespace db = simpleworld::db;
@@ -43,14 +44,10 @@ namespace db = simpleworld::db;
 BOOST_AUTO_TEST_CASE(spawn_get)
 {
   db::DB sw(DB_FILE);
-  db::Spawn spawn1(&sw, 1);
-  sw::Uint32 size1;
-  boost::shared_array<sw::Uint8> code1 = spawn1.code().read(&size1);
-  db::Spawn spawn2(&sw, 2);
-  sw::Uint32 size2;
-  boost::shared_array<sw::Uint8> code2 = spawn2.code().read(&size2);
 
+  db::Spawn spawn1(&sw, 1);
   BOOST_CHECK_EQUAL(spawn1.id(), 1);
+  BOOST_CHECK_EQUAL(spawn1.code_id(), 1);
   BOOST_CHECK_EQUAL(spawn1.frequency(), 1024);
   BOOST_CHECK_EQUAL(spawn1.max(), 12);
   BOOST_CHECK_EQUAL(spawn1.start_x(), 1);
@@ -58,16 +55,10 @@ BOOST_AUTO_TEST_CASE(spawn_get)
   BOOST_CHECK_EQUAL(spawn1.end_x(), 5);
   BOOST_CHECK_EQUAL(spawn1.end_y(), 6);
   BOOST_CHECK_EQUAL(spawn1.energy(), 512);
-  BOOST_CHECK_EQUAL(size1, 8);
-  BOOST_CHECK_EQUAL(code1[0], 0xAB);
-  BOOST_CHECK_EQUAL(code1[1], 0xAB);
-  BOOST_CHECK_EQUAL(code1[2], 0xAB);
-  BOOST_CHECK_EQUAL(code1[3], 0xAB);
-  BOOST_CHECK_EQUAL(code1[4], 0xAB);
-  BOOST_CHECK_EQUAL(code1[5], 0xAB);
-  BOOST_CHECK_EQUAL(code1[6], 0xAB);
-  BOOST_CHECK_EQUAL(code1[7], 0xAB);
+
+  db::Spawn spawn2(&sw, 2);  
   BOOST_CHECK_EQUAL(spawn2.id(), 2);
+  BOOST_CHECK_EQUAL(spawn2.code_id(), 2);
   BOOST_CHECK_EQUAL(spawn2.frequency(), 4096);
   BOOST_CHECK_EQUAL(spawn2.max(), 16);
   BOOST_CHECK_EQUAL(spawn2.start_x(), 4);
@@ -75,15 +66,6 @@ BOOST_AUTO_TEST_CASE(spawn_get)
   BOOST_CHECK_EQUAL(spawn2.end_x(), 8);
   BOOST_CHECK_EQUAL(spawn2.end_y(), 9);
   BOOST_CHECK_EQUAL(spawn2.energy(), 1024);
-  BOOST_CHECK_EQUAL(size2, 8);
-  BOOST_CHECK_EQUAL(code2[0], 0xBA);
-  BOOST_CHECK_EQUAL(code2[1], 0xBA);
-  BOOST_CHECK_EQUAL(code2[2], 0xBA);
-  BOOST_CHECK_EQUAL(code2[3], 0xBA);
-  BOOST_CHECK_EQUAL(code2[4], 0xBA);
-  BOOST_CHECK_EQUAL(code2[5], 0xBA);
-  BOOST_CHECK_EQUAL(code2[6], 0xBA);
-  BOOST_CHECK_EQUAL(code2[7], 0xBA);
 }
 
 db::ID id;
@@ -94,12 +76,12 @@ db::ID id;
 BOOST_AUTO_TEST_CASE(spawn_insert)
 {
   db::DB sw = open_db(DB_SAVE);
-  id = db::Spawn::insert(&sw, 1024, 8, 0, 0, 4, 4, 512, "1234", 4);
-  db::Spawn spawn(&sw, id);
-  sw::Uint32 size;
-  boost::shared_array<sw::Uint8> code = spawn.code().read(&size);
+  db::ID code_id = db::Code::insert(&sw, "1234", 4);
+  id = db::Spawn::insert(&sw, code_id, 1024, 8, 0, 0, 4, 4, 512);
 
+  db::Spawn spawn(&sw, id);
   BOOST_CHECK_EQUAL(spawn.id(), id);
+  BOOST_CHECK_EQUAL(spawn.code_id(), code_id);
   BOOST_CHECK_EQUAL(spawn.frequency(), 1024);
   BOOST_CHECK_EQUAL(spawn.max(), 8);
   BOOST_CHECK_EQUAL(spawn.start_x(), 0);
@@ -107,11 +89,6 @@ BOOST_AUTO_TEST_CASE(spawn_insert)
   BOOST_CHECK_EQUAL(spawn.end_x(), 4);
   BOOST_CHECK_EQUAL(spawn.end_y(), 4);
   BOOST_CHECK_EQUAL(spawn.energy(), 512);
-  BOOST_CHECK_EQUAL(size, 4);
-  BOOST_CHECK_EQUAL(code[0], '1');
-  BOOST_CHECK_EQUAL(code[1], '2');
-  BOOST_CHECK_EQUAL(code[2], '3');
-  BOOST_CHECK_EQUAL(code[3], '4');
 }
 
 
@@ -121,7 +98,9 @@ BOOST_AUTO_TEST_CASE(spawn_insert)
 BOOST_AUTO_TEST_CASE(spawn_update)
 {
   db::DB sw = open_db(DB_SAVE);
+  db::ID code_id = db::Code::insert(&sw, "1234", 4);
   db::Spawn spawn(&sw, id);
+  spawn.code_id(code_id);
   spawn.frequency(2048);
   spawn.max(16);
   spawn.end_x(6);
@@ -129,23 +108,17 @@ BOOST_AUTO_TEST_CASE(spawn_update)
   spawn.start_x(1);
   spawn.start_y(2);
   spawn.energy(1024);
-  spawn.code().write("0101", 4);
-  sw::Uint32 size;
-  boost::shared_array<sw::Uint8> code = spawn.code().read(&size);
-
-  BOOST_CHECK_EQUAL(spawn.id(), id);
-  BOOST_CHECK_EQUAL(spawn.frequency(), 2048);
-  BOOST_CHECK_EQUAL(spawn.max(), 16);
-  BOOST_CHECK_EQUAL(spawn.start_x(), 1);
-  BOOST_CHECK_EQUAL(spawn.start_y(), 2);
-  BOOST_CHECK_EQUAL(spawn.end_x(), 6);
-  BOOST_CHECK_EQUAL(spawn.end_y(), 7);
-  BOOST_CHECK_EQUAL(spawn.energy(), 1024);
-  BOOST_CHECK_EQUAL(size, 4);
-  BOOST_CHECK_EQUAL(code[0], '0');
-  BOOST_CHECK_EQUAL(code[1], '1');
-  BOOST_CHECK_EQUAL(code[2], '0');
-  BOOST_CHECK_EQUAL(code[3], '1');
+  
+  db::Spawn test(&sw, id);
+  BOOST_CHECK_EQUAL(test.id(), id);
+  BOOST_CHECK_EQUAL(test.code_id(), code_id);
+  BOOST_CHECK_EQUAL(test.frequency(), 2048);
+  BOOST_CHECK_EQUAL(test.max(), 16);
+  BOOST_CHECK_EQUAL(test.start_x(), 1);
+  BOOST_CHECK_EQUAL(test.start_y(), 2);
+  BOOST_CHECK_EQUAL(test.end_x(), 6);
+  BOOST_CHECK_EQUAL(test.end_y(), 7);
+  BOOST_CHECK_EQUAL(test.energy(), 1024);
 }
 
 /**
@@ -154,7 +127,7 @@ BOOST_AUTO_TEST_CASE(spawn_update)
 BOOST_AUTO_TEST_CASE(spawn_delete)
 {
   db::DB sw = open_db(DB_SAVE);
-  db::Spawn::remove(&sw, id);
 
+  BOOST_CHECK_NO_THROW(db::Spawn::remove(&sw, id));
   BOOST_CHECK_THROW(db::Spawn(&sw, id).frequency(), db::DBException);
 }

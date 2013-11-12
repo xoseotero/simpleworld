@@ -1,6 +1,7 @@
 Simple World 1.0b7:
 	* swl: Add the directive .warning
 	* swl: Add the directive .error
+	* db: Increase the database version to 6
 
 Simple World 1.0b6 (2012/04/15):
 	* Eggs can be eaten

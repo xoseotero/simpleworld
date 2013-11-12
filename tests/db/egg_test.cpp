@@ -1,8 +1,8 @@
 /**
- * @file tests/db/db_test.cpp
+ * @file tests/db/egg_test.cpp
  * Unit test for db::Egg.
  *
- *  Copyright (C) 2010-2011  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2010-2013  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -27,6 +27,7 @@
 #include <simpleworld/db/exception.hpp>
 #include <simpleworld/db/db.hpp>
 #include <simpleworld/db/world.hpp>
+#include <simpleworld/db/code.hpp>
 #include <simpleworld/db/bug.hpp>
 #include <simpleworld/db/egg.hpp>
 namespace sw = simpleworld;
@@ -50,6 +51,7 @@ BOOST_AUTO_TEST_CASE(egg_get)
   BOOST_CHECK_EQUAL(egg.bug_id(), 3);
   BOOST_CHECK_EQUAL(egg.world_id(), 1);
   BOOST_CHECK_EQUAL(egg.energy(), 100);
+  BOOST_CHECK_EQUAL(egg.memory_id(), 4);
 }
 
 db::ID id;
@@ -61,15 +63,18 @@ db::ID world_id;
 BOOST_AUTO_TEST_CASE(egg_insert)
 {
   db::DB sw = open_db(DB_SAVE);
-  db::ID bug_id = db::Bug::insert(&sw, 0, "abcd", 4);
   world_id = db::World::insert(&sw, 4, 3, sw::OrientationNorth);
-  id = db::Egg::insert(&sw, bug_id, world_id, 101);
+  db::ID code_id = db::Code::insert(&sw, "code", 4);
+  db::ID bug_id = db::Bug::insert(&sw, code_id, 0);
+  code_id = db::Code::insert(&sw, code_id);
+  id = db::Egg::insert(&sw, bug_id, world_id, 101, code_id);
   db::Egg egg(&sw, id);
 
   BOOST_CHECK_EQUAL(egg.bug_id(), bug_id);
   BOOST_CHECK_EQUAL(egg.bug_id(), id);
   BOOST_CHECK_EQUAL(egg.world_id(), world_id);
   BOOST_CHECK_EQUAL(egg.energy(), 101);
+  BOOST_CHECK_EQUAL(egg.memory_id(), code_id);
 }
 
 
@@ -81,9 +86,12 @@ BOOST_AUTO_TEST_CASE(egg_update)
   db::DB sw = open_db(DB_SAVE);
   db::Egg egg(&sw, id);
   egg.energy(82);
+  db::ID code_id = db::Code::insert(&sw, egg.memory_id());
+  egg.memory_id(code_id);
 
   BOOST_CHECK_EQUAL(egg.bug_id(), id);
   BOOST_CHECK_EQUAL(egg.energy(), 82);
+  BOOST_CHECK_EQUAL(egg.memory_id(), code_id);
 }
 
 /**
@@ -92,8 +100,9 @@ BOOST_AUTO_TEST_CASE(egg_update)
 BOOST_AUTO_TEST_CASE(egg_delete)
 {
   db::DB sw = open_db(DB_SAVE);
-  db::Egg::remove(&sw, id);
-  db::World::remove(&sw, world_id);
 
+  BOOST_CHECK_NO_THROW(db::Egg::remove(&sw, id));
   BOOST_CHECK_THROW(db::Egg(&sw, id).energy(), db::DBException);
+
+  db::World::remove(&sw, world_id);
 }

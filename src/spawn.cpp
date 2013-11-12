@@ -2,7 +2,7 @@
  * @file src/spawn.cpp
  * Command spawn of Simple World.
  *
- *  Copyright (C) 2010  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2010-2013  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -31,6 +31,7 @@
 #include <simpleworld/world.hpp>
 #include <simpleworld/worlderror.hpp>
 #include <simpleworld/cpu/memory_file.hpp>
+#include <simpleworld/db/code.hpp>
 #include <simpleworld/db/spawn.hpp>
 namespace sw = simpleworld;
 namespace cpu = simpleworld::cpu;
@@ -214,6 +215,7 @@ void sw_spawn(int argc, char* argv[])
   boost::scoped_array<cpu::Word> data(new cpu::Word[code.size()]);
   for (cpu::Address i = 0; i < code.size(); i += sizeof(cpu::Word))
     data[i / sizeof(cpu::Word)] = code.get_word(i, false);
-  db::Spawn::insert(&simpleworld, frequency, max, start.x, start.y,
-                    end.x, end.y, energy, data.get(), code.size());
+  db::Spawn::insert(&simpleworld,
+                    db::Code::insert(&simpleworld, data.get(), code.size()),
+                    frequency, max, start.x, start.y, end.x, end.y, energy);
 }

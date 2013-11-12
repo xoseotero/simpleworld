@@ -2,7 +2,7 @@
  * @file tests/db/db_test.cpp
  * Unit test for db::World.
  *
- *  Copyright (C) 2010  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2010-2013  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -102,7 +102,7 @@ BOOST_AUTO_TEST_CASE(world_update)
 BOOST_AUTO_TEST_CASE(world_delete)
 {
   db::DB sw = open_db(DB_SAVE);
-  db::World::remove(&sw, id);
 
+  BOOST_CHECK_NO_THROW(db::World::remove(&sw, id));
   BOOST_CHECK_THROW(db::World(&sw, id).position_x(), db::DBException);
 }

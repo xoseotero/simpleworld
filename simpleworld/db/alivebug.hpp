@@ -2,7 +2,7 @@
  * @file simpleworld/db/alivebug.hpp
  * Information about an alive bug.
  *
- *  Copyright (C) 2007-2010  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2007-2013  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -24,7 +24,6 @@
 #include <simpleworld/db/types.hpp>
 #include <simpleworld/db/db.hpp>
 #include <simpleworld/db/table.hpp>
-#include <simpleworld/db/blob.hpp>
 #include <simpleworld/db/egg.hpp>
 
 namespace simpleworld
@@ -55,13 +54,13 @@ public:
    * @param world_id id of the world.
    * @param birth birth time.
    * @param energy energy.
-   * @param registers data stored in the registers.
-   * @param size size of the data.
+   * @param registers_id id of the registers of the bug.
+   * @param memory_id id of the memory of the bug.
    * @return the id of the new row (the same as bug_id).
    * @exception DBException if there is an error with the insertion.
    */
   static ID insert(DB* db, ID bug_id, ID world_id, Time birth, Energy energy,
-                   const void* registers, Uint32 size);
+                   ID registers_id, ID memory_id);
 
   /**
    * Insert a alive bug from a egg.
@@ -173,11 +172,32 @@ public:
 
 
   /**
-   * Get the registers of the bug.
-   * @return the registers.
+   * Get the id of the registers.
+   * @return the id.
    * @exception DBException if there is an error with the query.
    */
-  Blob registers() const;
+  ID registers_id() const;
+
+  /**
+   * Set the id of the registers.
+   * @param registers_id the new id.
+   * @exception DBException if there is an error with the update.
+   */
+  void registers_id(ID registers_id);
+
+  /**
+   * Get the id of the memory.
+   * @return the id.
+   * @exception DBException if there is an error with the query.
+   */
+  ID memory_id() const;
+
+  /**
+   * Set the id of the memory.
+   * @param memory_id the new id.
+   * @exception DBException if there is an error with the update.
+   */
+  void memory_id(ID memory_id);
 };
 
 }

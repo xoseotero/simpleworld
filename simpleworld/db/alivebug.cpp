@@ -2,7 +2,7 @@
  * @file simpleworld/db/alivebug.cpp
  * Information about an alive bug.
  *
- *  Copyright (C) 2007-2010  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2007-2013  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -28,6 +28,9 @@
 #include <simpleworld/cpu/types.hpp>
 #include <simpleworld/cpu/cpu.hpp>
 #include "exception.hpp"
+#include "registers.hpp"
+#include "code.hpp"
+#include "bug.hpp"
 #include "alivebug.hpp"
 
 namespace simpleworld
@@ -55,24 +58,26 @@ AliveBug::AliveBug(DB* db, ID bug_id)
  * @param world_id id of the world.
  * @param birth birth time.
  * @param energy energy.
- * @param registers data stored in the registers.
- * @param size size of the data.
+ * @param registers_id id of the registers of the bug.
+ * @param memory_id id of the memory of the bug.
  * @return the id of the new row (the same as bug_id).
  * @exception DBException if there is an error with the insertion.
  */
 ID AliveBug::insert(DB* db, ID bug_id, ID world_id, Time birth, Energy energy,
-                    const void* registers, Uint32 size)
+                    ID registers_id, ID memory_id)
 {
   sqlite3_stmt* stmt;
   if (sqlite3_prepare_v2(db->db(), "\
-INSERT INTO AliveBug(bug_id, world_id, birth, energy, registers)\n\
-VALUES(?, ?, ?, ?, ?);", -1, &stmt, NULL))
+INSERT INTO AliveBug(bug_id, world_id, birth, energy, registers_id,\n\
+                     memory_id)\n\
+VALUES(?, ?, ?, ?, ?, ?);", -1, &stmt, NULL))
     throw EXCEPTION(DBException, sqlite3_errmsg(db->db()));
   sqlite3_bind_int64(stmt, 1, bug_id);
   sqlite3_bind_int64(stmt, 2, world_id);
   sqlite3_bind_int(stmt, 3, birth);
   sqlite3_bind_int(stmt, 4, energy);
-  sqlite3_bind_blob(stmt, 5, registers, size, SQLITE_TRANSIENT);
+  sqlite3_bind_int64(stmt, 5, registers_id);
+  sqlite3_bind_int64(stmt, 6, memory_id);
   if (sqlite3_step(stmt) != SQLITE_DONE)
     throw EXCEPTION(DBException, sqlite3_errmsg(db->db()));
   sqlite3_finalize(stmt);
@@ -91,16 +96,22 @@ VALUES(?, ?, ?, ?, ?);", -1, &stmt, NULL))
  */
 ID AliveBug::insert(DB* db, Egg* egg, Time birth)
 {
+  // Insert the registers
+  ID registers_id = Registers::insert(db);
+
+  // Insert the alive bug
   sqlite3_stmt* stmt;
   if (sqlite3_prepare_v2(db->db(), "\
-INSERT INTO AliveBug(bug_id, world_id, birth, energy, registers)\n\
-VALUES(?, ?, ?, ?, ?);", -1, &stmt, NULL))
+INSERT INTO AliveBug(bug_id, world_id, birth, energy, registers_id,\n\
+                     memory_id)\n\
+VALUES(?, ?, ?, ?, ?, ?);", -1, &stmt, NULL))
     throw EXCEPTION(DBException, sqlite3_errmsg(db->db()));
-  sqlite3_bind_int64(stmt, 1, egg->bug_id());
+  sqlite3_bind_int64(stmt, 1, egg->id());
   sqlite3_bind_int64(stmt, 2, egg->world_id());
   sqlite3_bind_int(stmt, 3, birth);
   sqlite3_bind_int(stmt, 4, egg->energy());
-  sqlite3_bind_zeroblob(stmt, 5, TOTAL_REGISTERS * sizeof(cpu::Word));
+  sqlite3_bind_int64(stmt, 5, registers_id);
+  sqlite3_bind_int64(stmt, 6, egg->memory_id());
   if (sqlite3_step(stmt) != SQLITE_DONE)
     throw EXCEPTION(DBException, sqlite3_errmsg(db->db()));
   sqlite3_finalize(stmt);
@@ -187,7 +198,6 @@ id %1% not found in table AliveBug")
 
   return world_id;
 }
-
 /**
  * Set the id of the world.
  * @return the new id.
@@ -387,14 +397,93 @@ WHERE bug_id = ?;", -1, &stmt, NULL))
   sqlite3_finalize(stmt);
 }
 
+
 /**
- * Get the registers of the bug.
- * @return the registers.
+ * Get the id of the registers.
+ * @return the id.
  * @exception DBException if there is an error with the query.
  */
-Blob AliveBug::registers() const
+ID AliveBug::registers_id() const
 {
-  return Blob(this->db_, "AliveBug", "registers", this->id_);
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(this->db_->db(), "\
+SELECT registers_id\n\
+FROM AliveBug\n\
+WHERE bug_id = ?;", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_bind_int64(stmt, 1, this->id_);
+  if (sqlite3_step(stmt) != SQLITE_ROW)
+    throw EXCEPTION(DBException, boost::str(boost::format("\
+id %1% not found in table AliveBug")
+    % this->id_));
+  ID registers_id = sqlite3_column_int64(stmt, 0);
+  sqlite3_finalize(stmt);
+
+  return registers_id;
+}
+
+/**
+ * Set the id of the registers.
+ * @param registers_id the new id.
+ * @exception DBException if there is an error with the update.
+ */
+void AliveBug::registers_id(ID registers_id)
+{
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(this->db_->db(), "\
+UPDATE AliveBug\n\
+SET registers_id = ?\n\
+WHERE bug_id = ?;", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_bind_int64(stmt, 1, registers_id);
+  sqlite3_bind_int64(stmt, 2, this->id_);
+  if (sqlite3_step(stmt) != SQLITE_DONE)
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_finalize(stmt);
+}
+
+/**
+ * Get the id of the memory.
+ * @return the id.
+ * @exception DBException if there is an error with the query.
+ */
+ID AliveBug::memory_id() const
+{
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(this->db_->db(), "\
+SELECT memory_id\n\
+FROM AliveBug\n\
+WHERE bug_id = ?;", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_bind_int64(stmt, 1, this->id_);
+  if (sqlite3_step(stmt) != SQLITE_ROW)
+    throw EXCEPTION(DBException, boost::str(boost::format("\
+id %1% not found in table AliveBug")
+    % this->id_));
+  ID memory_id = sqlite3_column_int64(stmt, 0);
+  sqlite3_finalize(stmt);
+
+  return memory_id;
+}
+
+/**
+ * Set the id of the memory.
+ * @param memory_id the new id.
+ * @exception DBException if there is an error with the update.
+ */
+void AliveBug::memory_id(ID memory_id)
+{
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(this->db_->db(), "\
+UPDATE AliveBug\n\
+SET memory_id = ?\n\
+WHERE bug_id = ?;", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_bind_int64(stmt, 1, memory_id);
+  sqlite3_bind_int64(stmt, 2, this->id_);
+  if (sqlite3_step(stmt) != SQLITE_DONE)
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_finalize(stmt);
 }
 
 }

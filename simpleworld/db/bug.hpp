@@ -2,7 +2,7 @@
  * @file simpleworld/db/bug.hpp
  * Information about a Bug.
  *
- *  Copyright (C) 2007-2011  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2007-2013  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -28,7 +28,6 @@
 #include <simpleworld/db/types.hpp>
 #include <simpleworld/db/db.hpp>
 #include <simpleworld/db/table.hpp>
-#include <simpleworld/db/blob.hpp>
 
 namespace simpleworld
 {
@@ -54,26 +53,22 @@ public:
   /**
    * Insert a bug with father.
    * @param db database.
+   * @param code_id ID of the code of the bug.
    * @param creation when the egg was created.
    * @param father_id id of the father.
-   * @param code code of the bug.
-   * @param size size of the code.
-   * @return the id of the new row.
    * @exception DBException if there is an error with the insertion.
    */
-  static ID insert(DB* db, Time creation, ID father_id,
-                   const void* code, Uint32 size);
+  static ID insert(DB* db, ID code_id, Time creation, ID father_id);
 
   /**
    * Insert a bug without father.
    * @param db database.
+   * @param code_id ID of the code of the bug.
    * @param creation when the egg was created.
-   * @param code code of the bug.
-   * @param size size of the code.
    * @return the id of the new row.
    * @exception DBException if there is an error with the insertion.
    */
-  static ID insert(DB* db, Time creation, const void* code, Uint32 size);
+  static ID insert(DB* db, ID code_id, Time creation);
 
   /**
    * Delete a bug.
@@ -97,6 +92,21 @@ public:
    * @exception DBException if there is an error with the update.
    */
   void id(ID id);
+
+
+  /**
+   * Get the id of the code of the bug.
+   * @return the id of the code.
+   * @exception DBException if there is an error with the query.
+   */
+  ID code_id() const;
+
+  /**
+   * Set the id of the code of the bug.
+   * @param id the new id.
+   * @exception DBException if there is an error with the update.
+   */
+  void code_id(ID code_id);
 
 
   /**
@@ -135,14 +145,6 @@ public:
   * @exception DBException if there is an error with the query.
   */
   std::vector<ID> ancestors() const;
-
-
-  /**
-   * Get the code of the bug.
-   * @return the code of the bug.
-   * @exception DBException if there is an error with the query.
-   */
-  Blob code() const;
 
 
   /**

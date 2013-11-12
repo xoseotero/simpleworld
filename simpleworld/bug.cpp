@@ -2,7 +2,7 @@
  * @file simpleworld/bug.cpp
  * A bug in Simple World.
  *
- *  Copyright (C) 2007-2011  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2007-2013  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -28,12 +28,13 @@
 #include <boost/format.hpp>
 #endif // DEBUG
 
+#include <simpleworld/cpu/types.hpp>
+#include <simpleworld/db/code.hpp>
+#include <simpleworld/db/registers.hpp>
 #include "simpleworld.hpp"
 #include "types.hpp"
 #include "isa.hpp"
 #include "bug.hpp"
-#include "cpu/types.hpp"
-#include "db/bug.hpp"
 
 namespace simpleworld
 {
@@ -47,7 +48,8 @@ namespace simpleworld
 Bug::Bug(SimpleWorld* sw, db::ID id)
   : Element(ElementBug), db::Bug(sw, id), db::AliveBug(sw, id),
     db::World(sw, this->world_id()), world(sw),
-    regs(db::AliveBug::registers()), mem(db::Bug::code()),
+    regs(db::Registers(sw, db::AliveBug::registers_id()).data()),
+    mem(db::Code(sw, db::AliveBug::memory_id()).data()),
     cpu(isa, &this->regs, &this->mem, this)
 {
 }

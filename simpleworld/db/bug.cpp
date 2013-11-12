@@ -2,7 +2,7 @@
  * @file simpleworld/db/bug.cpp
  * Information about a bug.
  *
- *  Copyright (C) 2007-2011  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2007-2013  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -48,24 +48,22 @@ Bug::Bug(DB* db, ID id)
 /**
  * Insert a bug with father.
  * @param db database.
+ * @param code_id ID of the code of the bug.
  * @param creation when the egg was created.
  * @param father_id id of the father.
- * @param code code of the bug.
- * @param size size of the code.
  * @return the id of the new row.
  * @exception DBException if there is an error with the insertion.
  */
-ID Bug::insert(DB* db, Time creation, ID father_id,
-               const void* code, Uint32 size)
+ID Bug::insert(DB* db, ID code_id, Time creation, ID father_id)
 {
   sqlite3_stmt* stmt;
   if (sqlite3_prepare_v2(db->db(), "\
-INSERT INTO Bug(creation, father_id, code)\n\
+INSERT INTO Bug(code_id, creation, father_id)\n\
 VALUES(?, ?, ?);", -1, &stmt, NULL))
     throw EXCEPTION(DBException, sqlite3_errmsg(db->db()));
-  sqlite3_bind_int(stmt, 1, creation);
-  sqlite3_bind_int64(stmt, 2, father_id);
-  sqlite3_bind_blob(stmt, 3, code, size, SQLITE_TRANSIENT);
+  sqlite3_bind_int64(stmt, 1, code_id);
+  sqlite3_bind_int(stmt, 2, creation);
+  sqlite3_bind_int64(stmt, 3, father_id);
   if (sqlite3_step(stmt) != SQLITE_DONE)
     throw EXCEPTION(DBException, sqlite3_errmsg(db->db()));
   sqlite3_finalize(stmt);
@@ -76,21 +74,20 @@ VALUES(?, ?, ?);", -1, &stmt, NULL))
 /**
  * Insert a bug without father.
  * @param db database.
+ * @param code_id ID of the code of the bug.
  * @param creation when the egg was created.
- * @param code code of the bug.
- * @param size size of the code.
  * @return the id of the new row.
  * @exception DBException if there is an error with the insertion.
  */
-ID Bug::insert(DB* db, Time creation, const void* code, Uint32 size)
+ID Bug::insert(DB* db, ID code_id, Time creation)
 {
   sqlite3_stmt* stmt;
   if (sqlite3_prepare_v2(db->db(), "\
-INSERT INTO Bug(creation, code)\n\
+INSERT INTO Bug(code_id, creation)\n\
 VALUES(?, ?);", -1, &stmt, NULL))
     throw EXCEPTION(DBException, sqlite3_errmsg(db->db()));
-  sqlite3_bind_int(stmt, 1, creation);
-  sqlite3_bind_blob(stmt, 2, code, size, SQLITE_TRANSIENT);
+  sqlite3_bind_int64(stmt, 1, code_id);
+  sqlite3_bind_int(stmt, 2, creation);
   if (sqlite3_step(stmt) != SQLITE_DONE)
     throw EXCEPTION(DBException, sqlite3_errmsg(db->db()));
   sqlite3_finalize(stmt);
@@ -138,6 +135,51 @@ WHERE id = ?;", -1, &stmt, NULL))
   sqlite3_finalize(stmt);
 
   this->id_ = id;
+}
+
+
+/**
+ * Get the id of the code of the bug.
+ * @return the id of the code.
+ * @exception DBException if there is an error with the query.
+ */
+ID Bug::code_id() const
+{
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(this->db_->db(), "\
+SELECT code_id\n\
+FROM Bug\n\
+WHERE id = ?;", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_bind_int64(stmt, 1, this->id_);
+  if (sqlite3_step(stmt) != SQLITE_ROW)
+    throw EXCEPTION(DBException, boost::str(boost::format("\
+id %1% not found in table AliveBug")
+    % this->id_));
+  ID code_id = sqlite3_column_int64(stmt, 0);
+  sqlite3_finalize(stmt);
+
+  return code_id;
+}
+
+/**
+ * Set the id of the code of the bug.
+ * @param id the new id.
+ * @exception DBException if there is an error with the update.
+ */
+void Bug::code_id(ID code_id)
+{
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(this->db_->db(), "\
+UPDATE Bug\n\
+SET code_id = ?\n\
+WHERE id = ?;", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_bind_int64(stmt, 1, code_id);
+  sqlite3_bind_int64(stmt, 2, this->id_);
+  if (sqlite3_step(stmt) != SQLITE_DONE)
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_finalize(stmt);
 }
 
 
@@ -248,17 +290,6 @@ std::vector<ID> Bug::ancestors() const
   }
 
   return ids;
-}
-
-
-/**
- * Get the code of the bug.
- * @return the code of the bug.
- * @exception DBException if there is an error with the query.
- */
-Blob Bug::code() const
-{
-  return Blob(this->db_, "Bug", "code", this->id_);
 }
 
 

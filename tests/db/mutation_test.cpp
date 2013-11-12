@@ -2,7 +2,7 @@
  * @file tests/db/db_test.cpp
  * Unit test for db::Mutation.
  *
- *  Copyright (C) 2010-2011  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2010-2013  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -26,6 +26,7 @@
 #include <simpleworld/db/types.hpp>
 #include <simpleworld/db/exception.hpp>
 #include <simpleworld/db/db.hpp>
+#include <simpleworld/db/code.hpp>
 #include <simpleworld/db/bug.hpp>
 #include <simpleworld/db/mutation.hpp>
 namespace sw = simpleworld;
@@ -118,7 +119,8 @@ db::ID bug_id;
 BOOST_AUTO_TEST_CASE(mutation_insert)
 {
   db::DB sw = open_db(DB_SAVE);
-  bug_id = db::Bug::insert(&sw, 0, "0123456789abcdef", 16);
+  db::ID code_id = db::Code::insert(&sw, "0123456789abcdef", 16);
+  bug_id = db::Bug::insert(&sw, code_id, 0);
   id = db::Mutation::insert_mutation(&sw, bug_id, 1, 0, 1, 2);
   db::ID id2 = db::Mutation::insert_partial(&sw, bug_id, 2, 4, 1, 1025);
   db::ID id3 = db::Mutation::insert_permutation(&sw, bug_id, 3, 8, 1, 256);

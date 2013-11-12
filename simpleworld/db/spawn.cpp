@@ -2,7 +2,7 @@
  * @file simpleworld/db/spawn.cpp
  * Information about a spawn.
  *
- *  Copyright (C) 2007-2010  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2007-2013  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -46,6 +46,7 @@ Spawn::Spawn(DB* db, ID id)
 /**
  * Insert a spawn.
  * @param db database.
+ * @param code ID of the code of the new bugs.
  * @param frequency the frequency of the spawns.
  * @param max maximum number of elements in the region.
  * @param start_x x coord of the start of the region.
@@ -53,29 +54,27 @@ Spawn::Spawn(DB* db, ID id)
  * @param end_x x coord of the end of the region.
  * @param end_y y coord of the end of the region.
  * @param energy energy of new bugs.
- * @param code code of new bugs.
- * @param size size of new bug.
  * @return the id of the new row (the same as bug_id).
  * @exception DBException if there is an error with the insertion.
  */
-ID Spawn::insert(DB* db, Time frequency, Uint16 max,
+ID Spawn::insert(DB* db, ID code_id, Time frequency, Uint16 max,
                  Coord start_x, Coord start_y, Coord end_x, Coord end_y,
-                 Energy energy, const void* code, Uint32 size)
+		 Energy energy)
 {
   sqlite3_stmt* stmt;
   if (sqlite3_prepare_v2(db->db(), "\
-INSERT INTO Spawn(frequency, max, start_x, start_y, end_x, end_y,\n\
-                  energy, code)\n\
+INSERT INTO Spawn(code_id, frequency, max, start_x, start_y, end_x, end_y,\n\
+                  energy)\n\
 VALUES(?, ?, ?, ?, ?, ?, ?, ?);", -1, &stmt, NULL))
     throw EXCEPTION(DBException, sqlite3_errmsg(db->db()));
-  sqlite3_bind_int(stmt, 1, frequency);
-  sqlite3_bind_int(stmt, 2, max);
-  sqlite3_bind_int(stmt, 3, start_x);
-  sqlite3_bind_int(stmt, 4, start_y);
-  sqlite3_bind_int(stmt, 5, end_x);
-  sqlite3_bind_int(stmt, 6, end_y);
-  sqlite3_bind_int(stmt, 7, energy);
-  sqlite3_bind_blob(stmt, 8, code, size, SQLITE_TRANSIENT);
+  sqlite3_bind_int64(stmt, 1, code_id);
+  sqlite3_bind_int(stmt, 2, frequency);
+  sqlite3_bind_int(stmt, 3, max);
+  sqlite3_bind_int(stmt, 4, start_x);
+  sqlite3_bind_int(stmt, 5, start_y);
+  sqlite3_bind_int(stmt, 6, end_x);
+  sqlite3_bind_int(stmt, 7, end_y);
+  sqlite3_bind_int(stmt, 8, energy);
   if (sqlite3_step(stmt) != SQLITE_DONE)
     throw EXCEPTION(DBException, sqlite3_errmsg(db->db()));
   sqlite3_finalize(stmt);
@@ -123,6 +122,51 @@ WHERE id = ?;", -1, &stmt, NULL))
   sqlite3_finalize(stmt);
 
   this->id_ = id;
+}
+
+
+/**
+ * Get the id of the code of new bugs.
+ * @return the code.
+ * @exception DBException if there is an error with the query.
+ */
+ID Spawn::code_id() const
+{
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(this->db_->db(), "\
+SELECT code_id\n\
+FROM Spawn\n\
+WHERE id = ?;", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_bind_int64(stmt, 1, this->id_);
+  if (sqlite3_step(stmt) != SQLITE_ROW)
+    throw EXCEPTION(DBException, boost::str(boost::format("\
+id %1% not found in table AliveBug")
+    % this->id_));
+  ID code_id = sqlite3_column_int64(stmt, 0);
+  sqlite3_finalize(stmt);
+
+  return code_id;
+}
+
+/**
+ * Set the id of the code of new bugs.
+ * @param the id of the code.
+ * @exception DBException if there is an error with the query.
+ */
+void Spawn::code_id(ID code_id)
+{
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(this->db_->db(), "\
+UPDATE Spawn\n\
+SET code_id = ?\n\
+WHERE id = ?;", -1, &stmt, NULL))
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_bind_int64(stmt, 1, code_id);
+  sqlite3_bind_int64(stmt, 2, this->id_);
+  if (sqlite3_step(stmt) != SQLITE_DONE)
+    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
+  sqlite3_finalize(stmt);
 }
 
 
@@ -434,16 +478,6 @@ WHERE id = ?;", -1, &stmt, NULL))
   if (sqlite3_step(stmt) != SQLITE_DONE)
     throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
   sqlite3_finalize(stmt);
-}
-
-/**
- * Get the code of new bugs.
- * @return the code.
- * @exception DBException if there is an error with the query.
- */
-Blob Spawn::code() const
-{
-  return Blob(this->db_, "Spawn", "code", this->id_);
 }
 
 }

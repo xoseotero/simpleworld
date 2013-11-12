@@ -2,7 +2,7 @@
  * @file simpleworld/db/spawn.hpp
  * Information about a spawn.
  *
- *  Copyright (C) 2010  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2010-2013  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -25,7 +25,6 @@
 #include <simpleworld/types.hpp>
 #include <simpleworld/db/types.hpp>
 #include <simpleworld/db/table.hpp>
-#include <simpleworld/db/blob.hpp>
 
 namespace simpleworld
 {
@@ -51,6 +50,7 @@ public:
   /**
    * Insert a spawn.
    * @param db database.
+   * @param code_id ID of the code of the new bugs.
    * @param frequency the frequency of the spawns.
    * @param max maximum number of elements in the region.
    * @param start_x x coord of the start of the region.
@@ -58,14 +58,11 @@ public:
    * @param end_x x coord of the end of the region.
    * @param end_y y coord of the end of the region.
    * @param energy energy of new bugs.
-   * @param code code of new bugs.
-   * @param size size of new bug.
-   * @return the id of the new row (the same as bug_id).
    * @exception DBException if there is an error with the insertion.
    */
-  static ID insert(DB* db, Time frequency, Uint16 max,
+  static ID insert(DB* db, ID code_id, Time frequency, Uint16 max,
                    Coord start_x, Coord start_y, Coord end_x, Coord end_y,
-                   Energy energy, const void* code, Uint32 size);
+                   Energy energy);
 
   /**
    * Delete a spawn.
@@ -89,6 +86,21 @@ public:
    * @exception DBException if there is an error with the update.
    */
   void id(ID id);
+
+
+  /**
+   * Get the id of the code of new bugs.
+   * @return the code.
+   * @exception DBException if there is an error with the query.
+   */
+  ID code_id() const;
+
+  /**
+   * Set the id of the code of new bugs.
+   * @param the id of the code.
+   * @exception DBException if there is an error with the query.
+   */
+  void code_id(ID code_id);
 
 
   /**
@@ -190,13 +202,6 @@ public:
    * @exception DBException if there is an error with the update.
    */
   void energy(Energy energy);
-
-  /**
-   * Get the code of new bugs.
-   * @return the code.
-   * @exception DBException if there is an error with the query.
-   */
-  Blob code() const;
 };
 
 }

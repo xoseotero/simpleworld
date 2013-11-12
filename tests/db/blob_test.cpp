@@ -2,7 +2,7 @@
  * @file tests/db/db_test.cpp
  * Unit test for db::Blob.
  *
- *  Copyright (C) 2010-2011  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2010-2013  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -25,7 +25,7 @@
 #include <simpleworld/ints.hpp>
 #include <simpleworld/db/types.hpp>
 #include <simpleworld/db/db.hpp>
-#include <simpleworld/db/bug.hpp>
+#include <simpleworld/db/code.hpp>
 #include <simpleworld/db/blob.hpp>
 namespace sw = simpleworld;
 namespace db = simpleworld::db;
@@ -43,7 +43,7 @@ namespace db = simpleworld::db;
 BOOST_AUTO_TEST_CASE(blob_get)
 {
   db::DB sw(DB_FILE);
-  db::Blob blob(db::Bug(&sw, 1).code());
+  db::Blob blob(db::Code(&sw, 3).data());
 
   BOOST_CHECK_EQUAL(blob.size(), 8);
   sw::Uint32 size;
@@ -65,7 +65,7 @@ BOOST_AUTO_TEST_CASE(blob_get)
 BOOST_AUTO_TEST_CASE(blob_get_part)
 {
   db::DB sw(DB_FILE);
-  db::Blob blob(db::Bug(&sw, 2).code());
+  db::Blob blob(db::Code(&sw, 4).data());
 
   boost::shared_array<sw::Uint8> data = blob.read(sizeof(sw::Uint8) * 4,
                                                   sizeof(sw::Uint8) * 3);
@@ -82,19 +82,11 @@ BOOST_AUTO_TEST_CASE(blob_get_part)
 BOOST_AUTO_TEST_CASE(blob_update)
 {
   db::DB sw = open_db(DB_SAVE);
-  sw::Uint8 code[8];
-  code[0] = 0xAA;
-  code[1] = 0xBB;
-  code[2] = 0xCC;
-  code[3] = 0xDD;
-  code[4] = 0xEE;
-  code[5] = 0xFF;
-  code[6] = 0x00;
-  code[7] = 0x11;
-  db::ID id = db::Bug::insert(&sw, 0, code, sizeof(code));
+  sw::Uint8 code[8] = { 0xAA, 0xBB, 0xCC, 0xDD, 0xEE, 0xFF, 0x00, 0x11 };
+  db::ID id = db::Code::insert(&sw, code, sizeof(code));
 
-  db::Blob blob(db::Bug(&sw, id).code());
-  sw::Uint8 newcode[4] = {0x55, 0x66, 0x77, 0x88};
+  db::Blob blob(db::Code(&sw, id).data());
+  sw::Uint8 newcode[4] = { 0x55, 0x66, 0x77, 0x88 };
   blob.write(&newcode, sizeof(newcode));
 
   sw::Uint32 size;
@@ -113,14 +105,10 @@ BOOST_AUTO_TEST_CASE(blob_update)
 BOOST_AUTO_TEST_CASE(blob_update_part)
 {
   db::DB sw = open_db(DB_SAVE);
-  sw::Uint8 code[4];
-  code[0] = 0xAA;
-  code[1] = 0xBB;
-  code[2] = 0xCC;
-  code[3] = 0xDD;
-  db::ID id = db::Bug::insert(&sw, 0, code, sizeof(code));
+  sw::Uint8 code[4] = { 0xAA, 0xBB, 0xCC, 0xDD };
+  db::ID id = db::Code::insert(&sw, code, sizeof(code));
 
-  db::Blob blob(db::Bug(&sw, id).code());
+  db::Blob blob(db::Code(&sw, id).data());
   sw::Uint8 newcode = 0x88;
   blob.write(&newcode, sizeof(newcode), sizeof(sw::Uint8) * 1);
 

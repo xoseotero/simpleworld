@@ -42,6 +42,7 @@
 #include <simpleworld/db/transaction.hpp>
 #include <simpleworld/db/world.hpp>
 #include <simpleworld/db/food.hpp>
+#include <simpleworld/db/code.hpp>
 #include <simpleworld/db/bug.hpp>
 #include <simpleworld/db/egg.hpp>
 #include <simpleworld/db/alivebug.hpp>
@@ -170,14 +171,17 @@ void SimpleWorld::add_egg(Energy energy,
 
   db::ID id;
   try {
+    // TODO: Add a method to cpu::Memory to get the pointer to the memory,
+    //       maybe using a shared_array.
     boost::scoped_array<cpu::Word> data(new cpu::Word[code.size()]);
     for (cpu::Address i = 0; i < code.size(); i += sizeof(cpu::Word))
       data[i / sizeof(cpu::Word)] = code.get_word(i, false);
 
-    id = db::Bug::insert(this, this->env_->time(), data.get(), code.size());
+    db::ID code_id = db::Code::insert(this, data.get(), code.size());
+    id = db::Bug::insert(this, code_id, this->env_->time());
     db::ID world_id = db::World::insert(this, position.x, position.y,
                                         orientation);
-    db::Egg::insert(this, id, world_id, energy);
+    db::Egg::insert(this, id, world_id, energy, db::Code::insert(this, code_id));
   } catch (const db::DBException& e) {
     throw EXCEPTION(WorldError, e.what);
   }
@@ -297,7 +301,7 @@ cpu::Word SimpleWorld::myself(Bug* bug, Info info, cpu::Word* ypos)
     return static_cast<cpu::Word>(bug->id());
 
   case InfoSize:
-    return static_cast<cpu::Word>(bug->code().size());
+    return static_cast<cpu::Word>(db::Code(this, bug->memory_id()).data().size());
 
   case InfoEnergy:
     return static_cast<cpu::Word>(bug->energy());
@@ -385,9 +389,9 @@ There is nothing in (%1%, %2%)")
     if (target->type == ElementFood)
       return static_cast<cpu::Word>(static_cast<Food*>(target)->size());
     else if (target->type == ElementEgg)
-      return static_cast<cpu::Word>(static_cast<Egg*>(target)->code().size());
+      return static_cast<cpu::Word>(db::Code(this, static_cast<Egg*>(target)->memory_id()).data().size());
     else
-      return static_cast<cpu::Word>(static_cast<Bug*>(target)->code().size());
+      return static_cast<cpu::Word>(db::Code(this, static_cast<Bug*>(target)->memory_id()).data().size());
 
   case InfoEnergy: // Only eggs and bugs
     if (target->type == ElementEgg)
@@ -574,7 +578,7 @@ There is nothing in (%1%, %2%)")
     delete food_target;
   } else if (target->type == ElementEgg) {
     Egg* egg_target = dynamic_cast<Egg*>(target);
-    energy = egg_target->code().size();
+    energy = db::Code(this, egg_target->memory_id()).data().size();
     this->kill(egg_target, bug->id());
   } else
     throw EXCEPTION(ActionError, boost::str(boost::format("\
@@ -621,17 +625,23 @@ Position used (%1%, %2%)")
                                       ::simpleworld::turn(::simpleworld::turn(bug->orientation(),
                                                                               TurnLeft),
                                                           TurnLeft));
-  Uint32 size;
-  boost::shared_array<Uint8> code = bug->code().read(&size);
-  db::ID egg_id = db::Bug::insert(this, this->env_->time(), bug->id(),
-                                  code.get(), size);
-  db::Egg::insert(this, egg_id, world_id, std::min(bug->energy(), energy));
+  db::ID code_id = db::Code::insert(this, bug->memory_id());
+  db::ID egg_id = db::Bug::insert(this, code_id, this->env_->time(), bug->id());
+  MutationsList list;
+  db::ID memory_id;
+  if (mutate(&list, this, &memory_id, bug->memory_id(), 
+             this->env_->mutations_probability()))
+    update_mutations(&list, this, egg_id, this->env_->time());
+  else
+    memory_id = db::Code::insert(this, code_id);
+  db::Egg::insert(this, egg_id, world_id, std::min(bug->energy(), energy),
+                  memory_id);
   Egg* ptr = new Egg(this, egg_id);
-  mutate(ptr, this->env_->mutations_probability(), this->env_->time());
 
   try {
     // Substracts the size of the egg
-    this->substract_energy(bug, db::Bug(this, egg_id).code().size());
+    this->substract_energy(bug,
+                           db::Code(this, db::Egg(this, egg_id).memory_id()).data().size());
   } catch (const BugDeath& e) {
     transaction.rollback("egg;");
 
@@ -677,22 +687,25 @@ void SimpleWorld::spawn_eggs()
         Uint16 num_elements = this->world_->num_elements(start, end,
                                                          ElementBug);
         Uint16 max = (*spawn)->max();
-        Energy energy = (*spawn)->energy();
         if (num_elements < max) {
-          Uint32 size;
-          boost::shared_array<Uint8> data = (*spawn)->code().read(&size);
+          Energy energy = (*spawn)->energy();
 
           for (Uint16 i = 0; i < max - num_elements; i++) {
-            db::ID id = db::Bug::insert(this, this->env_->time(),
-                                        data.get(), size);
+            db::ID code_id = db::Code::insert(this, (*spawn)->code_id());
+            db::ID id = db::Bug::insert(this, code_id, this->env_->time());
+            db::ID memory_id;
+            MutationsList list;
+            if (mutate(&list, this, &memory_id, code_id,
+                       this->env_->mutations_probability()))
+              update_mutations(&list, this, id, this->env_->time());
+            else
+              memory_id = db::Code::insert(this, code_id);
             Position position = this->world_->unused_position(start, end);
             db::ID world_id = db::World::insert(this, position.x, position.y,
                                                 World::random_orientation());
-            db::Egg::insert(this, id, world_id, energy);
+            db::Egg::insert(this, id, world_id, energy, memory_id);
 
             Egg* egg = new Egg(this, id);
-            mutate(egg, this->env_->mutations_probability(),
-                   this->env_->time());
             this->eggs_.push_back(egg);
             this->world_->add(egg, position);
           }
@@ -767,9 +780,11 @@ void SimpleWorld::bugs_mutate()
        bug != this->bugs_.end();
        ++bug) {
     Time age = this->env_->time() - (*bug)->birth();
-    if ((age > 0) and (age % this->env_->time_mutate() == 0))
-      if (mutate((*bug), this->env_->mutations_probability(),
-          this->env_->time())) {
+    if ((age > 0) and (age % this->env_->time_mutate() == 0)) {
+      MutationsList list;
+      if (mutate(&list, this, (*bug)->memory_id(),
+          this->env_->mutations_probability())) {
+        update_mutations(&list, this, (*bug)->id(), this->env_->time());
         (*bug)->mutated();
 
 #ifdef DEBUG
@@ -778,6 +793,7 @@ void SimpleWorld::bugs_mutate()
                   << std::endl;
 #endif // DEBUG
       }
+    }
   }
 }
 
@@ -867,7 +883,8 @@ void SimpleWorld::kill(Egg* egg)
 {
   // Convert the egg in food
   Time now = this->env_->time();
-  db::ID id = db::Food::insert(this, now, egg->world_id(), egg->code().size());
+  db::ID id = db::Food::insert(this, now, egg->world_id(),
+                               db::Code(this, egg->memory_id()).data().size());
   db::DeadBug::insert(this, egg, now);
 
   Food* food = new Food(this, id);
@@ -905,7 +922,8 @@ void SimpleWorld::kill(Egg* egg, db::ID killer_id)
 {
   // Convert the egg in food
   Time now = this->env_->time();
-  db::ID id = db::Food::insert(this, now, egg->world_id(), egg->code().size());
+  db::ID id = db::Food::insert(this, now, egg->world_id(),
+                               db::Code(this, egg->memory_id()).data().size());
   db::DeadBug::insert(this, egg, now, killer_id);
 
   Food* food = new Food(this, id);
@@ -942,7 +960,8 @@ void SimpleWorld::kill(Bug* bug)
 {
   // Convert the bug in food
   Time now = this->env_->time();
-  db::ID id = db::Food::insert(this, now, bug->world_id(), bug->code().size());
+  db::ID id = db::Food::insert(this, now, bug->world_id(),
+                               db::Code(this, bug->memory_id()).data().size());
   db::DeadBug::insert(this, bug, now);
 
   Food* food = new Food(this, id);
@@ -980,7 +999,8 @@ void SimpleWorld::kill(Bug* bug, db::ID killer_id)
 {
   // Convert the bug in food
   Time now = this->env_->time();
-  db::ID id = db::Food::insert(this, now, bug->world_id(), bug->code().size());
+  db::ID id = db::Food::insert(this, now, bug->world_id(),
+                               db::Code(this, bug->memory_id()).data().size());
   db::DeadBug::insert(this, bug, now, killer_id);
 
   Food* food = new Food(this, id);

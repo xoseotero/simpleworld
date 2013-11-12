@@ -165,10 +165,25 @@ END;
 
 
 /*******************
+ * Code
+ */
+CREATE TABLE Code(
+  id INTEGER NOT NULL,
+
+  data BLOB NOT NULL,
+
+  PRIMARY KEY(id),
+  CHECK(length(data) > 0 AND (length(data) % 4 = 0))
+);
+
+
+/*******************
  * Spawn
  */
 CREATE TABLE Spawn(
   id INTEGER NOT NULL,
+
+  code_id INTEGER NOT NULL,
 
   frequency INTEGER NOT NULL,
 
@@ -179,17 +194,16 @@ CREATE TABLE Spawn(
   end_y INTEGER NOT NULL,
 
   energy INTENER NOT NULL,
-  code BLOB NOT NULL,
 
-  PRIMARY KEY(id)
+  PRIMARY KEY(id),
+  FOREIGN KEY(code_id) REFERENCES Code(id) ON UPDATE CASCADE ON DELETE CASCADE,
   CHECK(frequency > 0),
   CHECK(start_x >= 0),
   CHECK(start_y >= 0),
   CHECK(end_x > start_x),
   CHECK(end_y > start_y),
   CHECK(max <= (end_x - start_x) * (end_y - start_y)),
-  CHECK(energy > 0),
-  CHECK(length(code) >= 0 AND (length(code) % 4 = 0))
+  CHECK(energy > 0)
 );
 
 /* regions must be inside the world */
@@ -379,17 +393,15 @@ CREATE TABLE Bug
 (
   id INTEGER NOT NULL,
 
+  code_id INTEGER NOT NULL,
+
   creation INTEGER NOT NULL,
   father_id INTEGER,                    -- NULL if the bug is added manually
 
-  /* The blob is the last col for performance */
-  code BLOB NOT NULL,
-
   PRIMARY KEY(id),
+  FOREIGN KEY(code_id) REFERENCES Code(id) ON UPDATE CASCADE ON DELETE CASCADE,
   FOREIGN KEY(father_id) REFERENCES Bug(id) ON UPDATE CASCADE ON DELETE SET NULL,
-  CHECK(creation >= 0),
-  CHECK(father_id),
-  CHECK(length(code) >= 0 AND (length(code) % 4 = 0))
+  CHECK(creation >= 0)
 );
 
 CREATE INDEX Bug_index ON Bug(father_id);
@@ -416,11 +428,28 @@ CREATE TABLE Egg
   world_id INTEGER NOT NULL,
   energy INTEGER NOT NULL,
 
+  memory_id INTEGER NOT NULL,
+
   PRIMARY KEY(bug_id),
   FOREIGN KEY(bug_id) REFERENCES Bug(id) ON UPDATE CASCADE ON DELETE CASCADE,
   FOREIGN KEY(world_id) REFERENCES World(id) ON UPDATE CASCADE ON DELETE CASCADE,
+  FOREIGN KEY(memory_id) REFERENCES Code(id) ON UPDATE CASCADE ON DELETE CASCADE,
   UNIQUE(world_id),
+  UNIQUE(memory_id),
   CHECK(energy > 0)
+);
+
+
+/*******************
+ * Registers
+ */
+CREATE TABLE Registers(
+  id INTEGER NOT NULL,
+
+  data BLOB NOT NULL,
+
+  PRIMARY KEY(id),
+  CHECK(length(data) = 520)
 );
 
 
@@ -439,13 +468,17 @@ CREATE TABLE AliveBug
   action_time INTEGER,                  -- NULL if the bug is not doing a
                                         -- action
 
-  /* The blob is the last col for performance */
-  registers BLOB NOT NULL,
+  registers_id INTEGER NOT NULL,
+  memory_id INTEGER NOT NULL,
 
   PRIMARY KEY(bug_id),
   FOREIGN KEY(bug_id) REFERENCES Bug(id) ON UPDATE CASCADE ON DELETE CASCADE,
   FOREIGN KEY(world_id) REFERENCES World(id) ON UPDATE CASCADE ON DELETE CASCADE,
+  FOREIGN KEY(registers_id) REFERENCES Registers(id) ON UPDATE CASCADE ON DELETE CASCADE,
+  FOREIGN KEY(memory_id) REFERENCES Code(id) ON UPDATE CASCADE ON DELETE CASCADE,
   UNIQUE(world_id),
+  UNIQUE(registers_id),
+  UNIQUE(memory_id),
   CHECK(time_last_action IS NULL OR time_last_action >= 0),
   CHECK(action_time IS NULL OR action_time > 0),
   CHECK(birth >= 0),
@@ -497,6 +530,17 @@ BEGIN
          FROM Environment)
         > NEW.action_time;
 END;
+
+/* Delete the registers when a alive bug is deleted */
+CREATE TRIGGER AliveBug_delete
+AFTER DELETE
+ON AliveBug
+FOR EACH ROW
+BEGIN
+  DELETE FROM Registers
+  WHERE id = OLD.registers_id;
+END;
+
 
 
 /*******************

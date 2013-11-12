@@ -39,6 +39,7 @@
 #include <simpleworld/db/exception.hpp>
 #include <simpleworld/db/environment.hpp>
 #include <simpleworld/db/food.hpp>
+#include <simpleworld/db/code.hpp>
 #include <simpleworld/db/egg.hpp>
 #include <simpleworld/db/bug.hpp>
 #include <simpleworld/db/deadbug.hpp>
@@ -540,7 +541,7 @@ static void extract_code(sw::SimpleWorld& sw)
   try {
     db::Bug bug(&sw, code_id);
     sw::Uint32 size;
-    boost::shared_array<sw::Uint8> data = bug.code().read(&size);
+    boost::shared_array<sw::Uint8> data = db::Code(&sw, code_id).data().read(&size);
     cpu::MemoryFile code(cpu::Memory(data.get(), size));
     code.save_file(boost::str(boost::format("%1%.swo") % code_id));
   } catch (const db::DBException& e) {

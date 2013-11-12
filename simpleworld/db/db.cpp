@@ -2,7 +2,7 @@
  * @file simpleworld/db/db.cpp
  * Simple World database.
  *
- *  Copyright (C) 2006-2011  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2006-2013  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -30,7 +30,7 @@ namespace fs = boost::filesystem;
 #include "default.hpp"
 #include "environment.hpp"
 
-#define DATABASE_VERSION 5
+#define DATABASE_VERSION 6
 
 namespace simpleworld
 {
@@ -221,11 +221,27 @@ END;",
 
 
     /*******************
+     * Code
+     */
+    "\
+CREATE TABLE Code(\n\
+  id INTEGER NOT NULL,\n\
+\n\
+  data BLOB NOT NULL,\n\
+\n\
+  PRIMARY KEY(id),\n\
+  CHECK(length(data) > 0 AND (length(data) % 4 = 0))\n\
+);",
+
+
+    /*******************
      * Spawn
      */
     "\
 CREATE TABLE Spawn(\n\
   id INTEGER NOT NULL,\n\
+\n\
+  code_id INTEGER NOT NULL,\n\
 \n\
   frequency INTEGER NOT NULL,\n\
 \n\
@@ -236,16 +252,15 @@ CREATE TABLE Spawn(\n\
 \n\
   max INTEGER NOT NULL,\n\
   energy INTENER NOT NULL,\n\
-  code BLOB NOT NULL,\n\
 \n\
-  PRIMARY KEY(id)\n\
+  PRIMARY KEY(id),\n\
+  FOREIGN KEY(code_id) REFERENCES Code(id) ON UPDATE CASCADE ON DELETE CASCADE,\n\
   CHECK(start_x >= 0),\n\
   CHECK(start_y >= 0),\n\
   CHECK(end_x > start_x),\n\
   CHECK(end_y > start_y),\n\
   CHECK(max <= (end_x - start_x) * (end_y - start_y)),\n\
-  CHECK(energy > 0),\n\
-  CHECK(length(code) >= 0 AND (length(code) % 4 = 0))\n \
+  CHECK(energy > 0)\n\
 );",
 
     /* regions must be inside the world */
@@ -447,17 +462,15 @@ CREATE TABLE Bug\n\
 (\n\
   id INTEGER NOT NULL,\n\
 \n\
+  code_id INTEGER NOT NULL,\n\
+\n\
   creation INTEGER NOT NULL,\n\
   father_id INTEGER,                    -- NULL if the bug is added manually\n\
 \n\
-  /* The blob is the last col for performance */\n\
-  code BLOB NOT NULL,\n\
-\n\
   PRIMARY KEY(id),\n\
+  FOREIGN KEY(code_id) REFERENCES Code(id) ON UPDATE CASCADE ON DELETE CASCADE,\n\
   FOREIGN KEY(father_id) REFERENCES Bug(id) ON UPDATE CASCADE ON DELETE SET NULL,\n\
-  CHECK(creation >= 0),\n\
-  CHECK(father_id),\n\
-  CHECK(length(code) >= 0 AND (length(code) % 4 = 0))\n\
+  CHECK(creation >= 0)\n\
 );",
 
     "\
@@ -470,9 +483,9 @@ BEFORE INSERT\n\
 ON Bug\n\
 FOR EACH ROW\n\
 BEGIN\n\
-SELECT RAISE(ROLLBACK, 'creation is not now')\n\
-WHERE (SELECT max(time)\n\
-FROM Environment) <> NEW.creation;\n\
+  SELECT RAISE(ROLLBACK, 'creation is not now')\n\
+  WHERE (SELECT max(time)\n\
+  FROM Environment) <> NEW.creation;\n\
 END;",
 
 
@@ -487,11 +500,29 @@ CREATE TABLE Egg\n\
   world_id INTEGER NOT NULL,\n\
   energy INTEGER NOT NULL,\n\
 \n\
+  memory_id INTEGER NOT NULL,\n\
+\n\
   PRIMARY KEY(bug_id),\n\
   FOREIGN KEY(bug_id) REFERENCES Bug(id) ON UPDATE CASCADE ON DELETE CASCADE,\n\
   FOREIGN KEY(world_id) REFERENCES World(id) ON UPDATE CASCADE ON DELETE CASCADE,\n\
+  FOREIGN KEY(memory_id) REFERENCES Code(id) ON UPDATE CASCADE ON DELETE CASCADE,\n\
   UNIQUE(world_id),\n\
+  UNIQUE(memory_id),\n\
   CHECK(energy > 0)\n\
+);",
+
+
+    /*******************
+     * Registers
+     */
+    "\
+CREATE TABLE Registers(\n\
+  id INTEGER NOT NULL,\n\
+\n\
+  data BLOB NOT NULL,\n\
+\n\
+  PRIMARY KEY(id),\n\
+  CHECK(length(data) = 544)\n\
 );",
 
 
@@ -511,13 +542,17 @@ CREATE TABLE AliveBug\n\
   action_time INTEGER,                  -- NULL if the bug is not doing a\n\
                                         -- action\n\
 \n\
-  /* The blob is the last col for performance */\n\
-  registers BLOB NOT NULL,\n\
+  registers_id INTEGER NOT NULL,\n\
+  memory_id INTEGER NOT NULL,\n\
 \n\
   PRIMARY KEY(bug_id),\n\
   FOREIGN KEY(bug_id) REFERENCES Bug(id) ON UPDATE CASCADE ON DELETE CASCADE,\n\
   FOREIGN KEY(world_id) REFERENCES World(id) ON UPDATE CASCADE ON DELETE CASCADE,\n\
+  FOREIGN KEY(registers_id) REFERENCES Registers(id) ON UPDATE CASCADE ON DELETE CASCADE,\n\
+  FOREIGN KEY(memory_id) REFERENCES Code(id) ON UPDATE CASCADE ON DELETE CASCADE,\n\
   UNIQUE(world_id),\n\
+  UNIQUE(registers_id),\n\
+  UNIQUE(memory_id),\n\
   CHECK(time_last_action IS NULL OR time_last_action >= 0),\n\
   CHECK(action_time IS NULL OR action_time > 0),\n\
   CHECK(birth >= 0),\n\
@@ -572,6 +607,17 @@ BEGIN\n\
   WHERE (SELECT max(time)\n\
          FROM Environment)\n\
         > NEW.action_time;\n\
+END;",
+
+    /* Delete the registers when a alive bug is deleted */
+    "\
+CREATE TRIGGER AliveBug_delete\n\
+AFTER DELETE\n\
+ON AliveBug\n\
+FOR EACH ROW\n\
+BEGIN\n\
+  DELETE FROM Registers\n\
+  WHERE id = OLD.registers_id;\n\
 END;",
 
 

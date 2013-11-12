@@ -2,7 +2,7 @@
  * @file simpleworld/db/egg.hpp
  * Information about an egg.
  *
- *  Copyright (C) 2007-2011  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2007-2013  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -52,10 +52,11 @@ public:
    * @param bug_id id of the bug.
    * @param world_id id of the world.
    * @param energy energy.
+   * @param memory_id id of the memory of the bug.
    * @return the id of the new row (the same as bug_id).
    * @exception DBException if there is an error with the insertion.
    */
-  static ID insert(DB* db, ID bug_id, ID world_id, Energy energy);
+  static ID insert(DB* db, ID bug_id, ID world_id, Energy energy, ID memory_id);
 
   /**
    * Delete a egg.
@@ -109,6 +110,21 @@ public:
    * @exception DBException if there is an error with the update.
    */
   void energy(Energy energy);
+
+
+  /**
+   * Get the id of the memory.
+   * @return the id.
+   * @exception DBException if there is an error with the query.
+   */
+  ID memory_id() const;
+  
+  /**
+   * Set the id of the memory.
+   * @param memory_id the new id.
+   * @exception DBException if there is an error with the update.
+   */
+  void memory_id(ID memory_id);
 };
 
 }

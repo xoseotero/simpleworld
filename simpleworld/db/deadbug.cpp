@@ -25,7 +25,7 @@
 #include <sqlite3.h>
 
 #include "exception.hpp"
-#include "bug.hpp"
+#include "code.hpp"
 #include "deadbug.hpp"
 
 namespace simpleworld
@@ -173,7 +173,8 @@ VALUES(?, ?);", -1, &stmt, NULL))
   sqlite3_finalize(stmt);
   ID id = sqlite3_last_insert_rowid(db->db());
 
-  Egg::remove(db, egg->id());
+  // The egg is removed by the foreign key constraint
+  Code::remove(db, egg->memory_id());
 
   return id;
 }
@@ -203,7 +204,8 @@ VALUES(?, ?, ?);", -1, &stmt, NULL))
   sqlite3_finalize(stmt);
   ID id = sqlite3_last_insert_rowid(db->db());
 
-  Egg::remove(db, egg->id());
+  // The egg is removed by the foreign key constraint
+  Code::remove(db, egg->memory_id());
 
   return id;
 }
@@ -232,7 +234,8 @@ VALUES(?, ?, ?);", -1, &stmt, NULL))
   sqlite3_finalize(stmt);
   ID id = sqlite3_last_insert_rowid(db->db());
 
-  AliveBug::remove(db, alivebug->id());
+  // The bug is removed by the foreign key constraint
+  Code::remove(db, alivebug->memory_id());
 
   return id;
 }
@@ -263,7 +266,8 @@ VALUES(?, ?, ?, ?);", -1, &stmt, NULL))
   sqlite3_finalize(stmt);
   ID id = sqlite3_last_insert_rowid(db->db());
 
-  AliveBug::remove(db, alivebug->id());
+  // The bug is removed by the foreign key constraint
+  Code::remove(db, alivebug->memory_id());
 
   return id;
 }
