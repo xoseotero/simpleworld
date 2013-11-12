@@ -36,7 +36,7 @@ class DBMemory: public cpu::Memory
 public:
   /**
    * Constructor.
-   * @param blob binary larget object that with the data
+   * @param blob binary larget object with the data
    */
   DBMemory(const db::Blob& blob);
 

@@ -31,7 +31,7 @@ namespace simpleworld
 
 /**
  * Constructor.
- * @param blob binary larget object that with the data
+ * @param blob binary larget object with the data
  */
 DBMemory::DBMemory(const db::Blob& blob)
   : cpu::Memory(0), blob_(blob)
