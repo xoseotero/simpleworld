@@ -227,7 +227,7 @@ END;",
 CREATE TABLE Spawn(\n\
   id INTEGER NOT NULL,\n\
 \n\
-  frequency INTGER NOT NULL,\n\
+  frequency INTEGER NOT NULL,\n\
 \n\
   start_x INTEGER NOT NULL,\n\
   start_y INTEGER NOT NULL,\n\
@@ -337,7 +337,7 @@ END;",
 CREATE TABLE Resource(\n\
   id INTEGER NOT NULL,\n\
 \n\
-  frequency INTGER NOT NULL,\n\
+  frequency INTEGER NOT NULL,\n\
 \n\
   max INTEGER NOT NULL,\n\
   start_x INTEGER NOT NULL,\n\
