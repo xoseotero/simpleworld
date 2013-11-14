@@ -87,7 +87,7 @@ public:
    * @return the id.
    * @exception DBException if there is an error with the query.
    */
-  ID bug_id() const;
+  ID bug_id() const { return db::Table::id(); }
 
   /**
    * Set the id of the bug.

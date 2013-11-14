@@ -143,16 +143,6 @@ WHERE bug_id = ?;", -1, &stmt, NULL))
 
 
 /**
- * Get the id of the bug.
- * @return the id.
- * @exception DBException if there is an error with the query.
- */
-ID AliveBug::bug_id() const
-{
-  return this->id_;
-}
-
-/**
  * Set the id of the bug.
  * @param bug_id the new id.
  * @exception DBException if there is an error with the update.
