@@ -2,7 +2,7 @@
  * @file simpleworld/db/deadbug.hpp
  * Information about a dead bug.
  *
- *  Copyright (C) 2007-2010  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2007-2013  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -152,7 +152,7 @@ public:
    * @return the id.
    * @exception DBException if there is an error with the query.
    */
-  ID bug_id() const;
+  ID bug_id() const { return db::Table::id(); }
 
   /**
    * Set the id of the bug.

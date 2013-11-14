@@ -2,7 +2,7 @@
  * @file simpleworld/db/deadbug.cpp
  * Information about a dead bug.
  *
- *  Copyright (C) 2007-2010  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2007-2013  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -291,30 +291,6 @@ WHERE bug_id = ?;", -1, &stmt, NULL))
   sqlite3_finalize(stmt);
 }
 
-
-/**
- * Get the id of the bug.
- * @return the id.
- * @exception DBException if there is an error with the query.
- */
-ID DeadBug::bug_id() const
-{
-  sqlite3_stmt* stmt;
-  if (sqlite3_prepare_v2(this->db_->db(), "\
-SELECT bug_id\n\
-FROM DeadBug\n\
-WHERE bug_id = ?;", -1, &stmt, NULL))
-    throw EXCEPTION(DBException, sqlite3_errmsg(this->db_->db()));
-  sqlite3_bind_int64(stmt, 1, this->id_);
-  if (sqlite3_step(stmt) != SQLITE_ROW)
-    throw EXCEPTION(DBException, boost::str(boost::format("\
-id %1% not found in table DeadBug")
-                                            % this->id_));
-  ID id = sqlite3_column_int64(stmt, 0);
-  sqlite3_finalize(stmt);
-
-  return id;
-}
 
 /**
  * Set the id of the bug.
