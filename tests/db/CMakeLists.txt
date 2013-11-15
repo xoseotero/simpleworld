@@ -26,6 +26,13 @@ if(UNIT_TESTS)
     ${Boost_REGEX_LIBRARY} ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY}
     ${SQLite3x_LIB} ${SQLite3_LIB})
 
+  add_executable(db_code_test code_test.cpp)
+  target_link_libraries(db_code_test test_db_opendb
+    simpleworld_db
+    ${Boost_PROGRAM_OPTIONS_LIBRARY} ${Boost_FILESYSTEM_LIBRARY}
+    ${Boost_REGEX_LIBRARY} ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY}
+    ${SQLite3x_LIB} ${SQLite3_LIB})
+
   add_executable(db_spawn_test spawn_test.cpp)
   target_link_libraries(db_spawn_test test_db_opendb
     simpleworld_db
