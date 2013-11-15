@@ -2,7 +2,7 @@
  * @file simpleworld/actionerror.hpp
  * Class thrown when a error about a action is found.
  *
- *  Copyright (C) 2007  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2007-2013  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -39,11 +39,11 @@ public:
    * @param file File where the exception is raised.
    * @param line Line where the exception is raised.
    * @param function Function where the exception is raised.
-   * @param what What happened.
+   * @param info What happened.
    */
   ActionError(std::string file, Uint32 line, std::string function,
-              std::string what) throw ()
-    : WorldError(file, line, function, what)
+              std::string info) throw ()
+    : WorldError(file, line, function, info)
   {}
 };
 

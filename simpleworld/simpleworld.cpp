@@ -183,7 +183,7 @@ void SimpleWorld::add_egg(Energy energy,
                                         orientation);
     db::Egg::insert(this, id, world_id, energy, db::Code::insert(this, code_id));
   } catch (const db::DBException& e) {
-    throw EXCEPTION(WorldError, e.what);
+    throw EXCEPTION(WorldError, e.info);
   }
 
   Egg* egg = new Egg(this, id);
@@ -210,7 +210,7 @@ void SimpleWorld::add_food(Position position, Energy size)
     db::ID world_id = db::World::insert(this, position.x, position.y);
     id = db::Food::insert(this, this->env_->time(), world_id, size);
   } catch (const db::DBException& e) {
-    throw EXCEPTION(WorldError, e.what);
+    throw EXCEPTION(WorldError, e.info);
   }
 
   Food* food = new Food(this, id);
@@ -445,7 +445,7 @@ void SimpleWorld::move(Bug* bug, Movement movement)
     else
       bug->position_y(front.y);
   } catch (const Exception& e) {
-    throw EXCEPTION(ActionError, e.what);
+    throw EXCEPTION(ActionError, e.info);
   }
 }
 
@@ -468,7 +468,7 @@ void SimpleWorld::turn(Bug* bug, Turn turn)
   try {
     bug->orientation(::simpleworld::turn(bug->orientation(), turn));
   } catch (const Exception& e) {
-    throw EXCEPTION(ActionError, e.what);
+    throw EXCEPTION(ActionError, e.info);
   }
 }
 

@@ -2,7 +2,7 @@
  * @file simpleworld/exception.hpp
  * Exception base class father of the rest of Simple World exceptions.
  *
- *  Copyright (C) 2004, 2006-2007  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2004-2013  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -20,6 +20,7 @@
 #ifndef SIMPLEWORLD_EXCEPTION_HPP
 #define SIMPLEWORLD_EXCEPTION_HPP
 
+#include <exception>
 #include <string>
 
 #include <boost/current_function.hpp>
@@ -32,7 +33,7 @@ namespace simpleworld
 /**
  * Exception base class father of the rest of Simple CPU exceptions.
  */
-class Exception
+class Exception: public std::exception
 {
 public:
   /**
@@ -40,39 +41,49 @@ public:
    * @param file File where the exception is raised.
    * @param line Line where the exception is raised.
    * @param function Function where the exception is raised.
-   * @param what What happened.
+   * @param info What happened.
    */
   Exception(std::string file, Uint32 line, std::string function,
-            std::string what) throw ()
-    : file(file), line(line), function(function), what(what)
+            std::string info) throw ()
+    : std::exception(), file(file), line(line), function(function), info(info)
   {}
 
-  virtual ~Exception() {}
+  /**
+   * Destructor.
+   */
+  ~Exception() throw() {}
+
+
+  /**
+   * Return the information about the exception.
+   * @return Info.
+   */
+  const char* what() const throw() { return this->info.c_str(); }
 
 
   std::string file;             /**< File where the exception is raised. */
   Uint32 line;                  /**< Line where the exception is raised. */
   std::string function;         /**< Function where the exception is raised. */
-  std::string what;             /**< What happened */
+  std::string info;             /**< What happened */
 };
 
 
 /**
  * Macro to set the automatic values of the exceptions.
  * @param exception Exception to call.
- * @param what What happened.
+ * @param info What happened.
  */
-#define EXCEPTION(exception, what) \
-  (exception(__FILE__, __LINE__, BOOST_CURRENT_FUNCTION, what))
+#define EXCEPTION(exception, info) \
+  (exception(__FILE__, __LINE__, BOOST_CURRENT_FUNCTION, info))
 
 /**
  * Macro to set the automatic values of the exceptions with 1 extra argument.
  * @param exception Exception to call.
- * @param what What happened.
+ * @param info What happened.
  * @param extra Extra argument.
  */
-#define EXCEPTION1(exception, what, extra) \
-  (exception(__FILE__, __LINE__, BOOST_CURRENT_FUNCTION, what, extra))
+#define EXCEPTION1(exception, info, extra) \
+  (exception(__FILE__, __LINE__, BOOST_CURRENT_FUNCTION, info, extra))
 
 
 }

@@ -1336,7 +1336,7 @@ Word Source::compile(File::size_type line) const
 Line: %1%\n\
 %2%")
                                             % this->get_line(line)
-                                            % e.what));
+                                            % e.info));
   }
 
   if ((info.nregs + info.has_inmediate + 1) != keywords.size())
@@ -1370,7 +1370,7 @@ Wrong number of parameters (%2%)")
 Line: %1%\n\
 %2%")
                                             % this->get_line(line)
-                                            % e.what));
+                                            % e.info));
   }
 
   return inst.encode();

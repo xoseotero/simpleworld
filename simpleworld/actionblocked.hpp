@@ -2,7 +2,7 @@
  * @file simpleworld/actionblocked.hpp
  * Class thrown when a action is blocked waiting to be executed.
  *
- *  Copyright (C) 2012  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2012-2013  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -39,11 +39,11 @@ public:
    * @param file File where the exception is raised.
    * @param line Line where the exception is raised.
    * @param function Function where the exception is raised.
-   * @param what What happened.
+   * @param info What happened.
    */
   ActionBlocked(std::string file, Uint32 line, std::string function,
-                std::string what) throw ()
-    : Exception(file, line, function, what)
+                std::string info) throw ()
+    : Exception(file, line, function, info)
   {}
 };
 

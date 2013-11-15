@@ -276,10 +276,10 @@ try {
   std::exit(EXIT_SUCCESS);
 }
 catch (const cpu::ErrorDirective& e) {
-  std::cout << e.what << std::endl;
+  std::cout << e.info << std::endl;
 }
 catch (const cpu::ParserError& e) {
-  std::cout << e.what << std::endl;
+  std::cout << e.info << std::endl;
 }
 catch (const sw::Exception& e) {
   std::cout << e << std::endl;
