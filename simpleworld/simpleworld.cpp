@@ -7,7 +7,7 @@
  * world. The objective of the project is to observe the evolution of this
  * world and of these bugs.
  *
- *  Copyright (C) 2007-2012  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2007-2013  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -374,7 +374,9 @@ There is nothing in (%1%, %2%)")
 
   switch (info) {
   case InfoID:  // Only eggs and bugs
-    if (target->type == ElementEgg or target->type == ElementBug)
+    if (target->type == ElementEgg)
+      return static_cast<cpu::Word>(static_cast<Egg*>(target)->id());
+    else if (target->type == ElementBug)
       return static_cast<cpu::Word>(static_cast<Bug*>(target)->id());
     else
       throw EXCEPTION(ActionError, "Food has no id");
@@ -382,11 +384,15 @@ There is nothing in (%1%, %2%)")
   case InfoSize: // Every element
     if (target->type == ElementFood)
       return static_cast<cpu::Word>(static_cast<Food*>(target)->size());
+    else if (target->type == ElementEgg)
+      return static_cast<cpu::Word>(static_cast<Egg*>(target)->code().size());
     else
       return static_cast<cpu::Word>(static_cast<Bug*>(target)->code().size());
 
   case InfoEnergy: // Only eggs and bugs
-    if (target->type == ElementEgg or target->type == ElementBug)
+    if (target->type == ElementEgg)
+      return static_cast<cpu::Word>(static_cast<Egg*>(target)->energy());
+    else if (target->type == ElementBug)
       return static_cast<cpu::Word>(static_cast<Bug*>(target)->energy());
     else
       throw EXCEPTION(ActionError, "Food has no energy");
@@ -396,7 +402,9 @@ There is nothing in (%1%, %2%)")
     return static_cast<cpu::Word>(front.x);
 
   case InfoOrientation: // Only eggs and bugs
-    if (target->type == ElementEgg or target->type == ElementBug)
+    if (target->type == ElementEgg)
+      return static_cast<cpu::Word>(static_cast<Egg*>(target)->orientation());
+    else if (target->type == ElementBug)
       return static_cast<cpu::Word>(static_cast<Bug*>(target)->orientation());
     else
       throw EXCEPTION(ActionError, "Food has no orientation");
