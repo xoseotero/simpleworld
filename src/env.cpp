@@ -2,7 +2,7 @@
  * @file src/env.cpp
  * Command env of Simple World.
  *
- *  Copyright (C) 2008  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2008-2013  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -399,5 +399,5 @@ void sw_env(int argc, char* argv[])
                           mutations, birth, old, laziness, elaziness,
                           multiplier, tnothing, tmyself, tdetect, tinfo,
                           tmove, tturn, tattack, teat, tegg, nothing, myself,
-			  detect, info, move, turn, attack, eat, egg);
+                          detect, info, move, turn, attack, eat, egg);
 }

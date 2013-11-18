@@ -852,7 +852,7 @@ void Source::load(std::string filename)
 void Source::add_include_path(std::string path)
 {
   if (std::find(this->include_path_.begin(), this->include_path_.end(),
-		path) != this->include_path_.end())
+                path) != this->include_path_.end())
     throw EXCEPTION(CPUException, boost::str(boost::format("\
 Path %1% already added")
                                                 % path));

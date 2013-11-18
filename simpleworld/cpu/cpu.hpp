@@ -187,7 +187,7 @@ public:
   void timer_interrupt();
 
 protected:
-  const ISA& isa_;		/**< Instruction set */
+  const ISA& isa_;              /**< Instruction set */
   Memory* registers_;
   Memory* memory_;
 

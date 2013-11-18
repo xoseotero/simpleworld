@@ -2,7 +2,7 @@
 * @file simpleworld/db/default.cpp
 * Default values of the Environment.
 *
-*  Copyright (C) 2011  Xosé Otero <xoseotero@gmail.com>
+*  Copyright (C) 2011-2013  Xosé Otero <xoseotero@gmail.com>
 *
 *  This program is free software: you can redistribute it and/or modify
 *  it under the terms of the GNU General Public License as published by
@@ -57,39 +57,39 @@ namespace db
 {
 
 DefaultEnvironment default_environment = { DEFAULT_SIZE_X,
-					   DEFAULT_SIZE_Y,
+                                           DEFAULT_SIZE_Y,
 
-					   DEFAULT_TIME_ROT,
-					   DEFAULT_SIZE_ROT,
+                                           DEFAULT_TIME_ROT,
+                                           DEFAULT_SIZE_ROT,
 
-					   DEFAULT_MUTATIONS_PROBABILITY,
-					   DEFAULT_TIME_BIRTH,
-					   DEFAULT_TIME_MUTATE,
+                                           DEFAULT_MUTATIONS_PROBABILITY,
+                                           DEFAULT_TIME_BIRTH,
+                                           DEFAULT_TIME_MUTATE,
 
-					   DEFAULT_TIME_LAZINESS,
-					   DEFAULT_ENERGY_LAZINESS,
+                                           DEFAULT_TIME_LAZINESS,
+                                           DEFAULT_ENERGY_LAZINESS,
 
-					   DEFAULT_ATTACK_MULTIPLER,
+                                           DEFAULT_ATTACK_MULTIPLER,
 
-					   DEFAULT_TIME_NOTHING,
-					   DEFAULT_TIME_MYSELF,
-					   DEFAULT_TIME_DETECT,
-					   DEFAULT_TIME_INFO,
-					   DEFAULT_TIME_MOVE,
-					   DEFAULT_TIME_TURN,
-					   DEFAULT_TIME_ATTACK,
-					   DEFAULT_TIME_EAT,
-					   DEFAULT_TIME_EGG,
+                                           DEFAULT_TIME_NOTHING,
+                                           DEFAULT_TIME_MYSELF,
+                                           DEFAULT_TIME_DETECT,
+                                           DEFAULT_TIME_INFO,
+                                           DEFAULT_TIME_MOVE,
+                                           DEFAULT_TIME_TURN,
+                                           DEFAULT_TIME_ATTACK,
+                                           DEFAULT_TIME_EAT,
+                                           DEFAULT_TIME_EGG,
 
-					   DEFAULT_ENERGY_NOTHING,
-					   DEFAULT_ENERGY_MYSELF,
-					   DEFAULT_ENERGY_DETECT,
-					   DEFAULT_ENERGY_INFO,
-					   DEFAULT_ENERGY_MOVE,
-					   DEFAULT_ENERGY_TURN,
-					   DEFAULT_ENERGY_ATTACK,
-					   DEFAULT_ENERGY_EAT,
-					   DEFAULT_ENERGY_EGG };
+                                           DEFAULT_ENERGY_NOTHING,
+                                           DEFAULT_ENERGY_MYSELF,
+                                           DEFAULT_ENERGY_DETECT,
+                                           DEFAULT_ENERGY_INFO,
+                                           DEFAULT_ENERGY_MOVE,
+                                           DEFAULT_ENERGY_TURN,
+                                           DEFAULT_ENERGY_ATTACK,
+                                           DEFAULT_ENERGY_EAT,
+                                           DEFAULT_ENERGY_EGG };
 
 }
 }

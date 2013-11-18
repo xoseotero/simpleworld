@@ -37,7 +37,7 @@ namespace simpleworld
  * @param bug bug owner of the CPU.
  */
 CPU::CPU(const cpu::ISA& isa, cpu::Memory* registers, cpu::Memory* memory,
-	 Bug* bug)
+         Bug* bug)
   : cpu::CPU(isa, registers, memory), bug(bug)
 {
 }

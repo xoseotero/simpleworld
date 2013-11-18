@@ -2,7 +2,7 @@
  * @file simpleworld/world.cpp
  * Simple World World.
  *
- *  Copyright (C) 2007-2011  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2007-2013  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -125,7 +125,7 @@ Uint16 World::num_elements(Position start, Position end) const
  * @return the number of elements.
  */
 Uint16 World::num_elements(Position start, Position end,
-			   ElementType type) const
+                           ElementType type) const
 {
   Uint16 count = 0;
   for (Coord x = start.x; x < end.x; x++)

@@ -624,7 +624,7 @@ Position used (%1%, %2%)")
   Uint32 size;
   boost::shared_array<Uint8> code = bug->code().read(&size);
   db::ID egg_id = db::Bug::insert(this, this->env_->time(), bug->id(),
-				  code.get(), size);
+                                  code.get(), size);
   db::Egg::insert(this, egg_id, world_id, std::min(bug->energy(), energy));
   Egg* ptr = new Egg(this, egg_id);
   mutate(ptr, this->env_->mutations_probability(), this->env_->time());
