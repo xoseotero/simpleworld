@@ -123,6 +123,17 @@ Byte 0x%02X is out of range")
 #define SWAP32(x) bswap32(x)
 #define SWAP16(x) bswap16(x)
 
+#elif defined(__OpenBSD__)
+#include <sys/types.h>
+#define SWAP32(x) swap32(x)
+#define SWAP16(x) swap16(x)
+
+#elif defined(__NetBSD__)
+#include <sys/types.h>
+#include <machine/bswap.h>
+#define SWAP32(x) bswap32(x)
+#define SWAP16(x) bswap16(x)
+
 #elif defined(__APPLE__) && defined(__MACH__)
 #include <libkern/OSByteOrder.h>
 #define SWAP32(x) OSSwapInt32(x)
