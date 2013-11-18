@@ -2,7 +2,7 @@
  * @file simpleworld/cpu/word.cpp
  * Access bytes in a half word/word and change the byte ordering.
  *
- *  Copyright (C) 2004-2010  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2004-2013  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -102,6 +102,42 @@ Byte 0x%02X is out of range")
 }
 
 
+// Use the swap functions provided by the compiler
+#if defined(__GNUC__)
+#define SWAP32(x) __builtin_bswap32(x)
+#define SWAP16(x) __builtin_bswap16(x)
+
+#elif defined(_MSC_VER)
+#include <stdlib.h>
+#define SWAP32(x) _byteswap_ulong(x)
+#define SWAP16(x) _byteswap_ushort(x)
+
+// Use the swap functions provided by the operating system
+#elif defined(__gnu_linux__)
+#include <byteswap.h>
+#define SWAP32(x) bswap_32(x)
+#define SWAP16(x) bswap_16(x)
+
+#elif defined(__FreeBSD__)
+#include <sys/endian.h>
+#define SWAP32(x) bswap32(x)
+#define SWAP16(x) bswap16(x)
+
+#elif defined(__APPLE__) && defined(__MACH__)
+#include <libkern/OSByteOrder.h>
+#define SWAP32(x) OSSwapInt32(x)
+#define SWAP16(x) OSSwapInt16(x)
+
+#else
+#define SWAP32(x) ((((x) & 0xFF000000) >> 24) | \
+		   (((x) & 0x00FF0000) >>  8) | \
+		   (((x) & 0x0000FF00) <<  8) | \
+		   (((x) & 0x000000FF) << 24))
+#define SWAP16(x) ((((x) & 0xFF00) >> 8) |	\
+		   (((x) & 0x00FF) << 8))
+
+#endif
+
 /**
  * Change the byte order of a word.
  * Big Endian <-> Little Endian.
@@ -110,15 +146,7 @@ Byte 0x%02X is out of range")
  */
 Word change_byte_order(Word word)
 {
-#if defined(IS_BIG_ENDIAN)
-  return get_byte(word, 0) | get_byte(word, 1) << 8 |
-    get_byte(word, 2) << 16 | get_byte(word, 3) << 24;
-#elif defined(IS_LITTLE_ENDIAN)
-  return get_byte(word, 0) << 24 | get_byte(word, 1) << 16 |
-    get_byte(word, 2) << 8 | get_byte(word, 3);
-#else
-#error endianness not specified
-#endif
+  return SWAP32(word);
 }
 
 /**
@@ -129,13 +157,7 @@ Word change_byte_order(Word word)
  */
 HalfWord change_byte_order(HalfWord hword)
 {
-#if defined(IS_BIG_ENDIAN)
-  return get_byte(hword, 0) | get_byte(hword, 1) << 8;
-#elif defined(IS_LITTLE_ENDIAN)
-  return get_byte(hword, 0) << 8 | get_byte(hword, 1);
-#else
-#error endianness not specified
-#endif
+  return SWAP16(hword);
 }
 
 }
