@@ -2,7 +2,7 @@
  * @file simpleworld/db/blob.cpp
  * A binary large object in a table.
  *
- *  Copyright (C) 2010  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2010-2013  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -71,7 +71,7 @@ WHERE _ROWID_ = ?;")
     throw EXCEPTION(DBException, boost::str(boost::format("\
 id %1% not found in table %2%")
                                             % this->id_
-                                            % this->column_));
+                                            % this->table_));
   Uint32 size = sqlite3_column_int(stmt, 0);
   sqlite3_finalize(stmt);
 
@@ -103,7 +103,7 @@ WHERE _ROWID_ = ?;")
     throw EXCEPTION(DBException, boost::str(boost::format("\
 id %1% not found in table %2%")
                                               % this->id_
-                                              % this->column_));
+                                              % this->table_));
   const void* blob = sqlite3_column_blob(stmt, 0);
   int s = sqlite3_column_bytes(stmt, 0);
   boost::shared_array<Uint8> data(new Uint8[s]);
