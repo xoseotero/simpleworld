@@ -691,7 +691,7 @@ void SimpleWorld::spawn_eggs()
           Energy energy = (*spawn)->energy();
 
           for (Uint16 i = 0; i < max - num_elements; i++) {
-            db::ID code_id = db::Code::insert(this, (*spawn)->code_id());
+            db::ID code_id = (*spawn)->code_id();
             db::ID id = db::Bug::insert(this, code_id, this->env_->time());
             db::ID memory_id;
             MutationsList list;
