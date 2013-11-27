@@ -199,15 +199,14 @@ static boost::shared_array<Uint8> mutate(MutationsList* list,
       {
         cpu::Word old_word = 
           *reinterpret_cast<cpu::Word*>(original.get() + chunk_size);
-        cpu::Word new_word;
-        do {
-          new_word = random_word();
-        } while (old_word == new_word);
-        *reinterpret_cast<cpu::Word*>(mutated.get() + chunk_size) = new_word;
-        (*iter).old_value = old_word;
-        (*iter).new_value = new_word;
-        original_i += chunk_size + sizeof(cpu::Word);
-        mutated_i += chunk_size + sizeof(cpu::Word);
+        cpu::Word new_word = random_word();
+        if (old_word != new_word) {
+          *reinterpret_cast<cpu::Word*>(mutated.get() + chunk_size) = new_word;
+          (*iter).old_value = old_word;
+          (*iter).new_value = new_word;
+          original_i += chunk_size + sizeof(cpu::Word);
+          mutated_i += chunk_size + sizeof(cpu::Word);
+        }
       }
 
       break;
@@ -221,15 +220,14 @@ static boost::shared_array<Uint8> mutate(MutationsList* list,
       {
         cpu::Word old_word =
           *reinterpret_cast<cpu::Word*>(original.get() + chunk_size);
-        cpu::Word new_word;
-        do {
-          new_word = partial_mutation(old_word);
-        } while (old_word == new_word);
-        *reinterpret_cast<cpu::Word*>(mutated.get() + chunk_size) = new_word;
-        (*iter).old_value = old_word;
-        (*iter).new_value = new_word;
-        original_i += chunk_size + sizeof(cpu::Word);
-        mutated_i += chunk_size + sizeof(cpu::Word);
+        cpu::Word new_word = partial_mutation(old_word);
+        if (old_word != new_word) {
+          *reinterpret_cast<cpu::Word*>(mutated.get() + chunk_size) = new_word;
+          (*iter).old_value = old_word;
+          (*iter).new_value = new_word;
+          original_i += chunk_size + sizeof(cpu::Word);
+          mutated_i += chunk_size + sizeof(cpu::Word);
+        }
       }
 
       break;
@@ -243,15 +241,14 @@ static boost::shared_array<Uint8> mutate(MutationsList* list,
       {
         cpu::Word old_word =
           *reinterpret_cast<cpu::Word*>(original.get() + chunk_size);
-        cpu::Word new_word;
-        do {
-          new_word = permutation(old_word);
-        } while (old_word == new_word);
-        *reinterpret_cast<cpu::Word*>(mutated.get() + chunk_size) = new_word;
-        (*iter).old_value = old_word;
-        (*iter).new_value = new_word;
-        original_i += chunk_size + sizeof(cpu::Word);
-        mutated_i += chunk_size + sizeof(cpu::Word);
+        cpu::Word new_word = permutation(old_word);
+        if (old_word != new_word) {
+          *reinterpret_cast<cpu::Word*>(mutated.get() + chunk_size) = new_word;
+          (*iter).old_value = old_word;
+          (*iter).new_value = new_word;
+          original_i += chunk_size + sizeof(cpu::Word);
+          mutated_i += chunk_size + sizeof(cpu::Word);
+        }
       }
 
       break;
