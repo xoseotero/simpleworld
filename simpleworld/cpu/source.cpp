@@ -1002,8 +1002,10 @@ void Source::replace_includes()
                                   get_include(this->get_line(i))));
       if (filename.empty())
         throw EXCEPTION(IOError, boost::str(boost::format("\
-File %1% not found")
-                                            % get_include(this->get_line(i))));
+Line: %1%\n\
+File %2% not found")
+                                                % this->get_line(i)
+                                                % get_include(this->get_line(i))));
 
       this->remove(i, 1);
 

@@ -30,6 +30,7 @@
 
 #include <simpleworld/config.hpp>
 #include <simpleworld/exception.hpp>
+#include <simpleworld/ioerror.hpp>
 #include <simpleworld/cpu/parsererror.hpp>
 #include <simpleworld/cpu/errordirective.hpp>
 #include <simpleworld/cpu/memory.hpp>
@@ -283,6 +284,9 @@ catch (const cpu::ErrorDirective& e) {
   std::cout << e.info << std::endl;
 }
 catch (const cpu::ParserError& e) {
+  std::cout << e.info << std::endl;
+}
+catch (const sw::IOError& e) {
   std::cout << e.info << std::endl;
 }
 catch (const sw::Exception& e) {
