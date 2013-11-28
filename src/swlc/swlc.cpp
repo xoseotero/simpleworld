@@ -43,6 +43,7 @@ namespace cpu = simpleworld::cpu;
 #include "../common/fakeisa.hpp"
 
 #define DEFAULT_OUTPUT "out.swo"
+#define DEFAULT_PREPROCCESS_OUTPUT "out.swe"
 
 const char* program_short_name = "swlc";
 const char* program_name = "Simple World Language compiler";
@@ -85,16 +86,18 @@ Mandatory arguments to long options are mandatory for short options too.\n\
   -D, --define=ID            add the definition ID with the value 1\n\
   -D, --define=ID=VALUE      add the definition ID with teh value VALUE\n\
   -o, --output=FILE          place the output into FILE\n\
-                               the default value is %2%\n\
+                               the default file name is \"%2%\"\n\
+                               the default preprocess file name is \"%3%\"\n\
 \n\
   -h, --help                 display this help and exit\n\
   -v, --version              output version information and exit\n\
 \n\
 Exit status is 0 if OK, 1 if minor problems, 2 if serious trouble.\n\
 \n\
-Report bugs to <%3%>.")
+Report bugs to <%4%>.")
     % program_short_name
     % DEFAULT_OUTPUT
+    % DEFAULT_PREPROCCESS_OUTPUT
     % program_mailbugs
     << std::endl;
   std::exit(0);
@@ -177,6 +180,7 @@ void parse_cmd(int argc, char* argv[])
     {
     case 'E':
       preprocess_set = true;
+      output = DEFAULT_PREPROCCESS_OUTPUT;
 
       break;
 
