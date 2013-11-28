@@ -104,7 +104,6 @@ public:
   /**
    * Add a include path.
    * @param path Path to add.
-   * @exception CPUException Path already added.
    */
   void add_include_path(std::string path);
 
