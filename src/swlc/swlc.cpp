@@ -274,27 +274,27 @@ try {
     for (iter = warnings.begin();
          iter != warnings.end();
          ++iter) {
-      std::cout << (*iter) << std::endl;
+      std::cerr << (*iter) << std::endl;
     }
   }
 
   std::exit(EXIT_SUCCESS);
 }
 catch (const cpu::ErrorDirective& e) {
-  std::cout << e.info << std::endl;
+  std::cerr << e.info << std::endl;
 }
 catch (const cpu::ParserError& e) {
-  std::cout << e.info << std::endl;
+  std::cerr << e.info << std::endl;
 }
 catch (const sw::IOError& e) {
-  std::cout << e.info << std::endl;
+  std::cerr << e.info << std::endl;
 }
 catch (const sw::Exception& e) {
-  std::cout << e << std::endl;
+  std::cerr << e << std::endl;
 }
 catch (const std::exception& e) {
-  std::cout << boost::format("Exception thrown: %1%") % e.what() << std::endl;
+  std::cerr << boost::format("Exception thrown: %1%") % e.what() << std::endl;
 }
 catch (...) {
-  std::cout << "Unknown exception thrown" << std::endl;
+  std::cerr << "Unknown exception thrown" << std::endl;
 }

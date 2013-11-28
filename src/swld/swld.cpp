@@ -2,7 +2,7 @@
  * @file src/swld/swld.cpp
  * Simple World Language decompiler
  *
- *  Copyright (C) 2006-2010  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2006-2013  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -201,11 +201,11 @@ try {
   std::exit(EXIT_SUCCESS);
 }
 catch (const sw::Exception& e) {
-  std::cout << e << std::endl;
+  std::cerr << e << std::endl;
 }
 catch (const std::exception& e) {
-  std::cout << boost::format("Exception thrown: %1%") % e.what() << std::endl;
+  std::cerr << boost::format("Exception thrown: %1%") % e.what() << std::endl;
 }
 catch (...) {
-  std::cout << "Unknown exception thrown" << std::endl;
+  std::cerr << "Unknown exception thrown" << std::endl;
 }
