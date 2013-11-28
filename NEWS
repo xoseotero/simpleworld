@@ -1,3 +1,20 @@
+-- Simple World 1.0b7 --
+
+Now there are two possible versions of the code of a bug:
+- The initial code is the code is the code that a egg has when it's created.
+  This code can be the code of a spawn or a copy of the executable code of
+  its father. This initial code of a bug isn't never modified.
+- The executable code is the code that the bug is executing while it's alive.
+  When the bug died, this code is deleted from the database.
+
+As the initial code can't be modified, the bugs spawned will share the same
+code. Also, as the executable code is deleted after the death of a bug, the
+database size of this version is lower than the previous version.
+    
+As the changes to the database were not compatible, the database version was
+increased to 6.
+
+
 -- Simple World 1.0b6 (2012/04/15) --
 
 The main change in this version is the addition of the worldlib
