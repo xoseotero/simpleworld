@@ -1322,6 +1322,11 @@ Word Source::compile(File::size_type line) const
 
   // Is a instruction
   std::vector<std::string> keywords(get_instruction(this->get_line(line)));
+  if (keywords.empty())		// or maybe a invalid instruction...
+    throw EXCEPTION(ParserError, boost::str(boost::format("\
+Line: %1%\n\
+Invalid instruction")
+                                            % this->get_line(line)));
 
   InstructionInfo info;
   try {
