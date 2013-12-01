@@ -30,7 +30,6 @@
 #include <simpleworld/cpu/memory.hpp>
 #include <simpleworld/cpu/memory_file.hpp>
 #include <simpleworld/cpu/isa.hpp>
-#include <simpleworld/cpu/cpu.hpp>
 #include <simpleworld/cpu/file.hpp>
 #include <simpleworld/cpu/source.hpp>
 namespace sw = simpleworld;
@@ -70,10 +69,6 @@ bool compare_swl(const cpu::File& file1, const cpu::File& file2)
  */
 bool compare_swo(const std::string& file1, const std::string& file2)
 {
-  cpu::Memory registers;
-  cpu::CPU cpu(cpu::isa, &registers, NULL);
-  cpu::ISA isa = cpu.isa();
-
   cpu::MemoryFile memory1(file1);
   cpu::MemoryFile memory2(file2);
 
@@ -87,7 +82,7 @@ bool compare_swo(const std::string& file1, const std::string& file2)
     if (inst1.code != inst2.code)
       return false;
 
-    cpu::InstructionInfo info = isa.instruction_info(inst1.code);
+    cpu::InstructionInfo info = cpu::isa.instruction_info(inst1.code);
     if (info.nregs >= 1)
       if (inst1.first != inst2.first)
         return false;
@@ -119,9 +114,7 @@ BOOST_AUTO_TEST_CASE(source_clear)
  */
 BOOST_AUTO_TEST_CASE(source_preprocess)
 {
-  cpu::Memory registers;
-  cpu::CPU cpu(cpu::isa, &registers, NULL);
-  cpu::Source compiler(cpu.isa(), SOURCE);
+  cpu::Source compiler(cpu::isa, SOURCE);
   compiler.add_include_path(INCLUDE_DIR);
 
   compiler.preprocess();
@@ -134,9 +127,7 @@ BOOST_AUTO_TEST_CASE(source_preprocess)
  */
 BOOST_AUTO_TEST_CASE(source_swo)
 {
-  cpu::Memory registers;
-  cpu::CPU cpu(cpu::isa, &registers, NULL);
-  cpu::Source compiler(cpu.isa(), SOURCE);
+  cpu::Source compiler(cpu::isa, SOURCE);
   compiler.add_include_path(INCLUDE_DIR);
 
   compiler.compile(SOURCE_SAVE);
