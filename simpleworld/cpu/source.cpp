@@ -822,7 +822,6 @@ void Source::clear()
  */
 void Source::load(const File& file)
 {
-  File::remove(0, this->lines());
   this->clear();
   File::insert(file);
 }
