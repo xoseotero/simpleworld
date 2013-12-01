@@ -141,6 +141,24 @@ BOOST_AUTO_TEST_CASE(source_swo)
 }
 
 /**
+ * Create object code.
+ */
+BOOST_AUTO_TEST_CASE(source_swo2)
+{
+  cpu::Source compiler(cpu::isa, SOURCE);
+  compiler.add_include_path(INCLUDE_DIR);
+
+  cpu::MemoryFile memory;
+  compiler.compile(&memory);
+  memory.save_file(SOURCE_SAVE);
+
+  std::vector<std::string> warnings = compiler.warnings();
+  BOOST_CHECK_EQUAL(warnings.size(), 1);
+  BOOST_CHECK_EQUAL(warnings[0], "This is just a test!");
+  BOOST_CHECK(compare_swo(SOURCE_SWO, SOURCE_SAVE));
+}
+
+/**
  * Check the .error directive.
  */
 BOOST_AUTO_TEST_CASE(source_error)
