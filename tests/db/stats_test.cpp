@@ -2,7 +2,7 @@
  * @file tests/db/db_test.cpp
  * Unit test for db::Stats.
  *
- *  Copyright (C) 2011  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2011-2013  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -26,6 +26,7 @@
 #include <simpleworld/db/types.hpp>
 #include <simpleworld/db/exception.hpp>
 #include <simpleworld/db/db.hpp>
+#include <simpleworld/db/transaction.hpp>
 #include <simpleworld/db/world.hpp>
 #include <simpleworld/db/stats.hpp>
 namespace sw = simpleworld;
@@ -70,6 +71,7 @@ db::ID id;
 BOOST_AUTO_TEST_CASE(stats_insert)
 {
   db::DB sw = open_db(DB_SAVE);
+  db::Transaction transaction(&sw, db::Transaction::deferred);
   id = db::Stats::insert(&sw, 2048, 98, 101, 41, 33, 20000, 10, 10241,
                          1, 2, 3, 4, 5);
   db::Stats stats(&sw, id);
@@ -88,6 +90,8 @@ BOOST_AUTO_TEST_CASE(stats_insert)
   BOOST_CHECK_EQUAL(stats.last_deaths(), 3);
   BOOST_CHECK_EQUAL(stats.last_kills(), 4);
   BOOST_CHECK_EQUAL(stats.last_mutations(), 5);
+
+  transaction.commit();
 }
 
 
@@ -97,6 +101,7 @@ BOOST_AUTO_TEST_CASE(stats_insert)
 BOOST_AUTO_TEST_CASE(stats_update)
 {
   db::DB sw = open_db(DB_SAVE);
+  db::Transaction transaction(&sw, db::Transaction::deferred);
   db::Stats stats(&sw, id);
   stats.time(4096);
   stats.families(96);
@@ -126,6 +131,8 @@ BOOST_AUTO_TEST_CASE(stats_update)
   BOOST_CHECK_EQUAL(stats.last_deaths(), 6);
   BOOST_CHECK_EQUAL(stats.last_kills(), 8);
   BOOST_CHECK_EQUAL(stats.last_mutations(), 10);
+
+  transaction.commit();
 }
 
 /**
@@ -134,7 +141,10 @@ BOOST_AUTO_TEST_CASE(stats_update)
 BOOST_AUTO_TEST_CASE(stats_delete)
 {
   db::DB sw = open_db(DB_SAVE);
+  db::Transaction transaction(&sw, db::Transaction::deferred);
   db::Stats::remove(&sw, id);
 
   BOOST_CHECK_THROW(db::Stats(&sw, id).time(), db::DBException);
+
+  transaction.commit();
 }

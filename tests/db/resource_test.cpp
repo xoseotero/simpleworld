@@ -2,7 +2,7 @@
  * @file tests/db/resource_test.cpp
  * Unit test for db::Resource.
  *
- *  Copyright (C) 2010  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2010-2013  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -26,6 +26,7 @@
 #include <simpleworld/db/types.hpp>
 #include <simpleworld/db/exception.hpp>
 #include <simpleworld/db/db.hpp>
+#include <simpleworld/db/transaction.hpp>
 #include <simpleworld/db/resource.hpp>
 namespace sw = simpleworld;
 namespace db = simpleworld::db;
@@ -63,6 +64,7 @@ db::ID id;
 BOOST_AUTO_TEST_CASE(resource_insert)
 {
   db::DB sw = open_db(DB_SAVE);
+  db::Transaction transaction(&sw, db::Transaction::deferred);
   id = db::Resource::insert(&sw, 1024, 8, 0, 0, 4, 4, 128);
   db::Resource resource(&sw, id);
 
@@ -74,6 +76,8 @@ BOOST_AUTO_TEST_CASE(resource_insert)
   BOOST_CHECK_EQUAL(resource.end_x(), 4);
   BOOST_CHECK_EQUAL(resource.end_y(), 4);
   BOOST_CHECK_EQUAL(resource.size(), 128);
+
+  transaction.commit();
 }
 
 
@@ -83,6 +87,7 @@ BOOST_AUTO_TEST_CASE(resource_insert)
 BOOST_AUTO_TEST_CASE(resource_update)
 {
   db::DB sw = open_db(DB_SAVE);
+  db::Transaction transaction(&sw, db::Transaction::deferred);
   db::Resource resource(&sw, id);
   resource.frequency(2048);
   resource.max(16);
@@ -100,6 +105,8 @@ BOOST_AUTO_TEST_CASE(resource_update)
   BOOST_CHECK_EQUAL(resource.end_x(), 6);
   BOOST_CHECK_EQUAL(resource.end_y(), 7);
   BOOST_CHECK_EQUAL(resource.size(), 100);
+
+  transaction.commit();
 }
 
 /**
@@ -108,7 +115,10 @@ BOOST_AUTO_TEST_CASE(resource_update)
 BOOST_AUTO_TEST_CASE(resource_delete)
 {
   db::DB sw = open_db(DB_SAVE);
+  db::Transaction transaction(&sw, db::Transaction::deferred);
   db::Resource::remove(&sw, id);
 
   BOOST_CHECK_THROW(db::Resource(&sw, id).frequency(), db::DBException);
+
+  transaction.commit();
 }

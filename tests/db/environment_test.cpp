@@ -2,7 +2,7 @@
  * @file tests/db/db_test.cpp
  * Unit test for db::Environment.
  *
- *  Copyright (C) 2010-2011  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2010-2013  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -26,6 +26,7 @@
 #include <simpleworld/db/types.hpp>
 #include <simpleworld/db/exception.hpp>
 #include <simpleworld/db/db.hpp>
+#include <simpleworld/db/transaction.hpp>
 #include <simpleworld/db/environment.hpp>
 namespace sw = simpleworld;
 namespace db = simpleworld::db;
@@ -85,6 +86,7 @@ db::ID id;
 BOOST_AUTO_TEST_CASE(environment_insert)
 {
   db::DB sw = open_db(DB_SAVE);
+  db::Transaction transaction(&sw, db::Transaction::deferred);
   id = db::Environment::insert(&sw, 100, 16, 16, 4096, 8, 0.01, 16, 65536,
                                2048, 32, 3.0, 2, 3, 3, 3, 4, 4, 5, 5, 5,
                                1, 2, 2, 2, 3, 3, 4, 4, 5);
@@ -120,6 +122,8 @@ BOOST_AUTO_TEST_CASE(environment_insert)
   BOOST_CHECK_EQUAL(environment.energy_attack(), 4);
   BOOST_CHECK_EQUAL(environment.energy_eat(), 4);
   BOOST_CHECK_EQUAL(environment.energy_egg(), 5);
+
+  transaction.commit();
 }
 
 
@@ -129,6 +133,7 @@ BOOST_AUTO_TEST_CASE(environment_insert)
 BOOST_AUTO_TEST_CASE(environment_update)
 {
   db::DB sw = open_db(DB_SAVE);
+  db::Transaction transaction(&sw, db::Transaction::deferred);
   db::Environment environment(&sw, id);
   environment.time(101);
   environment.time_rot(1001);
@@ -188,6 +193,8 @@ BOOST_AUTO_TEST_CASE(environment_update)
   BOOST_CHECK_EQUAL(environment.energy_attack(), 5);
   BOOST_CHECK_EQUAL(environment.energy_eat(), 5);
   BOOST_CHECK_EQUAL(environment.energy_egg(), 6);
+
+  transaction.commit();
 }
 
 /**
@@ -196,7 +203,10 @@ BOOST_AUTO_TEST_CASE(environment_update)
 BOOST_AUTO_TEST_CASE(environment_delete)
 {
   db::DB sw = open_db(DB_SAVE);
+  db::Transaction transaction(&sw, db::Transaction::deferred);
   db::Environment::remove(&sw, id);
 
   BOOST_CHECK_THROW(db::Environment(&sw, id).time(), db::DBException);
+
+  transaction.commit();
 }

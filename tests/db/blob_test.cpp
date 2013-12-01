@@ -25,6 +25,7 @@
 #include <simpleworld/ints.hpp>
 #include <simpleworld/db/types.hpp>
 #include <simpleworld/db/db.hpp>
+#include <simpleworld/db/transaction.hpp>
 #include <simpleworld/db/code.hpp>
 #include <simpleworld/db/blob.hpp>
 namespace sw = simpleworld;
@@ -82,6 +83,7 @@ BOOST_AUTO_TEST_CASE(blob_get_part)
 BOOST_AUTO_TEST_CASE(blob_update)
 {
   db::DB sw = open_db(DB_SAVE);
+  db::Transaction transaction(&sw, db::Transaction::deferred);
   sw::Uint8 code[8] = { 0xAA, 0xBB, 0xCC, 0xDD, 0xEE, 0xFF, 0x00, 0x11 };
   db::ID id = db::Code::insert(&sw, code, sizeof(code));
 
@@ -97,6 +99,8 @@ BOOST_AUTO_TEST_CASE(blob_update)
   BOOST_CHECK_EQUAL(data[1], 0x66);
   BOOST_CHECK_EQUAL(data[2], 0x77);
   BOOST_CHECK_EQUAL(data[3], 0x88);
+
+  transaction.commit();
 }
 
 /**
@@ -105,6 +109,7 @@ BOOST_AUTO_TEST_CASE(blob_update)
 BOOST_AUTO_TEST_CASE(blob_update_part)
 {
   db::DB sw = open_db(DB_SAVE);
+  db::Transaction transaction(&sw, db::Transaction::deferred);
   sw::Uint8 code[4] = { 0xAA, 0xBB, 0xCC, 0xDD };
   db::ID id = db::Code::insert(&sw, code, sizeof(code));
 
@@ -117,4 +122,6 @@ BOOST_AUTO_TEST_CASE(blob_update_part)
 
   BOOST_CHECK_EQUAL(blob.size(), 4);
   BOOST_CHECK_EQUAL(data[1], 0x88);
+
+  transaction.commit();
 }

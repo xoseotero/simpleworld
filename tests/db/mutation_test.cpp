@@ -26,6 +26,7 @@
 #include <simpleworld/db/types.hpp>
 #include <simpleworld/db/exception.hpp>
 #include <simpleworld/db/db.hpp>
+#include <simpleworld/db/transaction.hpp>
 #include <simpleworld/db/code.hpp>
 #include <simpleworld/db/bug.hpp>
 #include <simpleworld/db/mutation.hpp>
@@ -119,6 +120,7 @@ db::ID bug_id;
 BOOST_AUTO_TEST_CASE(mutation_insert)
 {
   db::DB sw = open_db(DB_SAVE);
+  db::Transaction transaction(&sw, db::Transaction::deferred);
   db::ID code_id = db::Code::insert(&sw, "0123456789abcdef", 16);
   bug_id = db::Bug::insert(&sw, code_id, 0);
   id = db::Mutation::insert_mutation(&sw, bug_id, 1, 0, 1, 2);
@@ -190,6 +192,8 @@ BOOST_AUTO_TEST_CASE(mutation_insert)
   BOOST_CHECK_EQUAL(mutation6.original(), 4);
   BOOST_CHECK_EQUAL(mutation6.is_null("original"), false);
   BOOST_CHECK_EQUAL(mutation6.is_null("mutated"), true);
+
+  transaction.commit();
 }
 
 
@@ -199,6 +203,7 @@ BOOST_AUTO_TEST_CASE(mutation_insert)
 BOOST_AUTO_TEST_CASE(mutation_update)
 {
   db::DB sw = open_db(DB_SAVE);
+  db::Transaction transaction(&sw, db::Transaction::deferred);
   db::Mutation mutation(&sw, id);
   mutation.time(15);
   mutation.type(db::Mutation::Partial);
@@ -215,6 +220,8 @@ BOOST_AUTO_TEST_CASE(mutation_update)
   BOOST_CHECK_EQUAL(mutation.mutated(), 4);
   BOOST_CHECK_EQUAL(mutation.is_null("original"), false);
   BOOST_CHECK_EQUAL(mutation.is_null("mutated"), false);
+
+  transaction.commit();
 }
 
 /**
@@ -223,7 +230,10 @@ BOOST_AUTO_TEST_CASE(mutation_update)
 BOOST_AUTO_TEST_CASE(mutation_delete)
 {
   db::DB sw = open_db(DB_SAVE);
+  db::Transaction transaction(&sw, db::Transaction::deferred);
   db::Mutation::remove(&sw, id);
 
   BOOST_CHECK_THROW(db::Mutation(&sw, id).time(), db::DBException);
+
+  transaction.commit();
 }

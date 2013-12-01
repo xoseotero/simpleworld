@@ -2,7 +2,7 @@
  * @file tests/db/db_test.cpp
  * Unit test for db::AliveBug.
  *
- *  Copyright (C) 2010-2011  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2010-2013  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -28,6 +28,7 @@
 #include <simpleworld/db/types.hpp>
 #include <simpleworld/db/exception.hpp>
 #include <simpleworld/db/db.hpp>
+#include <simpleworld/db/transaction.hpp>
 #include <simpleworld/db/world.hpp>
 #include <simpleworld/db/code.hpp>
 #include <simpleworld/db/bug.hpp>
@@ -74,6 +75,7 @@ db::ID world_id1;
 BOOST_AUTO_TEST_CASE(alivebug_insert)
 {
   db::DB sw = open_db(DB_SAVE);
+  db::Transaction transaction(&sw, db::Transaction::deferred);
   world_id1 = db::World::insert(&sw, 1, 12);
   db::ID code_id = db::Code::insert(&sw, "code", 4);
   bug_id1 = db::Bug::insert(&sw, code_id, 0);
@@ -90,6 +92,8 @@ BOOST_AUTO_TEST_CASE(alivebug_insert)
   BOOST_CHECK_EQUAL(alivebug.is_null("action_time"), true);
   BOOST_CHECK_EQUAL(alivebug.registers_id(), registers_id);
   BOOST_CHECK_EQUAL(alivebug.memory_id(), code_id);
+
+  transaction.commit();
 }
 
 db::ID id2;
@@ -102,6 +106,7 @@ db::ID world_id2;
 BOOST_AUTO_TEST_CASE(alivebug_insert_egg)
 {
   db::DB sw = open_db(DB_SAVE);
+  db::Transaction transaction(&sw, db::Transaction::deferred);
   world_id2 = db::World::insert(&sw, 13, 2);
   db::ID code_id = db::Code::insert(&sw, "code", 4);
   bug_id2 = db::Bug::insert(&sw, code_id, 0);
@@ -118,6 +123,8 @@ BOOST_AUTO_TEST_CASE(alivebug_insert_egg)
   BOOST_CHECK_EQUAL(alivebug.energy(), 74);
   BOOST_CHECK_EQUAL(alivebug.is_null("time_last_action"), true);
   BOOST_CHECK_EQUAL(alivebug.is_null("action_time"), true);
+
+  transaction.commit();
 }
 
 /**
@@ -126,6 +133,7 @@ BOOST_AUTO_TEST_CASE(alivebug_insert_egg)
 BOOST_AUTO_TEST_CASE(alivebug_update)
 {
   db::DB sw = open_db(DB_SAVE);
+  db::Transaction transaction(&sw, db::Transaction::deferred);
   db::AliveBug alivebug(&sw, id1);
   alivebug.birth(21);
   alivebug.energy(52);
@@ -146,6 +154,8 @@ BOOST_AUTO_TEST_CASE(alivebug_update)
   BOOST_CHECK_EQUAL(alivebug.action_time(), 45);
   BOOST_CHECK_EQUAL(alivebug.registers_id(), registers_id);
   BOOST_CHECK_EQUAL(alivebug.memory_id(), memory_id);
+
+  transaction.commit();
 }
 
 /**
@@ -154,6 +164,7 @@ BOOST_AUTO_TEST_CASE(alivebug_update)
 BOOST_AUTO_TEST_CASE(alivebug_delete)
 {
   db::DB sw = open_db(DB_SAVE);
+  db::Transaction transaction(&sw, db::Transaction::deferred);
   BOOST_CHECK_NO_THROW(db::AliveBug::remove(&sw, id1));
   db::World::remove(&sw, world_id1);
   db::Bug::remove(&sw, id1);
@@ -164,4 +175,6 @@ BOOST_AUTO_TEST_CASE(alivebug_delete)
 
   BOOST_CHECK_THROW(db::AliveBug(&sw, id1).birth(), db::DBException);
   BOOST_CHECK_THROW(db::AliveBug(&sw, id2).energy(), db::DBException);
+
+  transaction.commit();
 }

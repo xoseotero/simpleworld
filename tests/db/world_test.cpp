@@ -21,11 +21,13 @@
 #define BOOST_TEST_MODULE Unit test for db::World
 #define BOOST_TEST_DYN_LINK
 #include <boost/test/unit_test.hpp>
+#include <boost/concept_check.hpp>
 
 #include <simpleworld/ints.hpp>
 #include <simpleworld/db/types.hpp>
 #include <simpleworld/db/exception.hpp>
 #include <simpleworld/db/db.hpp>
+#include <simpleworld/db/transaction.hpp>
 #include <simpleworld/db/world.hpp>
 namespace sw = simpleworld;
 namespace db = simpleworld::db;
@@ -69,6 +71,7 @@ db::ID id;
 BOOST_AUTO_TEST_CASE(world_insert)
 {
   db::DB sw = open_db(DB_SAVE);
+  db::Transaction transaction(&sw, db::Transaction::deferred);
   id = db::World::insert(&sw, 5, 3, sw::OrientationSouth);
   db::World world(&sw, id);
 
@@ -76,6 +79,8 @@ BOOST_AUTO_TEST_CASE(world_insert)
   BOOST_CHECK_EQUAL(world.position_x(), 5);
   BOOST_CHECK_EQUAL(world.position_y(), 3);
   BOOST_CHECK_EQUAL(world.orientation(), sw::OrientationSouth);
+
+  transaction.commit();
 }
 
 
@@ -85,6 +90,7 @@ BOOST_AUTO_TEST_CASE(world_insert)
 BOOST_AUTO_TEST_CASE(world_update)
 {
   db::DB sw = open_db(DB_SAVE);
+  db::Transaction transaction(&sw, db::Transaction::deferred);
   db::World world(&sw, id);
   world.position_x(8);
   world.position_y(0);
@@ -94,6 +100,8 @@ BOOST_AUTO_TEST_CASE(world_update)
   BOOST_CHECK_EQUAL(world.position_x(), 8);
   BOOST_CHECK_EQUAL(world.position_y(), 0);
   BOOST_CHECK_EQUAL(world.is_null("orientation"), true);
+
+  transaction.commit();
 }
 
 /**
@@ -102,7 +110,10 @@ BOOST_AUTO_TEST_CASE(world_update)
 BOOST_AUTO_TEST_CASE(world_delete)
 {
   db::DB sw = open_db(DB_SAVE);
+  db::Transaction transaction(&sw, db::Transaction::deferred);
 
   BOOST_CHECK_NO_THROW(db::World::remove(&sw, id));
   BOOST_CHECK_THROW(db::World(&sw, id).position_x(), db::DBException);
+
+  transaction.commit();
 }

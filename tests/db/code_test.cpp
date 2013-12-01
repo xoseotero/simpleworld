@@ -26,6 +26,7 @@
 #include <simpleworld/db/types.hpp>
 #include <simpleworld/db/exception.hpp>
 #include <simpleworld/db/db.hpp>
+#include <simpleworld/db/transaction.hpp>
 #include <simpleworld/db/types.hpp>
 #include <simpleworld/db/code.hpp>
 namespace sw = simpleworld;
@@ -106,6 +107,7 @@ db::ID id;
 BOOST_AUTO_TEST_CASE(code_insert)
 {
   db::DB sw = open_db(DB_SAVE);
+  db::Transaction transaction(&sw, db::Transaction::deferred);
   id = db::Code::insert(&sw, "ABCD", 4);
 
   db::Code code(&sw, id);
@@ -116,6 +118,8 @@ BOOST_AUTO_TEST_CASE(code_insert)
   BOOST_CHECK_EQUAL(test[1], 'B');
   BOOST_CHECK_EQUAL(test[2], 'C');
   BOOST_CHECK_EQUAL(test[3], 'D');
+
+  transaction.commit();
 }
 
 
@@ -125,6 +129,7 @@ BOOST_AUTO_TEST_CASE(code_insert)
 BOOST_AUTO_TEST_CASE(code_update)
 {
   db::DB sw = open_db(DB_SAVE);
+  db::Transaction transaction(&sw, db::Transaction::deferred);
   db::Code code(&sw, id);
   sw::Uint32 size;
   boost::shared_array<sw::Uint8> data = code.data().read(&size);
@@ -140,6 +145,8 @@ BOOST_AUTO_TEST_CASE(code_update)
   BOOST_CHECK_EQUAL(data[1], 'B');
   BOOST_CHECK_EQUAL(data[2], 'C');
   BOOST_CHECK_EQUAL(data[3], 'D');
+
+  transaction.commit();
 }
 
 /**
@@ -148,8 +155,11 @@ BOOST_AUTO_TEST_CASE(code_update)
 BOOST_AUTO_TEST_CASE(code_delete)
 {
   db::DB sw = open_db(DB_SAVE);
+  db::Transaction transaction(&sw, db::Transaction::deferred);
 
   BOOST_CHECK_NO_THROW(db::Code::remove(&sw, id));
   sw::Uint32 size;
   BOOST_CHECK_THROW(db::Code(&sw, id).data().read(&size), db::DBException);
+
+  transaction.commit();
 }

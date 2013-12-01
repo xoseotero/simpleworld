@@ -26,6 +26,7 @@
 #include <simpleworld/db/types.hpp>
 #include <simpleworld/db/exception.hpp>
 #include <simpleworld/db/db.hpp>
+#include <simpleworld/db/transaction.hpp>
 #include <simpleworld/db/code.hpp>
 #include <simpleworld/db/spawn.hpp>
 namespace sw = simpleworld;
@@ -76,6 +77,7 @@ db::ID id;
 BOOST_AUTO_TEST_CASE(spawn_insert)
 {
   db::DB sw = open_db(DB_SAVE);
+  db::Transaction transaction(&sw, db::Transaction::deferred);
   db::ID code_id = db::Code::insert(&sw, "1234", 4);
   id = db::Spawn::insert(&sw, code_id, 1024, 8, 0, 0, 4, 4, 512);
 
@@ -89,6 +91,8 @@ BOOST_AUTO_TEST_CASE(spawn_insert)
   BOOST_CHECK_EQUAL(spawn.end_x(), 4);
   BOOST_CHECK_EQUAL(spawn.end_y(), 4);
   BOOST_CHECK_EQUAL(spawn.energy(), 512);
+
+  transaction.commit();
 }
 
 
@@ -98,6 +102,7 @@ BOOST_AUTO_TEST_CASE(spawn_insert)
 BOOST_AUTO_TEST_CASE(spawn_update)
 {
   db::DB sw = open_db(DB_SAVE);
+  db::Transaction transaction(&sw, db::Transaction::deferred);
   db::ID code_id = db::Code::insert(&sw, "1234", 4);
   db::Spawn spawn(&sw, id);
   spawn.code_id(code_id);
@@ -119,6 +124,8 @@ BOOST_AUTO_TEST_CASE(spawn_update)
   BOOST_CHECK_EQUAL(test.end_x(), 6);
   BOOST_CHECK_EQUAL(test.end_y(), 7);
   BOOST_CHECK_EQUAL(test.energy(), 1024);
+
+  transaction.commit();
 }
 
 /**
@@ -127,7 +134,10 @@ BOOST_AUTO_TEST_CASE(spawn_update)
 BOOST_AUTO_TEST_CASE(spawn_delete)
 {
   db::DB sw = open_db(DB_SAVE);
+  db::Transaction transaction(&sw, db::Transaction::deferred);
 
   BOOST_CHECK_NO_THROW(db::Spawn::remove(&sw, id));
   BOOST_CHECK_THROW(db::Spawn(&sw, id).frequency(), db::DBException);
+
+  transaction.commit();
 }

@@ -26,6 +26,7 @@
 #include <simpleworld/db/types.hpp>
 #include <simpleworld/db/exception.hpp>
 #include <simpleworld/db/db.hpp>
+#include <simpleworld/db/transaction.hpp>
 #include <simpleworld/db/world.hpp>
 #include <simpleworld/db/code.hpp>
 #include <simpleworld/db/bug.hpp>
@@ -63,6 +64,7 @@ db::ID world_id;
 BOOST_AUTO_TEST_CASE(egg_insert)
 {
   db::DB sw = open_db(DB_SAVE);
+  db::Transaction transaction(&sw, db::Transaction::deferred);
   world_id = db::World::insert(&sw, 4, 3, sw::OrientationNorth);
   db::ID code_id = db::Code::insert(&sw, "code", 4);
   db::ID bug_id = db::Bug::insert(&sw, code_id, 0);
@@ -75,6 +77,8 @@ BOOST_AUTO_TEST_CASE(egg_insert)
   BOOST_CHECK_EQUAL(egg.world_id(), world_id);
   BOOST_CHECK_EQUAL(egg.energy(), 101);
   BOOST_CHECK_EQUAL(egg.memory_id(), code_id);
+
+  transaction.commit();
 }
 
 
@@ -84,6 +88,7 @@ BOOST_AUTO_TEST_CASE(egg_insert)
 BOOST_AUTO_TEST_CASE(egg_update)
 {
   db::DB sw = open_db(DB_SAVE);
+  db::Transaction transaction(&sw, db::Transaction::deferred);
   db::Egg egg(&sw, id);
   egg.energy(82);
   db::ID code_id = db::Code::insert(&sw, egg.memory_id());
@@ -92,6 +97,8 @@ BOOST_AUTO_TEST_CASE(egg_update)
   BOOST_CHECK_EQUAL(egg.bug_id(), id);
   BOOST_CHECK_EQUAL(egg.energy(), 82);
   BOOST_CHECK_EQUAL(egg.memory_id(), code_id);
+
+  transaction.commit();
 }
 
 /**
@@ -100,9 +107,12 @@ BOOST_AUTO_TEST_CASE(egg_update)
 BOOST_AUTO_TEST_CASE(egg_delete)
 {
   db::DB sw = open_db(DB_SAVE);
+  db::Transaction transaction(&sw, db::Transaction::deferred);
 
   BOOST_CHECK_NO_THROW(db::Egg::remove(&sw, id));
   BOOST_CHECK_THROW(db::Egg(&sw, id).energy(), db::DBException);
 
   db::World::remove(&sw, world_id);
+
+  transaction.commit();
 }

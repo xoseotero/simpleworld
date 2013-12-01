@@ -2,7 +2,7 @@
  * @file tests/db/db_test.cpp
  * Unit test for db::Bug.
  *
- *  Copyright (C) 2010-2011  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2010-2013  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -26,6 +26,7 @@
 #include <simpleworld/db/types.hpp>
 #include <simpleworld/db/exception.hpp>
 #include <simpleworld/db/db.hpp>
+#include <simpleworld/db/transaction.hpp>
 #include <simpleworld/db/code.hpp>
 #include <simpleworld/db/bug.hpp>
 namespace sw = simpleworld;
@@ -71,6 +72,7 @@ db::ID id;
 BOOST_AUTO_TEST_CASE(bug_insert)
 {
   db::DB sw = open_db(DB_SAVE);
+  db::Transaction transaction(&sw, db::Transaction::deferred);
   db::ID code_id = db::Code::insert(&sw, "code", 4);
   db::ID father_id = db::Bug::insert(&sw, code_id, 0);
   id = db::Bug::insert(&sw, code_id, 0, father_id);
@@ -84,6 +86,8 @@ BOOST_AUTO_TEST_CASE(bug_insert)
   BOOST_CHECK_EQUAL(son.creation(), 0);
   BOOST_CHECK_EQUAL(son.is_null("father_id"), false);
   BOOST_CHECK_EQUAL(son.father_id(), father_id);
+
+  transaction.commit();
 }
 
 
@@ -93,6 +97,7 @@ BOOST_AUTO_TEST_CASE(bug_insert)
 BOOST_AUTO_TEST_CASE(bug_update)
 {
   db::DB sw = open_db(DB_SAVE);
+  db::Transaction transaction(&sw, db::Transaction::deferred);
   db::ID code_id = db::Code::insert(&sw, "new code", 4);
   db::ID father_id = db::Bug::insert(&sw, code_id, 0);
   db::Bug bug(&sw, id);
@@ -101,6 +106,8 @@ BOOST_AUTO_TEST_CASE(bug_update)
   BOOST_CHECK_EQUAL(bug.id(), id);
   BOOST_CHECK_EQUAL(bug.is_null("father_id"), false);
   BOOST_CHECK_EQUAL(bug.father_id(), father_id);
+
+  transaction.commit();
 }
 
 /**
@@ -109,7 +116,10 @@ BOOST_AUTO_TEST_CASE(bug_update)
 BOOST_AUTO_TEST_CASE(bug_delete)
 {
   db::DB sw = open_db(DB_SAVE);
+  db::Transaction transaction(&sw, db::Transaction::deferred);
 
   BOOST_CHECK_NO_THROW(db::Bug::remove(&sw, id));
   BOOST_CHECK_THROW(db::Bug(&sw, id).father_id(), db::DBException);
+
+  transaction.commit();
 }

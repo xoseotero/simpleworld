@@ -26,6 +26,7 @@
 #include <simpleworld/db/types.hpp>
 #include <simpleworld/db/exception.hpp>
 #include <simpleworld/db/db.hpp>
+#include <simpleworld/db/transaction.hpp>
 #include <simpleworld/db/code.hpp>
 #include <simpleworld/db/bug.hpp>
 #include <simpleworld/db/world.hpp>
@@ -66,6 +67,7 @@ db::ID id;
 BOOST_AUTO_TEST_CASE(deadbug_insert)
 {
   db::DB sw = open_db(DB_SAVE);
+  db::Transaction transaction(&sw, db::Transaction::deferred);
   db::ID code_id = db::Code::insert(&sw, "code", 4);
   id = db::Bug::insert(&sw, code_id, 0);
   db::DeadBug::insert(&sw, id, 101);
@@ -106,6 +108,8 @@ BOOST_AUTO_TEST_CASE(deadbug_insert)
   BOOST_CHECK_EQUAL(deadbug4.birth(), 0);
   BOOST_CHECK_EQUAL(deadbug4.is_null("killer_id"), false);
   BOOST_CHECK_EQUAL(deadbug4.killer_id(), id);
+
+  transaction.commit();
 }
 
 /**
@@ -114,6 +118,7 @@ BOOST_AUTO_TEST_CASE(deadbug_insert)
 BOOST_AUTO_TEST_CASE(deadbug_insert_egg)
 {
   db::DB sw = open_db(DB_SAVE);
+  db::Transaction transaction(&sw, db::Transaction::deferred);
   db::ID world_id1 = db::World::insert(&sw, 1, 1, sw::OrientationNorth);
   db::ID code_id = db::Code::insert(&sw, "code", 4);
   db::ID id1 = db::Bug::insert(&sw, code_id, 0);
@@ -143,6 +148,8 @@ BOOST_AUTO_TEST_CASE(deadbug_insert_egg)
   BOOST_CHECK_EQUAL(deadbug2.is_null("killer_id"), false);
   BOOST_CHECK_EQUAL(deadbug2.killer_id(), 1);
   BOOST_CHECK_THROW(db::Egg(&sw, id2).energy(), db::DBException);
+
+  transaction.commit();
 }
 
 /**
@@ -151,6 +158,7 @@ BOOST_AUTO_TEST_CASE(deadbug_insert_egg)
 BOOST_AUTO_TEST_CASE(deadbug_insert_alivebug)
 {
   db::DB sw = open_db(DB_SAVE);
+  db::Transaction transaction(&sw, db::Transaction::deferred);
   db::ID world_id1 = db::World::insert(&sw, 1, 1, sw::OrientationNorth);
   db::ID code_id = db::Code::insert(&sw, "code", 4);
   db::ID id1 = db::Bug::insert(&sw, code_id, 0);
@@ -190,6 +198,8 @@ BOOST_AUTO_TEST_CASE(deadbug_insert_alivebug)
   BOOST_CHECK_EQUAL(deadbug2.killer_id(), 1);
   BOOST_CHECK_THROW(db::World(&sw, world_id1).position_x(), db::DBException);
   BOOST_CHECK_THROW(db::AliveBug(&sw, id).birth(), db::DBException);
+
+  transaction.commit();
 }
 
 /**
@@ -198,6 +208,7 @@ BOOST_AUTO_TEST_CASE(deadbug_insert_alivebug)
 BOOST_AUTO_TEST_CASE(deadbug_update)
 {
   db::DB sw = open_db(DB_SAVE);
+  db::Transaction transaction(&sw, db::Transaction::deferred);
   db::DeadBug deadbug(&sw, id);
   deadbug.birth(78);
   deadbug.death(108);
@@ -209,6 +220,8 @@ BOOST_AUTO_TEST_CASE(deadbug_update)
   BOOST_CHECK_EQUAL(deadbug.birth(), 78);
   BOOST_CHECK_EQUAL(deadbug.is_null("killer_id"), false);
   BOOST_CHECK_EQUAL(deadbug.killer_id(), 2);
+
+  transaction.commit();
 }
 
 /**
@@ -217,7 +230,10 @@ BOOST_AUTO_TEST_CASE(deadbug_update)
 BOOST_AUTO_TEST_CASE(deadbug_delete)
 {
   db::DB sw = open_db(DB_SAVE);
+  db::Transaction transaction(&sw, db::Transaction::deferred);
 
   BOOST_CHECK_NO_THROW(db::DeadBug::remove(&sw, id));
   BOOST_CHECK_THROW(db::DeadBug(&sw, id).death(), db::DBException);
+
+  transaction.commit();
 }

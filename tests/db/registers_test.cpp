@@ -27,6 +27,7 @@
 #include <simpleworld/db/types.hpp>
 #include <simpleworld/db/exception.hpp>
 #include <simpleworld/db/db.hpp>
+#include <simpleworld/db/transaction.hpp>
 #include <simpleworld/db/types.hpp>
 #include <simpleworld/db/registers.hpp>
 namespace sw = simpleworld;
@@ -135,6 +136,7 @@ db::ID ids[2];
 BOOST_AUTO_TEST_CASE(registers_insert)
 {
   db::DB sw = open_db(DB_SAVE);
+  db::Transaction transaction(&sw, db::Transaction::deferred);
   sw::Uint8 data[REGISTERS_SIZE];
   for (int i = 0; i < REGISTERS_SIZE; i++)
     data[i] = static_cast<sw::Uint8>(i);
@@ -153,6 +155,8 @@ BOOST_AUTO_TEST_CASE(registers_insert)
   BOOST_CHECK_EQUAL(size, REGISTERS_SIZE);
   for (int i = 0; i < REGISTERS_SIZE; i++)
     BOOST_CHECK_EQUAL(test[i], 0);
+
+  transaction.commit();
 }
 
 
@@ -162,6 +166,7 @@ BOOST_AUTO_TEST_CASE(registers_insert)
 BOOST_AUTO_TEST_CASE(registers_update)
 {
   db::DB sw = open_db(DB_SAVE);
+  db::Transaction transaction(&sw, db::Transaction::deferred);
   db::Registers registers(&sw, ids[1]);
   sw::Uint32 size;
   boost::shared_array<sw::Uint8> data = registers.data().read(&size);
@@ -176,6 +181,8 @@ BOOST_AUTO_TEST_CASE(registers_update)
   BOOST_CHECK_EQUAL(data[0], 0xFF);
   for (int i = 1; i < REGISTERS_SIZE - 1; i++)
     BOOST_CHECK_EQUAL(data[i], data[i]);
+
+  transaction.commit();
 }
 
 /**
@@ -184,12 +191,15 @@ BOOST_AUTO_TEST_CASE(registers_update)
 BOOST_AUTO_TEST_CASE(registers_delete)
 {
   db::DB sw = open_db(DB_SAVE);
+  db::Transaction transaction(&sw, db::Transaction::deferred);
 
   BOOST_CHECK_NO_THROW(db::Registers::remove(&sw, ids[0]));
   BOOST_CHECK_NO_THROW(db::Registers::remove(&sw, ids[1]));
   sw::Uint32 size;
   BOOST_CHECK_THROW(db::Registers(&sw, ids[0]).data().read(&size),
-		    db::DBException);
+                    db::DBException);
   BOOST_CHECK_THROW(db::Registers(&sw, ids[1]).data().read(&size),
-		    db::DBException);
+                    db::DBException);
+
+  transaction.commit();
 }
