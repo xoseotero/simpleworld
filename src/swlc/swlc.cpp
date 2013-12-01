@@ -248,6 +248,21 @@ void parse_cmd(int argc, char* argv[])
 }
 
 
+/**
+ * Show the warnings of a source file.
+ * @param source source file.
+ */
+void show_warnings(const cpu::Source& source)
+{
+  std::vector<std::string> warnings = source.warnings();
+  std::vector<std::string>::const_iterator iter;
+  for (iter = warnings.begin();
+       iter != warnings.end();
+       ++iter)
+    std::cerr << (*iter) << std::endl;
+}
+
+
 int main(int argc, char *argv[])
 try {
   parse_cmd(argc, argv);
@@ -255,40 +270,40 @@ try {
   // This CPU doesn't need memory because only the instruction set is needed
   cpu::Memory registers;
   cpu::CPU cpu(fakeisa, &registers, NULL);
-  cpu::Source source(cpu.isa(), input);
-  for (std::vector<std::string>::const_iterator iter = include_path.begin();
-       iter != include_path.end();
-       ++iter)
-    source.add_include_path(*iter);
-  for (std::map<std::string, std::string>::const_iterator iter = definitions.begin();
-       iter != definitions.end();
-       ++iter)
-    source.add_define(iter->first, iter->second);
+  cpu::Source source(cpu.isa());
+  try {
+    source.load(input);
+    for (std::vector<std::string>::const_iterator iter = include_path.begin();
+         iter != include_path.end();
+         ++iter)
+      source.add_include_path(*iter);
+    for (std::map<std::string, std::string>::const_iterator iter = definitions.begin();
+         iter != definitions.end();
+         ++iter)
+      source.add_define(iter->first, iter->second);
 
-  if (preprocess_set) {
-    source.preprocess();
-    source.save(output);
-  } else {
-    source.compile(output);
-    std::vector<std::string> warnings = source.warnings();
-    std::vector<std::string>::const_iterator iter;
-    for (iter = warnings.begin();
-	 iter != warnings.end();
-	 ++iter) {
-      std::cerr << (*iter) << std::endl;
+    if (preprocess_set) {
+      source.preprocess();
+      source.save(output);
+    } else {
+      source.compile(output);
+      show_warnings(source);
     }
+  }
+  catch (const cpu::ErrorDirective& e) {
+    show_warnings(source);
+    std::cerr << e.info << std::endl;
+  }
+  catch (const cpu::ParserError& e) {
+    show_warnings(source);
+    std::cerr << e.info << std::endl;
+  }
+  catch (const sw::IOError& e) {
+    show_warnings(source);
+    std::cerr << e.info << std::endl;
   }
 
   std::exit(EXIT_SUCCESS);
-}
-catch (const cpu::ErrorDirective& e) {
-  std::cerr << e.info << std::endl;
-}
-catch (const cpu::ParserError& e) {
-  std::cerr << e.info << std::endl;
-}
-catch (const sw::IOError& e) {
-  std::cerr << e.info << std::endl;
 }
 catch (const sw::Exception& e) {
   std::cerr << e << std::endl;
