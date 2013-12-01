@@ -104,6 +104,17 @@ bool compare_swo(const std::string& file1, const std::string& file2)
 
 
 /**
+ * Clear a empty file.
+ */
+BOOST_AUTO_TEST_CASE(source_clear)
+{
+  cpu::Source file(cpu::isa);
+
+  BOOST_CHECK_NO_THROW(file.clear());
+  BOOST_CHECK_EQUAL(file.lines(), 0);
+}
+
+/**
  * Preprocess the SWL.
  */
 BOOST_AUTO_TEST_CASE(source_preprocess)

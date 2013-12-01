@@ -806,7 +806,8 @@ Source::Source(const ISA& isa, const std::string& filename)
  */
 void Source::clear()
 {
-  this->remove(0, this->lines());
+  if (this->lines() > 0)
+    this->remove(0, this->lines());
   this->include_path_.clear();
   this->includes_.clear();
   this->macros_.clear();
