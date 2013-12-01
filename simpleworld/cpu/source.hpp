@@ -135,22 +135,31 @@ public:
   /**
    * Compile the source code to object code.
    * @param mem Memory where to save.
-   * @return the warning messages generated during the compilation.
    * @exception ParserError error found in the code.
    * @exception ErrorDirective error directive found in the code.
    */
-  std::vector<std::string> compile(Memory* mem);
+  void compile(Memory* mem);
 
   /**
    * Compile the source code to object code.
    * @param filename File where to save.
-   * @return the warning messages generated during the compilation.
    * @exception IOERROR if a problem with file happen.
    * @exception ParserError error found in the code.
    * @exception ErrorDirective error directive found in the code.
    */
-  std::vector<std::string> compile(std::string filename);
+  void compile(std::string filename);
 
+
+  /**
+   * Reset the warnings messages.
+   */
+  void reset_warnings() { this->warnings_.resize(0); }
+
+  /**
+   * Get the warnings messages generated.
+   * @return the warning messages.
+   */
+  std::vector<std::string> warnings() const { return this->warnings_; }
 
 protected:
   /**
@@ -206,6 +215,7 @@ private:
   std::map<std::string, Macro> macros_;
   std::map<std::string, std::string> defines_;
   std::map<std::string, Address> labels_;
+  std::vector<std::string> warnings_;
 };
 
 }

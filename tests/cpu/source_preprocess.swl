@@ -1,4 +1,5 @@
 # Test code for source_test.cpp
+.warning "This is just a test!"
 
 
 

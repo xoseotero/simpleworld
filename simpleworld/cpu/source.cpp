@@ -908,11 +908,10 @@ void Source::preprocess(bool strip)
 /**
  * Compile the source code to object code.
  * @param mem Memory where to save.
- * @return the warning messages generated during the compilation.
  * @exception ParserError error found in the code.
  * @exception ErrorDirective error directive found in the code.
  */
-std::vector<std::string> Source::compile(Memory* mem)
+void Source::compile(Memory* mem)
 {
   this->preprocess(true);
 
@@ -920,14 +919,13 @@ std::vector<std::string> Source::compile(Memory* mem)
   // At most, one instruction by line of source code will be generated.
   mem->resize(sizeof(Word) * this->lines());
 
-  std::vector<std::string> warnings;
   Address addr = 0;
   for (File::size_type i = 0; i < this->lines(); i++) {
     if (is_blank(this->get_line(i)) or is_comment(this->get_line(i)))
       continue;
 
     if (is_warning(this->get_line(i))) {
-      warnings.push_back(get_warning(this->get_line(i)));
+      this->warnings_.push_back(get_warning(this->get_line(i)));
       continue;
     }
 
@@ -940,19 +938,16 @@ std::vector<std::string> Source::compile(Memory* mem)
 
   // Adjust the size of object code
   mem->resize(addr);
-
-  return warnings;
 }
 
 /**
  * Compile the source code to object code.
  * @param filename File where to save.
- * @return the warning messages generated during the compilation.
  * @exception IOERROR if a problem with file happen.
  * @exception ParserError error found in the code.
  * @exception ErrorDirective error directive found in the code.
  */
-std::vector<std::string> Source::compile(std::string filename)
+void Source::compile(std::string filename)
 {
   this->preprocess(true);
 
@@ -962,13 +957,12 @@ std::vector<std::string> Source::compile(std::string filename)
 File %1% is not writable")
                                         % filename));
 
-  std::vector<std::string> warnings;
   for (File::size_type i = 0; i < this->lines(); i++) {
     if (is_blank(this->get_line(i)) or is_comment(this->get_line(i)))
       continue;
 
     if (is_warning(this->get_line(i))) {
-      warnings.push_back(get_warning(this->get_line(i)));
+      this->warnings_.push_back(get_warning(this->get_line(i)));
       continue;
     }
 
@@ -984,8 +978,6 @@ Can't write in file %1%")
   }
 
   file.close();
-
-  return warnings;
 }
 
 

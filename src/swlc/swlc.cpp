@@ -269,11 +269,12 @@ try {
     source.preprocess();
     source.save(output);
   } else {
-    std::vector<std::string> warnings = source.compile(output);
+    source.compile(output);
+    std::vector<std::string> warnings = source.warnings();
     std::vector<std::string>::const_iterator iter;
     for (iter = warnings.begin();
-         iter != warnings.end();
-         ++iter) {
+	 iter != warnings.end();
+	 ++iter) {
       std::cerr << (*iter) << std::endl;
     }
   }

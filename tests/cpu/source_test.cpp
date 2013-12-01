@@ -120,6 +120,7 @@ BOOST_AUTO_TEST_CASE(source_preprocess)
 
   compiler.preprocess();
 
+  BOOST_CHECK_EQUAL(compiler.warnings().size(), 0);
   BOOST_CHECK(compare_swl(compiler, cpu::File(SOURCE_PREPROCESS)));
 }
 
@@ -133,6 +134,9 @@ BOOST_AUTO_TEST_CASE(source_swo)
 
   compiler.compile(SOURCE_SAVE);
 
+  std::vector<std::string> warnings = compiler.warnings();
+  BOOST_CHECK_EQUAL(warnings.size(), 1);
+  BOOST_CHECK_EQUAL(warnings[0], "This is just a test!");
   BOOST_CHECK(compare_swo(SOURCE_SWO, SOURCE_SAVE));
 }
 
