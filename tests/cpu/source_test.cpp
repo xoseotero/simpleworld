@@ -26,6 +26,7 @@
 #include <boost/test/unit_test.hpp>
 
 #include <simpleworld/cpu/types.hpp>
+#include <simpleworld/cpu/errordirective.hpp>
 #include <simpleworld/cpu/instruction.hpp>
 #include <simpleworld/cpu/memory.hpp>
 #include <simpleworld/cpu/memory_file.hpp>
@@ -133,4 +134,17 @@ BOOST_AUTO_TEST_CASE(source_swo)
   compiler.compile(SOURCE_SAVE);
 
   BOOST_CHECK(compare_swo(SOURCE_SWO, SOURCE_SAVE));
+}
+
+/**
+ * Check the .error directive.
+ */
+BOOST_AUTO_TEST_CASE(source_error)
+{
+  cpu::Source compiler(cpu::isa);
+  compiler.insert(".error \"Stop here!\"");
+
+  cpu::Memory memory;
+  BOOST_CHECK_THROW(compiler.compile(&memory), cpu::ErrorDirective);
+  BOOST_CHECK_EQUAL(compiler.warnings().size(), 0);
 }
