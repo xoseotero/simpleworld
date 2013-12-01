@@ -38,6 +38,11 @@ class MemoryFile: public Memory
 public:
   /**
    * Constructor.
+   */
+  MemoryFile();
+
+  /**
+   * Constructor.
    * @param filename filename from where to load the code.
    * @exception IOError problem with the file.
    */

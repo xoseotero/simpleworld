@@ -37,6 +37,14 @@ namespace cpu
 
 /**
  * Constructor.
+ */
+MemoryFile::MemoryFile()
+  : Memory()
+{
+}
+
+/**
+ * Constructor.
  * @param filename filename from where to load the code.
  * @exception IOError problem with the file.
  */
