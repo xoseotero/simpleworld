@@ -7,7 +7,7 @@
  * world. The objective of the project is to observe the evolution of this
  * world and of these bugs.
  *
- *  Copyright (C) 2007-2013  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2007-2014  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -49,6 +49,7 @@
 #include <simpleworld/db/deadbug.hpp>
 #include <simpleworld/db/stats.hpp>
 
+#include "config.hpp"
 #include "simpleworld.hpp"
 #include "worlderror.hpp"
 #include "actionerror.hpp"
@@ -230,10 +231,10 @@ void SimpleWorld::run(Time cycles)
   Time time = this->env_->time();
 
   while (cycles > 0) {
-    // run up to 64 cycles in a transaction
     db::Transaction transaction(this, db::Transaction::immediate);
 
-    const Time cycles_transaction = (cycles < 64) ? cycles : 64;
+    const Time cycles_transaction = (cycles < CYCLES_BY_TRANSACTION) ?
+      cycles : CYCLES_BY_TRANSACTION;
     for (Time i = cycles_transaction; i > 0; i--) {
       this->spawn_eggs();
       this->spawn_food();

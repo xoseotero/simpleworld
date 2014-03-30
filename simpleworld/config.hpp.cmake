@@ -2,7 +2,7 @@
  * @file simpleworld/config.hpp
  * Configuration.
  *
- *  Copyright (C) 2007-2013  Xosé Otero <xoseotero@gmail.com>
+ *  Copyright (C) 2007-2014  Xosé Otero <xoseotero@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -26,5 +26,7 @@
 #cmakedefine IS_LITTLE_ENDIAN
 
 #cmakedefine HAVE_CXXABI_H
+
+#cmakedefine CYCLES_BY_TRANSACTION ${CYCLES_BY_TRANSACTION}
 
 #endif // SIMPLEWORLD_CONFIG_H

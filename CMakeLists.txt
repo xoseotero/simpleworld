@@ -93,6 +93,9 @@ if(CXX_ACCEPTS_WALL)
 endif()
 
 
+set(CYCLES_BY_TRANSACTION 1024 CACHE STRING
+    "Maximum CPU cycles executed in a database transaction")
+
 set(DEBUG_MODE OFF CACHE BOOL "Build the project using debugging code")
 if(DEBUG_MODE)
   set(CMAKE_BUILD_TYPE Debug)
