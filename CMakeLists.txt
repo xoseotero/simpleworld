@@ -49,7 +49,7 @@ include_directories(${Boost_INCLUDE_DIRS})
 
 
 # getopt()/getopt_long()
-option(getopt_USE_INTERNAL "Use internal getopt()/getopt_long()" OFF)
+set(getopt_USE_INTERNAL OFF CACHE BOOL "Use internal getopt()/getopt_long()")
 
 if(NOT getopt_USE_INTERNAL)
   check_include_file_cxx(getopt.h HAVE_GETOPT_H)
@@ -68,7 +68,7 @@ endif()
 
 
 # SQLite3
-option(SQLite3_USE_INTERNAL "Use internal SQLite3 library" OFF)
+set(SQLite3_USE_INTERNAL OFF CACHE BOOL "Use internal SQLite3 library")
 
 if(NOT SQLite3_USE_INTERNAL)
   find_package(SQLite3)
@@ -93,7 +93,7 @@ if(CXX_ACCEPTS_WALL)
 endif()
 
 
-option(DEBUG_MODE "Build the project using debugging code" OFF)
+set(DEBUG_MODE OFF CACHE BOOL "Build the project using debugging code")
 if(DEBUG_MODE)
   set(CMAKE_BUILD_TYPE Debug)
   add_definitions("-DDEBUG")
@@ -103,7 +103,7 @@ else()
   add_definitions("-DBOOST_DISABLE_ASSERTS")
 endif()
 
-option(UNIT_TESTS "Compile the unit tests" OFF)
+set(UNIT_TESTS OFF CACHE BOOL "Compile the unit tests")
 if(UNIT_TESTS)
   enable_testing()
 endif()
